@@ -1,39 +1,50 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { StatusBar } from 'expo-status-bar';
-import { useEffect } from 'react';
-import 'react-native-reanimated';
+import { Stack } from "expo-router";
+import { useEffect, useState } from "react";
+import { Session } from "@supabase/supabase-js";
+import { supabase } from "@/lib/supabase";
+import { setStatusBarStyle } from "expo-status-bar";
+import { useRouter } from "expo-router";
+import userStore from "@/store/userStore";
 
-import { useColorScheme } from '@/hooks/useColorScheme';
-
-// Prevent the splash screen from auto-hiding before asset loading is complete.
-SplashScreen.preventAutoHideAsync();
-
-export default function RootLayout() {
-  const colorScheme = useColorScheme();
-  const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-  });
-
+export default function Root() {
+  const [session, setSession] = useState<Session | null>(null);
+  const router = useRouter();
   useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded]);
+    // Set the status bar style once the component is mounted
+    setStatusBarStyle("dark");
 
-  if (!loaded) {
-    return null;
-  }
+    // Fetch the initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+    });
+
+    // Set up a listener for authentication state changes
+    supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+      userStore.setState({ session });
+      if (!session) {
+        // Redirect to sign-in if session is null (logged out)
+        router.replace("/sign-in");
+      } else {
+        // Redirect to tabs if session exists (logged in)
+        router.replace("/(tabs)");
+      }
+    });
+
+    // // Clean up the listener on unmount
+    // return () => {
+    //   authListener?.unsubscribe();
+    // };
+  }, []);
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
+    <Stack>
+      {session ? (
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
+      ) : (
+        <Stack.Screen name="sign-in" options={{ headerShown: false }} />
+      )}
+      <Stack.Screen name="+not-found" />
+    </Stack>
   );
 }
