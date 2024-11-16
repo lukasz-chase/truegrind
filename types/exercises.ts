@@ -1,4 +1,5 @@
 export type Exercise = {
+  id: number;
   name: string;
   muscle: string;
   type: string;

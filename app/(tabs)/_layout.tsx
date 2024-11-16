@@ -17,11 +17,12 @@ export default function TabLayout() {
         },
       }}
     >
-      {NavigationData.map(({ name, icon, focusedIcon }) => (
+      {NavigationData.map(({ name, icon, focusedIcon, title }) => (
         <Tabs.Screen
           name={name}
           key={name}
           options={{
+            title,
             headerShown: false,
             tabBarIcon: ({ color, focused }) => (
               <FontAwesomeIcons

@@ -1,13 +1,25 @@
 import { Stack } from "expo-router";
-import { useEffect, useState } from "react";
-import { Session } from "@supabase/supabase-js";
+import { useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import { setStatusBarStyle } from "expo-status-bar";
 import { useRouter } from "expo-router";
 import userStore from "@/store/userStore";
+import { AppState } from "react-native";
+
+// Tells Supabase Auth to continuously refresh the session automatically if
+// the app is in the foreground. When this is added, you will continue to receive
+// `onAuthStateChange` events with the `TOKEN_REFRESHED` or `SIGNED_OUT` event
+// if the user's session is terminated. This should only be registered once.
+AppState.addEventListener("change", (state) => {
+  if (state === "active") {
+    supabase.auth.startAutoRefresh();
+  } else {
+    supabase.auth.stopAutoRefresh();
+  }
+});
 
 export default function Root() {
-  const [session, setSession] = useState<Session | null>(null);
+  const { session: currentSession } = userStore((state) => state);
   const router = useRouter();
   useEffect(() => {
     // Set the status bar style once the component is mounted
@@ -15,12 +27,11 @@ export default function Root() {
 
     // Fetch the initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
+      userStore.setState({ session });
     });
 
     // Set up a listener for authentication state changes
-    supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
+    const authListener = supabase.auth.onAuthStateChange((_event, session) => {
       userStore.setState({ session });
       if (!session) {
         // Redirect to sign-in if session is null (logged out)
@@ -32,14 +43,14 @@ export default function Root() {
     });
 
     // // Clean up the listener on unmount
-    // return () => {
-    //   authListener?.unsubscribe();
-    // };
+    return () => {
+      authListener?.data.subscription.unsubscribe();
+    };
   }, []);
 
   return (
     <Stack>
-      {session ? (
+      {currentSession ? (
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       ) : (
         <Stack.Screen name="sign-in" options={{ headerShown: false }} />
