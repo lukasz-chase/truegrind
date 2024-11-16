@@ -4,10 +4,10 @@ import { Exercise } from "@/types/exercises";
 
 const ExerciseRow = ({
   exercise,
-  exerciseSets,
+  numberOfSets,
 }: {
   exercise: Exercise;
-  exerciseSets?: number;
+  numberOfSets?: number;
 }) => {
   return (
     <View style={styles.exerciseItem}>
@@ -18,7 +18,7 @@ const ExerciseRow = ({
       />
       <View style={styles.exerciseDetails}>
         <Text style={styles.exerciseName}>
-          {exerciseSets && `${exerciseSets} x `}
+          {numberOfSets && `${numberOfSets} x `}
           {exercise.name}
         </Text>
         <View>

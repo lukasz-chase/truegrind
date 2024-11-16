@@ -1,41 +1,49 @@
-// StartWorkoutScreen.js
 import WorkoutSessionModal from "@/components/WorkoutModal";
 import WorkoutPreviewModal from "@/components/WorkoutPreviewModal";
 import { supabase } from "@/lib/supabase";
 import userStore from "@/store/userStore";
 import useWorkoutModalStore from "@/store/useWorkoutModalStore";
 import useWorkoutPreviewModalStore from "@/store/useWorkoutPreviewModalStore";
+import { Workout } from "@/types/workout";
 import React, { useState, useEffect } from "react";
 import { ScrollView, TouchableOpacity, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Button, Text, View } from "react-native-ui-lib";
 
-export default function Workout() {
-  const [templates, setTemplates] = useState<any[]>([]);
+export default function WorkoutScreen() {
+  const [workouts, setWorkouts] = useState<Workout[]>([]);
   const {
     isVisible: isWorkoutModalVisible,
     openModal: openWorkoutModal,
     closeModal: closeWorkoutModal,
   } = useWorkoutModalStore();
   const { isVisible, openModal, closeModal } = useWorkoutPreviewModalStore();
-  const [workoutId, setWorkoutId] = useState<number>(0);
+  const [chosenWorkout, setChosenWorkout] = useState<Workout | null>(null);
   const { session } = userStore((state) => state);
   useEffect(() => {
-    fetchTemplates();
+    fetchWorkouts();
   }, [session]);
 
-  const fetchTemplates = async () => {
+  const fetchWorkouts = async () => {
     try {
       const { data } = await supabase
         .from("workouts")
-        .select(`id, name,  workout_exercises(id, exercises(name))`)
-        .eq("user_id", session?.user?.id);
+        .select(
+          `id, name,  workout_exercises(id, exercises(name, image, muscle, equipment), exercise_sets(*))`
+        )
+        .eq("user_id", session?.user?.id)
+        .returns<Workout[]>();
       if (data) {
-        setTemplates(data);
+        setWorkouts(data);
       }
     } catch (error) {
       console.log(error);
     }
+  };
+
+  const startWorkout = () => {
+    closeModal();
+    openWorkoutModal();
   };
 
   return (
@@ -56,19 +64,19 @@ export default function Workout() {
             style={styles.templatesButton}
           />
         </View>
-        <Text>My Templates ({templates.length})</Text>
+        <Text>My Templates ({workouts.length})</Text>
         <ScrollView style={styles.workouts}>
-          {templates.map((template) => (
+          {workouts.map((workout) => (
             <TouchableOpacity
               style={styles.workoutCard}
-              key={template.id}
+              key={workout.id}
               onPress={() => {
-                setWorkoutId(template.id);
+                setChosenWorkout(workout);
                 openModal();
               }}
             >
-              <Text style={styles.workoutCardTitle}>{template.name}</Text>
-              {template?.workout_exercises
+              <Text style={styles.workoutCardTitle}>{workout.name}</Text>
+              {workout?.workout_exercises
                 .slice(0, 4)
                 .map((workout: { id: number; exercises: { name: string } }) => (
                   <Text
@@ -79,25 +87,30 @@ export default function Workout() {
                     {workout.exercises.name}
                   </Text>
                 ))}
-              {template?.workout_exercises.length > 4 && (
+              {workout?.workout_exercises.length > 4 && (
                 <Text style={styles.workoutCardExercises}>
-                  & {template.workout_exercises.length - 4} more
+                  & {workout.workout_exercises.length - 4} more
                 </Text>
               )}
             </TouchableOpacity>
           ))}
         </ScrollView>
       </View>
-      <WorkoutPreviewModal
-        visible={isVisible}
-        onClose={closeModal}
-        workoutId={workoutId}
-      />
-      <WorkoutSessionModal
-        visible={isWorkoutModalVisible}
-        onClose={closeWorkoutModal}
-        workoutId={workoutId}
-      />
+      {chosenWorkout && (
+        <>
+          <WorkoutPreviewModal
+            visible={isVisible}
+            onClose={closeModal}
+            workout={chosenWorkout}
+            startWorkout={startWorkout}
+          />
+          <WorkoutSessionModal
+            visible={isWorkoutModalVisible}
+            onClose={closeWorkoutModal}
+            workout={chosenWorkout}
+          />
+        </>
+      )}
     </SafeAreaView>
   );
 }

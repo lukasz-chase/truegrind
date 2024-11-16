@@ -1,0 +1,10 @@
+export type ExerciseSet = {
+  id: number;
+  workout_exercise_id: number;
+  order: number;
+  reps: number | null;
+  weight: number | null;
+  is_warmup: boolean;
+  is_dropset: boolean;
+  reps_in_reserve: number | null;
+};

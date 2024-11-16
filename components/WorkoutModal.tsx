@@ -1,45 +1,28 @@
 import { supabase } from "@/lib/supabase";
-import React, { useState, useEffect } from "react";
+import { Workout } from "@/types/workout";
+import React, { useState } from "react";
 import {
   View,
   Text,
-  Button,
   ScrollView,
-  TouchableOpacity,
   Modal,
   StyleSheet,
   TouchableWithoutFeedback,
+  Pressable,
 } from "react-native";
 
 type Props = {
   visible: boolean;
   onClose: () => void;
-  workoutId: number;
+  workout: Workout;
 };
 
 export default function WorkoutSessionModal({
   visible,
   onClose,
-  workoutId,
+  workout,
 }: Props) {
-  const [exercises, setExercises] = useState<any[]>([]);
   const [currentSets, setCurrentSets] = useState<any>({});
-
-  useEffect(() => {
-    if (workoutId) fetchWorkoutExercises();
-  }, [workoutId]);
-
-  const fetchWorkoutExercises = async () => {
-    const { data } = await supabase
-      .from("workout_exercises")
-      .select("*, exercise_sets(*), exercises(name), workouts(name)")
-      .eq("workout_id", workoutId);
-
-    console.log(data);
-    if (data) {
-      setExercises(data);
-    }
-  };
 
   const handleSetUpdate = (exerciseId: string, set: number, value: any) => {
     setCurrentSets((prev: any) => ({
@@ -79,8 +62,12 @@ export default function WorkoutSessionModal({
               <ScrollView>
                 {/* Your dynamic exercise content here */}
               </ScrollView>
-              <Button title="Finish Workout" onPress={saveWorkout} />
-              <Button title="Close" onPress={onClose} color="red" />
+              <Pressable onPress={saveWorkout}>
+                <Text>Finish Workout</Text>
+              </Pressable>
+              <Pressable onPress={onClose}>
+                <Text>Cancel</Text>
+              </Pressable>
             </View>
           </TouchableWithoutFeedback>
         </View>
@@ -100,7 +87,7 @@ const styles = StyleSheet.create({
   modalContent: {
     width: "100%", // Adjust width as needed
     padding: 20,
-    backgroundColor: "#FF6B6B", // modal background color
+    backgroundColor: "white", // modal background color
     borderRadius: 10,
     alignItems: "center",
   },

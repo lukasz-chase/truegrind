@@ -1,5 +1,4 @@
-import { supabase } from "@/lib/supabase";
-import React, { useState, useEffect } from "react";
+import React from "react";
 import {
   View,
   Text,
@@ -11,37 +10,21 @@ import {
 } from "react-native";
 import EvilIcons from "@expo/vector-icons/EvilIcons";
 import ExerciseRow from "./ExerciseRow";
+import { Workout } from "@/types/workout";
 
 type Props = {
   visible: boolean;
   onClose: () => void;
-  workoutId: number;
+  startWorkout: () => void;
+  workout: Workout;
 };
 
 export default function WorkoutPreviewModal({
   visible,
   onClose,
-  workoutId,
+  startWorkout,
+  workout,
 }: Props) {
-  const [exercises, setExercises] = useState<any[]>([]);
-
-  useEffect(() => {
-    if (workoutId) fetchWorkoutExercises();
-  }, [workoutId]);
-
-  const fetchWorkoutExercises = async () => {
-    const { data } = await supabase
-      .from("workout_exercises")
-      .select(
-        "*, exercise_sets(*), exercises(name, image, muscle, equipment), workouts(name)"
-      )
-      .eq("workout_id", workoutId);
-    console.log(JSON.stringify(data, null, 2));
-    if (data) {
-      setExercises(data);
-    }
-  };
-
   return (
     <Modal
       transparent={true}
@@ -57,25 +40,23 @@ export default function WorkoutPreviewModal({
                 <Pressable style={styles.modalCloseButton} onPress={onClose}>
                   <EvilIcons name="close" size={24} color="black" />
                 </Pressable>
-                <Text style={styles.modalHeaderTitle}>
-                  {exercises[0]?.workouts.name}
-                </Text>
+                <Text style={styles.modalHeaderTitle}>{workout.name}</Text>
                 <Pressable>
                   <Text style={styles.modalEditButton}>Edit</Text>
                 </Pressable>
               </View>
               <FlatList
                 style={styles.exercisesList}
-                data={exercises}
+                data={workout.workout_exercises}
                 renderItem={({ item }) => (
                   <ExerciseRow
                     exercise={item.exercises}
-                    exerciseSets={item.exercise_sets.length}
-                  /> // Pass only the "exercises" fragment
+                    numberOfSets={item.exercise_sets.length}
+                  />
                 )}
-                keyExtractor={(item) => item.id.toString()} // Ensure keyExtractor uses a string
+                keyExtractor={(item) => item.id.toString()}
               />
-              <Pressable onPress={onClose} style={styles.actionButton}>
+              <Pressable onPress={startWorkout} style={styles.actionButton}>
                 <Text style={styles.actionButtonText}>Start Workout</Text>
               </Pressable>
             </View>
