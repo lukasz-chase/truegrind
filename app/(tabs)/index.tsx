@@ -1,8 +1,7 @@
-import WorkoutSessionModal from "@/components/WorkoutModal";
-import WorkoutPreviewModal from "@/components/WorkoutPreviewModal";
+import WorkoutBottomSheet from "@/components/BottomSheet/WorkoutBottomSheet";
+import WorkoutPreviewModal from "@/components/Modals/WorkoutPreviewModal";
 import { supabase } from "@/lib/supabase";
 import userStore from "@/store/userStore";
-import useWorkoutModalStore from "@/store/useWorkoutModalStore";
 import useWorkoutPreviewModalStore from "@/store/useWorkoutPreviewModalStore";
 import { Workout } from "@/types/workout";
 import React, { useState, useEffect } from "react";
@@ -12,12 +11,13 @@ import { Button, Text, View } from "react-native-ui-lib";
 
 export default function WorkoutScreen() {
   const [workouts, setWorkouts] = useState<Workout[]>([]);
+  const [isSheetVisible, setIsSheetVisible] = useState(false);
   const {
-    isVisible: isWorkoutModalVisible,
-    openModal: openWorkoutModal,
-    closeModal: closeWorkoutModal,
-  } = useWorkoutModalStore();
-  const { isVisible, openModal, closeModal } = useWorkoutPreviewModalStore();
+    isVisible: previewVisible,
+    closeModal: closePreviewModal,
+    openModal: openPreviewModal,
+  } = useWorkoutPreviewModalStore();
+
   const [chosenWorkout, setChosenWorkout] = useState<Workout | null>(null);
   const { session } = userStore((state) => state);
   useEffect(() => {
@@ -42,81 +42,90 @@ export default function WorkoutScreen() {
   };
 
   const startWorkout = () => {
-    closeModal();
-    openWorkoutModal();
+    closePreviewModal();
+    setIsSheetVisible(true);
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <View>
-        <Text style={styles.title}>Start Workout</Text>
-        <Button
-          label={"Start an Empty Workout"}
-          size={Button.sizes.large}
-          style={styles.actionButton}
-          onPress={openWorkoutModal}
-        />
-        <View style={styles.templateHeader}>
-          <Text style={styles.templatesTitle}>Templates</Text>
+    <>
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.container}>
+          <Text style={styles.title}>Start Workout</Text>
           <Button
-            label="+ Template"
-            size="xSmall"
-            style={styles.templatesButton}
+            label={"Start an Empty Workout"}
+            size={Button.sizes.large}
+            style={styles.actionButton}
+            onPress={() => setIsSheetVisible(true)}
           />
-        </View>
-        <Text>My Templates ({workouts.length})</Text>
-        <ScrollView style={styles.workouts}>
-          {workouts.map((workout) => (
-            <TouchableOpacity
-              style={styles.workoutCard}
-              key={workout.id}
-              onPress={() => {
-                setChosenWorkout(workout);
-                openModal();
-              }}
-            >
-              <Text style={styles.workoutCardTitle}>{workout.name}</Text>
-              {workout?.workout_exercises
-                .slice(0, 4)
-                .map((workout: { id: number; exercises: { name: string } }) => (
-                  <Text
-                    key={workout.id}
-                    style={styles.workoutCardExercises}
-                    numberOfLines={1}
-                  >
-                    {workout.exercises.name}
+          <View style={styles.templateHeader}>
+            <Text style={styles.templatesTitle}>Templates</Text>
+            <Button
+              label="+ Template"
+              size="xSmall"
+              style={styles.templatesButton}
+            />
+          </View>
+          <Text>My Templates ({workouts.length})</Text>
+          <ScrollView style={styles.workouts}>
+            {workouts.map((workout) => (
+              <TouchableOpacity
+                style={styles.workoutCard}
+                key={workout.id}
+                onPress={() => {
+                  setChosenWorkout(workout);
+                  openPreviewModal();
+                }}
+              >
+                <Text style={styles.workoutCardTitle}>{workout.name}</Text>
+                {workout?.workout_exercises
+                  .slice(0, 4)
+                  .map(
+                    (workout: { id: number; exercises: { name: string } }) => (
+                      <Text
+                        key={workout.id}
+                        style={styles.workoutCardExercises}
+                        numberOfLines={1}
+                      >
+                        {workout.exercises.name}
+                      </Text>
+                    )
+                  )}
+                {workout?.workout_exercises.length > 4 && (
+                  <Text style={styles.workoutCardExercises}>
+                    & {workout.workout_exercises.length - 4} more
                   </Text>
-                ))}
-              {workout?.workout_exercises.length > 4 && (
-                <Text style={styles.workoutCardExercises}>
-                  & {workout.workout_exercises.length - 4} more
-                </Text>
-              )}
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
-      </View>
-      {chosenWorkout && (
-        <>
-          <WorkoutPreviewModal
-            visible={isVisible}
-            onClose={closeModal}
-            workout={chosenWorkout}
-            startWorkout={startWorkout}
-          />
-          <WorkoutSessionModal
-            visible={isWorkoutModalVisible}
-            onClose={closeWorkoutModal}
-            workout={chosenWorkout}
-          />
-        </>
+                )}
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </View>
+        {chosenWorkout && (
+          <>
+            {previewVisible && (
+              <WorkoutPreviewModal
+                visible={previewVisible}
+                onClose={closePreviewModal}
+                workout={chosenWorkout}
+                startWorkout={startWorkout}
+              />
+            )}
+          </>
+        )}
+      </SafeAreaView>
+      {isSheetVisible && chosenWorkout && (
+        <WorkoutBottomSheet
+          onClose={() => setIsSheetVisible(false)}
+          workout={chosenWorkout}
+        />
       )}
-    </SafeAreaView>
+    </>
   );
 }
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
+  },
+  container: {
     paddingHorizontal: 20,
   },
   title: {

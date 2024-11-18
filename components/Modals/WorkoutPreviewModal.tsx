@@ -9,7 +9,7 @@ import {
   Pressable,
 } from "react-native";
 import EvilIcons from "@expo/vector-icons/EvilIcons";
-import ExerciseRow from "./ExerciseRow";
+import ExerciseRow from "../ExerciseRow";
 import { Workout } from "@/types/workout";
 
 type Props = {

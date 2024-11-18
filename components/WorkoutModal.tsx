@@ -9,6 +9,7 @@ import {
   StyleSheet,
   TouchableWithoutFeedback,
   Pressable,
+  FlatList,
 } from "react-native";
 
 type Props = {
@@ -55,23 +56,39 @@ export default function WorkoutSessionModal({
       animationType="fade"
       onRequestClose={onClose}
     >
-      <TouchableWithoutFeedback onPress={onClose}>
-        <View style={styles.modalOverlay}>
-          <TouchableWithoutFeedback>
-            <View style={styles.modalContent}>
-              <ScrollView>
-                {/* Your dynamic exercise content here */}
-              </ScrollView>
-              <Pressable onPress={saveWorkout}>
-                <Text>Finish Workout</Text>
-              </Pressable>
-              <Pressable onPress={onClose}>
-                <Text>Cancel</Text>
-              </Pressable>
-            </View>
-          </TouchableWithoutFeedback>
+      {/* <TouchableWithoutFeedback onPress={onClose}> */}
+      <View style={styles.modalOverlay}>
+        {/* <TouchableWithoutFeedback> */}
+        <View style={styles.modalContent}>
+          {/* <ScrollView> */}
+          <FlatList
+            data={workout.workout_exercises}
+            renderItem={({ item }) => (
+              <View>
+                <Text>{item.exercises.name}</Text>
+                {item.exercise_sets.map((set: any, index: number) => (
+                  <View key={index}>
+                    <Text>Set {index + 1}</Text>
+                    <Text>Reps: {set.reps}</Text>
+                    <Text>Weight: {set.weight}</Text>
+                  </View>
+                ))}
+              </View>
+            )}
+            keyExtractor={(item) => item.id.toString()}
+            keyboardShouldPersistTaps="handled"
+          />
+          {/* </ScrollView> */}
+          <Pressable onPress={saveWorkout}>
+            <Text>Finish Workout</Text>
+          </Pressable>
+          <Pressable onPress={onClose}>
+            <Text>Cancel</Text>
+          </Pressable>
         </View>
-      </TouchableWithoutFeedback>
+        {/* </TouchableWithoutFeedback> */}
+      </View>
+      {/* </TouchableWithoutFeedback> */}
     </Modal>
   );
 }
