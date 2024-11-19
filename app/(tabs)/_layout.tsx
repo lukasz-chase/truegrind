@@ -14,7 +14,7 @@ export default function TabLayout() {
     <GestureHandlerRootView>
       <Tabs
         screenOptions={{
-          tabBarActiveTintColor: "#ffd33d",
+          tabBarActiveTintColor: "#387bce",
           headerStyle: {
             backgroundColor: "#25292e",
           },
@@ -22,6 +22,7 @@ export default function TabLayout() {
           headerTintColor: "#fff",
           tabBarStyle: {
             backgroundColor: "#25292e",
+            height: 70,
           },
         }}
         tabBar={(props) => (

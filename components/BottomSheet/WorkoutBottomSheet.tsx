@@ -1,7 +1,6 @@
-import React, { useRef, useMemo, useCallback } from "react";
-import { StyleSheet, View, Text, useAnimatedValue } from "react-native";
+import React, { useRef, useMemo, useCallback, useState } from "react";
+import { StyleSheet, View, Text } from "react-native";
 import BottomSheet, { BottomSheetFlashList } from "@gorhom/bottom-sheet";
-import { Workout } from "@/types/workout";
 import CustomBackdrop from "./CustomBackdrop";
 import CustomHeader from "./CustomHeader";
 import CustomFooter from "./CustomFooter";
@@ -14,14 +13,17 @@ type Props = {
 
 const WorkoutBottomSheet = ({ animatedIndex }: Props) => {
   const sheetRef = useRef<BottomSheet>(null);
-  const snapPoints = useMemo(() => [150, "90%"], []);
+  const snapPoints = useMemo(() => [130, "90%"], []);
+  const [sheetIndex, setSheetIndex] = useState(0);
   const { activeWorkout, setIsSheetVisible } = useBottomSheet();
   const handleClosePress = useCallback(() => {
     setIsSheetVisible(false);
     sheetRef.current?.close();
     animatedIndex.value = 0;
   }, []);
-
+  const handleSheetChanges = useCallback((index: number) => {
+    setSheetIndex(index);
+  }, []);
   return (
     <View style={styles.overlay}>
       <View style={styles.container}>
@@ -36,9 +38,15 @@ const WorkoutBottomSheet = ({ animatedIndex }: Props) => {
           backdropComponent={CustomBackdrop}
           animatedIndex={animatedIndex}
           enableOverDrag={false}
+          style={styles.bottomSheet}
+          onChange={handleSheetChanges}
         >
           {/* Header */}
-          <CustomHeader />
+          <CustomHeader
+            workoutName={activeWorkout?.name ?? ""}
+            sheetIndex={sheetIndex}
+            close={handleClosePress}
+          />
 
           {/* Content */}
           <BottomSheetFlashList
@@ -47,7 +55,7 @@ const WorkoutBottomSheet = ({ animatedIndex }: Props) => {
             renderItem={({ item }: { item: any }) => (
               <Text>{item.exercises.name}</Text>
             )}
-            contentContainerStyle={styles.contentContainer}
+            contentContainerStyle={styles.exercisesWrapper}
             estimatedItemSize={100}
           />
           <CustomFooter close={handleClosePress} />
@@ -65,11 +73,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  contentContainer: {
+  bottomSheet: {},
+  exercisesWrapper: {
     backgroundColor: "white",
   },
   handle: {
-    paddingTop: 10,
+    paddingTop: 5,
     paddingBottom: 0,
   },
 });
