@@ -1,12 +1,18 @@
 import { create } from "zustand";
-import { SharedValue } from "react-native-reanimated";
+import { Workout } from "@/types/workout";
 
 interface BottomSheetStore {
-  sheetIndex: number;
+  isSheetVisible: boolean;
+  activeWorkout: Workout | null;
+  setIsSheetVisible: (value: boolean) => void;
+  setActiveWorkout: (workout: Workout) => void;
 }
 
 const useBottomSheet = create<BottomSheetStore>((set) => ({
-  sheetIndex: 0,
+  isSheetVisible: false,
+  activeWorkout: null,
+  setIsSheetVisible: (value: boolean) => set({ isSheetVisible: value }),
+  setActiveWorkout: (workout: Workout) => set({ activeWorkout: workout }),
 }));
 
 export default useBottomSheet;

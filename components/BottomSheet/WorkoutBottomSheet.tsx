@@ -4,58 +4,54 @@ import BottomSheet, { BottomSheetFlashList } from "@gorhom/bottom-sheet";
 import { Workout } from "@/types/workout";
 import CustomBackdrop from "./CustomBackdrop";
 import CustomHeader from "./CustomHeader";
-import Portal from "../Portal/Portal";
 import CustomFooter from "./CustomFooter";
 import useBottomSheet from "@/store/useBottomSheet";
+import { SharedValue } from "react-native-reanimated";
 
 type Props = {
-  onClose: () => void;
-  workout: Workout;
+  animatedIndex: SharedValue<number>;
 };
 
-const WorkoutBottomSheet = ({ onClose, workout }: Props) => {
+const WorkoutBottomSheet = ({ animatedIndex }: Props) => {
   const sheetRef = useRef<BottomSheet>(null);
   const snapPoints = useMemo(() => [150, "90%"], []);
-
+  const { activeWorkout, setIsSheetVisible } = useBottomSheet();
   const handleClosePress = useCallback(() => {
-    useBottomSheet.setState({ sheetIndex: 0 });
+    setIsSheetVisible(false);
     sheetRef.current?.close();
-    onClose();
+    animatedIndex.value = 0;
   }, []);
-  const handleSheetChanges = useCallback((index: number) => {
-    useBottomSheet.setState({ sheetIndex: index });
-  }, []);
+
   return (
     <View style={styles.overlay}>
       <View style={styles.container}>
-        <Portal name="bottomsheet">
-          <BottomSheet
-            onClose={onClose}
-            ref={sheetRef}
-            snapPoints={snapPoints}
-            enableDynamicSizing={false}
-            animateOnMount={true}
-            index={1}
-            handleStyle={styles.handle}
-            backdropComponent={CustomBackdrop}
-            onChange={handleSheetChanges}
-          >
-            {/* Header */}
-            <CustomHeader />
+        <BottomSheet
+          onClose={handleClosePress}
+          ref={sheetRef}
+          snapPoints={snapPoints}
+          enableDynamicSizing={false}
+          animateOnMount={true}
+          index={1}
+          handleStyle={styles.handle}
+          backdropComponent={CustomBackdrop}
+          animatedIndex={animatedIndex}
+          enableOverDrag={false}
+        >
+          {/* Header */}
+          <CustomHeader />
 
-            {/* Content */}
-            <BottomSheetFlashList
-              data={workout.workout_exercises}
-              keyExtractor={(i: any) => i.id.toString()}
-              renderItem={({ item }: { item: any }) => (
-                <Text>{item.exercises.name}</Text>
-              )}
-              contentContainerStyle={styles.contentContainer}
-              estimatedItemSize={100}
-            />
-            <CustomFooter close={handleClosePress} />
-          </BottomSheet>
-        </Portal>
+          {/* Content */}
+          <BottomSheetFlashList
+            data={activeWorkout?.workout_exercises}
+            keyExtractor={(i: any) => i.id.toString()}
+            renderItem={({ item }: { item: any }) => (
+              <Text>{item.exercises.name}</Text>
+            )}
+            contentContainerStyle={styles.contentContainer}
+            estimatedItemSize={100}
+          />
+          <CustomFooter close={handleClosePress} />
+        </BottomSheet>
       </View>
     </View>
   );
