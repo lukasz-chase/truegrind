@@ -1,4 +1,5 @@
 import WorkoutPreviewModal from "@/components/Modals/WorkoutPreviewModal";
+import { AppColors } from "@/constants/colors";
 import { supabase } from "@/lib/supabase";
 import useBottomSheet from "@/store/useBottomSheet";
 import userStore from "@/store/userStore";
@@ -76,8 +77,8 @@ export default function WorkoutScreen() {
               }}
             >
               <Text style={styles.workoutCardTitle}>{workout.name}</Text>
-              {workout?.workout_exercises
-                .slice(0, 4)
+              {workout.workout_exercises
+                ?.slice(0, 4)
                 .map((workout: { id: number; exercises: { name: string } }) => (
                   <Text
                     key={workout.id}
@@ -87,9 +88,9 @@ export default function WorkoutScreen() {
                     {workout.exercises.name}
                   </Text>
                 ))}
-              {workout?.workout_exercises.length > 4 && (
+              {workout.workout_exercises!.length > 4 && (
                 <Text style={styles.workoutCardExercises}>
-                  & {workout.workout_exercises.length - 4} more
+                  & {workout.workout_exercises!.length - 4} more
                 </Text>
               )}
             </TouchableOpacity>
@@ -120,13 +121,13 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 32,
-    color: "#25292e",
+    color: AppColors.black,
     paddingVertical: 20,
     fontWeight: "bold",
   },
   actionButton: {
     borderRadius: 10,
-    backgroundColor: "#387bce",
+    backgroundColor: AppColors.blue,
   },
   templateHeader: {
     display: "flex",
@@ -136,11 +137,11 @@ const styles = StyleSheet.create({
   },
   templatesTitle: {
     fontSize: 24,
-    color: "#25292e",
+    color: AppColors.black,
     fontWeight: "bold",
   },
   templatesButton: {
-    backgroundColor: "#387bce",
+    backgroundColor: AppColors.blue,
   },
   workouts: {
     display: "flex",
@@ -150,7 +151,7 @@ const styles = StyleSheet.create({
     minHeight: 150,
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: "#25292e",
+    borderColor: AppColors.black,
     width: "48%",
     padding: 10,
   },

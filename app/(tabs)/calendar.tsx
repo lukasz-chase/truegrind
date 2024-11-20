@@ -1,3 +1,4 @@
+import { AppColors } from "@/constants/colors";
 import { Text, View, StyleSheet } from "react-native";
 
 export default function CalendarScreen() {
@@ -11,7 +12,7 @@ export default function CalendarScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#25292e",
+    backgroundColor: AppColors.black,
     justifyContent: "center",
     alignItems: "center",
   },

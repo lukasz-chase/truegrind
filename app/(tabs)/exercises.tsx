@@ -11,6 +11,7 @@ import {
 } from "react-native-ui-lib";
 import { ScrollView, StyleSheet, SafeAreaView, Image } from "react-native";
 import ExerciseRow from "@/components/ExerciseRow";
+import { AppColors } from "@/constants/colors";
 
 export default function ExercisesScreen() {
   const [exercises, setExercises] = useState<Exercise[]>([]);
@@ -49,7 +50,7 @@ export default function ExercisesScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <View flex backgroundColor="#25292e" padding-16>
+      <View flex backgroundColor={AppColors.black} padding-16>
         {/* Search Bar */}
         <TextField
           placeholder="Search by name"

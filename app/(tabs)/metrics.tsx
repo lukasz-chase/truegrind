@@ -1,3 +1,4 @@
+import { AppColors } from "@/constants/colors";
 import { StyleSheet } from "react-native";
 import { View, Text, Card, Button, WheelPicker } from "react-native-ui-lib";
 export default function MetricsScreen() {
@@ -27,7 +28,7 @@ export default function MetricsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#25292e",
+    backgroundColor: AppColors.black,
     justifyContent: "center",
     alignItems: "center",
   },

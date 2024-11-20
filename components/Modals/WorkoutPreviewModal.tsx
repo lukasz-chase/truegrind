@@ -11,6 +11,7 @@ import {
 import EvilIcons from "@expo/vector-icons/EvilIcons";
 import ExerciseRow from "../ExerciseRow";
 import { Workout } from "@/types/workout";
+import { AppColors } from "@/constants/colors";
 
 type Props = {
   visible: boolean;
@@ -94,7 +95,7 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   modalCloseButton: {
-    backgroundColor: "#c1c1c1",
+    backgroundColor: AppColors.gray,
     padding: 4,
     borderRadius: 8,
   },
@@ -103,12 +104,12 @@ const styles = StyleSheet.create({
     fontSize: 20,
   },
   modalEditButton: {
-    color: "#387bce",
+    color: AppColors.blue,
     fontSize: 20,
   },
   actionButton: {
     width: "100%",
-    backgroundColor: "#387bce",
+    backgroundColor: AppColors.blue,
     padding: 10,
     borderRadius: 8,
   },

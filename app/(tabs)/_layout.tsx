@@ -6,6 +6,7 @@ import CustomTabBar from "@/components/CustomTabBar";
 import WorkoutBottomSheet from "@/components/BottomSheet/WorkoutBottomSheet";
 import { useSharedValue } from "react-native-reanimated";
 import useBottomSheet from "@/store/useBottomSheet";
+import { AppColors } from "@/constants/colors";
 
 export default function TabLayout() {
   const animatedIndex = useSharedValue(0);
@@ -14,14 +15,14 @@ export default function TabLayout() {
     <GestureHandlerRootView>
       <Tabs
         screenOptions={{
-          tabBarActiveTintColor: "#387bce",
+          tabBarActiveTintColor: AppColors.blue,
           headerStyle: {
-            backgroundColor: "#25292e",
+            backgroundColor: AppColors.black,
           },
           headerShadowVisible: false,
           headerTintColor: "#fff",
           tabBarStyle: {
-            backgroundColor: "#25292e",
+            backgroundColor: AppColors.black,
             height: 70,
           },
         }}

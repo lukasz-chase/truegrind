@@ -1,6 +1,7 @@
 import React from "react";
 import { Image, StyleSheet, View, Text } from "react-native";
 import { Exercise } from "@/types/exercises";
+import { AppColors } from "@/constants/colors";
 
 const ExerciseRow = ({
   exercise,
@@ -38,7 +39,7 @@ const styles = StyleSheet.create({
   exerciseItem: {
     borderRadius: 8,
     marginVertical: 8,
-    color: "#25292e",
+    color: AppColors.black,
     flexDirection: "row",
   },
   exerciseDetails: {
