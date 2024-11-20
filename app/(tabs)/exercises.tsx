@@ -2,16 +2,15 @@ import React, { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import { Exercise } from "@/types/exercises";
 import {
+  ScrollView,
+  StyleSheet,
+  SafeAreaView,
   View,
-  Colors,
-  Text,
-  Picker,
-  TextField,
-  Card,
-} from "react-native-ui-lib";
-import { ScrollView, StyleSheet, SafeAreaView, Image } from "react-native";
+  TextInput,
+} from "react-native";
 import ExerciseRow from "@/components/ExerciseRow";
 import { AppColors } from "@/constants/colors";
+import RNPickerSelect from "react-native-picker-select";
 
 export default function ExercisesScreen() {
   const [exercises, setExercises] = useState<Exercise[]>([]);
@@ -50,33 +49,33 @@ export default function ExercisesScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <View flex backgroundColor={AppColors.black} padding-16>
-        {/* Search Bar */}
-        <TextField
+      <View>
+        <TextInput
           placeholder="Search by name"
-          placeholderTextColor={Colors.grey40}
+          placeholderTextColor={AppColors.gray}
           value={searchQuery}
           onChangeText={setSearchQuery}
           style={styles.input}
-          containerStyle={styles.searchContainer}
           underlineColorAndroid="transparent"
         />
-        {/* Muscle Group Filter */}
-        <Picker
-          placeholder="Filter by Muscle Group"
-          value={selectedMuscle}
-          onChange={(value) => setSelectedMuscle(value as string)}
-          style={styles.picker}
-        >
-          <Picker.Item label="All Muscles" value="" />
-          <Picker.Item label="Chest" value="chest" />
-          <Picker.Item label="Back" value="back" />
-          <Picker.Item label="Legs" value="legs" />
-          <Picker.Item label="Arms" value="arms" />
-          <Picker.Item label="Shoulders" value="shoulders" />
-        </Picker>
+        <View style={styles.pickerContainer}>
+          <RNPickerSelect
+            placeholder={{ label: "Filter by Muscle Group", value: null }}
+            value={selectedMuscle}
+            onValueChange={(value) => setSelectedMuscle(value)}
+            disabled={false}
+            items={[
+              { label: "All Muscles", value: "" },
+              { label: "Chest", value: "chest" },
+              { label: "Back", value: "back" },
+              { label: "Legs", value: "legs" },
+              { label: "Arms", value: "arms" },
+              { label: "Shoulders", value: "shoulders" },
+            ]}
+            style={pickerSelectStyles}
+          />
+        </View>
 
-        {/* Exercise List */}
         <ScrollView>
           {exercises.map((exercise) => (
             <ExerciseRow key={exercise.id} exercise={exercise} />
@@ -101,11 +100,34 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     height: 40,
   },
-  picker: {
-    height: 40,
-    color: "#fff",
-    backgroundColor: "#333",
+  pickerContainer: {
+    height: 60,
+    marginVertical: 20,
+    zIndex: 20,
+  },
+});
+const pickerSelectStyles = StyleSheet.create({
+  inputIOSContainer: {
+    pointerEvents: "none",
+  },
+  inputIOS: {
+    fontSize: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 10,
+    borderWidth: 1,
+    borderColor: "gray",
+    borderRadius: 4,
+    color: "black",
+    paddingRight: 30, // to ensure the text is never behind the icon
+  },
+  inputAndroid: {
+    fontSize: 16,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    borderWidth: 0.5,
+    borderColor: "purple",
     borderRadius: 8,
-    marginBottom: 12,
+    color: "black",
+    paddingRight: 30, // to ensure the text is never behind the icon
   },
 });

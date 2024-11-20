@@ -1,8 +1,14 @@
 import React, { useState } from "react";
-import { Alert, StyleSheet, View } from "react-native";
+import {
+  Alert,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
 import { supabase } from "@/lib/supabase";
 import { getProfile } from "@/hooks/userProfile";
-import { TextField, Button, Text } from "react-native-ui-lib";
 
 export default function Auth() {
   const [email, setEmail] = useState("");
@@ -40,16 +46,16 @@ export default function Auth() {
   return (
     <View style={styles.container}>
       <View style={[styles.verticallySpaced, styles.mt20]}>
-        <TextField
-          label="Email"
+        <Text>Sign in</Text>
+        <TextInput
           onChangeText={(text) => setEmail(text)}
           value={email}
           placeholder="email@address.com"
         />
       </View>
       <View style={styles.verticallySpaced}>
-        <TextField
-          label="Password"
+        <Text>Password</Text>
+        <TextInput
           onChangeText={(text) => setPassword(text)}
           value={password}
           secureTextEntry={true}
@@ -57,14 +63,14 @@ export default function Auth() {
         />
       </View>
       <View style={[styles.verticallySpaced, styles.mt20]}>
-        <Button disabled={loading} onPress={() => signInWithEmail()}>
+        <Pressable disabled={loading} onPress={() => signInWithEmail()}>
           <Text>Sign in</Text>
-        </Button>
+        </Pressable>
       </View>
       <View style={styles.verticallySpaced}>
-        <Button disabled={loading} onPress={() => signUpWithEmail()}>
+        <Pressable disabled={loading} onPress={() => signUpWithEmail()}>
           <Text>Sign up</Text>
-        </Button>
+        </Pressable>
       </View>
     </View>
   );

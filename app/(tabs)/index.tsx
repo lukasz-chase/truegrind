@@ -6,9 +6,14 @@ import userStore from "@/store/userStore";
 import useWorkoutPreviewModalStore from "@/store/useWorkoutPreviewModalStore";
 import { Workout } from "@/types/workout";
 import React, { useState, useEffect } from "react";
-import { ScrollView, TouchableOpacity, StyleSheet } from "react-native";
+import {
+  ScrollView,
+  TouchableOpacity,
+  StyleSheet,
+  View,
+  Text,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Button, Text, View } from "react-native-ui-lib";
 
 export default function WorkoutScreen() {
   const [workouts, setWorkouts] = useState<Workout[]>([]);
@@ -51,19 +56,17 @@ export default function WorkoutScreen() {
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
         <Text style={styles.title}>Start Workout</Text>
-        <Button
-          label={"Start an Empty Workout"}
-          size={Button.sizes.large}
+        <TouchableOpacity
           style={styles.actionButton}
           onPress={() => setIsSheetVisible(true)}
-        />
+        >
+          <Text style={styles.actionButtonText}>Start an Empty Workout</Text>
+        </TouchableOpacity>
         <View style={styles.templateHeader}>
           <Text style={styles.templatesTitle}>Templates</Text>
-          <Button
-            label="+ Template"
-            size="xSmall"
-            style={styles.templatesButton}
-          />
+          <TouchableOpacity style={styles.templatesButton}>
+            <Text style={styles.templatesButtonText}>+ Template</Text>
+          </TouchableOpacity>
         </View>
         <Text>My Templates ({workouts.length})</Text>
         <ScrollView style={styles.workouts}>
@@ -128,6 +131,13 @@ const styles = StyleSheet.create({
   actionButton: {
     borderRadius: 10,
     backgroundColor: AppColors.blue,
+    padding: 10,
+  },
+  actionButtonText: {
+    color: "white",
+    textAlign: "center",
+    fontSize: 18,
+    fontWeight: "bold",
   },
   templateHeader: {
     display: "flex",
@@ -141,7 +151,14 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   templatesButton: {
-    backgroundColor: AppColors.blue,
+    padding: 4,
+    borderRadius: 10,
+    backgroundColor: AppColors.lightBlue,
+  },
+  templatesButtonText: {
+    textAlign: "center",
+    fontSize: 18,
+    color: AppColors.blue,
   },
   workouts: {
     display: "flex",

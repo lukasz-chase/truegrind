@@ -1,8 +1,14 @@
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
-import { StyleSheet, View, Alert } from "react-native";
+import {
+  StyleSheet,
+  View,
+  Alert,
+  TextInput,
+  Text,
+  Pressable,
+} from "react-native";
 import userStore from "@/store/userStore";
-import { TextField, Button, Text } from "react-native-ui-lib";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Profile() {
@@ -39,27 +45,28 @@ export default function Profile() {
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
         <View style={[styles.verticallySpaced, styles.mt20]}>
-          <TextField label="Email" value={session?.user?.email} disabled />
+          <Text>Email</Text>
+          <TextInput value={session?.user?.email} />
         </View>
         <View style={styles.verticallySpaced}>
-          <TextField
-            label="Username"
+          <Text>Username</Text>
+          <TextInput
             value={username || ""}
             onChangeText={(text) => setUsername(text)}
           />
         </View>
 
         <View style={[styles.verticallySpaced, styles.mt20]}>
-          <Button
+          <Pressable
             onPress={() => updateProfile({ username })}
             disabled={loading}
           >
             <Text>{loading ? "Loading ..." : "Update"}</Text>
-          </Button>
+          </Pressable>
         </View>
 
         <View style={styles.verticallySpaced}>
-          <Button
+          <Pressable
             onPress={async () => {
               try {
                 userStore.setState({ session: null });
@@ -71,7 +78,7 @@ export default function Profile() {
             }}
           >
             <Text>Sign Out</Text>
-          </Button>
+          </Pressable>
         </View>
       </View>
     </SafeAreaView>
