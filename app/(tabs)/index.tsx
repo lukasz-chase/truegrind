@@ -1,10 +1,12 @@
 import WorkoutPreviewModal from "@/components/Modals/WorkoutPreviewModal";
+import WorkoutCard from "@/components/WorkoutCard";
 import { AppColors } from "@/constants/colors";
 import { supabase } from "@/lib/supabase";
+import appStore from "@/store/appStore";
 import useActiveWorkout from "@/store/useActiveWorkout";
 import useBottomSheet from "@/store/useBottomSheet";
 import userStore from "@/store/userStore";
-import useWorkoutPreviewModalStore from "@/store/useWorkoutPreviewModalStore";
+import useWorkoutPreviewModal from "@/store/useWorkoutPreviewModal";
 import { Workout } from "@/types/workout";
 import React, { useState, useEffect } from "react";
 import {
@@ -18,24 +20,21 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function WorkoutScreen() {
   const [workouts, setWorkouts] = useState<Workout[]>([]);
-  const {
-    isVisible: previewVisible,
-    closeModal: closePreviewModal,
-    openModal: openPreviewModal,
-  } = useWorkoutPreviewModalStore();
+  const { isVisible, closeModal } = useWorkoutPreviewModal();
   const { setIsSheetVisible } = useBottomSheet();
-  const { activeWorkout, setActiveWorkout } = useActiveWorkout();
-  const { session } = userStore((state) => state);
+  const { activeWorkout } = useActiveWorkout();
+  const { session } = userStore();
+  const { refetchData } = appStore();
   useEffect(() => {
     fetchWorkouts();
-  }, [session]);
+  }, [session, refetchData]);
 
   const fetchWorkouts = async () => {
     try {
       const { data } = await supabase
         .from("workouts")
         .select(
-          `id, name,  workout_exercises(id, exercises(name, image, muscle, equipment), exercise_sets(*))`
+          `id, name, notes, workout_exercises(id, exercises(name, image, muscle, equipment), exercise_sets(*))`
         )
         .eq("user_id", session?.user?.id)
         .returns<Workout[]>();
@@ -48,7 +47,7 @@ export default function WorkoutScreen() {
   };
 
   const startWorkout = () => {
-    closePreviewModal();
+    closeModal();
     setIsSheetVisible(true);
   };
 
@@ -71,41 +70,16 @@ export default function WorkoutScreen() {
         <Text>My Templates ({workouts.length})</Text>
         <ScrollView style={styles.workouts}>
           {workouts.map((workout) => (
-            <TouchableOpacity
-              style={styles.workoutCard}
-              key={workout.id}
-              onPress={() => {
-                setActiveWorkout(workout);
-                openPreviewModal();
-              }}
-            >
-              <Text style={styles.workoutCardTitle}>{workout.name}</Text>
-              {workout.workout_exercises
-                ?.slice(0, 4)
-                .map((workout: { id: number; exercises: { name: string } }) => (
-                  <Text
-                    key={workout.id}
-                    style={styles.workoutCardExercises}
-                    numberOfLines={1}
-                  >
-                    {workout.exercises.name}
-                  </Text>
-                ))}
-              {workout.workout_exercises!.length > 4 && (
-                <Text style={styles.workoutCardExercises}>
-                  & {workout.workout_exercises!.length - 4} more
-                </Text>
-              )}
-            </TouchableOpacity>
+            <WorkoutCard key={workout.id} workout={workout} />
           ))}
         </ScrollView>
       </View>
       {activeWorkout && (
         <>
-          {previewVisible && (
+          {isVisible && (
             <WorkoutPreviewModal
-              visible={previewVisible}
-              onClose={closePreviewModal}
+              visible={isVisible}
+              onClose={closeModal}
               workout={activeWorkout}
               startWorkout={startWorkout}
             />
@@ -163,21 +137,5 @@ const styles = StyleSheet.create({
   workouts: {
     display: "flex",
     marginTop: 20,
-  },
-  workoutCard: {
-    minHeight: 150,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: AppColors.black,
-    width: "48%",
-    padding: 10,
-  },
-  workoutCardTitle: {
-    fontSize: 20,
-    paddingBottom: 5,
-    fontWeight: "bold",
-  },
-  workoutCardExercises: {
-    textOverflow: "ellipsis",
   },
 });

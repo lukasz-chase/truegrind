@@ -1,5 +1,5 @@
 import { UserProfile } from "@/types/user";
-import { Session, User } from "@supabase/supabase-js";
+import { Session } from "@supabase/supabase-js";
 import { create } from "zustand";
 
 type Store = {

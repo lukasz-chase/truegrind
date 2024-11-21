@@ -48,7 +48,10 @@ const WorkoutExercise = ({ exercise, exerciseSets }: Props) => {
             />
           ))}
       </View>
-      <Animated.View layout={LinearTransition}>
+      <Animated.View
+        layout={LinearTransition}
+        style={styles.addButtonContainer}
+      >
         <TouchableOpacity
           style={styles.addButton}
           onPress={() => addNewSet(exercise.id)}
@@ -61,13 +64,12 @@ const WorkoutExercise = ({ exercise, exerciseSets }: Props) => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    padding: 20,
-  },
+  container: {},
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    padding: 20,
   },
   headerTitle: {
     color: AppColors.blue,
@@ -101,7 +103,9 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 16,
   },
-
+  addButtonContainer: {
+    padding: 20,
+  },
   addButton: {
     marginTop: 16,
     padding: 8,

@@ -39,7 +39,6 @@ const WorkoutSet = ({ exerciseSet, exerciseId }: Props) => {
   const [rowWidth, setRowWidth] = useState(0);
   const [hapticTriggered, setHapticTriggered] = useState(false);
   const [movedPassTreshold, setMovedPassTreshold] = useState(false);
-  const [setDetails, setSetDetails] = useState({ reps: "", weight: "" });
   const { initialActiveWorkout, updateExerciseSet, deleteExerciseSet } =
     useActiveWorkout();
 
@@ -48,12 +47,10 @@ const WorkoutSet = ({ exerciseSet, exerciseId }: Props) => {
   );
 
   const updateExerciseField = (
-    e: NativeSyntheticEvent<TextInputChangeEventData>,
+    newValue: any,
     setId: string,
     name: keyof ExerciseSet
   ) => {
-    const newValue = e.nativeEvent.text;
-    setSetDetails((state) => ({ ...state, [name]: newValue }));
     updateExerciseSet(exerciseId, setId, name, newValue);
   };
 
@@ -119,7 +116,14 @@ const WorkoutSet = ({ exerciseSet, exerciseId }: Props) => {
     <GestureHandlerRootView>
       <Animated.View
         layout={LinearTransition}
-        style={styles.container}
+        style={[
+          styles.container,
+          {
+            backgroundColor: exerciseSet.completed
+              ? AppColors.lightGreen
+              : "white",
+          },
+        ]}
         onLayout={(e) => setRowWidth(e.nativeEvent.layout.width)} // Capture row width dynamically
       >
         <Animated.View
@@ -150,19 +154,34 @@ const WorkoutSet = ({ exerciseSet, exerciseId }: Props) => {
                 {renderPreviousSet(exerciseSet)}
               </Text>
               <TextInput
-                value={setDetails.reps}
-                onChange={(e) => updateExerciseField(e, exerciseSet.id, "reps")}
+                value={`${exerciseSet?.reps ?? ""}`}
+                onChange={(e) =>
+                  updateExerciseField(
+                    e.nativeEvent.text,
+                    exerciseSet.id,
+                    "reps"
+                  )
+                }
                 style={[styles.cell, styles.textInput, { flex: 1 }]}
               />
               <TextInput
-                value={setDetails.weight}
+                value={`${exerciseSet?.weight ?? ""}`}
                 onChange={(e) =>
-                  updateExerciseField(e, exerciseSet.id, "weight")
+                  updateExerciseField(
+                    e.nativeEvent.text,
+                    exerciseSet.id,
+                    "weight"
+                  )
                 }
                 style={[styles.cell, styles.textInput, { flex: 1 }]}
               />
               <View style={[styles.cell, { flex: 1, alignItems: "center" }]}>
-                <Pressable style={styles.rowButton}>
+                <Pressable
+                  style={styles.rowButton}
+                  onPress={() =>
+                    updateExerciseField(true, exerciseSet.id, "completed")
+                  }
+                >
                   <AntDesign name="check" size={20} color="black" />
                 </Pressable>
               </View>
@@ -178,6 +197,7 @@ const styles = StyleSheet.create({
   container: {
     position: "relative",
     marginVertical: 5,
+    paddingHorizontal: 20,
   },
   deleteButtonContainer: {
     position: "absolute",

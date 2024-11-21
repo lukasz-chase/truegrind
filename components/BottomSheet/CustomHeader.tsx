@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo } from "react";
 import Animated, {
   Extrapolate,
   interpolate,
@@ -9,20 +9,88 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { useBottomSheet } from "@gorhom/bottom-sheet";
 import { AppColors } from "@/constants/colors";
 import useWorkoutTimer from "@/store/useWorkoutTimer";
+import { supabase } from "@/lib/supabase";
+import useActiveWorkout from "@/store/useActiveWorkout";
+import { WorkoutExercise } from "@/types/workoutExercise";
+import { ExerciseSet } from "@/types/exercisesSets";
+import appStore from "@/store/appStore";
 
 type Props = {
-  workoutName: string;
   sheetIndex: number;
   close: () => void;
 };
 
-const CustomHeader = ({ workoutName, sheetIndex, close }: Props) => {
+const CustomHeader = ({ sheetIndex, close }: Props) => {
   const { animatedIndex, expand } = useBottomSheet();
-  const { formattedTime, stopTimer } = useWorkoutTimer();
+  const { formattedTime, stopTimer, startTimer } = useWorkoutTimer();
+  useEffect(startTimer);
+  const { activeWorkout, initialActiveWorkout } = useActiveWorkout();
+  const { setRefetchData } = appStore();
+  const finishWorkout = async () => {
+    try {
+      if (
+        initialActiveWorkout.name !== activeWorkout.name ||
+        initialActiveWorkout.notes !== activeWorkout.notes
+      ) {
+        const { data, error } = await supabase
+          .from("workouts")
+          .update({ name: activeWorkout.name, notes: activeWorkout.notes })
+          .eq("id", activeWorkout.id)
+          .select();
+      }
+      //UPDATE WORKOUT EXERCISES
+      let workoutExercisesToUpdate: WorkoutExercise[] = [];
+      activeWorkout.workout_exercises?.forEach(
+        async (workout_exercise, index) => {
+          if (
+            !initialActiveWorkout.workout_exercises ||
+            workout_exercise.notes !==
+              initialActiveWorkout.workout_exercises[index].notes ||
+            workout_exercise.timer !==
+              initialActiveWorkout.workout_exercises[index].timer
+          ) {
+            workoutExercisesToUpdate.push({
+              id: workout_exercise.id,
+              notes: workout_exercise.notes,
+              timer: workout_exercise.timer,
+              exercise_id: workout_exercise.exercises.id,
+              workout_id: activeWorkout.id,
+            });
+          }
+        }
+      );
+      await supabase.from("workout_exercises").upsert(workoutExercisesToUpdate);
+      setRefetchData();
 
-  const finishWorkout = () => {
-    close();
-    stopTimer();
+      // //UPDATE EXERCISE SETS
+      // let exerciseSetsToUpdate: ExerciseSet[] = [];
+      // activeWorkout.workout_exercises?.forEach(async (workout_exercise) => {
+      //   workout_exercise.exercise_sets.forEach(async (set) => {
+      //     let order = 0;
+      //     if (set.completed) {
+      //       order = +1;
+      //       exerciseSetsToUpdate.push({
+      //         id: set.id,
+      //         order,
+      //         reps: set.reps,
+      //         weight: set.weight,
+      //         is_dropset: set.is_dropset,
+      //         is_warmup: set.is_warmup,
+      //         reps_in_reserve: set.reps_in_reserve,
+      //         workout_exercise_id: workout_exercise.id,
+      //         completed: set.completed,
+      //       });
+      //     }
+      //   });
+      // });
+      // await supabase.from("exercise_sets").upsert(exerciseSetsToUpdate);
+      // await supabase.from("sets_history").upsert(exerciseSetsToUpdate);
+
+      close();
+      stopTimer();
+    } catch (error) {
+      console.log(error);
+    }
   };
   // Animated styles
   const containerAnimatedStyle = useAnimatedStyle(() => ({
@@ -65,7 +133,7 @@ const CustomHeader = ({ workoutName, sheetIndex, close }: Props) => {
       <Animated.View
         style={[styles.titleContainer, containerAnimatedStyleReverse]}
       >
-        <Text style={styles.headerTitle}>{workoutName}</Text>
+        <Text style={styles.headerTitle}>{activeWorkout.name}</Text>
         <Text style={styles.headerTitleTime}>{formattedTime}</Text>
       </Animated.View>
 

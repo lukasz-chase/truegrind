@@ -7,7 +7,9 @@ export type Workout = {
   user_id: string;
   notes?: string;
   workout_exercises?: {
-    id: number;
+    id: string;
+    notes: string;
+    timer: number;
     exercises: Exercise;
     exercise_sets: ExerciseSet[];
   }[];

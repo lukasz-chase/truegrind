@@ -1,3 +1,4 @@
+import { AppColors } from "@/constants/colors";
 import React from "react";
 
 import { Pressable, StyleSheet, Text, View } from "react-native";
@@ -10,11 +11,21 @@ type Props = {
 const CustomFooter = ({ close }: Props) => {
   return (
     <Animated.View layout={LinearTransition}>
-      <Pressable style={styles.footerContainer} onPress={close}>
-        <Text style={styles.footerText}>Add Exercises</Text>
+      <Pressable
+        style={[styles.footerButton, styles.addExerciseButton]}
+        onPress={close}
+      >
+        <Text style={[styles.footerText, styles.addExerciseButtonText]}>
+          Add Exercises
+        </Text>
       </Pressable>
-      <Pressable style={styles.footerContainer} onPress={close}>
-        <Text style={styles.footerText}>Cancel Workout</Text>
+      <Pressable
+        style={[styles.footerButton, styles.cancelWorkoutButton]}
+        onPress={close}
+      >
+        <Text style={[styles.footerText, styles.cancelWorkoutButtonText]}>
+          Cancel Workout
+        </Text>
       </Pressable>
     </Animated.View>
   );
@@ -22,15 +33,25 @@ const CustomFooter = ({ close }: Props) => {
 
 export default CustomFooter;
 const styles = StyleSheet.create({
-  footerContainer: {
+  footerButton: {
     padding: 12,
     margin: 12,
     borderRadius: 12,
-    backgroundColor: "#80f",
+  },
+  addExerciseButton: {
+    backgroundColor: AppColors.lightBlue,
+  },
+  cancelWorkoutButton: {
+    backgroundColor: AppColors.lightRed,
+  },
+  addExerciseButtonText: {
+    color: AppColors.blue,
+  },
+  cancelWorkoutButtonText: {
+    color: AppColors.red,
   },
   footerText: {
     textAlign: "center",
-    color: "white",
-    fontWeight: "800",
+    fontWeight: "bold",
   },
 });

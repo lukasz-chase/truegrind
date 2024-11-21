@@ -6,10 +6,10 @@ interface ModalState {
   closeModal: () => void;
 }
 
-const useWorkoutModalStore = create<ModalState>((set) => ({
+const useWorkoutExercisesModal = create<ModalState>((set) => ({
   isVisible: false,
   openModal: () => set({ isVisible: true }),
   closeModal: () => set({ isVisible: false }),
 }));
 
-export default useWorkoutModalStore;
+export default useWorkoutExercisesModal;

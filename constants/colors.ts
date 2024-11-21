@@ -1,7 +1,10 @@
 export const AppColors = {
-  gray: "#e5e5e5",
-  green: "#26c233",
+  gray: "#E9E9E9",
+  lightGreen: "#EAFAF0",
+  green: "#2FCE72",
   black: "#25292e",
-  blue: "#387bce",
-  lightBlue: "#c0d7ee",
+  blue: "#5EB7F7",
+  lightBlue: "#EDF6FD",
+  lightRed: "#FFECEE",
+  red: "#FE4D5F",
 };

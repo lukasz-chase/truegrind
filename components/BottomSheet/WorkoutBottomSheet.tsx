@@ -5,26 +5,18 @@ import React, {
   useState,
   useEffect,
 } from "react";
-import {
-  StyleSheet,
-  View,
-  Text,
-  NativeSyntheticEvent,
-  TextInputChangeEventData,
-  TextInput,
-} from "react-native";
+import { StyleSheet, View } from "react-native";
 import BottomSheet from "@gorhom/bottom-sheet";
 import CustomBackdrop from "./CustomBackdrop";
 import CustomHeader from "./CustomHeader";
 import CustomFooter from "./CustomFooter";
 import useBottomSheet from "@/store/useBottomSheet";
 import { SharedValue } from "react-native-reanimated";
-import { Workout } from "@/types/workout";
-import { AppColors } from "@/constants/colors";
 import WorkoutExercise from "../WorkoutExercise";
 import { ScrollView } from "react-native-gesture-handler";
 import useActiveWorkout from "@/store/useActiveWorkout";
 import useWorkoutTimer from "@/store/useWorkoutTimer";
+import WorkoutDetails from "./WorkoutDetails";
 
 type Props = {
   animatedIndex: SharedValue<number>;
@@ -33,14 +25,9 @@ type Props = {
 const WorkoutBottomSheet = ({ animatedIndex }: Props) => {
   const [sheetIndex, setSheetIndex] = useState(0);
   const { setIsSheetVisible } = useBottomSheet();
-  const { activeWorkout, updateWorkoutField } = useActiveWorkout();
-  const { startTimer, formattedTime } = useWorkoutTimer();
-
+  const { activeWorkout } = useActiveWorkout();
   const sheetRef = useRef<BottomSheet>(null);
   const snapPoints = useMemo(() => [130, "90%"], []);
-
-  useEffect(startTimer);
-
   const handleClosePress = useCallback(() => {
     setIsSheetVisible(false);
     sheetRef.current?.close();
@@ -50,13 +37,6 @@ const WorkoutBottomSheet = ({ animatedIndex }: Props) => {
   const handleSheetChanges = useCallback((index: number) => {
     setSheetIndex(index);
   }, []);
-  const updateActiveWorkout = (
-    e: NativeSyntheticEvent<TextInputChangeEventData>,
-    name: keyof Workout
-  ) => {
-    const newValue = e.nativeEvent.text;
-    updateWorkoutField(name, newValue);
-  };
 
   return (
     <View style={styles.overlay}>
@@ -74,31 +54,8 @@ const WorkoutBottomSheet = ({ animatedIndex }: Props) => {
           enableOverDrag={false}
           onChange={handleSheetChanges}
         >
-          {/* Header */}
-          <CustomHeader
-            workoutName={activeWorkout?.name ?? ""}
-            sheetIndex={sheetIndex}
-            close={handleClosePress}
-          />
-          <View style={styles.workoutDetails}>
-            <TextInput
-              placeholder={"Workout Name"}
-              placeholderTextColor={AppColors.gray}
-              onChange={(e) => updateActiveWorkout(e, "name")}
-              maxLength={60}
-              value={activeWorkout.name}
-              style={styles.workoutName}
-            />
-            <Text style={styles.workoutTime}>{formattedTime}</Text>
-            <TextInput
-              placeholder={"Notes"}
-              placeholderTextColor={AppColors.gray}
-              onChange={(e) => updateActiveWorkout(e, "notes")}
-              maxLength={60}
-              value={activeWorkout?.notes}
-              style={styles.workoutNotes}
-            />
-          </View>
+          <CustomHeader sheetIndex={sheetIndex} close={handleClosePress} />
+          <WorkoutDetails />
           <ScrollView>
             {activeWorkout?.workout_exercises?.map((workout) => (
               <WorkoutExercise
@@ -126,20 +83,6 @@ const styles = StyleSheet.create({
   handle: {
     paddingTop: 5,
     paddingBottom: 0,
-  },
-  workoutDetails: {
-    padding: 20,
-  },
-  workoutName: {
-    fontSize: 24,
-    fontWeight: "bold",
-  },
-  workoutTime: {
-    fontSize: 18,
-  },
-  workoutNotes: {
-    fontSize: 18,
-    color: "black",
   },
 });
 
