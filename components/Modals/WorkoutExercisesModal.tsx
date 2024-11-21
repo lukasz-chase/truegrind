@@ -6,10 +6,14 @@ import {
   TouchableWithoutFeedback,
 } from "react-native";
 import useWorkoutExercisesModal from "@/store/useWorkoutExercisesModal";
+import Exercises from "../Exercises";
+import { Exercise } from "@/types/exercises";
 
-type Props = {};
+type Props = {
+  onPress: (exercise: Exercise) => void;
+};
 
-export default function WorkoutPreviewModal({}: Props) {
+export default function WorkoutExercisesModal({ onPress }: Props) {
   const { closeModal, isVisible } = useWorkoutExercisesModal();
   return (
     <Modal
@@ -21,7 +25,9 @@ export default function WorkoutPreviewModal({}: Props) {
       <TouchableWithoutFeedback onPress={closeModal}>
         <View style={styles.modalOverlay}>
           <TouchableWithoutFeedback>
-            <View style={styles.modalContent}></View>
+            <View style={styles.modalContent}>
+              <Exercises onPress={onPress} />
+            </View>
           </TouchableWithoutFeedback>
         </View>
       </TouchableWithoutFeedback>
@@ -39,6 +45,7 @@ const styles = StyleSheet.create({
   },
   modalContent: {
     width: "100%", // Adjust width as needed
+    height: "80%",
     padding: 20,
     borderRadius: 10,
     alignItems: "center",

@@ -2,11 +2,13 @@ import { create } from "zustand";
 import { Workout } from "@/types/workout";
 import { ExerciseSet } from "@/types/exercisesSets";
 import uuid from "react-native-uuid";
+import { Exercise } from "@/types/exercises";
 
 interface ActiveWorkoutStore {
   initialActiveWorkout: Workout;
   activeWorkout: Workout;
   setActiveWorkout: (workout: Workout) => void;
+  addNewExercise: (exercise: Exercise) => void;
   updateWorkoutField: (field: keyof Workout, updatedValue: any) => void;
   addNewSet: (exerciseId: string) => void;
   updateExerciseSet: (
@@ -38,6 +40,25 @@ const useActiveWorkout = create<ActiveWorkoutStore>((set, get) => ({
       activeWorkout: { ...state.activeWorkout, [field]: updatedValue },
     }));
   },
+  addNewExercise: (exercise: Exercise) => {
+    const workoutExercise = {
+      id: uuid.v4(),
+      notes: "",
+      timer: 0,
+      exercises: exercise,
+      exercise_sets: [],
+    };
+    set((state) => ({
+      activeWorkout: {
+        ...state.activeWorkout,
+        workout_exercises: [
+          ...(state.activeWorkout.workout_exercises || []),
+          workoutExercise,
+        ],
+      },
+    }));
+    get().addNewSet(exercise.id);
+  },
   addNewSet: (exerciseId: string) => {
     set((state) => {
       const updatedExercises = state.activeWorkout.workout_exercises?.map(
@@ -56,6 +77,7 @@ const useActiveWorkout = create<ActiveWorkoutStore>((set, get) => ({
                     is_warmup: false,
                     is_dropset: false,
                     reps_in_reserve: null,
+                    completed: false,
                   },
                 ],
               }
