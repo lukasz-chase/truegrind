@@ -6,6 +6,7 @@ import SimpleLineIcons from "@expo/vector-icons/SimpleLineIcons";
 import { AppColors } from "@/constants/colors";
 import useActiveWorkout from "@/store/useActiveWorkout";
 import WorkoutSet from "./WorkoutSet";
+import Animated, { LinearTransition } from "react-native-reanimated";
 
 type Props = {
   exercise: Exercise;
@@ -47,13 +48,14 @@ const WorkoutExercise = ({ exercise, exerciseSets }: Props) => {
             />
           ))}
       </View>
-
-      <TouchableOpacity
-        style={styles.addButton}
-        onPress={() => addNewSet(exercise.id)}
-      >
-        <Text style={styles.addButtonText}>+ Add Set</Text>
-      </TouchableOpacity>
+      <Animated.View layout={LinearTransition}>
+        <TouchableOpacity
+          style={styles.addButton}
+          onPress={() => addNewSet(exercise.id)}
+        >
+          <Text style={styles.addButtonText}>+ Add Set</Text>
+        </TouchableOpacity>
+      </Animated.View>
     </View>
   );
 };

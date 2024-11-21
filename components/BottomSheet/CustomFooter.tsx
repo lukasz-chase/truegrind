@@ -1,6 +1,7 @@
 import React from "react";
 
 import { Pressable, StyleSheet, Text, View } from "react-native";
+import Animated, { LinearTransition } from "react-native-reanimated";
 
 type Props = {
   close: () => void;
@@ -8,14 +9,14 @@ type Props = {
 
 const CustomFooter = ({ close }: Props) => {
   return (
-    <View>
+    <Animated.View layout={LinearTransition}>
       <Pressable style={styles.footerContainer} onPress={close}>
         <Text style={styles.footerText}>Add Exercises</Text>
       </Pressable>
       <Pressable style={styles.footerContainer} onPress={close}>
         <Text style={styles.footerText}>Cancel Workout</Text>
       </Pressable>
-    </View>
+    </Animated.View>
   );
 };
 

@@ -18,6 +18,7 @@ import Animated, {
   useAnimatedStyle,
   withTiming,
   runOnJS,
+  LinearTransition,
 } from "react-native-reanimated";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import useActiveWorkout from "@/store/useActiveWorkout";
@@ -95,7 +96,9 @@ const WorkoutSet = ({ exerciseSet, exerciseId }: Props) => {
         translateX.value = withTiming(-rowWidth, {}, () =>
           runOnJS(deleteExerciseSet)(exerciseId, exerciseSet.id)
         );
-        buttonWidth.value = withTiming(rowWidth);
+        buttonWidth.value = withTiming(
+          rowWidth + initialButtonWidth + buttonMargin
+        );
       } else {
         translateX.value = withTiming(0);
         buttonWidth.value = withTiming(initialButtonWidth);
@@ -114,11 +117,11 @@ const WorkoutSet = ({ exerciseSet, exerciseId }: Props) => {
 
   return (
     <GestureHandlerRootView>
-      <View
+      <Animated.View
+        layout={LinearTransition}
         style={styles.container}
         onLayout={(e) => setRowWidth(e.nativeEvent.layout.width)} // Capture row width dynamically
       >
-        {/* Delete button in the background */}
         <Animated.View
           style={[
             styles.deleteButtonContainer,
@@ -132,7 +135,6 @@ const WorkoutSet = ({ exerciseSet, exerciseId }: Props) => {
           <Text style={styles.deleteButtonText}>Delete</Text>
         </Animated.View>
 
-        {/* Swipeable row */}
         <GestureHandlerRootView>
           <GestureDetector gesture={swipeGesture}>
             <Animated.View style={[styles.row, rowStyle]}>
@@ -167,7 +169,7 @@ const WorkoutSet = ({ exerciseSet, exerciseId }: Props) => {
             </Animated.View>
           </GestureDetector>
         </GestureHandlerRootView>
-      </View>
+      </Animated.View>
     </GestureHandlerRootView>
   );
 };
