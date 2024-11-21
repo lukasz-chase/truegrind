@@ -2,7 +2,7 @@ import { Exercise } from "./exercises";
 import { ExerciseSet } from "./exercisesSets";
 
 export type Workout = {
-  id: number;
+  id: string;
   name: string;
   user_id: string;
   notes?: string;

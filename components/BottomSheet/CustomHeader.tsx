@@ -8,55 +8,21 @@ import { Pressable, StyleSheet, Text } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useBottomSheet } from "@gorhom/bottom-sheet";
 import { AppColors } from "@/constants/colors";
+import useWorkoutTimer from "@/store/useWorkoutTimer";
 
 type Props = {
   workoutName: string;
   sheetIndex: number;
   close: () => void;
-  setWorkoutElapsedTime: React.Dispatch<React.SetStateAction<number>>;
-  workoutElapsedTime: number;
 };
 
-const CustomHeader = ({
-  workoutName,
-  sheetIndex,
-  close,
-  workoutElapsedTime,
-  setWorkoutElapsedTime,
-}: Props) => {
-  const [startTime, setStartTime] = useState(0); // Timestamp when the timer starts
-  const [isRunning, setIsRunning] = useState(false);
+const CustomHeader = ({ workoutName, sheetIndex, close }: Props) => {
   const { animatedIndex, expand } = useBottomSheet();
+  const { formattedTime, stopTimer } = useWorkoutTimer();
 
-  useEffect(() => {
-    let timer: any;
-
-    if (isRunning) {
-      timer = setInterval(() => {
-        setWorkoutElapsedTime(Math.floor((Date.now() - startTime) / 1000));
-      }, 100); // Update every 100ms for smoothness
-    } else {
-      clearInterval(timer);
-    }
-
-    return () => clearInterval(timer);
-  }, [isRunning, startTime]);
-
-  const handleStart = () => {
-    if (!isRunning) {
-      setStartTime(Date.now() - workoutElapsedTime * 1000); // Maintain continuity
-      setIsRunning(true);
-    }
-  };
-  useEffect(handleStart);
-  const handleReset = () => {
-    setIsRunning(false);
-    setWorkoutElapsedTime(0);
-    setStartTime(0);
-  };
   const finishWorkout = () => {
-    handleReset();
     close();
+    stopTimer();
   };
   // Animated styles
   const containerAnimatedStyle = useAnimatedStyle(() => ({
@@ -100,10 +66,7 @@ const CustomHeader = ({
         style={[styles.titleContainer, containerAnimatedStyleReverse]}
       >
         <Text style={styles.headerTitle}>{workoutName}</Text>
-        <Text style={styles.headerTitleTime}>
-          {Math.floor(workoutElapsedTime / 60)}:
-          {String(workoutElapsedTime % 60).padStart(2, "0")}
-        </Text>
+        <Text style={styles.headerTitleTime}>{formattedTime}</Text>
       </Animated.View>
 
       <Animated.View style={containerStyle}>

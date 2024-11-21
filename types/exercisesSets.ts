@@ -1,5 +1,5 @@
 export type ExerciseSet = {
-  id: number;
+  id: string;
   workout_exercise_id: number;
   order: number;
   reps: number | null;

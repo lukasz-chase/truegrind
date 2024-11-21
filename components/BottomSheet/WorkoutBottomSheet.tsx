@@ -1,4 +1,10 @@
-import React, { useRef, useMemo, useCallback, useState } from "react";
+import React, {
+  useRef,
+  useMemo,
+  useCallback,
+  useState,
+  useEffect,
+} from "react";
 import {
   StyleSheet,
   View,
@@ -18,6 +24,7 @@ import { AppColors } from "@/constants/colors";
 import WorkoutExercise from "../WorkoutExercise";
 import { ScrollView } from "react-native-gesture-handler";
 import useActiveWorkout from "@/store/useActiveWorkout";
+import useWorkoutTimer from "@/store/useWorkoutTimer";
 
 type Props = {
   animatedIndex: SharedValue<number>;
@@ -27,10 +34,12 @@ const WorkoutBottomSheet = ({ animatedIndex }: Props) => {
   const [sheetIndex, setSheetIndex] = useState(0);
   const { setIsSheetVisible } = useBottomSheet();
   const { activeWorkout, updateWorkoutField } = useActiveWorkout();
-  const [workoutElapsedTime, setWorkoutElapsedTime] = useState(0);
-  const sheetRef = useRef<BottomSheet>(null);
+  const { startTimer, formattedTime } = useWorkoutTimer();
 
+  const sheetRef = useRef<BottomSheet>(null);
   const snapPoints = useMemo(() => [130, "90%"], []);
+
+  useEffect(startTimer);
 
   const handleClosePress = useCallback(() => {
     setIsSheetVisible(false);
@@ -70,8 +79,6 @@ const WorkoutBottomSheet = ({ animatedIndex }: Props) => {
             workoutName={activeWorkout?.name ?? ""}
             sheetIndex={sheetIndex}
             close={handleClosePress}
-            setWorkoutElapsedTime={setWorkoutElapsedTime}
-            workoutElapsedTime={workoutElapsedTime}
           />
           <View style={styles.workoutDetails}>
             <TextInput
@@ -82,10 +89,7 @@ const WorkoutBottomSheet = ({ animatedIndex }: Props) => {
               value={activeWorkout.name}
               style={styles.workoutName}
             />
-            <Text style={styles.workoutTime}>
-              {Math.floor(workoutElapsedTime / 60)}:
-              {String(workoutElapsedTime % 60).padStart(2, "0")}
-            </Text>
+            <Text style={styles.workoutTime}>{formattedTime}</Text>
             <TextInput
               placeholder={"Notes"}
               placeholderTextColor={AppColors.gray}
