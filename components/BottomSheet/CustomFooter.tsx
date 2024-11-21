@@ -10,7 +10,10 @@ const CustomFooter = ({ close }: Props) => {
   return (
     <View>
       <Pressable style={styles.footerContainer} onPress={close}>
-        <Text style={styles.footerText}>Close</Text>
+        <Text style={styles.footerText}>Add Exercises</Text>
+      </Pressable>
+      <Pressable style={styles.footerContainer} onPress={close}>
+        <Text style={styles.footerText}>Cancel Workout</Text>
       </Pressable>
     </View>
   );

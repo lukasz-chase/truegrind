@@ -1,6 +1,7 @@
 import WorkoutPreviewModal from "@/components/Modals/WorkoutPreviewModal";
 import { AppColors } from "@/constants/colors";
 import { supabase } from "@/lib/supabase";
+import useActiveWorkout from "@/store/useActiveWorkout";
 import useBottomSheet from "@/store/useBottomSheet";
 import userStore from "@/store/userStore";
 import useWorkoutPreviewModalStore from "@/store/useWorkoutPreviewModalStore";
@@ -22,9 +23,8 @@ export default function WorkoutScreen() {
     closeModal: closePreviewModal,
     openModal: openPreviewModal,
   } = useWorkoutPreviewModalStore();
-  const { activeWorkout, setIsSheetVisible, setActiveWorkout } =
-    useBottomSheet();
-
+  const { setIsSheetVisible } = useBottomSheet();
+  const { activeWorkout, setActiveWorkout } = useActiveWorkout();
   const { session } = userStore((state) => state);
   useEffect(() => {
     fetchWorkouts();

@@ -7,7 +7,7 @@ import {
   TextInputChangeEventData,
   TextInput,
 } from "react-native";
-import BottomSheet, { BottomSheetFlashList } from "@gorhom/bottom-sheet";
+import BottomSheet from "@gorhom/bottom-sheet";
 import CustomBackdrop from "./CustomBackdrop";
 import CustomHeader from "./CustomHeader";
 import CustomFooter from "./CustomFooter";
@@ -15,6 +15,9 @@ import useBottomSheet from "@/store/useBottomSheet";
 import { SharedValue } from "react-native-reanimated";
 import { Workout } from "@/types/workout";
 import { AppColors } from "@/constants/colors";
+import WorkoutExercise from "../WorkoutExercise";
+import { ScrollView } from "react-native-gesture-handler";
+import useActiveWorkout from "@/store/useActiveWorkout";
 
 type Props = {
   animatedIndex: SharedValue<number>;
@@ -22,8 +25,8 @@ type Props = {
 
 const WorkoutBottomSheet = ({ animatedIndex }: Props) => {
   const [sheetIndex, setSheetIndex] = useState(0);
-  const { activeWorkout, setIsSheetVisible, updateWorkoutField } =
-    useBottomSheet();
+  const { setIsSheetVisible } = useBottomSheet();
+  const { activeWorkout, updateWorkoutField } = useActiveWorkout();
   const [workoutElapsedTime, setWorkoutElapsedTime] = useState(0);
   const sheetRef = useRef<BottomSheet>(null);
 
@@ -60,7 +63,6 @@ const WorkoutBottomSheet = ({ animatedIndex }: Props) => {
           backdropComponent={CustomBackdrop}
           animatedIndex={animatedIndex}
           enableOverDrag={false}
-          style={styles.bottomSheet}
           onChange={handleSheetChanges}
         >
           {/* Header */}
@@ -93,17 +95,16 @@ const WorkoutBottomSheet = ({ animatedIndex }: Props) => {
               style={styles.workoutNotes}
             />
           </View>
-          {/* Content */}
-          <BottomSheetFlashList
-            data={activeWorkout?.workout_exercises}
-            keyExtractor={(i: any) => i.id.toString()}
-            renderItem={({ item }: { item: any }) => (
-              <Text>{item.exercises.name}</Text>
-            )}
-            contentContainerStyle={styles.exercisesWrapper}
-            estimatedItemSize={100}
-          />
-          <CustomFooter close={handleClosePress} />
+          <ScrollView>
+            {activeWorkout?.workout_exercises?.map((workout) => (
+              <WorkoutExercise
+                key={workout.id}
+                exercise={workout.exercises}
+                exerciseSets={workout.exercise_sets}
+              />
+            ))}
+            <CustomFooter close={handleClosePress} />
+          </ScrollView>
         </BottomSheet>
       </View>
     </View>
@@ -117,10 +118,6 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-  },
-  bottomSheet: {},
-  exercisesWrapper: {
-    backgroundColor: "white",
   },
   handle: {
     paddingTop: 5,
