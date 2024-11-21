@@ -6,9 +6,11 @@ import {
   Text,
   TextInput,
   View,
+  ActivityIndicator,
 } from "react-native";
 import { supabase } from "@/lib/supabase";
 import { getProfile } from "@/hooks/userProfile";
+import { AppColors } from "@/constants/colors";
 
 export default function Auth() {
   const [email, setEmail] = useState("");
@@ -23,7 +25,7 @@ export default function Auth() {
     });
 
     if (error) Alert.alert(error.message);
-    getProfile(data.user!.id);
+    if (data?.user) getProfile(data.user.id);
     setLoading(false);
   }
 
@@ -45,48 +47,113 @@ export default function Auth() {
 
   return (
     <View style={styles.container}>
-      <View style={[styles.verticallySpaced, styles.mt20]}>
-        <Text>Sign in</Text>
+      <Text style={styles.title}>Welcome Back</Text>
+      <Text style={styles.subtitle}>Sign in to continue</Text>
+      <View style={styles.inputContainer}>
         <TextInput
+          style={styles.input}
           onChangeText={(text) => setEmail(text)}
           value={email}
-          placeholder="email@address.com"
+          placeholder="Email"
+          placeholderTextColor="#888"
+          keyboardType="email-address"
+          autoCapitalize="none"
         />
-      </View>
-      <View style={styles.verticallySpaced}>
-        <Text>Password</Text>
         <TextInput
+          style={styles.input}
           onChangeText={(text) => setPassword(text)}
           value={password}
-          secureTextEntry={true}
+          secureTextEntry
           placeholder="Password"
+          placeholderTextColor="#888"
         />
       </View>
-      <View style={[styles.verticallySpaced, styles.mt20]}>
-        <Pressable disabled={loading} onPress={() => signInWithEmail()}>
-          <Text>Sign in</Text>
-        </Pressable>
-      </View>
-      <View style={styles.verticallySpaced}>
-        <Pressable disabled={loading} onPress={() => signUpWithEmail()}>
-          <Text>Sign up</Text>
-        </Pressable>
-      </View>
+      <Pressable
+        style={[styles.button, loading && styles.buttonDisabled]}
+        disabled={loading}
+        onPress={signInWithEmail}
+      >
+        {loading ? (
+          <ActivityIndicator color="#fff" />
+        ) : (
+          <Text style={styles.buttonText}>Sign In</Text>
+        )}
+      </Pressable>
+      <Pressable
+        style={[styles.buttonOutline, loading && styles.buttonOutlineDisabled]}
+        disabled={loading}
+        onPress={signUpWithEmail}
+      >
+        <Text style={styles.buttonOutlineText}>Sign Up</Text>
+      </Pressable>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 40,
-    padding: 12,
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+    backgroundColor: "#f7f7f7",
   },
-  verticallySpaced: {
-    paddingTop: 4,
-    paddingBottom: 4,
-    alignSelf: "stretch",
+  title: {
+    fontSize: 28,
+    fontWeight: "700",
+    color: "#333",
+    marginBottom: 10,
   },
-  mt20: {
-    marginTop: 20,
+  subtitle: {
+    fontSize: 16,
+    color: "#666",
+    marginBottom: 20,
+  },
+  inputContainer: {
+    width: "100%",
+    marginBottom: 20,
+  },
+  input: {
+    height: 50,
+    borderWidth: 1,
+    borderColor: "#ddd",
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    marginBottom: 10,
+    backgroundColor: "#fff",
+    fontSize: 16,
+  },
+  button: {
+    width: "100%",
+    backgroundColor: AppColors.blue,
+    paddingVertical: 14,
+    borderRadius: 8,
+    alignItems: "center",
+    marginBottom: 10,
+  },
+  buttonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "600",
+  },
+  buttonDisabled: {
+    backgroundColor: AppColors.blue,
+  },
+  buttonOutline: {
+    width: "100%",
+    paddingVertical: 14,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: AppColors.blue,
+    alignItems: "center",
+  },
+  buttonOutlineText: {
+    color: AppColors.blue,
+    fontSize: 16,
+    fontWeight: "600",
+  },
+  buttonOutlineDisabled: {
+    borderColor: AppColors.blue,
+    color: AppColors.blue,
   },
 });
