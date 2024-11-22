@@ -18,6 +18,7 @@ interface ActiveWorkoutStore {
     value: any
   ) => void;
   deleteExerciseSet: (exerciseId: string, setId: string) => void;
+  removeExercise: (exerciseId: string) => void;
 }
 
 const useActiveWorkout = create<ActiveWorkoutStore>((set, get) => ({
@@ -57,7 +58,7 @@ const useActiveWorkout = create<ActiveWorkoutStore>((set, get) => ({
         ],
       },
     }));
-    get().addNewSet(exercise.id);
+    get().addNewSet(workoutExercise.id);
   },
   addNewSet: (workoutExerciseId: string) => {
     set((state) => {
@@ -134,6 +135,20 @@ const useActiveWorkout = create<ActiveWorkoutStore>((set, get) => ({
                   })),
               }
             : exercise
+      );
+
+      return {
+        activeWorkout: {
+          ...state.activeWorkout,
+          workout_exercises: updatedExercises,
+        },
+      };
+    });
+  },
+  removeExercise: (exerciseId: string) => {
+    set((state) => {
+      const updatedExercises = state.activeWorkout.workout_exercises?.filter(
+        (exercise) => exercise.exercises.id !== exerciseId
       );
 
       return {

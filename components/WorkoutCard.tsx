@@ -1,17 +1,16 @@
 import { AppColors } from "@/constants/colors";
 import useActiveWorkout from "@/store/useActiveWorkout";
-import useWorkoutPreviewModal from "@/store/useWorkoutPreviewModal";
 import { Workout } from "@/types/workout";
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity } from "react-native";
 
 type Props = {
   workout: Workout;
+  openModal: () => void;
 };
 
-const WorkoutCard = ({ workout }: Props) => {
+const WorkoutCard = ({ workout, openModal }: Props) => {
   const { setActiveWorkout } = useActiveWorkout();
-  const { openModal } = useWorkoutPreviewModal();
   return (
     <TouchableOpacity
       style={styles.workoutCard}

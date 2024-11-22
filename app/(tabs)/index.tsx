@@ -6,7 +6,6 @@ import appStore from "@/store/appStore";
 import useActiveWorkout from "@/store/useActiveWorkout";
 import useBottomSheet from "@/store/useBottomSheet";
 import userStore from "@/store/userStore";
-import useWorkoutPreviewModal from "@/store/useWorkoutPreviewModal";
 import { Workout } from "@/types/workout";
 import React, { useState, useEffect } from "react";
 import {
@@ -20,7 +19,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function WorkoutScreen() {
   const [workouts, setWorkouts] = useState<Workout[]>([]);
-  const { isVisible, closeModal } = useWorkoutPreviewModal();
+  const [isVisible, setIsVisible] = useState(false);
   const { setIsSheetVisible } = useBottomSheet();
   const { activeWorkout } = useActiveWorkout();
   const { session } = userStore();
@@ -47,7 +46,7 @@ export default function WorkoutScreen() {
   };
 
   const startWorkout = () => {
-    closeModal();
+    setIsVisible(false);
     setIsSheetVisible(true);
   };
 
@@ -70,21 +69,21 @@ export default function WorkoutScreen() {
         <Text>My Templates ({workouts.length})</Text>
         <ScrollView style={styles.workouts}>
           {workouts.map((workout) => (
-            <WorkoutCard key={workout.id} workout={workout} />
+            <WorkoutCard
+              key={workout.id}
+              workout={workout}
+              openModal={() => setIsVisible(true)}
+            />
           ))}
         </ScrollView>
       </View>
       {activeWorkout && (
-        <>
-          {isVisible && (
-            <WorkoutPreviewModal
-              visible={isVisible}
-              onClose={closeModal}
-              workout={activeWorkout}
-              startWorkout={startWorkout}
-            />
-          )}
-        </>
+        <WorkoutPreviewModal
+          visible={isVisible}
+          onClose={() => setIsVisible(false)}
+          workout={activeWorkout}
+          startWorkout={startWorkout}
+        />
       )}
     </SafeAreaView>
   );

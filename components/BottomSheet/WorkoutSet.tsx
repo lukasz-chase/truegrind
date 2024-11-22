@@ -251,7 +251,7 @@ const WorkoutSet = ({ exerciseSet, exerciseId }: Props) => {
 const styles = StyleSheet.create({
   container: {
     position: "relative",
-    paddingHorizontal: 20,
+    paddingHorizontal: 10,
   },
   deleteButtonContainer: {
     position: "absolute",
