@@ -27,6 +27,7 @@ const CustomHeader = ({ sheetIndex, close }: Props) => {
   const { activeWorkout, initialActiveWorkout } = useActiveWorkout();
   const { setRefetchData } = appStore();
   const finishWorkout = async () => {
+    console.log("start finish");
     try {
       if (
         initialActiveWorkout.name !== activeWorkout.name ||
@@ -37,7 +38,10 @@ const CustomHeader = ({ sheetIndex, close }: Props) => {
           .update({ name: activeWorkout.name, notes: activeWorkout.notes })
           .eq("id", activeWorkout.id)
           .select();
+        console.log(error);
       }
+      console.log("after workout update");
+
       //UPDATE WORKOUT EXERCISES
       let workoutExercisesToUpdate: WorkoutExercise[] = [];
       activeWorkout.workout_exercises?.forEach(
@@ -58,23 +62,28 @@ const CustomHeader = ({ sheetIndex, close }: Props) => {
         }
       );
       await supabase.from("workout_exercises").upsert(workoutExercisesToUpdate);
-
       //UPDATE EXERCISE SETS
       let exerciseSetsToUpdate: ExerciseSet[] = [];
       activeWorkout.workout_exercises?.forEach(async (workout_exercise) => {
         workout_exercise.exercise_sets.forEach(async (set) => {
           let order = 0;
           if (set.completed) {
+            console.log(set);
             order = +1;
             exerciseSetsToUpdate.push({
               ...set,
+              completed: false,
               order,
               workout_exercise_id: workout_exercise.id,
             });
           }
         });
       });
-      await supabase.from("exercise_sets").upsert(exerciseSetsToUpdate);
+      const { data, error } = await supabase
+        .from("exercise_sets")
+        .upsert(exerciseSetsToUpdate);
+      console.log(data);
+      console.log(error);
       await supabase.from("sets_history").upsert(exerciseSetsToUpdate);
       setRefetchData();
 

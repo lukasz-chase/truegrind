@@ -33,6 +33,7 @@ type Props = {
 
 const WorkoutSet = ({ exerciseSet, exerciseId }: Props) => {
   const translateX = useSharedValue(0);
+  const rowScale = useSharedValue(1);
   const initialButtonWidth = 70;
   const buttonMargin = 20;
   const buttonWidth = useSharedValue(initialButtonWidth);
@@ -70,22 +71,25 @@ const WorkoutSet = ({ exerciseSet, exerciseId }: Props) => {
   };
 
   const swipeGesture = Gesture.Pan()
+    .activeOffsetX([-10, 0])
     .onUpdate((event) => {
-      translateX.value = Math.max(event.translationX, -rowWidth);
-      buttonWidth.value =
-        initialButtonWidth +
-        buttonMargin +
-        Math.min(-translateX.value, rowWidth);
+      if (event.translationX < 0) {
+        translateX.value = Math.max(event.translationX, -rowWidth);
+        buttonWidth.value =
+          initialButtonWidth +
+          buttonMargin +
+          Math.min(-translateX.value, rowWidth);
 
-      if (translateX.value < -rowWidth * 0.5 && !hapticTriggered) {
-        runOnJS(handleHapticFeedback)();
-        runOnJS(setMovedPassTreshold)(true);
-      }
+        if (translateX.value < -rowWidth * 0.5 && !hapticTriggered) {
+          runOnJS(handleHapticFeedback)();
+          runOnJS(setMovedPassTreshold)(true);
+        }
 
-      if (translateX.value >= -rowWidth * 0.5 && hapticTriggered) {
-        runOnJS(handleHapticFeedback)();
-        runOnJS(setMovedPassTreshold)(false);
-        runOnJS(setHapticTriggered)(false);
+        if (translateX.value >= -rowWidth * 0.5 && hapticTriggered) {
+          runOnJS(handleHapticFeedback)();
+          runOnJS(setMovedPassTreshold)(false);
+          runOnJS(setHapticTriggered)(false);
+        }
       }
     })
     .onEnd(() => {
@@ -105,7 +109,7 @@ const WorkoutSet = ({ exerciseSet, exerciseId }: Props) => {
     });
 
   const rowStyle = useAnimatedStyle(() => ({
-    transform: [{ translateX: translateX.value }],
+    transform: [{ translateX: translateX.value }, { scale: rowScale.value }],
   }));
 
   const deleteButtonStyle = useAnimatedStyle(() => ({
@@ -114,9 +118,13 @@ const WorkoutSet = ({ exerciseSet, exerciseId }: Props) => {
 
   const completeSet = () => {
     updateExerciseField(!exerciseSet.completed, exerciseSet.id, "completed");
-    if (!exerciseSet.completed)
+
+    if (!exerciseSet.completed) {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    else Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+      rowScale.value = withTiming(1.1, { duration: 100 }, () => {
+        rowScale.value = withTiming(1, { duration: 100 });
+      });
+    } else Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
   };
 
   return (
@@ -138,7 +146,11 @@ const WorkoutSet = ({ exerciseSet, exerciseId }: Props) => {
             styles.deleteButtonContainer,
             deleteButtonStyle,
             {
-              transform: [{ translateX: initialButtonWidth + buttonMargin }],
+              transform: [
+                {
+                  translateX: initialButtonWidth + buttonMargin,
+                },
+              ],
               alignItems: movedPassTreshold ? "flex-start" : "center",
             },
           ]}

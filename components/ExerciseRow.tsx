@@ -20,7 +20,7 @@ const ExerciseRow = ({ exercise, numberOfSets, onPress }: Props) => {
       />
       <View style={styles.exerciseDetails}>
         <Text style={styles.exerciseName}>
-          {numberOfSets && `${numberOfSets} x `}
+          {`${numberOfSets} x `}
           {exercise.name}
         </Text>
         <View>
@@ -49,6 +49,7 @@ const styles = StyleSheet.create({
   },
   exerciseDetails: {
     marginLeft: 12,
+    flex: 1,
     justifyContent: "space-between",
     paddingTop: 5,
     paddingBottom: 5,
@@ -61,6 +62,7 @@ const styles = StyleSheet.create({
   exerciseName: {
     fontWeight: "bold",
     fontSize: 18,
+    maxWidth: "100%", // Ensures it doesn't overflow its container
   },
   exerciseDetail: {
     fontSize: 16,
