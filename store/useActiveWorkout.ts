@@ -59,29 +59,31 @@ const useActiveWorkout = create<ActiveWorkoutStore>((set, get) => ({
     }));
     get().addNewSet(exercise.id);
   },
-  addNewSet: (exerciseId: string) => {
+  addNewSet: (workoutExerciseId: string) => {
     set((state) => {
       const updatedExercises = state.activeWorkout.workout_exercises?.map(
-        (exercise) =>
-          exercise.exercises.id === exerciseId
-            ? {
-                ...exercise,
-                exercise_sets: [
-                  ...(exercise.exercise_sets || []),
-                  {
-                    id: uuid.v4(),
-                    workout_exercise_id: exercise.id,
-                    order: exercise.exercise_sets.length + 1,
-                    reps: null,
-                    weight: null,
-                    is_warmup: false,
-                    is_dropset: false,
-                    reps_in_reserve: null,
-                    completed: false,
-                  },
-                ],
-              }
-            : exercise
+        (workoutExercise) => {
+          if (workoutExercise.id === workoutExerciseId)
+            return {
+              ...workoutExercise,
+              exercise_sets: [
+                ...(workoutExercise.exercise_sets || []),
+                {
+                  id: uuid.v4(),
+                  workout_exercise_id: workoutExercise.id,
+                  order: workoutExercise.exercise_sets.length + 1,
+                  reps: null,
+                  weight: null,
+                  is_warmup: false,
+                  is_dropset: false,
+                  reps_in_reserve: null,
+                  completed: false,
+                },
+              ],
+            };
+
+          return workoutExercise;
+        }
       );
       return {
         activeWorkout: {

@@ -45,14 +45,12 @@ const CustomHeader = ({ sheetIndex, close }: Props) => {
           if (
             !initialActiveWorkout.workout_exercises ||
             workout_exercise.notes !==
-              initialActiveWorkout.workout_exercises[index].notes ||
+              initialActiveWorkout.workout_exercises[index]?.notes ||
             workout_exercise.timer !==
-              initialActiveWorkout.workout_exercises[index].timer
+              initialActiveWorkout.workout_exercises[index]?.timer
           ) {
             workoutExercisesToUpdate.push({
-              id: workout_exercise.id,
-              notes: workout_exercise.notes,
-              timer: workout_exercise.timer,
+              ...workout_exercise,
               exercise_id: workout_exercise.exercises.id,
               workout_id: activeWorkout.id,
             });
@@ -60,31 +58,25 @@ const CustomHeader = ({ sheetIndex, close }: Props) => {
         }
       );
       await supabase.from("workout_exercises").upsert(workoutExercisesToUpdate);
-      setRefetchData();
 
-      // //UPDATE EXERCISE SETS
-      // let exerciseSetsToUpdate: ExerciseSet[] = [];
-      // activeWorkout.workout_exercises?.forEach(async (workout_exercise) => {
-      //   workout_exercise.exercise_sets.forEach(async (set) => {
-      //     let order = 0;
-      //     if (set.completed) {
-      //       order = +1;
-      //       exerciseSetsToUpdate.push({
-      //         id: set.id,
-      //         order,
-      //         reps: set.reps,
-      //         weight: set.weight,
-      //         is_dropset: set.is_dropset,
-      //         is_warmup: set.is_warmup,
-      //         reps_in_reserve: set.reps_in_reserve,
-      //         workout_exercise_id: workout_exercise.id,
-      //         completed: set.completed,
-      //       });
-      //     }
-      //   });
-      // });
-      // await supabase.from("exercise_sets").upsert(exerciseSetsToUpdate);
-      // await supabase.from("sets_history").upsert(exerciseSetsToUpdate);
+      //UPDATE EXERCISE SETS
+      let exerciseSetsToUpdate: ExerciseSet[] = [];
+      activeWorkout.workout_exercises?.forEach(async (workout_exercise) => {
+        workout_exercise.exercise_sets.forEach(async (set) => {
+          let order = 0;
+          if (set.completed) {
+            order = +1;
+            exerciseSetsToUpdate.push({
+              ...set,
+              order,
+              workout_exercise_id: workout_exercise.id,
+            });
+          }
+        });
+      });
+      await supabase.from("exercise_sets").upsert(exerciseSetsToUpdate);
+      await supabase.from("sets_history").upsert(exerciseSetsToUpdate);
+      setRefetchData();
 
       close();
       stopTimer();

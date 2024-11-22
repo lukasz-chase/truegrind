@@ -11,12 +11,16 @@ import Animated, { LinearTransition } from "react-native-reanimated";
 type Props = {
   exercise: Exercise;
   exerciseSets: ExerciseSet[];
+  workoutExerciseId: string;
 };
-const WorkoutExercise = ({ exercise, exerciseSets }: Props) => {
+const WorkoutExercise = ({
+  exercise,
+  exerciseSets,
+  workoutExerciseId,
+}: Props) => {
   const { addNewSet } = useActiveWorkout();
-
   return (
-    <View style={styles.container}>
+    <Animated.View style={styles.container} layout={LinearTransition}>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>{exercise.name}</Text>
         <Pressable style={styles.headerOptions}>
@@ -54,12 +58,12 @@ const WorkoutExercise = ({ exercise, exerciseSets }: Props) => {
       >
         <TouchableOpacity
           style={styles.addButton}
-          onPress={() => addNewSet(exercise.id)}
+          onPress={() => addNewSet(workoutExerciseId)}
         >
           <Text style={styles.addButtonText}>+ Add Set</Text>
         </TouchableOpacity>
       </Animated.View>
-    </View>
+    </Animated.View>
   );
 };
 
@@ -69,7 +73,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    padding: 20,
+    paddingHorizontal: 20,
   },
   headerTitle: {
     color: AppColors.blue,
@@ -104,10 +108,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   addButtonContainer: {
-    padding: 20,
+    paddingHorizontal: 12,
+    marginVertical: 12,
   },
   addButton: {
-    marginTop: 16,
     padding: 8,
     borderRadius: 8,
     backgroundColor: "#f0f0f0",

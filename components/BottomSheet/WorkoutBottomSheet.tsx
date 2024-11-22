@@ -12,10 +12,9 @@ import CustomHeader from "./CustomHeader";
 import CustomFooter from "./CustomFooter";
 import useBottomSheet from "@/store/useBottomSheet";
 import { SharedValue } from "react-native-reanimated";
-import WorkoutExercise from "../WorkoutExercise";
+import WorkoutExercise from "./WorkoutExercise";
 import { ScrollView } from "react-native-gesture-handler";
 import useActiveWorkout from "@/store/useActiveWorkout";
-import useWorkoutTimer from "@/store/useWorkoutTimer";
 import WorkoutDetails from "./WorkoutDetails";
 
 type Props = {
@@ -61,6 +60,7 @@ const WorkoutBottomSheet = ({ animatedIndex }: Props) => {
               <WorkoutExercise
                 key={workout.id}
                 exercise={workout.exercises}
+                workoutExerciseId={workout.id}
                 exerciseSets={workout.exercise_sets}
               />
             ))}

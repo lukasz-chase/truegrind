@@ -112,6 +112,13 @@ const WorkoutSet = ({ exerciseSet, exerciseId }: Props) => {
     width: buttonWidth.value,
   }));
 
+  const completeSet = () => {
+    updateExerciseField(!exerciseSet.completed, exerciseSet.id, "completed");
+    if (!exerciseSet.completed)
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    else Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+  };
+
   return (
     <GestureHandlerRootView>
       <Animated.View
@@ -143,7 +150,16 @@ const WorkoutSet = ({ exerciseSet, exerciseId }: Props) => {
           <GestureDetector gesture={swipeGesture}>
             <Animated.View style={[styles.row, rowStyle]}>
               <View style={[styles.cell, { flex: 1 }]}>
-                <Pressable style={styles.rowButton}>
+                <Pressable
+                  style={[
+                    styles.rowButton,
+                    {
+                      backgroundColor: exerciseSet.completed
+                        ? AppColors.lightGreen
+                        : AppColors.gray,
+                    },
+                  ]}
+                >
                   <Text style={[styles.cellText, styles.rowButtonText]}>
                     {exerciseSet.order}
                   </Text>
@@ -162,7 +178,16 @@ const WorkoutSet = ({ exerciseSet, exerciseId }: Props) => {
                     "reps"
                   )
                 }
-                style={[styles.cell, styles.textInput, { flex: 1 }]}
+                style={[
+                  styles.cell,
+                  styles.textInput,
+                  {
+                    flex: 1,
+                    backgroundColor: exerciseSet.completed
+                      ? AppColors.lightGreen
+                      : AppColors.gray,
+                  },
+                ]}
               />
               <TextInput
                 value={`${exerciseSet?.weight ?? ""}`}
@@ -173,16 +198,34 @@ const WorkoutSet = ({ exerciseSet, exerciseId }: Props) => {
                     "weight"
                   )
                 }
-                style={[styles.cell, styles.textInput, { flex: 1 }]}
+                style={[
+                  styles.cell,
+                  styles.textInput,
+                  {
+                    flex: 1,
+                    backgroundColor: exerciseSet.completed
+                      ? AppColors.lightGreen
+                      : AppColors.gray,
+                  },
+                ]}
               />
               <View style={[styles.cell, { flex: 1, alignItems: "center" }]}>
                 <Pressable
-                  style={styles.rowButton}
-                  onPress={() =>
-                    updateExerciseField(true, exerciseSet.id, "completed")
-                  }
+                  style={[
+                    styles.rowButton,
+                    {
+                      backgroundColor: exerciseSet.completed
+                        ? AppColors.green
+                        : AppColors.gray,
+                    },
+                  ]}
+                  onPress={completeSet}
                 >
-                  <AntDesign name="check" size={20} color="black" />
+                  <AntDesign
+                    name="check"
+                    size={20}
+                    color={exerciseSet.completed ? "white" : "black"}
+                  />
                 </Pressable>
               </View>
             </Animated.View>
@@ -196,7 +239,6 @@ const WorkoutSet = ({ exerciseSet, exerciseId }: Props) => {
 const styles = StyleSheet.create({
   container: {
     position: "relative",
-    marginVertical: 5,
     paddingHorizontal: 20,
   },
   deleteButtonContainer: {
