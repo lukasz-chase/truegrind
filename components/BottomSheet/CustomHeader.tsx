@@ -14,6 +14,11 @@ import useActiveWorkout from "@/store/useActiveWorkout";
 import { WorkoutExercise } from "@/types/workoutExercise";
 import { ExerciseSet } from "@/types/exercisesSets";
 import appStore from "@/store/appStore";
+import {
+  updateExerciseSets,
+  updateWorkout,
+  updateWorkoutExercises,
+} from "@/lib/supabaseActions";
 
 type Props = {
   sheetIndex: number;
@@ -22,77 +27,27 @@ type Props = {
 
 const CustomHeader = ({ sheetIndex, close }: Props) => {
   const { animatedIndex, expand } = useBottomSheet();
-  const { formattedTime, stopTimer, startTimer } = useWorkoutTimer();
-  useEffect(startTimer);
+  const { formattedTime, resetTimer, startTimer } = useWorkoutTimer();
   const { activeWorkout, initialActiveWorkout } = useActiveWorkout();
   const { setRefetchData } = appStore();
+
+  useEffect(startTimer);
+
   const finishWorkout = async () => {
-    console.log("start finish");
     try {
-      if (
-        initialActiveWorkout.name !== activeWorkout.name ||
-        initialActiveWorkout.notes !== activeWorkout.notes
-      ) {
-        const { data, error } = await supabase
-          .from("workouts")
-          .update({ name: activeWorkout.name, notes: activeWorkout.notes })
-          .eq("id", activeWorkout.id)
-          .select();
-        console.log(error);
-      }
-      console.log("after workout update");
+      await updateWorkout(activeWorkout, initialActiveWorkout);
+      await updateWorkoutExercises(activeWorkout, initialActiveWorkout);
+      await updateExerciseSets(activeWorkout, initialActiveWorkout);
 
-      //UPDATE WORKOUT EXERCISES
-      let workoutExercisesToUpdate: WorkoutExercise[] = [];
-      activeWorkout.workout_exercises?.forEach(
-        async (workout_exercise, index) => {
-          if (
-            !initialActiveWorkout.workout_exercises ||
-            workout_exercise.notes !==
-              initialActiveWorkout.workout_exercises[index]?.notes ||
-            workout_exercise.timer !==
-              initialActiveWorkout.workout_exercises[index]?.timer
-          ) {
-            workoutExercisesToUpdate.push({
-              ...workout_exercise,
-              exercise_id: workout_exercise.exercises.id,
-              workout_id: activeWorkout.id,
-            });
-          }
-        }
-      );
-      await supabase.from("workout_exercises").upsert(workoutExercisesToUpdate);
-      //UPDATE EXERCISE SETS
-      let exerciseSetsToUpdate: ExerciseSet[] = [];
-      activeWorkout.workout_exercises?.forEach(async (workout_exercise) => {
-        workout_exercise.exercise_sets.forEach(async (set) => {
-          let order = 0;
-          if (set.completed) {
-            console.log(set);
-            order = +1;
-            exerciseSetsToUpdate.push({
-              ...set,
-              completed: false,
-              order,
-              workout_exercise_id: workout_exercise.id,
-            });
-          }
-        });
-      });
-      const { data, error } = await supabase
-        .from("exercise_sets")
-        .upsert(exerciseSetsToUpdate);
-      console.log(data);
-      console.log(error);
-      await supabase.from("sets_history").upsert(exerciseSetsToUpdate);
       setRefetchData();
-
       close();
-      stopTimer();
+      resetTimer();
     } catch (error) {
-      console.log(error);
+      console.error("Error finishing workout:", error);
+      throw error;
     }
   };
+
   // Animated styles
   const containerAnimatedStyle = useAnimatedStyle(() => ({
     opacity: interpolate(
