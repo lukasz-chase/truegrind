@@ -129,6 +129,7 @@ export default function TimerModal({
                   customDuration={customDuration}
                   setCustomDuration={setCustomDuration}
                   circularProgressSize={circularProgressSize}
+                  backgroundColor="white"
                 />
               );
             }

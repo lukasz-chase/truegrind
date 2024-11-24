@@ -9,10 +9,16 @@ type Props = {
   customDuration: number;
   setCustomDuration: React.Dispatch<React.SetStateAction<number>>;
   circularProgressSize: number;
+  backgroundColor: string;
 };
 
 const MemoizedScrollPicker = memo(
-  ({ customDuration, setCustomDuration, circularProgressSize }: Props) => {
+  ({
+    customDuration,
+    setCustomDuration,
+    circularProgressSize,
+    backgroundColor,
+  }: Props) => {
     const timeOptions = Array.from({ length: 121 }, (_, i) => i * 5);
     const itemHeight = 50;
     const visibleItems = 5;
@@ -28,7 +34,7 @@ const MemoizedScrollPicker = memo(
           selectedIndex={timeOptions.indexOf(customDuration)}
           onValueChange={onValueChange}
           wrapperHeight={circularProgressSize - itemHeight / visibleItems}
-          wrapperBackground="#FFFFFF"
+          wrapperBackground={backgroundColor}
           itemHeight={itemHeight}
           highlightColor={AppColors.gray}
           highlightBorderWidth={2}

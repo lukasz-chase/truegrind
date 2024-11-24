@@ -96,5 +96,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: "center",
     position: "absolute",
+    overflow: "hidden",
   },
 });
