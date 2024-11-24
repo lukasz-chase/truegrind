@@ -1,12 +1,5 @@
 import React, { useState } from "react";
-import {
-  Text,
-  TextInput,
-  NativeSyntheticEvent,
-  TextInputChangeEventData,
-  View,
-  StyleSheet,
-} from "react-native";
+import { Text, TextInput, View, StyleSheet } from "react-native";
 import { Pressable } from "react-native";
 import {
   GestureHandlerRootView,

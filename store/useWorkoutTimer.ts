@@ -1,3 +1,4 @@
+import { formatTime } from "@/lib/helpers";
 import { create } from "zustand";
 
 interface TimerStore {
@@ -11,12 +12,6 @@ interface TimerStore {
 
 const useWorkoutTimer = create<TimerStore>((set, get) => {
   let timer: NodeJS.Timeout | null = null;
-
-  const formatTime = (elapsedTime: number) => {
-    const minutes = Math.floor(elapsedTime / 60);
-    const seconds = elapsedTime % 60;
-    return `${minutes}:${String(seconds).padStart(2, "0")}`;
-  };
 
   const startTimer = () => {
     if (get().isRunning) return;

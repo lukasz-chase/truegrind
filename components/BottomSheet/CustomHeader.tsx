@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Animated, {
   Extrapolate,
   interpolate,
@@ -9,16 +9,15 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { useBottomSheet } from "@gorhom/bottom-sheet";
 import { AppColors } from "@/constants/colors";
 import useWorkoutTimer from "@/store/useWorkoutTimer";
-import { supabase } from "@/lib/supabase";
 import useActiveWorkout from "@/store/useActiveWorkout";
-import { WorkoutExercise } from "@/types/workoutExercise";
-import { ExerciseSet } from "@/types/exercisesSets";
 import appStore from "@/store/appStore";
 import {
   updateExerciseSets,
   updateWorkout,
   updateWorkoutExercises,
 } from "@/lib/supabaseActions";
+import TimerModal from "../Modals/TimerModal";
+import useTimerStore from "@/store/useTimer";
 
 type Props = {
   sheetIndex: number;
@@ -28,8 +27,14 @@ type Props = {
 const CustomHeader = ({ sheetIndex, close }: Props) => {
   const { animatedIndex, expand } = useBottomSheet();
   const { formattedTime, resetTimer, startTimer } = useWorkoutTimer();
+  const { endTimer } = useTimerStore();
+
   const { activeWorkout, initialActiveWorkout } = useActiveWorkout();
   const { setRefetchData } = appStore();
+
+  const [isVisible, setIsVisible] = useState(false);
+
+  const buttonRef = useRef(null);
 
   useEffect(startTimer);
 
@@ -42,6 +47,7 @@ const CustomHeader = ({ sheetIndex, close }: Props) => {
       setRefetchData();
       close();
       resetTimer();
+      endTimer();
     } catch (error) {
       console.error("Error finishing workout:", error);
       throw error;
@@ -73,32 +79,42 @@ const CustomHeader = ({ sheetIndex, close }: Props) => {
   }));
 
   return (
-    <Pressable
-      style={styles.headerContainer}
-      onPress={() => {
-        if (sheetIndex === 0) expand();
-      }}
-      disabled={sheetIndex === 1}
-    >
-      <Animated.View style={containerStyle}>
-        <Pressable style={styles.timerButton}>
-          <Ionicons name="timer-outline" size={24} color="black" />
-        </Pressable>
-      </Animated.View>
-
-      <Animated.View
-        style={[styles.titleContainer, containerAnimatedStyleReverse]}
+    <>
+      <Pressable
+        style={styles.headerContainer}
+        onPress={() => {
+          if (sheetIndex === 0) expand();
+        }}
+        disabled={sheetIndex === 1}
       >
-        <Text style={styles.headerTitle}>{activeWorkout.name}</Text>
-        <Text style={styles.headerTitleTime}>{formattedTime}</Text>
-      </Animated.View>
+        <Animated.View style={containerStyle} ref={buttonRef}>
+          <Pressable
+            style={styles.timerButton}
+            onPress={() => setIsVisible(true)}
+          >
+            <Ionicons name="timer-outline" size={24} color="black" />
+          </Pressable>
+        </Animated.View>
 
-      <Animated.View style={containerStyle}>
-        <Pressable style={styles.finishButton} onPress={finishWorkout}>
-          <Text style={styles.finishButtonText}>Finish</Text>
-        </Pressable>
-      </Animated.View>
-    </Pressable>
+        <Animated.View
+          style={[styles.titleContainer, containerAnimatedStyleReverse]}
+        >
+          <Text style={styles.headerTitle}>{activeWorkout.name}</Text>
+          <Text style={styles.headerTitleTime}>{formattedTime}</Text>
+        </Animated.View>
+
+        <Animated.View style={containerStyle}>
+          <Pressable style={styles.finishButton} onPress={finishWorkout}>
+            <Text style={styles.finishButtonText}>Finish</Text>
+          </Pressable>
+        </Animated.View>
+      </Pressable>
+      <TimerModal
+        isVisible={isVisible}
+        closeModal={() => setIsVisible(false)}
+        buttonRef={buttonRef}
+      />
+    </>
   );
 };
 

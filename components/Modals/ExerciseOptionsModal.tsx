@@ -1,10 +1,4 @@
-import {
-  View,
-  Modal,
-  StyleSheet,
-  TouchableWithoutFeedback,
-  Text,
-} from "react-native";
+import { StyleSheet, Text } from "react-native";
 import { Pressable } from "react-native-gesture-handler";
 import EvilIcons from "@expo/vector-icons/EvilIcons";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
@@ -12,28 +6,24 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { AppColors } from "@/constants/colors";
 import RemoveExerciseModal from "./RemoveExerciseModal";
 import { useState } from "react";
+import AnchoredModal from "./AnchoredModal";
 
 type Props = {
   exerciseId: string;
   exerciseName: string;
-  buttonPosition: {
-    fx: number;
-    fy: number;
-    width: number;
-    height: number;
-  };
   isVisible: boolean;
   closeModal: () => void;
   setIsVisible: React.Dispatch<React.SetStateAction<boolean>>;
+  buttonRef: React.MutableRefObject<null>;
 };
 
 const ExerciseOptionsModal = function ExerciseOptionsModal({
   exerciseId,
   exerciseName,
-  buttonPosition,
   closeModal,
   isVisible,
   setIsVisible,
+  buttonRef,
 }: Props) {
   const [isWarningVisible, setIsWarningVisible] = useState(false);
   const [openWarning, setOpenWarning] = useState(false);
@@ -71,47 +61,29 @@ const ExerciseOptionsModal = function ExerciseOptionsModal({
   const closeWarningModal = () => {
     setIsWarningVisible(false);
   };
+  const onDismiss = () => {
+    if (openWarning) setIsWarningVisible(true);
+  };
   return (
     <>
-      <Modal
-        transparent={true}
-        visible={isVisible}
-        animationType="fade"
-        onRequestClose={closeModal}
-        onDismiss={() => {
-          if (openWarning) setIsWarningVisible(true);
-        }}
+      <AnchoredModal
+        isVisible={isVisible}
+        closeModal={closeModal}
+        anchorRef={buttonRef}
+        onDismiss={onDismiss}
+        anchorCorner="RIGHT"
+        backgroundColor={AppColors.darkBlue}
+        modalWidth={200}
       >
-        <TouchableWithoutFeedback onPress={closeModal}>
-          <View style={styles.modalOverlay}>
-            <TouchableWithoutFeedback>
-              <View
-                style={[
-                  styles.modalContent,
-                  {
-                    position: "absolute",
-                    top: buttonPosition.fy, // Position below the button
-                    left: buttonPosition.fx - 200 + buttonPosition.width,
-                  },
-                ]}
-              >
-                {options.map(({ title, Icon, cb }) => {
-                  return (
-                    <Pressable
-                      key={title}
-                      style={styles.pressableButton}
-                      onPress={cb}
-                    >
-                      {Icon}
-                      <Text style={styles.pressableText}>{title}</Text>
-                    </Pressable>
-                  );
-                })}
-              </View>
-            </TouchableWithoutFeedback>
-          </View>
-        </TouchableWithoutFeedback>
-      </Modal>
+        {options.map(({ title, Icon, cb }) => {
+          return (
+            <Pressable key={title} style={styles.pressableButton} onPress={cb}>
+              {Icon}
+              <Text style={styles.pressableText}>{title}</Text>
+            </Pressable>
+          );
+        })}
+      </AnchoredModal>
       <RemoveExerciseModal
         exerciseId={exerciseId}
         closeModal={closeWarningModal}
@@ -123,21 +95,6 @@ const ExerciseOptionsModal = function ExerciseOptionsModal({
 };
 
 const styles = StyleSheet.create({
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.5)", // semi-transparent background
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 20, // padding outside the modal
-  },
-  modalContent: {
-    width: 200, // Adjust width as needed
-    height: "auto",
-    padding: 10,
-    borderRadius: 10,
-    alignItems: "center",
-    backgroundColor: AppColors.darkBlue,
-  },
   pressableButton: {
     width: "100%",
     paddingVertical: 12,

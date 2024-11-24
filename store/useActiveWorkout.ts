@@ -3,6 +3,7 @@ import { Workout } from "@/types/workout";
 import { ExerciseSet } from "@/types/exercisesSets";
 import uuid from "react-native-uuid";
 import { Exercise } from "@/types/exercises";
+import useTimerStore from "./useTimer";
 
 interface ActiveWorkoutStore {
   initialActiveWorkout: Workout;
@@ -34,8 +35,12 @@ const useActiveWorkout = create<ActiveWorkoutStore>((set, get) => ({
     user_id: "0",
     workout_exercises: [],
   },
-  setActiveWorkout: (workout: Workout) =>
-    set({ activeWorkout: workout, initialActiveWorkout: workout }),
+  setActiveWorkout: (workout: Workout) => {
+    const { endTimer } = useTimerStore.getState(); // Access the timer store's actions
+    endTimer(); // Call the endTimer function from the timer store
+    set({ activeWorkout: workout, initialActiveWorkout: workout });
+  },
+
   updateWorkoutField: (field: keyof Workout, updatedValue: any) => {
     set((state) => ({
       activeWorkout: { ...state.activeWorkout, [field]: updatedValue },

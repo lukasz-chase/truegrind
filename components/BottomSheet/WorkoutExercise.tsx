@@ -22,20 +22,10 @@ const WorkoutExercise = ({
 }: Props) => {
   const { addNewSet } = useActiveWorkout();
   const [isVisible, setIsVisible] = useState(false);
-  const newRef = useRef(null);
-  const [buttonPosition, setButtonPosition] = useState({
-    fx: 0,
-    fy: 0,
-    width: 0,
-    height: 0,
-  });
+  const buttonRef = useRef(null);
+
   const onButtonPress = () => {
-    (newRef?.current as any).measureInWindow(
-      (fx: number, fy: number, width: number, height: number) => {
-        setButtonPosition({ fx: fx, fy: fy, height, width });
-        setIsVisible(true);
-      }
-    );
+    setIsVisible(true);
   };
   const onModalClose = () => {
     setIsVisible(false);
@@ -47,7 +37,7 @@ const WorkoutExercise = ({
           <Text style={styles.headerTitle}>{exercise.name}</Text>
           <Pressable
             style={styles.headerOptions}
-            ref={newRef}
+            ref={buttonRef}
             onPress={onButtonPress}
           >
             <SimpleLineIcons name="options" size={24} color={AppColors.blue} />
@@ -99,8 +89,8 @@ const WorkoutExercise = ({
         closeModal={onModalClose}
         isVisible={isVisible}
         exerciseId={exercise.id}
-        buttonPosition={buttonPosition}
         setIsVisible={setIsVisible}
+        buttonRef={buttonRef}
       />
     </>
   );

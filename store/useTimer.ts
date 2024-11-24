@@ -1,7 +1,9 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { createJSONStorage, persist } from "zustand/middleware";
 
 type TimerState = {
+  timerDuration: number; // Time left in seconds
   timeRemaining: number; // Time left in seconds
   isRunning: boolean; // Timer running state
   intervalId: NodeJS.Timeout | null; // Reference to the timer interval
@@ -16,6 +18,7 @@ type TimerState = {
 const useTimerStore = create<TimerState>()(
   persist<TimerState>(
     (set, get) => ({
+      timerDuration: 0,
       timeRemaining: 0,
       isRunning: false,
       intervalId: null,
@@ -24,7 +27,11 @@ const useTimerStore = create<TimerState>()(
         const existingInterval = get().intervalId;
         if (existingInterval) clearInterval(existingInterval);
 
-        set({ timeRemaining: timeLength, isRunning: true });
+        set({
+          timeRemaining: timeLength,
+          isRunning: true,
+          timerDuration: timeLength,
+        });
 
         const interval = setInterval(() => {
           const { timeRemaining, isRunning, endTimer } = get();
@@ -43,12 +50,14 @@ const useTimerStore = create<TimerState>()(
       addToTimer: (seconds) => {
         set((state) => ({
           timeRemaining: state.timeRemaining + seconds,
+          timerDuration: state.timerDuration + seconds,
         }));
       },
 
       reduceFromTimer: (seconds) => {
         set((state) => ({
           timeRemaining: Math.max(state.timeRemaining - seconds, 0),
+          timerDuration: Math.max(state.timerDuration - seconds, 0),
         }));
       },
 
@@ -56,7 +65,12 @@ const useTimerStore = create<TimerState>()(
         const interval = get().intervalId;
         if (interval) clearInterval(interval);
 
-        set({ timeRemaining: 0, isRunning: false, intervalId: null });
+        set({
+          timeRemaining: 0,
+          isRunning: false,
+          intervalId: null,
+          timerDuration: 0,
+        });
       },
 
       pauseTimer: () => {
@@ -74,7 +88,8 @@ const useTimerStore = create<TimerState>()(
       },
     }),
     {
-      name: "timer-storage", // Key for localStorage
+      name: "timer-storage", // Key for AsyncStorage
+      storage: createJSONStorage(() => AsyncStorage),
     }
   )
 );
