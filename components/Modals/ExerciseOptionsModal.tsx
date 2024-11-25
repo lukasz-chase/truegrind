@@ -1,8 +1,5 @@
 import { StyleSheet, Text, View } from "react-native";
 import { Pressable } from "react-native-gesture-handler";
-import EvilIcons from "@expo/vector-icons/EvilIcons";
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import Ionicons from "@expo/vector-icons/Ionicons";
 import { AppColors } from "@/constants/colors";
 import RemoveExerciseModal from "./RemoveExerciseModal";
 import { useState } from "react";
@@ -12,11 +9,15 @@ import Animated, {
   useAnimatedStyle,
   withTiming,
 } from "react-native-reanimated";
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import AutoRestTimeSettings from "../AutoRestTimeSettings";
+import { supabase } from "@/lib/supabase";
+import useAppStore from "@/store/useAppStore";
+import { getOptions } from "@/lib/workoutOptions";
+
+const MODAL_WIDTH = 275;
 
 type Props = {
-  exerciseId: string;
+  workoutExerciseId: string;
   exerciseName: string;
   isVisible: boolean;
   exerciseTimer: number | null;
@@ -25,8 +26,26 @@ type Props = {
   buttonRef: React.MutableRefObject<null>;
 };
 
+const OptionButton = ({
+  title,
+  Icon,
+  cb,
+  rightSide,
+}: {
+  title: string;
+  Icon: any;
+  cb: () => void;
+  rightSide?: any;
+}) => (
+  <Pressable style={styles.pressableButton} onPress={cb}>
+    {Icon}
+    <Text style={styles.pressableText}>{title}</Text>
+    {rightSide && rightSide}
+  </Pressable>
+);
+
 const ExerciseOptionsModal = function ExerciseOptionsModal({
-  exerciseId,
+  workoutExerciseId,
   exerciseName,
   exerciseTimer,
   closeModal,
@@ -34,125 +53,104 @@ const ExerciseOptionsModal = function ExerciseOptionsModal({
   setIsVisible,
   buttonRef,
 }: Props) {
-  const [isWarningVisible, setIsWarningVisible] = useState(false);
-  const [openWarning, setOpenWarning] = useState(false);
-  const [currentScreen, setCurrentScreen] = useState("main"); // Track the current screen
+  const [warningState, setWarningState] = useState({
+    isVisible: false,
+    shouldShow: false,
+  });
+  const [currentScreen, setCurrentScreen] = useState("main");
+  const [customDuration, setCustomDuration] = useState(
+    exerciseTimer ? exerciseTimer : 60
+  );
+  const { refetchData } = useAppStore();
   const translateX = useSharedValue(0);
-  const modalWidth = 275;
+
   const switchToAutoRestScreen = () => {
     setCurrentScreen("autoRest");
-    translateX.value = -modalWidth; // Animate to the second screen
+    translateX.value = -MODAL_WIDTH;
   };
-
+  const options = getOptions({
+    exerciseTimer,
+    switchToAutoRestScreen,
+    setIsVisible,
+    setWarningState,
+  });
   const switchToMainScreen = () => {
+    updateSettings();
+    translateX.value = 0;
     setCurrentScreen("main");
-    translateX.value = 0; // Animate back to the main screen
   };
-
+  const updateSettings = async () => {
+    try {
+      const { error } = await supabase
+        .from("workout_exercises")
+        .update({ timer: customDuration })
+        .eq("id", workoutExerciseId);
+      if (error) throw error;
+      refetchData();
+    } catch (err: any) {
+      console.error("Failed to update settings:", err.message);
+    }
+  };
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [
       { translateX: withTiming(translateX.value, { duration: 300 }) },
     ],
   }));
 
-  const options = [
-    {
-      Icon: <EvilIcons name="pencil" size={24} color={AppColors.blue} />,
-      title: "Add a Note",
-      cb: () => setIsWarningVisible(true),
-    },
-    {
-      Icon: (
-        <MaterialCommunityIcons
-          name="arrow-u-left-top"
-          size={24}
-          color={AppColors.blue}
-        />
-      ),
-      title: "Replace Exercise",
-      cb: () => setIsWarningVisible(true),
-    },
-    {
-      Icon: <Ionicons name="timer-outline" size={24} color={AppColors.blue} />,
-      title: "Auto Rest Timer",
-      IconEnd: (
-        <MaterialIcons
-          name="keyboard-arrow-right"
-          size={24}
-          color={AppColors.blue}
-        />
-      ),
-      cb: switchToAutoRestScreen,
-    },
-    {
-      Icon: <EvilIcons name="close" size={24} color={AppColors.red} />,
-      title: "Remove Exercise",
-      cb: () => {
-        setOpenWarning(true);
-        setIsVisible(false);
-      },
-    },
-  ];
-
   const closeWarningModal = () => {
-    setIsWarningVisible(false);
+    setWarningState((state) => ({ ...state, isVisible: true }));
   };
 
   const onDismiss = () => {
-    if (openWarning) setIsWarningVisible(true);
+    if (warningState.shouldShow)
+      setWarningState((state) => ({ ...state, isVisible: true }));
   };
-
+  const closeHandler = () => {
+    closeModal();
+    if (currentScreen === "autoRest") {
+      switchToMainScreen();
+      updateSettings();
+    }
+  };
   return (
     <>
       <AnchoredModal
         isVisible={isVisible}
-        closeModal={closeModal}
+        closeModal={closeHandler}
         anchorRef={buttonRef}
         onDismiss={onDismiss}
         anchorCorner="RIGHT"
         backgroundColor={AppColors.darkBlue}
-        modalWidth={modalWidth}
+        modalWidth={MODAL_WIDTH}
       >
         <Animated.View
-          style={[styles.container, animatedStyle, { width: modalWidth }]}
+          style={[styles.container, animatedStyle, { width: MODAL_WIDTH }]}
         >
           {/* Main Screen */}
           <View style={styles.screen}>
-            {options.map(({ title, Icon, cb, IconEnd }) => (
-              <Pressable
-                key={title}
-                style={styles.pressableButton}
-                onPress={cb}
-              >
-                {Icon}
-                <Text style={styles.pressableText}>{title}</Text>
-                {IconEnd && (
-                  <View style={styles.pressableEndWrapper}>
-                    <Text
-                      style={[styles.pressableText, { fontWeight: "normal" }]}
-                    >
-                      {exerciseTimer ? exerciseTimer : "Off"}
-                    </Text>
-                    {IconEnd}
-                  </View>
-                )}
-              </Pressable>
-            ))}
+            <View>
+              {options.map((option) => (
+                <OptionButton key={option.title} {...option} />
+              ))}
+            </View>
           </View>
 
           <View style={styles.screen}>
             <AutoRestTimeSettings
-              screenWidth={modalWidth}
+              screenWidth={MODAL_WIDTH}
+              translateX={translateX}
+              exerciseTimer={exerciseTimer}
+              setCustomDuration={setCustomDuration}
+              customDuration={customDuration}
               switchToMainScreen={switchToMainScreen}
             />
           </View>
         </Animated.View>
       </AnchoredModal>
-
       <RemoveExerciseModal
-        exerciseId={exerciseId}
+        workoutExerciseId={workoutExerciseId}
         closeModal={closeWarningModal}
-        isVisible={isWarningVisible}
+        isVisible={warningState.isVisible}
         exerciseName={exerciseName}
       />
     </>
@@ -165,13 +163,11 @@ const styles = StyleSheet.create({
   },
   screen: {
     width: "100%",
-    padding: 10,
-    alignItems: "center",
-    justifyContent: "center",
   },
   pressableButton: {
     width: "100%",
     paddingVertical: 12,
+    paddingHorizontal: 10,
     borderRadius: 6,
     marginVertical: 6,
     flexDirection: "row",

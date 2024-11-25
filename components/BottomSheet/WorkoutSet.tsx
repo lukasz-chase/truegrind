@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Text, TextInput, View, StyleSheet } from "react-native";
+import { Text, TextInput, View, StyleSheet, Platform } from "react-native";
 import { Pressable } from "react-native";
 import {
   GestureHandlerRootView,
@@ -13,18 +13,18 @@ import Animated, {
   runOnJS,
   LinearTransition,
 } from "react-native-reanimated";
-import AntDesign from "@expo/vector-icons/AntDesign";
 import useActiveWorkout from "@/store/useActiveWorkout";
 import { AppColors } from "@/constants/colors";
 import { ExerciseSet } from "@/types/exercisesSets";
 import * as Haptics from "expo-haptics";
+import CompleteSetButton from "./CompleteSetButton";
 
 type Props = {
   exerciseSet: ExerciseSet;
   exerciseId: string;
+  exerciseTimer: number;
 };
-
-const WorkoutSet = ({ exerciseSet, exerciseId }: Props) => {
+const WorkoutSet = ({ exerciseSet, exerciseId, exerciseTimer }: Props) => {
   const translateX = useSharedValue(0);
   const rowScale = useSharedValue(1);
   const initialButtonWidth = 70;
@@ -58,7 +58,9 @@ const WorkoutSet = ({ exerciseSet, exerciseId }: Props) => {
 
   const handleHapticFeedback = () => {
     if (!hapticTriggered || movedPassTreshold) {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+      if (Platform.OS !== "web") {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+      }
       setHapticTriggered(true);
     }
   };
@@ -108,17 +110,6 @@ const WorkoutSet = ({ exerciseSet, exerciseId }: Props) => {
   const deleteButtonStyle = useAnimatedStyle(() => ({
     width: buttonWidth.value,
   }));
-
-  const completeSet = () => {
-    updateExerciseField(!exerciseSet.completed, exerciseSet.id, "completed");
-
-    if (!exerciseSet.completed) {
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      rowScale.value = withTiming(1.1, { duration: 100 }, () => {
-        rowScale.value = withTiming(1, { duration: 100 });
-      });
-    } else Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-  };
 
   return (
     <GestureHandlerRootView>
@@ -215,23 +206,12 @@ const WorkoutSet = ({ exerciseSet, exerciseId }: Props) => {
                 ]}
               />
               <View style={[styles.cell, { flex: 1, alignItems: "center" }]}>
-                <Pressable
-                  style={[
-                    styles.rowButton,
-                    {
-                      backgroundColor: exerciseSet.completed
-                        ? AppColors.green
-                        : AppColors.gray,
-                    },
-                  ]}
-                  onPress={completeSet}
-                >
-                  <AntDesign
-                    name="check"
-                    size={20}
-                    color={exerciseSet.completed ? "white" : "black"}
-                  />
-                </Pressable>
+                <CompleteSetButton
+                  updateExerciseField={updateExerciseField}
+                  exerciseSet={exerciseSet}
+                  rowScale={rowScale}
+                  exerciseTimer={exerciseTimer}
+                />
               </View>
             </Animated.View>
           </GestureDetector>

@@ -1,10 +1,10 @@
-import { AppColors } from "@/constants/colors";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   View,
   Modal,
   StyleSheet,
   TouchableWithoutFeedback,
+  Dimensions,
   DimensionValue,
 } from "react-native";
 
@@ -25,30 +25,61 @@ export default function AnchoredModal({
   anchorRef,
   anchorCorner,
   backgroundColor = "white",
-  modalWidth = "100%",
+  modalWidth = "90%",
   onDismiss,
   children,
 }: Props) {
   const [modalPosition, setModalPosition] = useState({
     top: 0,
     left: 0,
+    isBottomAnchored: false,
   });
+  const modalRef = useRef<View>(null);
+  const [modalHeight, setModalHeight] = useState(0);
+
   useEffect(() => {
-    (anchorRef?.current as any).measureInWindow(
-      (fx: number, fy: number, width: number) => {
-        let left;
+    // Measure the modal height after it's rendered
+    if (isVisible) {
+      modalRef.current?.measure((x, y, width, height) => {
+        setModalHeight(height);
+      });
+    }
+  }, [isVisible]);
+
+  useEffect(() => {
+    const screenHeight = Dimensions.get("window").height;
+
+    (anchorRef?.current as any)?.measureInWindow(
+      (fx: number, fy: number, width: number, height: number) => {
+        let left, top;
+        let isBottomAnchored = false;
+
+        // Calculate horizontal position
         if (anchorCorner === "LEFT") {
           left = fx;
         } else {
-          left = fx - modalWidth + width;
+          left = fx - Number(modalWidth) + width;
         }
+
+        // Calculate vertical position
+        if (fy + height + modalHeight > screenHeight) {
+          // Anchor from bottom if modal exceeds screen height
+          top = fy - modalHeight + height;
+          isBottomAnchored = true;
+        } else {
+          // Default anchor from top
+          top = fy + height;
+        }
+
         setModalPosition({
-          top: fy,
+          top,
           left,
+          isBottomAnchored,
         });
       }
     );
-  }, [isVisible]);
+  }, [isVisible, anchorCorner, modalWidth, modalHeight]);
+
   return (
     <Modal
       transparent={true}
@@ -60,24 +91,23 @@ export default function AnchoredModal({
       }}
     >
       <TouchableWithoutFeedback onPress={closeModal}>
-        <View style={styles.modalOverlay}>
-          <TouchableWithoutFeedback>
-            <View
-              style={[
-                styles.modalContent,
-                {
-                  top: modalPosition.top,
-                  left: modalPosition.left,
-                  backgroundColor,
-                  width: modalWidth,
-                },
-              ]}
-            >
-              {children}
-            </View>
-          </TouchableWithoutFeedback>
-        </View>
+        <View style={styles.modalOverlay} />
       </TouchableWithoutFeedback>
+
+      <View
+        ref={modalRef}
+        style={[
+          styles.modalContent,
+          {
+            top: modalPosition.top,
+            left: modalPosition.left,
+            backgroundColor,
+            width: modalWidth,
+          },
+        ]}
+      >
+        {children}
+      </View>
     </Modal>
   );
 }
@@ -85,17 +115,13 @@ export default function AnchoredModal({
 const styles = StyleSheet.create({
   modalOverlay: {
     flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.5)", // semi-transparent background
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 20, // padding outside the modal
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
   modalContent: {
-    height: "auto",
+    position: "absolute",
     padding: 10,
     borderRadius: 10,
     alignItems: "center",
-    position: "absolute",
     overflow: "hidden",
   },
 });

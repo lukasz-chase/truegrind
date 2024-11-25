@@ -1,50 +1,57 @@
-import { AppColors } from "@/constants/colors";
 import { formatTime } from "@/lib/helpers";
 import React, { memo } from "react";
-import { StyleSheet, View } from "react-native";
-import ScrollPicker from "react-native-wheel-scrollview-picker";
+import { Platform, StyleSheet, View } from "react-native";
 import * as Haptics from "expo-haptics";
+import WheelPicker from "@quidone/react-native-wheel-picker";
 
 type Props = {
   customDuration: number;
   setCustomDuration: React.Dispatch<React.SetStateAction<number>>;
-  circularProgressSize: number;
-  backgroundColor: string;
+  visibleItemCount: number;
+  textColor?: string;
+  backgroundColor?: string;
+  disabled?: boolean;
 };
 
 const MemoizedScrollPicker = memo(
   ({
+    disabled = false,
+    backgroundColor = "white",
+    textColor = "white",
     customDuration,
     setCustomDuration,
-    circularProgressSize,
-    backgroundColor,
+    visibleItemCount,
   }: Props) => {
-    const timeOptions = Array.from({ length: 121 }, (_, i) => i * 5);
-    const itemHeight = 50;
-    const visibleItems = 5;
-    const onValueChange = (_: any, selectedIndex: number) => {
-      const selectedValue = timeOptions[selectedIndex];
-      setCustomDuration(selectedValue);
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    const timeOptions = Array.from({ length: 121 }, (_, i) => ({
+      value: i * 5,
+      label: formatTime(i * 5),
+    }));
+    const onValueChange = ({
+      item: { value },
+    }: {
+      item: { value: number };
+    }) => {
+      setCustomDuration(value);
     };
     return (
-      <View style={[styles.scrollPicker, { width: circularProgressSize }]}>
-        <ScrollPicker
-          dataSource={timeOptions.map((v) => formatTime(v))}
-          selectedIndex={timeOptions.indexOf(customDuration)}
-          onValueChange={onValueChange}
-          wrapperHeight={circularProgressSize - itemHeight / visibleItems}
-          wrapperBackground={backgroundColor}
-          itemHeight={itemHeight}
-          highlightColor={AppColors.gray}
-          highlightBorderWidth={2}
+      <View style={styles.scrollPicker}>
+        <WheelPicker
+          readOnly={disabled}
+          data={timeOptions}
+          value={customDuration}
+          onValueChanged={onValueChange}
+          visibleItemCount={visibleItemCount}
           itemTextStyle={{
-            fontSize: 20,
-            color: AppColors.gray,
-          }}
-          activeItemTextStyle={{
-            fontSize: 22,
+            color: disabled ? "gray" : textColor,
+            fontSize: 16,
             fontWeight: "bold",
+          }}
+          overlayItemStyle={{
+            height: 40,
+            backgroundColor: disabled ? "transparent" : backgroundColor,
+          }}
+          onValueChanging={() => {
+            if (Platform.OS !== "web") Haptics.selectionAsync();
           }}
         />
       </View>
@@ -54,8 +61,7 @@ const MemoizedScrollPicker = memo(
 
 const styles = StyleSheet.create({
   scrollPicker: {
-    flex: 1,
-    backgroundColor: "red",
+    width: "100%",
   },
 });
 

@@ -50,6 +50,7 @@ const useActiveWorkout = create<ActiveWorkoutStore>((set, get) => ({
     const workoutExercise = {
       id: uuid.v4(),
       notes: "",
+      order: (get().activeWorkout.workout_exercises?.length ?? 0) + 1,
       timer: 0,
       exercises: exercise,
       exercise_sets: [],
@@ -150,10 +151,10 @@ const useActiveWorkout = create<ActiveWorkoutStore>((set, get) => ({
       };
     });
   },
-  removeExercise: (exerciseId: string) => {
+  removeExercise: (workoutExerciseId: string) => {
     set((state) => {
       const updatedExercises = state.activeWorkout.workout_exercises?.filter(
-        (exercise) => exercise.exercises.id !== exerciseId
+        (workoutExercise) => workoutExercise.id !== workoutExerciseId
       );
 
       return {

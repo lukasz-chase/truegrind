@@ -1,10 +1,4 @@
-import React, {
-  useRef,
-  useMemo,
-  useCallback,
-  useState,
-  useEffect,
-} from "react";
+import { useRef, useMemo, useCallback, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import BottomSheet from "@gorhom/bottom-sheet";
 import CustomBackdrop from "./CustomBackdrop";
@@ -56,12 +50,10 @@ const WorkoutBottomSheet = ({ animatedIndex }: Props) => {
           <CustomHeader sheetIndex={sheetIndex} close={handleClosePress} />
           <WorkoutDetails />
           <ScrollView>
-            {activeWorkout?.workout_exercises?.map((workout) => (
+            {activeWorkout?.workout_exercises?.map((workoutExercise) => (
               <WorkoutExercise
-                key={workout.id}
-                exercise={workout.exercises}
-                workoutExerciseId={workout.id}
-                exerciseSets={workout.exercise_sets}
+                key={workoutExercise.id}
+                workoutExercise={workoutExercise}
               />
             ))}
             <CustomFooter close={handleClosePress} />

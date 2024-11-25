@@ -48,7 +48,9 @@ export default function WorkoutPreviewModal({
               </View>
               <FlatList
                 style={styles.exercisesList}
-                data={workout.workout_exercises}
+                data={workout.workout_exercises?.sort(
+                  (a, b) => a.order - b.order
+                )}
                 renderItem={({ item }) => (
                   <ExerciseRow
                     exercise={item.exercises}

@@ -41,6 +41,7 @@ const CustomFooter = ({ close }: Props) => {
             Cancel Workout
           </Text>
         </Pressable>
+        <View style={styles.space} />
       </Animated.View>
       {isVisible && <WorkoutExercisesModal onPress={addExercise} />}
     </>
@@ -69,5 +70,8 @@ const styles = StyleSheet.create({
   footerText: {
     textAlign: "center",
     fontWeight: "bold",
+  },
+  space: {
+    height: 50,
   },
 });

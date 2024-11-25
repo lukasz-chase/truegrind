@@ -14,14 +14,14 @@ type Props = {
   isVisible: boolean;
   closeModal: () => void;
   exerciseName: string;
-  exerciseId: string;
+  workoutExerciseId: string;
 };
 
 export default function RemoveExerciseModal({
   isVisible,
   closeModal,
   exerciseName,
-  exerciseId,
+  workoutExerciseId,
 }: Props) {
   const { removeExercise } = useActiveWorkout();
   return (
@@ -46,7 +46,7 @@ export default function RemoveExerciseModal({
                 </Pressable>
                 <Pressable
                   style={[styles.button, { backgroundColor: AppColors.red }]}
-                  onPress={() => removeExercise(exerciseId)}
+                  onPress={() => removeExercise(workoutExerciseId)}
                 >
                   <Text style={[styles.buttonText, { color: "white" }]}>
                     Delete

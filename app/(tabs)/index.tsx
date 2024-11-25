@@ -2,7 +2,7 @@ import WorkoutPreviewModal from "@/components/Modals/WorkoutPreviewModal";
 import WorkoutCard from "@/components/WorkoutCard";
 import { AppColors } from "@/constants/colors";
 import { supabase } from "@/lib/supabase";
-import appStore from "@/store/appStore";
+import useAppStore from "@/store/useAppStore";
 import useActiveWorkout from "@/store/useActiveWorkout";
 import useBottomSheet from "@/store/useBottomSheet";
 import userStore from "@/store/userStore";
@@ -14,31 +14,39 @@ import {
   StyleSheet,
   View,
   Text,
+  Platform,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import * as Haptics from "expo-haptics";
 
 export default function WorkoutScreen() {
   const [workouts, setWorkouts] = useState<Workout[]>([]);
   const [isVisible, setIsVisible] = useState(false);
   const { setIsSheetVisible } = useBottomSheet();
-  const { activeWorkout } = useActiveWorkout();
+  const { activeWorkout, setActiveWorkout } = useActiveWorkout();
   const { session } = userStore();
-  const { refetchData } = appStore();
+  const { refetchNumber } = useAppStore();
   useEffect(() => {
     fetchWorkouts();
-  }, [session, refetchData]);
+  }, [session, refetchNumber]);
 
   const fetchWorkouts = async () => {
     try {
       const { data } = await supabase
         .from("workouts")
         .select(
-          `id, name, notes, workout_exercises(id, exercises(id, name, image, muscle, equipment), exercise_sets(*))`
+          `id, name, notes, workout_exercises(id, timer, notes, order, exercises(id, name, image, muscle, equipment), exercise_sets(*))`
         )
         .eq("user_id", session?.user?.id)
         .returns<Workout[]>();
       if (data) {
         setWorkouts(data);
+        const activeWorkoutIndex = data.findIndex(
+          (workout) => workout.id === activeWorkout?.id
+        );
+        if (activeWorkoutIndex !== -1) {
+          setActiveWorkout(data[activeWorkoutIndex]);
+        }
       }
     } catch (error) {
       console.log(error);
@@ -48,6 +56,9 @@ export default function WorkoutScreen() {
   const startWorkout = () => {
     setIsVisible(false);
     setIsSheetVisible(true);
+    if (Platform.OS !== "web") {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    }
   };
 
   return (

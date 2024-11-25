@@ -1,5 +1,3 @@
-import { Exercise } from "@/types/exercises";
-import { ExerciseSet } from "@/types/exercisesSets";
 import { Pressable, Text, TouchableOpacity, View } from "react-native";
 import { StyleSheet } from "react-native";
 import SimpleLineIcons from "@expo/vector-icons/SimpleLineIcons";
@@ -9,17 +7,12 @@ import WorkoutSet from "./WorkoutSet";
 import Animated, { LinearTransition } from "react-native-reanimated";
 import ExerciseOptionsModal from "../Modals/ExerciseOptionsModal";
 import { useRef, useState } from "react";
+import { WorkoutExercisePopulated } from "@/types/workoutExercise";
 
 type Props = {
-  exercise: Exercise;
-  exerciseSets: ExerciseSet[];
-  workoutExerciseId: string;
+  workoutExercise: WorkoutExercisePopulated;
 };
-const WorkoutExercise = ({
-  exercise,
-  exerciseSets,
-  workoutExerciseId,
-}: Props) => {
+const WorkoutExercise = ({ workoutExercise }: Props) => {
   const { addNewSet } = useActiveWorkout();
   const [isVisible, setIsVisible] = useState(false);
   const buttonRef = useRef(null);
@@ -34,7 +27,9 @@ const WorkoutExercise = ({
     <>
       <Animated.View style={styles.container} layout={LinearTransition}>
         <View style={styles.header}>
-          <Text style={styles.headerTitle}>{exercise.name}</Text>
+          <Text style={styles.headerTitle}>
+            {workoutExercise.exercises.name}
+          </Text>
           <Pressable
             style={styles.headerOptions}
             ref={buttonRef}
@@ -62,13 +57,14 @@ const WorkoutExercise = ({
             </Text>
           </View>
 
-          {exerciseSets
+          {workoutExercise.exercise_sets
             .sort((a, b) => a.order - b.order)
             .map((set) => (
               <WorkoutSet
                 key={set.id}
                 exerciseSet={set}
-                exerciseId={exercise.id}
+                exerciseId={workoutExercise.exercises.id}
+                exerciseTimer={workoutExercise.timer}
               />
             ))}
         </View>
@@ -78,17 +74,18 @@ const WorkoutExercise = ({
         >
           <TouchableOpacity
             style={styles.addButton}
-            onPress={() => addNewSet(workoutExerciseId)}
+            onPress={() => addNewSet(workoutExercise.id)}
           >
             <Text style={styles.addButtonText}>+ Add Set</Text>
           </TouchableOpacity>
         </Animated.View>
       </Animated.View>
       <ExerciseOptionsModal
-        exerciseName={exercise.name}
+        exerciseTimer={workoutExercise.timer}
+        exerciseName={workoutExercise.exercises.name}
+        workoutExerciseId={workoutExercise.id}
         closeModal={onModalClose}
         isVisible={isVisible}
-        exerciseId={exercise.id}
         setIsVisible={setIsVisible}
         buttonRef={buttonRef}
       />

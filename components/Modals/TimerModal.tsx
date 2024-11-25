@@ -22,7 +22,7 @@ export default function TimerModal({
   buttonRef,
 }: Props) {
   const [customTimerView, setCustomTimerView] = useState(false);
-  const [customDuration, setCustomDuration] = useState(0);
+  const [customDuration, setCustomDuration] = useState(60);
   const circularProgressSize = 300;
   const {
     timeRemaining,
@@ -128,8 +128,9 @@ export default function TimerModal({
                 <MemoizedScrollPicker
                   customDuration={customDuration}
                   setCustomDuration={setCustomDuration}
-                  circularProgressSize={circularProgressSize}
-                  backgroundColor="white"
+                  visibleItemCount={9}
+                  textColor="black"
+                  backgroundColor="gray"
                 />
               );
             }

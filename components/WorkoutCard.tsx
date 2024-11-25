@@ -2,7 +2,8 @@ import { AppColors } from "@/constants/colors";
 import useActiveWorkout from "@/store/useActiveWorkout";
 import { Workout } from "@/types/workout";
 import React from "react";
-import { StyleSheet, Text, TouchableOpacity } from "react-native";
+import { Platform, StyleSheet, Text, TouchableOpacity } from "react-native";
+import * as Haptics from "expo-haptics";
 
 type Props = {
   workout: Workout;
@@ -16,6 +17,9 @@ const WorkoutCard = ({ workout, openModal }: Props) => {
       style={styles.workoutCard}
       onPress={() => {
         setActiveWorkout(workout);
+        if (Platform.OS !== "web") {
+          Haptics.selectionAsync();
+        }
         openModal();
       }}
     >

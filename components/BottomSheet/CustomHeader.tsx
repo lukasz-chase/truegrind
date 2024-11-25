@@ -10,7 +10,7 @@ import { useBottomSheet } from "@gorhom/bottom-sheet";
 import { AppColors } from "@/constants/colors";
 import useWorkoutTimer from "@/store/useWorkoutTimer";
 import useActiveWorkout from "@/store/useActiveWorkout";
-import appStore from "@/store/appStore";
+import useAppStore from "@/store/useAppStore";
 import {
   updateExerciseSets,
   updateWorkout,
@@ -18,6 +18,7 @@ import {
 } from "@/lib/supabaseActions";
 import TimerModal from "../Modals/TimerModal";
 import useTimerStore from "@/store/useTimer";
+import useWorkoutTimerModal from "@/store/useWorkoutTimerModal";
 
 type Props = {
   sheetIndex: number;
@@ -28,11 +29,9 @@ const CustomHeader = ({ sheetIndex, close }: Props) => {
   const { animatedIndex, expand } = useBottomSheet();
   const { formattedTime, resetTimer, startTimer } = useWorkoutTimer();
   const { endTimer } = useTimerStore();
-
   const { activeWorkout, initialActiveWorkout } = useActiveWorkout();
-  const { setRefetchData } = appStore();
-
-  const [isVisible, setIsVisible] = useState(false);
+  const { refetchData } = useAppStore();
+  const { isVisible, closeModal, openModal } = useWorkoutTimerModal();
 
   const buttonRef = useRef(null);
 
@@ -44,7 +43,7 @@ const CustomHeader = ({ sheetIndex, close }: Props) => {
       await updateWorkoutExercises(activeWorkout, initialActiveWorkout);
       await updateExerciseSets(activeWorkout, initialActiveWorkout);
 
-      setRefetchData();
+      refetchData();
       close();
       resetTimer();
       endTimer();
@@ -88,10 +87,7 @@ const CustomHeader = ({ sheetIndex, close }: Props) => {
         disabled={sheetIndex === 1}
       >
         <Animated.View style={containerStyle} ref={buttonRef}>
-          <Pressable
-            style={styles.timerButton}
-            onPress={() => setIsVisible(true)}
-          >
+          <Pressable style={styles.timerButton} onPress={openModal}>
             <Ionicons name="timer-outline" size={24} color="black" />
           </Pressable>
         </Animated.View>
@@ -111,7 +107,7 @@ const CustomHeader = ({ sheetIndex, close }: Props) => {
       </Pressable>
       <TimerModal
         isVisible={isVisible}
-        closeModal={() => setIsVisible(false)}
+        closeModal={closeModal}
         buttonRef={buttonRef}
       />
     </>

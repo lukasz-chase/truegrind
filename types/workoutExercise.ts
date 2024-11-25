@@ -13,6 +13,7 @@ export type WorkoutExercisePopulated = {
   id: string;
   notes: string;
   timer: number;
+  order: number;
   exercises: Exercise;
   exercise_sets: ExerciseSet[];
 };
