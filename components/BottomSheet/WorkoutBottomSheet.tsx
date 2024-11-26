@@ -50,12 +50,14 @@ const WorkoutBottomSheet = ({ animatedIndex }: Props) => {
           <CustomHeader sheetIndex={sheetIndex} close={handleClosePress} />
           <WorkoutDetails />
           <ScrollView>
-            {activeWorkout?.workout_exercises?.map((workoutExercise) => (
-              <WorkoutExercise
-                key={workoutExercise.id}
-                workoutExercise={workoutExercise}
-              />
-            ))}
+            {activeWorkout?.workout_exercises
+              ?.sort((a, b) => a.order - b.order)
+              .map((workoutExercise) => (
+                <WorkoutExercise
+                  key={workoutExercise.id}
+                  workoutExercise={workoutExercise}
+                />
+              ))}
             <CustomFooter close={handleClosePress} />
           </ScrollView>
         </BottomSheet>

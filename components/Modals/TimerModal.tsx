@@ -63,6 +63,7 @@ export default function TimerModal({
       isVisible={isVisible}
       closeModal={() => {
         closeModal();
+        setCustomTimerView(false);
       }}
       anchorRef={buttonRef}
       anchorCorner="LEFT"
@@ -73,6 +74,7 @@ export default function TimerModal({
             style={styles.headerButton}
             onPress={() => {
               closeModal();
+              setCustomTimerView(false);
             }}
           >
             <EvilIcons name="close" size={24} color="black" />

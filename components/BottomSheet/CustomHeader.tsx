@@ -1,11 +1,10 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import Animated, {
   Extrapolate,
   interpolate,
   useAnimatedStyle,
 } from "react-native-reanimated";
 import { Pressable, StyleSheet, Text } from "react-native";
-import Ionicons from "@expo/vector-icons/Ionicons";
 import { useBottomSheet } from "@gorhom/bottom-sheet";
 import { AppColors } from "@/constants/colors";
 import useWorkoutTimer from "@/store/useWorkoutTimer";
@@ -19,6 +18,7 @@ import {
 import TimerModal from "../Modals/TimerModal";
 import useTimerStore from "@/store/useTimer";
 import useWorkoutTimerModal from "@/store/useWorkoutTimerModal";
+import TimerButton from "./TimerButton";
 
 type Props = {
   sheetIndex: number;
@@ -28,7 +28,7 @@ type Props = {
 const CustomHeader = ({ sheetIndex, close }: Props) => {
   const { animatedIndex, expand } = useBottomSheet();
   const { formattedTime, resetTimer, startTimer } = useWorkoutTimer();
-  const { endTimer } = useTimerStore();
+  const { endTimer, timeRemaining, isRunning, timerDuration } = useTimerStore();
   const { activeWorkout, initialActiveWorkout } = useActiveWorkout();
   const { refetchData } = useAppStore();
   const { isVisible, closeModal, openModal } = useWorkoutTimerModal();
@@ -64,7 +64,7 @@ const CustomHeader = ({ sheetIndex, close }: Props) => {
   }));
 
   const containerStyle = useMemo(
-    () => [styles.timerButtonContainer, containerAnimatedStyle],
+    () => [styles.buttonContainer, containerAnimatedStyle],
     [containerAnimatedStyle]
   );
 
@@ -87,9 +87,12 @@ const CustomHeader = ({ sheetIndex, close }: Props) => {
         disabled={sheetIndex === 1}
       >
         <Animated.View style={containerStyle} ref={buttonRef}>
-          <Pressable style={styles.timerButton} onPress={openModal}>
-            <Ionicons name="timer-outline" size={24} color="black" />
-          </Pressable>
+          <TimerButton
+            openModal={openModal}
+            isRunning={isRunning}
+            timeRemaining={timeRemaining}
+            totalDuration={timerDuration}
+          />
         </Animated.View>
 
         <Animated.View
@@ -136,20 +139,14 @@ const styles = StyleSheet.create({
   headerTitleTime: {
     fontSize: 14,
   },
-  timerButtonContainer: {
+  buttonContainer: {
+    height: 40,
     width: 80,
-    height: "100%",
     display: "flex",
     justifyContent: "center",
   },
-  timerButton: {
-    backgroundColor: AppColors.gray,
-    padding: 10,
-    width: 52,
-    borderRadius: 10,
-    alignItems: "center",
-  },
   finishButton: {
+    height: "100%",
     backgroundColor: AppColors.green,
     padding: 10,
     borderRadius: 10,

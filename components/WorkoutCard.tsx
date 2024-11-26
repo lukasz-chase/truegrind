@@ -25,7 +25,8 @@ const WorkoutCard = ({ workout, openModal }: Props) => {
     >
       <Text style={styles.workoutCardTitle}>{workout.name}</Text>
       {workout.workout_exercises
-        ?.slice(0, 4)
+        ?.sort((a, b) => a.order - b.order)
+        .slice(0, 4)
         .map((workout: { id: string; exercises: { name: string } }) => (
           <Text
             key={workout.id}
