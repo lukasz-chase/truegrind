@@ -2,6 +2,8 @@ import { Workout } from "@/types/workout";
 import { supabase } from "./supabase";
 import { WorkoutExercise } from "@/types/workoutExercise";
 import { ExerciseSet } from "@/types/exercisesSets";
+import userStore from "@/store/userStore";
+import { UserProfile } from "@/types/user";
 
 export const updateWorkout = async (
   activeWorkout: Workout,
@@ -107,5 +109,22 @@ export const updateExerciseSets = async (
       .from("exercise_sets")
       .delete()
       .in("id", exerciseSetsToDelete);
+  }
+};
+
+export const updateUserProfile = async (
+  customTimers: number[],
+  userId: string
+) => {
+  const { data, error } = await supabase
+    .from("profiles")
+    .update({ custom_timers: customTimers })
+    .eq("id", userId)
+    .returns<UserProfile>();
+  if (data) {
+    userStore.setState({ user: data });
+  }
+  if (error) {
+    console.log("error", error);
   }
 };

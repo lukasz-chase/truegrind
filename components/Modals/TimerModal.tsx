@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Platform, Pressable, StyleSheet, Text, View } from "react-native";
 import AnchoredModal from "./AnchoredModal";
 import EvilIcons from "@expo/vector-icons/EvilIcons";
 import AntDesign from "@expo/vector-icons/AntDesign";
@@ -9,6 +9,9 @@ import useTimerStore from "@/store/useTimer";
 import { useState } from "react";
 import MemoizedScrollPicker from "../MemoizedScrollPicker";
 import { formatTime } from "@/lib/helpers";
+import userStore from "@/store/userStore";
+import { updateUserProfile } from "@/lib/supabaseActions";
+import * as Haptics from "expo-haptics";
 
 type Props = {
   isVisible: boolean;
@@ -23,7 +26,7 @@ export default function TimerModal({
 }: Props) {
   const [customTimerView, setCustomTimerView] = useState(false);
   const [customDuration, setCustomDuration] = useState(60);
-  const circularProgressSize = 300;
+  const { user } = userStore();
   const {
     timeRemaining,
     isRunning,
@@ -48,14 +51,21 @@ export default function TimerModal({
     sendNotification();
     endTimer();
     closeModal();
+    if (Platform.OS !== "web") {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    }
   };
 
-  const customTimerHandler = () => {
+  const customTimerHandler = async () => {
     if (!customTimerView) {
       setCustomTimerView(true);
     } else {
       startTimer(customDuration);
       setCustomTimerView(false);
+      const customTimers = user?.custom_timers || [];
+      customTimers.unshift(customDuration);
+      customTimers.pop();
+      await updateUserProfile(customTimers, user!.id);
     }
   };
   return (
@@ -94,7 +104,7 @@ export default function TimerModal({
           </Text>
         </View>
         <AnimatedCircularProgress
-          size={circularProgressSize}
+          size={300}
           width={5}
           fill={
             Math.floor((timeRemaining / timerDuration) * 100)
@@ -139,18 +149,14 @@ export default function TimerModal({
 
             return (
               <View style={styles.timeOptionsContainer}>
-                <Pressable onPress={() => startTimer(180)}>
-                  <Text style={styles.timeOption}>3:00</Text>
-                </Pressable>
-                <Pressable onPress={() => startTimer(240)}>
-                  <Text style={styles.timeOption}>4:00</Text>
-                </Pressable>
-                <Pressable onPress={() => startTimer(300)}>
-                  <Text style={styles.timeOption}>5:00</Text>
-                </Pressable>
-                <Pressable onPress={() => startTimer(360)}>
-                  <Text style={styles.timeOption}>6:00</Text>
-                </Pressable>
+                {user?.custom_timers.map((timer, index) => (
+                  <Pressable
+                    key={timer + index}
+                    onPress={() => startTimer(timer)}
+                  >
+                    <Text style={styles.timeOption}>{formatTime(timer)}</Text>
+                  </Pressable>
+                ))}
               </View>
             );
           }}

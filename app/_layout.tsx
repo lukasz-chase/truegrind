@@ -6,6 +6,7 @@ import { useRouter } from "expo-router";
 import userStore from "@/store/userStore";
 import { AppState } from "react-native";
 import * as Notifications from "expo-notifications";
+import { getProfile } from "@/hooks/userProfile";
 
 Notifications.requestPermissionsAsync();
 // Tells Supabase Auth to continuously refresh the session automatically if
@@ -39,6 +40,7 @@ export default function Root() {
         // Redirect to sign-in if session is null (logged out)
         router.replace("/sign-in");
       } else {
+        getProfile(session.user.id);
         // Redirect to tabs if session exists (logged in)
         router.replace("/(tabs)");
       }
