@@ -17,6 +17,7 @@ type Props = {
 
 const WorkoutBottomSheet = ({ animatedIndex }: Props) => {
   const [sheetIndex, setSheetIndex] = useState(0);
+  const [scrolledY, setScrolledY] = useState(0);
   const { setIsSheetVisible } = useBottomSheet();
   const { activeWorkout } = useActiveWorkout();
   const sheetRef = useRef<BottomSheet>(null);
@@ -30,6 +31,10 @@ const WorkoutBottomSheet = ({ animatedIndex }: Props) => {
   const handleSheetChanges = useCallback((index: number) => {
     setSheetIndex(index);
   }, []);
+  const handleScroll = (event: any) => {
+    const scrollY = event.nativeEvent.contentOffset.y;
+    setScrolledY(scrollY);
+  };
 
   return (
     <View style={styles.overlay}>
@@ -47,9 +52,13 @@ const WorkoutBottomSheet = ({ animatedIndex }: Props) => {
           enableOverDrag={false}
           onChange={handleSheetChanges}
         >
-          <CustomHeader sheetIndex={sheetIndex} close={handleClosePress} />
-          <WorkoutDetails />
-          <ScrollView>
+          <CustomHeader
+            sheetIndex={sheetIndex}
+            close={handleClosePress}
+            scrolledY={scrolledY}
+          />
+          <ScrollView onScroll={handleScroll} scrollEventThrottle={16}>
+            <WorkoutDetails />
             {activeWorkout?.workout_exercises
               ?.sort((a, b) => a.order - b.order)
               .map((workoutExercise) => (

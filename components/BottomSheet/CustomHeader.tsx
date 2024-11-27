@@ -3,8 +3,9 @@ import Animated, {
   Extrapolate,
   interpolate,
   useAnimatedStyle,
+  useSharedValue,
 } from "react-native-reanimated";
-import { Pressable, StyleSheet, Text } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useBottomSheet } from "@gorhom/bottom-sheet";
 import { AppColors } from "@/constants/colors";
 import useWorkoutTimer from "@/store/useWorkoutTimer";
@@ -23,10 +24,12 @@ import TimerButton from "./TimerButton";
 type Props = {
   sheetIndex: number;
   close: () => void;
+  scrolledY: number;
 };
 
-const CustomHeader = ({ sheetIndex, close }: Props) => {
+const CustomHeader = ({ sheetIndex, close, scrolledY }: Props) => {
   const { animatedIndex, expand } = useBottomSheet();
+  const scrolledValue = useSharedValue(scrolledY);
   const { formattedTime, resetTimer, startTimer } = useWorkoutTimer();
   const { endTimer, timeRemaining, isRunning, timerDuration } = useTimerStore();
   const { activeWorkout, initialActiveWorkout } = useActiveWorkout();
@@ -36,7 +39,9 @@ const CustomHeader = ({ sheetIndex, close }: Props) => {
   const buttonRef = useRef(null);
 
   useEffect(startTimer);
-
+  useEffect(() => {
+    scrolledValue.value = scrolledY;
+  }, [scrolledY]);
   const finishWorkout = async () => {
     try {
       await updateWorkout(activeWorkout, initialActiveWorkout);
@@ -76,6 +81,14 @@ const CustomHeader = ({ sheetIndex, close }: Props) => {
       Extrapolate.CLAMP
     ),
   }));
+  const opacityScroll = useAnimatedStyle(() => ({
+    opacity: interpolate(
+      scrolledValue.value,
+      [0, 100],
+      [0, 1],
+      Extrapolate.CLAMP
+    ),
+  }));
 
   return (
     <>
@@ -95,12 +108,24 @@ const CustomHeader = ({ sheetIndex, close }: Props) => {
           />
         </Animated.View>
 
-        <Animated.View
-          style={[styles.titleContainer, containerAnimatedStyleReverse]}
-        >
-          <Text style={styles.headerTitle}>{activeWorkout.name}</Text>
-          <Text style={styles.headerTitleTime}>{formattedTime}</Text>
-        </Animated.View>
+        <View style={styles.titleWrapper}>
+          <Animated.View
+            style={[
+              styles.titleContainer,
+              styles.absolute,
+              containerAnimatedStyleReverse,
+            ]}
+          >
+            <Text style={styles.headerTitle}>{activeWorkout.name}</Text>
+            <Text style={styles.headerTitleTime}>{formattedTime}</Text>
+          </Animated.View>
+          <Animated.View
+            style={[styles.titleContainer, styles.absolute, opacityScroll]}
+          >
+            <Text style={styles.headerTitle}>{activeWorkout.name}</Text>
+            <Text style={styles.headerTitleTime}>{formattedTime}</Text>
+          </Animated.View>
+        </View>
 
         <Animated.View style={containerStyle}>
           <Pressable style={styles.finishButton} onPress={finishWorkout}>
@@ -127,17 +152,21 @@ const styles = StyleSheet.create({
     marginTop: -5,
     paddingHorizontal: 20,
   },
+  titleWrapper: {
+    position: "relative",
+    height: 40,
+    paddingVertical: 10,
+  },
   titleContainer: {
     alignItems: "center",
     gap: 4,
-    fontSize: 14,
   },
   headerTitle: {
     fontWeight: "bold",
-    fontSize: 14,
+    fontSize: 18,
   },
   headerTitleTime: {
-    fontSize: 14,
+    fontSize: 18,
   },
   buttonContainer: {
     height: 40,
@@ -157,6 +186,12 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 18,
     textAlign: "center",
+  },
+  absolute: {
+    position: "absolute",
+    top: "0%",
+    left: "50%",
+    transform: [{ translateX: "-50%" }],
   },
 });
 
