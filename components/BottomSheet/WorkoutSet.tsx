@@ -20,6 +20,7 @@ import * as Haptics from "expo-haptics";
 import CompleteSetButton from "./CompleteSetButton";
 import userStore from "@/store/userStore";
 import SetHistory from "./SetHistory";
+import { BottomSheetTextInput } from "@gorhom/bottom-sheet";
 
 type Props = {
   exerciseSet: ExerciseSet;
@@ -180,7 +181,7 @@ const WorkoutSet = ({ exerciseSet, exerciseId, exerciseTimer }: Props) => {
                 />
               </View>
 
-              <TextInput
+              <BottomSheetTextInput
                 value={`${setDetails.weight}`}
                 onChange={(e) =>
                   updateSetDetails(e.nativeEvent.text, exerciseSet.id, "weight")
@@ -196,7 +197,7 @@ const WorkoutSet = ({ exerciseSet, exerciseId, exerciseTimer }: Props) => {
                   },
                 ]}
               />
-              <TextInput
+              <BottomSheetTextInput
                 value={`${setDetails.reps}`}
                 onChange={(e) =>
                   updateSetDetails(e.nativeEvent.text, exerciseSet.id, "reps")

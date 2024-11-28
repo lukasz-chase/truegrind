@@ -51,6 +51,7 @@ const WorkoutBottomSheet = ({ animatedIndex }: Props) => {
           animatedIndex={animatedIndex}
           enableOverDrag={false}
           onChange={handleSheetChanges}
+          keyboardBehavior="extend"
         >
           <CustomHeader
             sheetIndex={sheetIndex}
