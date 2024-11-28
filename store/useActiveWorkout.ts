@@ -8,6 +8,7 @@ import useTimerStore from "./useTimer";
 interface ActiveWorkoutStore {
   initialActiveWorkout: Workout;
   activeWorkout: Workout;
+  workoutWasUpdated: boolean;
   setActiveWorkout: (workout: Workout) => void;
   addNewExercise: (exercise: Exercise) => void;
   updateWorkoutField: (field: keyof Workout, updatedValue: any) => void;
@@ -35,6 +36,7 @@ const useActiveWorkout = create<ActiveWorkoutStore>((set, get) => ({
     user_id: "0",
     workout_exercises: [],
   },
+  workoutWasUpdated: false,
   setActiveWorkout: (workout: Workout) => {
     const { endTimer } = useTimerStore.getState(); // Access the timer store's actions
     endTimer(); // Call the endTimer function from the timer store
@@ -44,6 +46,7 @@ const useActiveWorkout = create<ActiveWorkoutStore>((set, get) => ({
   updateWorkoutField: (field: keyof Workout, updatedValue: any) => {
     set((state) => ({
       activeWorkout: { ...state.activeWorkout, [field]: updatedValue },
+      workoutWasUpdated: true,
     }));
   },
   addNewExercise: (exercise: Exercise) => {
@@ -63,6 +66,7 @@ const useActiveWorkout = create<ActiveWorkoutStore>((set, get) => ({
           workoutExercise,
         ],
       },
+      workoutWasUpdated: true,
     }));
     get().addNewSet(workoutExercise.id);
   },
@@ -97,6 +101,7 @@ const useActiveWorkout = create<ActiveWorkoutStore>((set, get) => ({
           ...state.activeWorkout,
           workout_exercises: updatedExercises,
         },
+        workoutWasUpdated: true,
       };
     });
   },
@@ -123,6 +128,7 @@ const useActiveWorkout = create<ActiveWorkoutStore>((set, get) => ({
           ...state.activeWorkout,
           workout_exercises: updatedExercises,
         },
+        workoutWasUpdated: true,
       };
     });
   },
@@ -148,6 +154,7 @@ const useActiveWorkout = create<ActiveWorkoutStore>((set, get) => ({
           ...state.activeWorkout,
           workout_exercises: updatedExercises,
         },
+        workoutWasUpdated: true,
       };
     });
   },
@@ -162,6 +169,7 @@ const useActiveWorkout = create<ActiveWorkoutStore>((set, get) => ({
           ...state.activeWorkout,
           workout_exercises: updatedExercises,
         },
+        workoutWasUpdated: true,
       };
     });
   },

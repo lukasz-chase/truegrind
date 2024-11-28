@@ -20,6 +20,7 @@ import TimerModal from "../Modals/TimerModal";
 import useTimerStore from "@/store/useTimer";
 import useWorkoutTimerModal from "@/store/useWorkoutTimerModal";
 import TimerButton from "./TimerButton";
+import uuid from "react-native-uuid";
 
 type Props = {
   sheetIndex: number;
@@ -32,7 +33,8 @@ const CustomHeader = ({ sheetIndex, close, scrolledY }: Props) => {
   const scrolledValue = useSharedValue(scrolledY);
   const { formattedTime, resetTimer, startTimer } = useWorkoutTimer();
   const { endTimer, timeRemaining, isRunning, timerDuration } = useTimerStore();
-  const { activeWorkout, initialActiveWorkout } = useActiveWorkout();
+  const { activeWorkout, initialActiveWorkout, workoutWasUpdated } =
+    useActiveWorkout();
   const { refetchData } = useAppStore();
   const { isVisible, closeModal, openModal } = useWorkoutTimerModal();
 
@@ -43,10 +45,30 @@ const CustomHeader = ({ sheetIndex, close, scrolledY }: Props) => {
     scrolledValue.value = scrolledY;
   }, [scrolledY]);
   const finishWorkout = async () => {
+    if (!workoutWasUpdated) return;
     try {
-      await updateWorkout(activeWorkout, initialActiveWorkout);
-      await updateWorkoutExercises(activeWorkout, initialActiveWorkout);
-      await updateExerciseSets(activeWorkout, initialActiveWorkout);
+      const workoutHistoryId = uuid.v4();
+      await updateWorkout(
+        activeWorkout,
+        initialActiveWorkout,
+        workoutHistoryId
+      );
+      const workoutExercisesHistoryIds =
+        activeWorkout.workout_exercises?.map((workoutExercise) => ({
+          historyId: uuid.v4(),
+          id: workoutExercise.id,
+        })) ?? [];
+      await updateWorkoutExercises(
+        activeWorkout,
+        initialActiveWorkout,
+        workoutHistoryId,
+        workoutExercisesHistoryIds
+      );
+      await updateExerciseSets(
+        activeWorkout,
+        initialActiveWorkout,
+        workoutExercisesHistoryIds
+      );
 
       refetchData();
       close();

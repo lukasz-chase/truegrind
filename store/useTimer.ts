@@ -1,4 +1,7 @@
 import { create } from "zustand";
+import * as Notifications from "expo-notifications";
+import { Platform } from "react-native";
+import * as Haptics from "expo-haptics";
 
 type TimerState = {
   timerDuration: number; // Total timer duration in seconds
@@ -15,8 +18,6 @@ const useTimerStore = create<TimerState>()((set, get) => {
   let timer: NodeJS.Timeout | null = null;
 
   const startTimer = (timeLength: number) => {
-    if (get().isRunning) return;
-
     const endTime = Date.now() + timeLength * 1000;
 
     timer = setInterval(() => {
@@ -76,8 +77,18 @@ const useTimerStore = create<TimerState>()((set, get) => {
     }
   };
 
-  const endTimer = () => {
+  const endTimer = async () => {
     if (timer) clearInterval(timer);
+    await Notifications.scheduleNotificationAsync({
+      content: {
+        title: "Time's Up!",
+        body: "Your timer is complete.",
+      },
+      trigger: null,
+    });
+    if (Platform.OS !== "web") {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    }
     timer = null; // Reset the timer variable
     set({
       timeRemaining: 0,

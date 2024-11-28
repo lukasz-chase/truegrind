@@ -3,7 +3,6 @@ import AnchoredModal from "./AnchoredModal";
 import EvilIcons from "@expo/vector-icons/EvilIcons";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { AnimatedCircularProgress } from "react-native-circular-progress";
-import * as Notifications from "expo-notifications";
 import { AppColors } from "@/constants/colors";
 import useTimerStore from "@/store/useTimer";
 import { useState } from "react";
@@ -11,7 +10,6 @@ import MemoizedScrollPicker from "../MemoizedScrollPicker";
 import { formatTime } from "@/lib/helpers";
 import userStore from "@/store/userStore";
 import { updateUserProfile } from "@/lib/supabaseActions";
-import * as Haptics from "expo-haptics";
 
 type Props = {
   isVisible: boolean;
@@ -37,23 +35,9 @@ export default function TimerModal({
     timerDuration,
   } = useTimerStore();
 
-  const sendNotification = async () => {
-    await Notifications.scheduleNotificationAsync({
-      content: {
-        title: "Time's Up!",
-        body: "Your timer is complete.",
-      },
-      trigger: null,
-    });
-  };
-
   const handleTimerComplete = () => {
-    sendNotification();
     endTimer();
     closeModal();
-    if (Platform.OS !== "web") {
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    }
   };
 
   const customTimerHandler = async () => {
@@ -177,10 +161,7 @@ export default function TimerModal({
             </Pressable>
             <Pressable
               style={styles.timerButtonManagement}
-              onPress={() => {
-                endTimer();
-                closeModal();
-              }}
+              onPress={handleTimerComplete}
             >
               <Text style={styles.timerButtonManagementText}>Skip</Text>
             </Pressable>
