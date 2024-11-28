@@ -16,8 +16,7 @@ interface ActiveWorkoutStore {
   updateExerciseSet: (
     exerciseId: string,
     setId: string,
-    fieldName: keyof ExerciseSet,
-    value: any
+    propertiesToUpdate: Partial<ExerciseSet>
   ) => void;
   deleteExerciseSet: (exerciseId: string, setId: string) => void;
   removeExercise: (exerciseId: string) => void;
@@ -108,8 +107,7 @@ const useActiveWorkout = create<ActiveWorkoutStore>((set, get) => ({
   updateExerciseSet: (
     exerciseId: string,
     setId: string,
-    fieldName: keyof ExerciseSet,
-    value: any
+    propertiesToUpdate: Partial<ExerciseSet>
   ) => {
     set((state) => {
       const updatedExercises = state.activeWorkout.workout_exercises?.map(
@@ -118,7 +116,7 @@ const useActiveWorkout = create<ActiveWorkoutStore>((set, get) => ({
             ? {
                 ...exercise,
                 exercise_sets: exercise.exercise_sets.map((set) =>
-                  set.id === setId ? { ...set, [fieldName]: value } : set
+                  set.id === setId ? { ...set, ...propertiesToUpdate } : set
                 ),
               }
             : exercise

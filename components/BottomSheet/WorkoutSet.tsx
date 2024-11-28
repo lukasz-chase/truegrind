@@ -18,42 +18,52 @@ import { AppColors } from "@/constants/colors";
 import { ExerciseSet } from "@/types/exercisesSets";
 import * as Haptics from "expo-haptics";
 import CompleteSetButton from "./CompleteSetButton";
+import userStore from "@/store/userStore";
+import SetHistory from "./SetHistory";
 
 type Props = {
   exerciseSet: ExerciseSet;
   exerciseId: string;
   exerciseTimer: number;
 };
+
+const INITIAL_BUTTON_WIDTH = 70;
+const BUTTON_MARGIN = 20;
+
 const WorkoutSet = ({ exerciseSet, exerciseId, exerciseTimer }: Props) => {
   const translateX = useSharedValue(0);
   const rowScale = useSharedValue(1);
-  const initialButtonWidth = 70;
-  const buttonMargin = 20;
-  const buttonWidth = useSharedValue(initialButtonWidth);
+  const buttonWidth = useSharedValue(INITIAL_BUTTON_WIDTH);
   const [rowWidth, setRowWidth] = useState(0);
+  const [setDetails, setSetDetails] = useState({
+    reps: "",
+    weight: "",
+  });
   const [hapticTriggered, setHapticTriggered] = useState(false);
   const [movedPassTreshold, setMovedPassTreshold] = useState(false);
-  const { initialActiveWorkout, updateExerciseSet, deleteExerciseSet } =
-    useActiveWorkout();
+  const { updateExerciseSet, deleteExerciseSet } = useActiveWorkout();
+  const { user } = userStore();
 
-  const exerciseHistory = initialActiveWorkout.workout_exercises?.find(
-    (e) => e.exercises.id === exerciseId
-  );
+  const updateSetDetails = (
+    newValue: any,
+    setId: string,
+    name: keyof ExerciseSet
+  ) => {
+    setSetDetails({ ...setDetails, [name]: newValue });
+    updateExerciseSet(exerciseId, setId, { [name]: newValue });
+  };
+
+  const updateRepsAndWeight = (newValue: { reps: number; weight: number }) => {
+    setSetDetails(newValue);
+    updateExerciseSet(exerciseId, exerciseSet.id, { ...newValue });
+  };
 
   const updateExerciseField = (
     newValue: any,
     setId: string,
     name: keyof ExerciseSet
   ) => {
-    updateExerciseSet(exerciseId, setId, name, newValue);
-  };
-
-  const renderPreviousSet = (set: ExerciseSet) => {
-    const previousSet = exerciseHistory?.exercise_sets.find(
-      (s) => s.order === set.order
-    );
-    if (!previousSet || previousSet.reps === null) return `-`;
-    return `${previousSet.reps} x ${previousSet.weight}`;
+    updateExerciseSet(exerciseId, setId, { [name]: newValue });
   };
 
   const handleHapticFeedback = () => {
@@ -71,8 +81,8 @@ const WorkoutSet = ({ exerciseSet, exerciseId, exerciseTimer }: Props) => {
       if (event.translationX < 0) {
         translateX.value = Math.max(event.translationX, -rowWidth);
         buttonWidth.value =
-          initialButtonWidth +
-          buttonMargin +
+          INITIAL_BUTTON_WIDTH +
+          BUTTON_MARGIN +
           Math.min(-translateX.value, rowWidth);
 
         if (translateX.value < -rowWidth * 0.5 && !hapticTriggered) {
@@ -93,11 +103,11 @@ const WorkoutSet = ({ exerciseSet, exerciseId, exerciseTimer }: Props) => {
           runOnJS(deleteExerciseSet)(exerciseId, exerciseSet.id)
         );
         buttonWidth.value = withTiming(
-          rowWidth + initialButtonWidth + buttonMargin
+          rowWidth + INITIAL_BUTTON_WIDTH + BUTTON_MARGIN
         );
       } else {
         translateX.value = withTiming(0);
-        buttonWidth.value = withTiming(initialButtonWidth);
+        buttonWidth.value = withTiming(INITIAL_BUTTON_WIDTH);
         runOnJS(setHapticTriggered)(false);
         runOnJS(setMovedPassTreshold)(false);
       }
@@ -132,7 +142,7 @@ const WorkoutSet = ({ exerciseSet, exerciseId, exerciseTimer }: Props) => {
             {
               transform: [
                 {
-                  translateX: initialButtonWidth + buttonMargin,
+                  translateX: INITIAL_BUTTON_WIDTH + BUTTON_MARGIN,
                 },
               ],
               alignItems: movedPassTreshold ? "flex-start" : "center",
@@ -161,18 +171,19 @@ const WorkoutSet = ({ exerciseSet, exerciseId, exerciseTimer }: Props) => {
                   </Text>
                 </Pressable>
               </View>
+              <View style={[styles.cell, { flex: 2 }]}>
+                <SetHistory
+                  exerciseId={exerciseId}
+                  setOrder={exerciseSet.order}
+                  userId={user!.id}
+                  updateRepsAndWeight={updateRepsAndWeight}
+                />
+              </View>
 
-              <Text style={[styles.cell, { flex: 2 }]}>
-                {renderPreviousSet(exerciseSet)}
-              </Text>
               <TextInput
-                value={`${exerciseSet?.reps ?? ""}`}
+                value={`${setDetails.weight}`}
                 onChange={(e) =>
-                  updateExerciseField(
-                    e.nativeEvent.text,
-                    exerciseSet.id,
-                    "reps"
-                  )
+                  updateSetDetails(e.nativeEvent.text, exerciseSet.id, "weight")
                 }
                 style={[
                   styles.cell,
@@ -186,13 +197,9 @@ const WorkoutSet = ({ exerciseSet, exerciseId, exerciseTimer }: Props) => {
                 ]}
               />
               <TextInput
-                value={`${exerciseSet?.weight ?? ""}`}
+                value={`${setDetails.reps}`}
                 onChange={(e) =>
-                  updateExerciseField(
-                    e.nativeEvent.text,
-                    exerciseSet.id,
-                    "weight"
-                  )
+                  updateSetDetails(e.nativeEvent.text, exerciseSet.id, "reps")
                 }
                 style={[
                   styles.cell,

@@ -113,6 +113,7 @@ export const updateExerciseSets = async (
           ...setUpdated,
           id: uuid.v4(),
           workout_exercise_id: workoutExerciseHistoricId,
+          exercise_id: workoutExercise.exercises.id,
           user_id: userId,
         };
         exerciseHistorySets.push(historySet);
