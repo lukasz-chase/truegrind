@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Text, TextInput, View, StyleSheet, Platform } from "react-native";
+import { Text, View, StyleSheet, Platform } from "react-native";
 import { Pressable } from "react-native";
 import {
   GestureHandlerRootView,
@@ -20,7 +20,7 @@ import * as Haptics from "expo-haptics";
 import CompleteSetButton from "./CompleteSetButton";
 import userStore from "@/store/userStore";
 import SetHistory from "./SetHistory";
-import { BottomSheetTextInput } from "@gorhom/bottom-sheet";
+import SetInput from "./SetInput";
 
 type Props = {
   exerciseSet: ExerciseSet;
@@ -35,6 +35,7 @@ const WorkoutSet = ({ exerciseSet, exerciseId, exerciseTimer }: Props) => {
   const translateX = useSharedValue(0);
   const rowScale = useSharedValue(1);
   const buttonWidth = useSharedValue(INITIAL_BUTTON_WIDTH);
+
   const [rowWidth, setRowWidth] = useState(0);
   const [setDetails, setSetDetails] = useState({
     reps: "",
@@ -42,29 +43,22 @@ const WorkoutSet = ({ exerciseSet, exerciseId, exerciseTimer }: Props) => {
   });
   const [hapticTriggered, setHapticTriggered] = useState(false);
   const [movedPassTreshold, setMovedPassTreshold] = useState(false);
+
   const { updateExerciseSet, deleteExerciseSet } = useActiveWorkout();
   const { user } = userStore();
 
-  const updateSetDetails = (
-    newValue: any,
-    setId: string,
-    name: keyof ExerciseSet
-  ) => {
+  const updateSetDetails = (newValue: any, name: keyof ExerciseSet) => {
     setSetDetails({ ...setDetails, [name]: newValue });
-    updateExerciseSet(exerciseId, setId, { [name]: newValue });
+    updateExerciseSet(exerciseId, exerciseSet.id, { [name]: newValue });
   };
 
   const updateRepsAndWeight = (newValue: { reps: number; weight: number }) => {
-    setSetDetails(newValue);
+    setSetDetails({ reps: `${newValue.reps}`, weight: `${newValue.weight}` });
     updateExerciseSet(exerciseId, exerciseSet.id, { ...newValue });
   };
 
-  const updateExerciseField = (
-    newValue: any,
-    setId: string,
-    name: keyof ExerciseSet
-  ) => {
-    updateExerciseSet(exerciseId, setId, { [name]: newValue });
+  const updateExerciseField = (newValue: any, name: keyof ExerciseSet) => {
+    updateExerciseSet(exerciseId, exerciseSet.id, { [name]: newValue });
   };
 
   const handleHapticFeedback = () => {
@@ -121,7 +115,6 @@ const WorkoutSet = ({ exerciseSet, exerciseId, exerciseTimer }: Props) => {
   const deleteButtonStyle = useAnimatedStyle(() => ({
     width: buttonWidth.value,
   }));
-
   return (
     <GestureHandlerRootView>
       <Animated.View
@@ -180,43 +173,32 @@ const WorkoutSet = ({ exerciseSet, exerciseId, exerciseTimer }: Props) => {
                   updateRepsAndWeight={updateRepsAndWeight}
                 />
               </View>
+              <View style={[styles.cell, { flex: 1 }]}>
+                <SetInput
+                  value={setDetails.weight}
+                  completed={exerciseSet.completed}
+                  exerciseSetId={exerciseSet.id}
+                  updateSetDetails={updateSetDetails}
+                  fieldName="weight"
+                  updateExerciseField={updateExerciseField}
+                />
+              </View>
 
-              <BottomSheetTextInput
-                value={`${setDetails.weight}`}
-                onChange={(e) =>
-                  updateSetDetails(e.nativeEvent.text, exerciseSet.id, "weight")
-                }
-                style={[
-                  styles.cell,
-                  styles.textInput,
-                  {
-                    flex: 1,
-                    backgroundColor: exerciseSet.completed
-                      ? AppColors.lightGreen
-                      : AppColors.gray,
-                  },
-                ]}
-              />
-              <BottomSheetTextInput
-                value={`${setDetails.reps}`}
-                onChange={(e) =>
-                  updateSetDetails(e.nativeEvent.text, exerciseSet.id, "reps")
-                }
-                style={[
-                  styles.cell,
-                  styles.textInput,
-                  {
-                    flex: 1,
-                    backgroundColor: exerciseSet.completed
-                      ? AppColors.lightGreen
-                      : AppColors.gray,
-                  },
-                ]}
-              />
+              <View style={[styles.cell, { flex: 1 }]}>
+                <SetInput
+                  value={setDetails.reps}
+                  completed={exerciseSet.completed}
+                  exerciseSetId={exerciseSet.id}
+                  updateSetDetails={updateSetDetails}
+                  fieldName="reps"
+                  updateExerciseField={updateExerciseField}
+                />
+              </View>
               <View style={[styles.cell, { flex: 1, alignItems: "center" }]}>
                 <CompleteSetButton
                   updateExerciseField={updateExerciseField}
-                  exerciseSet={exerciseSet}
+                  completed={exerciseSet.completed}
+                  reps={setDetails.reps}
                   rowScale={rowScale}
                   exerciseTimer={exerciseTimer}
                 />
@@ -262,15 +244,9 @@ const styles = StyleSheet.create({
     textAlign: "center",
     justifyContent: "center",
   },
+
   cellText: {
     fontSize: 14,
-  },
-  textInput: {
-    backgroundColor: AppColors.gray,
-    borderRadius: 10,
-    textAlign: "center",
-    fontSize: 16,
-    height: 30,
   },
   rowButton: {
     backgroundColor: AppColors.gray,

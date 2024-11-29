@@ -9,6 +9,7 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 import MaskedView from "@react-native-masked-view/masked-view";
+import useCustomKeyboard from "@/store/useCustomKeyboard";
 
 type Props = {
   openModal: () => void;
@@ -26,7 +27,7 @@ const TimerButton = ({
   totalDuration,
 }: Props) => {
   const animatedWidth = useSharedValue(TIMER_BUTTON_WIDTH);
-
+  const { closeKeyboard } = useCustomKeyboard();
   useEffect(() => {
     if (isRunning) {
       animatedWidth.value = withTiming(
@@ -45,7 +46,12 @@ const TimerButton = ({
   });
 
   return (
-    <Pressable onPress={openModal}>
+    <Pressable
+      onPress={() => {
+        openModal();
+        closeKeyboard();
+      }}
+    >
       {isRunning ? (
         <View style={styles.timerButtonContainer}>
           {/* MaskedView for text color animation */}

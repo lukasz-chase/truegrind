@@ -8,6 +8,7 @@ import Animated, { LinearTransition } from "react-native-reanimated";
 import ExerciseOptionsModal from "../Modals/ExerciseOptionsModal";
 import { useRef, useState } from "react";
 import { WorkoutExercisePopulated } from "@/types/workoutExercise";
+import useCustomKeyboard from "@/store/useCustomKeyboard";
 
 type Props = {
   workoutExercise: WorkoutExercisePopulated;
@@ -16,8 +17,9 @@ const WorkoutExercise = ({ workoutExercise }: Props) => {
   const { addNewSet } = useActiveWorkout();
   const [isVisible, setIsVisible] = useState(false);
   const buttonRef = useRef(null);
-
+  const { closeKeyboard } = useCustomKeyboard();
   const onButtonPress = () => {
+    closeKeyboard();
     setIsVisible(true);
   };
   const onModalClose = () => {

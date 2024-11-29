@@ -7,6 +7,7 @@ export type WorkoutExercise = {
   timer: number;
   exercise_id: string;
   workout_id: string;
+  created_at: string;
 };
 
 export type WorkoutExercisePopulated = {

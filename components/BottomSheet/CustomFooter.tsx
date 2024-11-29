@@ -7,6 +7,7 @@ import Animated, { LinearTransition } from "react-native-reanimated";
 import WorkoutExercisesModal from "../Modals/WorkoutExercisesModal";
 import useActiveWorkout from "@/store/useActiveWorkout";
 import { Exercise } from "@/types/exercises";
+import useCustomKeyboard from "@/store/useCustomKeyboard";
 
 type Props = {
   close: () => void;
@@ -15,6 +16,7 @@ type Props = {
 const CustomFooter = ({ close }: Props) => {
   const { openModal, isVisible, closeModal } = useWorkoutExercisesModal();
   const { addNewExercise } = useActiveWorkout();
+  const { isVisible: IsKeyboardVisible } = useCustomKeyboard();
   const addExercise = (exercise: Exercise) => {
     addNewExercise(exercise);
     closeModal();
@@ -25,7 +27,6 @@ const CustomFooter = ({ close }: Props) => {
         <Pressable
           style={[styles.footerButton, styles.addExerciseButton]}
           onPress={() => {
-            console.log("pressed");
             openModal();
           }}
         >
@@ -41,7 +42,7 @@ const CustomFooter = ({ close }: Props) => {
             Cancel Workout
           </Text>
         </Pressable>
-        <View style={styles.space} />
+        <View style={{ height: IsKeyboardVisible ? 100 : 50 }} />
       </Animated.View>
       {isVisible && <WorkoutExercisesModal onPress={addExercise} />}
     </>
@@ -70,8 +71,5 @@ const styles = StyleSheet.create({
   footerText: {
     textAlign: "center",
     fontWeight: "bold",
-  },
-  space: {
-    height: 50,
   },
 });

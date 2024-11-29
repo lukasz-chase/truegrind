@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { Workout } from "@/types/workout";
-
+import uuid from "react-native-uuid";
 interface BottomSheetStore {
   isSheetVisible: boolean;
   activeWorkout: Workout;
@@ -12,7 +12,7 @@ interface BottomSheetStore {
 const useBottomSheet = create<BottomSheetStore>((set, get) => ({
   isSheetVisible: false,
   activeWorkout: {
-    id: 0,
+    id: uuid.v4(),
     name: "New workout",
     user_id: "0",
   },

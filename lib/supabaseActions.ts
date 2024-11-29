@@ -22,7 +22,11 @@ export const updateWorkout = async (
       .select();
   }
   const { workout_exercises, id, ...workoutNotPopulated } = activeWorkout;
-  const workoutHistory = { ...workoutNotPopulated, id: workoutHistoryId };
+  const workoutHistory = {
+    ...workoutNotPopulated,
+    id: workoutHistoryId,
+    created_at: new Date().toISOString(),
+  };
   await supabase.from("workout_history").insert(workoutHistory);
 };
 
@@ -48,6 +52,7 @@ export const updateWorkoutExercises = async (
         .historyId,
       exercise_id: workoutExercise.exercises.id,
       workout_id: workoutHistoryId,
+      created_at: new Date().toISOString(),
     });
 
     if (
@@ -57,6 +62,7 @@ export const updateWorkoutExercises = async (
     ) {
       workoutExercisesToUpdate.push({
         ...workoutExerciseNotPopulated,
+        created_at: new Date().toISOString(),
         exercise_id: workoutExercise.exercises.id,
         workout_id: activeWorkout.id,
       });
@@ -100,6 +106,7 @@ export const updateExerciseSets = async (
       if (set.completed) {
         const setUpdated = {
           ...set,
+          created_at: new Date().toISOString(),
           completed: false,
           order: order++,
           workout_exercise_id: workoutExercise.id,

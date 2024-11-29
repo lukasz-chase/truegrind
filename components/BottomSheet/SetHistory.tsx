@@ -30,7 +30,8 @@ const SetHistory = ({
       .eq("exercise_id", exerciseId)
       .eq("user_id", userId)
       .eq('"order"', setOrder)
-      .order("created_at", { ascending: true })
+      .order("created_at", { ascending: false })
+      .limit(1)
       .single<{ reps: number; weight: number }>();
     if (error) {
       //error code PGRST116 means there is no data
@@ -50,7 +51,7 @@ const SetHistory = ({
   const renderPreviousSet = () => {
     if (!exerciseHistory)
       return <AntDesign name="minus" size={42} color={AppColors.gray} />;
-    return `${exerciseHistory.reps} x ${exerciseHistory.weight}`;
+    return `${exerciseHistory.weight} x ${exerciseHistory.reps}`;
   };
   const handlePress = () => {
     updateRepsAndWeight(exerciseHistory!);

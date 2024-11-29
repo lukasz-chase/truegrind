@@ -71,7 +71,6 @@ export default function Profile() {
               try {
                 userStore.setState({ session: null });
                 const asd = await supabase.auth.signOut();
-                console.log(asd);
               } catch (error) {
                 console.log(error);
               }

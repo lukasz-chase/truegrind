@@ -21,6 +21,7 @@ import useTimerStore from "@/store/useTimer";
 import useWorkoutTimerModal from "@/store/useWorkoutTimerModal";
 import TimerButton from "./TimerButton";
 import uuid from "react-native-uuid";
+import useCustomKeyboard from "@/store/useCustomKeyboard";
 
 type Props = {
   sheetIndex: number;
@@ -37,7 +38,7 @@ const CustomHeader = ({ sheetIndex, close, scrolledY }: Props) => {
     useActiveWorkout();
   const { refetchData } = useAppStore();
   const { isVisible, closeModal, openModal } = useWorkoutTimerModal();
-
+  const { closeKeyboard } = useCustomKeyboard();
   const buttonRef = useRef(null);
 
   useEffect(startTimer);
@@ -45,6 +46,7 @@ const CustomHeader = ({ sheetIndex, close, scrolledY }: Props) => {
     scrolledValue.value = scrolledY;
   }, [scrolledY]);
   const finishWorkout = async () => {
+    closeKeyboard();
     if (!workoutWasUpdated) return;
     try {
       const workoutHistoryId = uuid.v4();
