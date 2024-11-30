@@ -13,6 +13,7 @@ export const getOptions = ({
   switchToAutoRestScreen,
   setIsVisible,
   setWarningState,
+  openExercisesModal,
 }: {
   exerciseTimer: number | null;
   switchToAutoRestScreen: () => void;
@@ -20,6 +21,7 @@ export const getOptions = ({
   setWarningState: React.Dispatch<
     React.SetStateAction<{ isVisible: boolean; shouldShow: boolean }>
   >;
+  openExercisesModal: () => void;
 }) => [
   {
     Icon: <EvilIcons name="pencil" size={24} color={AppColors.blue} />,
@@ -35,7 +37,7 @@ export const getOptions = ({
       />
     ),
     title: "Replace Exercise",
-    cb: () => setWarningState((state) => ({ ...state, shouldShow: true })),
+    cb: openExercisesModal,
   },
   {
     Icon: <Ionicons name="timer-outline" size={24} color={AppColors.blue} />,

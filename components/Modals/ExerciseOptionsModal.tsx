@@ -13,6 +13,9 @@ import AutoRestTimeSettings from "../AutoRestTimeSettings";
 import { supabase } from "@/lib/supabase";
 import useAppStore from "@/store/useAppStore";
 import { getOptions } from "@/lib/workoutOptions";
+import useWorkoutExercisesModal from "@/store/useWorkoutExercisesModal";
+import { Exercise } from "@/types/exercises";
+import useActiveWorkout from "@/store/useActiveWorkout";
 
 const MODAL_WIDTH = 275;
 
@@ -57,22 +60,45 @@ const ExerciseOptionsModal = function ExerciseOptionsModal({
     isVisible: false,
     shouldShow: false,
   });
+  const [shouldShowExercisesModal, setShouldShowExercisesModal] =
+    useState(false);
   const [currentScreen, setCurrentScreen] = useState("main");
   const [customDuration, setCustomDuration] = useState(
     exerciseTimer ? exerciseTimer : 60
   );
   const { refetchData } = useAppStore();
+  const { openModal, closeModal: closeExercisesModal } =
+    useWorkoutExercisesModal();
   const translateX = useSharedValue(0);
+  const { replaceExercise } = useActiveWorkout();
 
   const switchToAutoRestScreen = () => {
     setCurrentScreen("autoRest");
     translateX.value = -MODAL_WIDTH;
+  };
+
+  const onDismiss = () => {
+    if (warningState.shouldShow)
+      setWarningState((state) => ({ ...state, isVisible: true }));
+    if (shouldShowExercisesModal) openModal(replaceExerciseHandler);
+  };
+
+  const replaceExerciseHandler = (exercise: Exercise) => {
+    replaceExercise(workoutExerciseId, exercise);
+    closeExercisesModal();
+    setShouldShowExercisesModal(false);
+  };
+
+  const openExercisesModal = () => {
+    setShouldShowExercisesModal(true);
+    closeModal();
   };
   const options = getOptions({
     exerciseTimer,
     switchToAutoRestScreen,
     setIsVisible,
     setWarningState,
+    openExercisesModal,
   });
   const switchToMainScreen = () => {
     updateSettings();
@@ -101,10 +127,6 @@ const ExerciseOptionsModal = function ExerciseOptionsModal({
     setWarningState((state) => ({ ...state, isVisible: true }));
   };
 
-  const onDismiss = () => {
-    if (warningState.shouldShow)
-      setWarningState((state) => ({ ...state, isVisible: true }));
-  };
   const closeHandler = () => {
     closeModal();
     if (currentScreen === "autoRest") {

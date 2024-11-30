@@ -18,6 +18,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as Haptics from "expo-haptics";
+import WorkoutExercisesModal from "@/components/Modals/WorkoutExercisesModal";
 
 export default function WorkoutScreen() {
   const [workouts, setWorkouts] = useState<Workout[]>([]);
@@ -96,6 +97,7 @@ export default function WorkoutScreen() {
           startWorkout={startWorkout}
         />
       )}
+      <WorkoutExercisesModal />
     </SafeAreaView>
   );
 }

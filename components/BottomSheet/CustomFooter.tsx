@@ -1,10 +1,7 @@
 import { AppColors } from "@/constants/colors";
 import useWorkoutExercisesModal from "@/store/useWorkoutExercisesModal";
-import React from "react";
-
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import Animated, { LinearTransition } from "react-native-reanimated";
-import WorkoutExercisesModal from "../Modals/WorkoutExercisesModal";
 import useActiveWorkout from "@/store/useActiveWorkout";
 import { Exercise } from "@/types/exercises";
 import useCustomKeyboard from "@/store/useCustomKeyboard";
@@ -14,7 +11,7 @@ type Props = {
 };
 
 const CustomFooter = ({ close }: Props) => {
-  const { openModal, isVisible, closeModal } = useWorkoutExercisesModal();
+  const { openModal, closeModal } = useWorkoutExercisesModal();
   const { addNewExercise } = useActiveWorkout();
   const { isVisible: IsKeyboardVisible } = useCustomKeyboard();
   const addExercise = (exercise: Exercise) => {
@@ -27,7 +24,7 @@ const CustomFooter = ({ close }: Props) => {
         <Pressable
           style={[styles.footerButton, styles.addExerciseButton]}
           onPress={() => {
-            openModal();
+            openModal(addExercise);
           }}
         >
           <Text style={[styles.footerText, styles.addExerciseButtonText]}>
@@ -44,7 +41,6 @@ const CustomFooter = ({ close }: Props) => {
         </Pressable>
         <View style={{ height: IsKeyboardVisible ? 100 : 50 }} />
       </Animated.View>
-      {isVisible && <WorkoutExercisesModal onPress={addExercise} />}
     </>
   );
 };

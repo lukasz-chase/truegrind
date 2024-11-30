@@ -20,6 +20,7 @@ interface ActiveWorkoutStore {
   ) => void;
   deleteExerciseSet: (exerciseId: string, setId: string) => void;
   removeExercise: (exerciseId: string) => void;
+  replaceExercise: (exerciseId: string, newExercise: Exercise) => void;
 }
 
 const useActiveWorkout = create<ActiveWorkoutStore>((set, get) => ({
@@ -69,6 +70,30 @@ const useActiveWorkout = create<ActiveWorkoutStore>((set, get) => ({
     }));
     get().addNewSet(workoutExercise.id);
   },
+  replaceExercise: (workoutExerciseId: string, newExercise: Exercise) => {
+    const newWorkoutExercise = {
+      id: uuid.v4(),
+      notes: "",
+      timer: 0,
+      exercises: newExercise,
+      exercise_sets: [],
+    };
+    set((state) => ({
+      activeWorkout: {
+        ...state.activeWorkout,
+        workout_exercises: state.activeWorkout.workout_exercises?.map(
+          (workoutExercise) => {
+            if (workoutExercise.id === workoutExerciseId) {
+              return { ...newWorkoutExercise, order: workoutExercise.order };
+            }
+            return workoutExercise;
+          }
+        ),
+      },
+      workoutWasUpdated: true,
+    }));
+    get().addNewSet(newWorkoutExercise.id);
+  },
   addNewSet: (workoutExerciseId: string) => {
     set((state) => {
       const updatedExercises = state.activeWorkout.workout_exercises?.map(
@@ -88,6 +113,7 @@ const useActiveWorkout = create<ActiveWorkoutStore>((set, get) => ({
                   is_dropset: false,
                   rpe: null,
                   completed: false,
+                  partials: null,
                 },
               ],
             };

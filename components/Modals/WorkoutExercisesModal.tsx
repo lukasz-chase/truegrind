@@ -13,8 +13,8 @@ type Props = {
   onPress: (exercise: Exercise) => void;
 };
 
-export default function WorkoutExercisesModal({ onPress }: Props) {
-  const { closeModal, isVisible } = useWorkoutExercisesModal();
+export default function WorkoutExercisesModal() {
+  const { closeModal, isVisible, onPress } = useWorkoutExercisesModal();
   return (
     <Modal
       transparent={true}
