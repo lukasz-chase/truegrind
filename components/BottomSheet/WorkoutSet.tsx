@@ -57,7 +57,7 @@ const WorkoutSet = ({ exerciseSet, exerciseId, exerciseTimer }: Props) => {
     updateExerciseSet(exerciseId, exerciseSet.id, { ...newValue });
   };
 
-  const updateExerciseField = (newValue: any, name: keyof ExerciseSet) => {
+  const updateSetField = (newValue: any, name: keyof ExerciseSet) => {
     updateExerciseSet(exerciseId, exerciseSet.id, { [name]: newValue });
   };
 
@@ -180,7 +180,8 @@ const WorkoutSet = ({ exerciseSet, exerciseId, exerciseTimer }: Props) => {
                   exerciseSetId={exerciseSet.id}
                   updateSetDetails={updateSetDetails}
                   fieldName="weight"
-                  updateExerciseField={updateExerciseField}
+                  updateSetField={updateSetField}
+                  setRPE={exerciseSet.rpe}
                 />
               </View>
 
@@ -191,12 +192,13 @@ const WorkoutSet = ({ exerciseSet, exerciseId, exerciseTimer }: Props) => {
                   exerciseSetId={exerciseSet.id}
                   updateSetDetails={updateSetDetails}
                   fieldName="reps"
-                  updateExerciseField={updateExerciseField}
+                  updateSetField={updateSetField}
+                  setRPE={exerciseSet.rpe}
                 />
               </View>
               <View style={[styles.cell, { flex: 1, alignItems: "center" }]}>
                 <CompleteSetButton
-                  updateExerciseField={updateExerciseField}
+                  updateSetField={updateSetField}
                   completed={exerciseSet.completed}
                   reps={setDetails.reps}
                   rowScale={rowScale}

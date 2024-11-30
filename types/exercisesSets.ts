@@ -6,6 +6,6 @@ export type ExerciseSet = {
   weight: number | null;
   is_warmup: boolean;
   is_dropset: boolean;
-  reps_in_reserve: number | null;
+  rpe: number | null;
   completed: boolean;
 };

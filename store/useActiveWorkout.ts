@@ -86,7 +86,7 @@ const useActiveWorkout = create<ActiveWorkoutStore>((set, get) => ({
                   weight: null,
                   is_warmup: false,
                   is_dropset: false,
-                  reps_in_reserve: null,
+                  rpe: null,
                   completed: false,
                 },
               ],

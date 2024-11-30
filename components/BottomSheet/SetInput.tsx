@@ -18,7 +18,8 @@ type SetInputProps = {
   exerciseSetId: string;
   updateSetDetails: (newValue: any, name: keyof ExerciseSet) => void;
   fieldName: "weight" | "reps";
-  updateExerciseField: (newValue: any, name: keyof ExerciseSet) => void;
+  updateSetField: (newValue: any, name: keyof ExerciseSet) => void;
+  setRPE: number | null;
 };
 
 const CARET_WIDTH = 2;
@@ -29,10 +30,12 @@ const SetInput = ({
   exerciseSetId,
   updateSetDetails,
   fieldName,
-  updateExerciseField,
+  updateSetField,
+  setRPE,
 }: SetInputProps) => {
   const [wasThereValueOnPress, setWasThereValueOnPress] = useState(false);
   const [textWidth, setTextWidth] = useState(0);
+  const [rpe, setRpe] = useState<number | null>(setRPE);
 
   const { openKeyboard, activeField: activeSetInput } = useCustomKeyboard();
 
@@ -41,8 +44,12 @@ const SetInput = ({
 
   const caretOpacity = useSharedValue(0);
 
+  const handleRPE = (value: number | null) => {
+    setRpe(value);
+    updateSetField(value, "rpe");
+  };
   const setValueHandler = (value: string) => {
-    if (fieldName === "reps" && !value) updateExerciseField(false, "completed");
+    if (fieldName === "reps" && !value) updateSetField(false, "completed");
     updateSetDetails(value, fieldName);
     setWasThereValueOnPress(false);
   };
@@ -79,7 +86,7 @@ const SetInput = ({
       ]}
       onPress={() => {
         setWasThereValueOnPress(value !== 0);
-        openKeyboard(setInputId, setValueHandler);
+        openKeyboard(setInputId, setValueHandler, handleRPE);
       }}
     >
       <View
@@ -105,6 +112,11 @@ const SetInput = ({
           <Animated.View style={[styles.caret, caretStyle]} />
         )}
       </View>
+      {fieldName === "reps" && rpe && (
+        <View style={styles.rpeBadge}>
+          <Text>{rpe}</Text>
+        </View>
+      )}
     </Pressable>
   );
 };
@@ -137,6 +149,18 @@ const styles = StyleSheet.create({
     width: CARET_WIDTH,
     height: 26,
     backgroundColor: AppColors.blue,
+  },
+  rpeBadge: {
+    position: "absolute",
+    right: 0,
+    top: 0,
+    transform: [{ translateX: 10 }, { translateY: -10 }],
+    height: 20,
+    width: 20,
+    borderRadius: 5,
+    backgroundColor: AppColors.blue,
+    alignItems: "center",
+    justifyContent: "center",
   },
 });
 
