@@ -1,16 +1,16 @@
-import { formatTime } from "@/lib/helpers";
 import React, { memo } from "react";
 import { Platform, StyleSheet, View } from "react-native";
 import * as Haptics from "expo-haptics";
 import WheelPicker from "@quidone/react-native-wheel-picker";
 
 type Props = {
-  customDuration: number;
-  setCustomDuration: React.Dispatch<React.SetStateAction<number>>;
+  value: number;
+  setValue: any;
   visibleItemCount: number;
   textColor?: string;
   backgroundColor?: string;
   disabled?: boolean;
+  data: { value: number; label: string }[];
 };
 
 const MemoizedScrollPicker = memo(
@@ -18,27 +18,24 @@ const MemoizedScrollPicker = memo(
     disabled = false,
     backgroundColor = "white",
     textColor = "white",
-    customDuration,
-    setCustomDuration,
+    value,
+    setValue,
     visibleItemCount,
+    data,
   }: Props) => {
-    const timeOptions = Array.from({ length: 121 }, (_, i) => ({
-      value: i * 5,
-      label: formatTime(i * 5),
-    }));
     const onValueChange = ({
       item: { value },
     }: {
       item: { value: number };
     }) => {
-      setCustomDuration(value);
+      setValue(value);
     };
     return (
       <View style={styles.scrollPicker}>
         <WheelPicker
           readOnly={disabled}
-          data={timeOptions}
-          value={customDuration}
+          data={data}
+          value={value}
           onValueChanged={onValueChange}
           visibleItemCount={visibleItemCount}
           itemTextStyle={{

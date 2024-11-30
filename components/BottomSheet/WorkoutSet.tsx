@@ -37,9 +37,11 @@ const WorkoutSet = ({ exerciseSet, exerciseId, exerciseTimer }: Props) => {
   const buttonWidth = useSharedValue(INITIAL_BUTTON_WIDTH);
 
   const [rowWidth, setRowWidth] = useState(0);
-  const [setDetails, setSetDetails] = useState({
+  const [setLocalState, setSetLocalState] = useState({
     reps: "",
     weight: "",
+    partials: null,
+    rpe: null,
   });
   const [hapticTriggered, setHapticTriggered] = useState(false);
   const [movedPassTreshold, setMovedPassTreshold] = useState(false);
@@ -47,17 +49,24 @@ const WorkoutSet = ({ exerciseSet, exerciseId, exerciseTimer }: Props) => {
   const { updateExerciseSet, deleteExerciseSet } = useActiveWorkout();
   const { user } = userStore();
 
-  const updateSetDetails = (newValue: any, name: keyof ExerciseSet) => {
-    setSetDetails({ ...setDetails, [name]: newValue });
-    updateExerciseSet(exerciseId, exerciseSet.id, { [name]: newValue });
+  const updateSet = (newValue: any, name: keyof ExerciseSet) => {
+    setSetLocalState((prev) => ({ ...prev, [name]: newValue }));
+    updateStoreSetField(newValue, name);
   };
 
-  const updateRepsAndWeight = (newValue: { reps: number; weight: number }) => {
-    setSetDetails({ reps: `${newValue.reps}`, weight: `${newValue.weight}` });
+  const bulkUpdateRepsAndWeight = (newValue: {
+    reps: number;
+    weight: number;
+  }) => {
+    setSetLocalState({
+      ...setLocalState,
+      reps: `${newValue.reps}`,
+      weight: `${newValue.weight}`,
+    });
     updateExerciseSet(exerciseId, exerciseSet.id, { ...newValue });
   };
 
-  const updateSetField = (newValue: any, name: keyof ExerciseSet) => {
+  const updateStoreSetField = (newValue: any, name: keyof ExerciseSet) => {
     updateExerciseSet(exerciseId, exerciseSet.id, { [name]: newValue });
   };
 
@@ -149,7 +158,7 @@ const WorkoutSet = ({ exerciseSet, exerciseId, exerciseTimer }: Props) => {
         <GestureHandlerRootView>
           <GestureDetector gesture={swipeGesture}>
             <Animated.View style={[styles.row, rowStyle]}>
-              <View style={[styles.cell, { flex: 1 }]}>
+              <View style={[styles.cell, { flex: 0.5 }]}>
                 <Pressable
                   style={[
                     styles.rowButton,
@@ -170,37 +179,39 @@ const WorkoutSet = ({ exerciseSet, exerciseId, exerciseTimer }: Props) => {
                   exerciseId={exerciseId}
                   setOrder={exerciseSet.order}
                   userId={user!.id}
-                  updateRepsAndWeight={updateRepsAndWeight}
+                  bulkUpdateRepsAndWeight={bulkUpdateRepsAndWeight}
                 />
               </View>
-              <View style={[styles.cell, { flex: 1 }]}>
+              <View style={[styles.cell, { flex: 1.25 }]}>
                 <SetInput
-                  value={setDetails.weight}
+                  value={setLocalState.weight}
                   completed={exerciseSet.completed}
                   exerciseSetId={exerciseSet.id}
-                  updateSetDetails={updateSetDetails}
+                  updateSet={updateSet}
                   fieldName="weight"
-                  updateSetField={updateSetField}
-                  setRPE={exerciseSet.rpe}
+                  updateStoreSetField={updateStoreSetField}
+                  setRPE={setLocalState.rpe}
+                  partials={setLocalState.partials}
                 />
               </View>
 
-              <View style={[styles.cell, { flex: 1 }]}>
+              <View style={[styles.cell, { flex: 1.25 }]}>
                 <SetInput
-                  value={setDetails.reps}
+                  value={setLocalState.reps}
                   completed={exerciseSet.completed}
                   exerciseSetId={exerciseSet.id}
-                  updateSetDetails={updateSetDetails}
+                  updateSet={updateSet}
                   fieldName="reps"
-                  updateSetField={updateSetField}
-                  setRPE={exerciseSet.rpe}
+                  updateStoreSetField={updateStoreSetField}
+                  setRPE={setLocalState.rpe}
+                  partials={setLocalState.partials}
                 />
               </View>
               <View style={[styles.cell, { flex: 1, alignItems: "center" }]}>
                 <CompleteSetButton
-                  updateSetField={updateSetField}
+                  updateStoreSetField={updateStoreSetField}
                   completed={exerciseSet.completed}
-                  reps={setDetails.reps}
+                  reps={setLocalState.reps}
                   rowScale={rowScale}
                   exerciseTimer={exerciseTimer}
                 />
@@ -242,7 +253,6 @@ const styles = StyleSheet.create({
   },
   cell: {
     paddingVertical: 10,
-    paddingHorizontal: 5,
     textAlign: "center",
     justifyContent: "center",
   },

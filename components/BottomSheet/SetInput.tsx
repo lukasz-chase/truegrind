@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { StyleSheet, TextInput, Pressable, View, Text } from "react-native";
+import { StyleSheet, Pressable, View, Text } from "react-native";
 import { AppColors } from "@/constants/colors";
 import { ExerciseSet } from "@/types/exercisesSets";
 import useCustomKeyboard from "@/store/useCustomKeyboard";
@@ -11,15 +11,17 @@ import Animated, {
   withRepeat,
   withTiming,
 } from "react-native-reanimated";
+import { rpeValues } from "@/constants/keyboard";
 
 type SetInputProps = {
   value: string | number;
   completed: boolean;
   exerciseSetId: string;
-  updateSetDetails: (newValue: any, name: keyof ExerciseSet) => void;
+  updateSet: (newValue: any, name: keyof ExerciseSet) => void;
   fieldName: "weight" | "reps";
-  updateSetField: (newValue: any, name: keyof ExerciseSet) => void;
+  updateStoreSetField: (newValue: any, name: keyof ExerciseSet) => void;
   setRPE: number | null;
+  partials: number | null;
 };
 
 const CARET_WIDTH = 2;
@@ -28,29 +30,35 @@ const SetInput = ({
   value,
   completed,
   exerciseSetId,
-  updateSetDetails,
+  updateSet,
   fieldName,
-  updateSetField,
+  updateStoreSetField,
   setRPE,
+  partials,
 }: SetInputProps) => {
   const [wasThereValueOnPress, setWasThereValueOnPress] = useState(false);
   const [textWidth, setTextWidth] = useState(0);
   const [rpe, setRpe] = useState<number | null>(setRPE);
-
-  const { openKeyboard, activeField: activeSetInput } = useCustomKeyboard();
+  const repsInput = fieldName === "reps";
+  const {
+    openKeyboard,
+    activeField: activeSetInput,
+    setPartials,
+    setRPEInStore,
+  } = useCustomKeyboard();
 
   const setInputId = `${exerciseSetId}-${fieldName}`;
   const isActive = activeSetInput === setInputId;
 
   const caretOpacity = useSharedValue(0);
 
-  const handleRPE = (value: number | null) => {
+  const setRPELocallyAndInStore = (value: number | null) => {
     setRpe(value);
-    updateSetField(value, "rpe");
+    updateStoreSetField(value, "rpe");
   };
   const setValueHandler = (value: string) => {
-    if (fieldName === "reps" && !value) updateSetField(false, "completed");
-    updateSetDetails(value, fieldName);
+    if (repsInput && !value) updateStoreSetField(false, "completed");
+    updateSet(value, fieldName);
     setWasThereValueOnPress(false);
   };
 
@@ -81,12 +89,23 @@ const SetInput = ({
         styles.textInput,
         {
           backgroundColor: completed ? AppColors.lightGreen : AppColors.gray,
-          borderWidth: isActive ? 2 : 0,
+          borderColor: isActive ? "black" : "transparent",
+          width: repsInput && (partials || rpe) ? "90%" : "100%",
         },
       ]}
       onPress={() => {
         setWasThereValueOnPress(value !== 0);
-        openKeyboard(setInputId, setValueHandler, handleRPE);
+        openKeyboard(
+          setInputId,
+          setValueHandler,
+          setRPELocallyAndInStore,
+          updateSet
+        );
+        if (partials) setPartials(partials);
+        if (rpe) {
+          const keyboardRPE = rpeValues.find((mapRpe) => rpe === mapRpe.value);
+          setRPEInStore(keyboardRPE!);
+        }
       }}
     >
       <View
@@ -112,9 +131,14 @@ const SetInput = ({
           <Animated.View style={[styles.caret, caretStyle]} />
         )}
       </View>
-      {fieldName === "reps" && rpe && (
+      {repsInput && rpe && (
         <View style={styles.rpeBadge}>
           <Text>{rpe}</Text>
+        </View>
+      )}
+      {repsInput && partials && (
+        <View style={styles.partials}>
+          <Text>+{partials}</Text>
         </View>
       )}
     </Pressable>
@@ -126,9 +150,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     height: 30,
     borderRadius: 10,
-    width: "100%",
     alignItems: "center",
     justifyContent: "center",
+    borderWidth: 2,
   },
   inputContainer: {
     flexDirection: "row",
@@ -159,6 +183,14 @@ const styles = StyleSheet.create({
     width: 20,
     borderRadius: 5,
     backgroundColor: AppColors.blue,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  partials: {
+    position: "absolute",
+    right: -23,
+    top: "50%",
+    transform: [{ translateY: "-50%" }],
     alignItems: "center",
     justifyContent: "center",
   },

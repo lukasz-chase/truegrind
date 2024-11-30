@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   Pressable,
+  Switch,
 } from "react-native";
 import Animated, {
   interpolate,
@@ -16,8 +17,9 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Feather from "@expo/vector-icons/Feather";
 import Entypo from "@expo/vector-icons/Entypo";
-import { useState } from "react";
 import { keys, rpeValues } from "@/constants/keyboard";
+import MemoizedScrollPicker from "./MemoizedScrollPicker";
+import { useEffect, useState } from "react";
 const CustomKeyboard = ({
   animatedIndex,
 }: {
@@ -36,7 +38,22 @@ const CustomKeyboard = ({
     selectRPE,
     keyboardView,
     setKeyboardView,
+    partials,
+    setPartials,
   } = useCustomKeyboard();
+  const [isEnabled, setIsEnabled] = useState(!!partials);
+  useEffect(() => {
+    setIsEnabled(!!partials);
+  }, [partials]);
+
+  const toggleSwitch = (value: any) => {
+    if (!value) {
+      setPartials(null);
+    }
+
+    setIsEnabled((previousState) => !previousState);
+  };
+
   const animatedStyle = useAnimatedStyle(() => {
     const interpolatedY = interpolate(animatedIndex.value, [0, 1], [250, 0]);
 
@@ -49,6 +66,10 @@ const CustomKeyboard = ({
     };
   });
   const fieldName = activeField?.split("-")[activeField?.split("-").length - 1];
+  const partialOptions = Array.from({ length: 10 }, (_, i) => ({
+    value: i + 1,
+    label: `${i + 1}`,
+  }));
   return (
     <Animated.View
       style={[
@@ -71,13 +92,18 @@ const CustomKeyboard = ({
             ))}
             {fieldName === "reps" ? (
               <TouchableOpacity
+                style={[styles.key]}
+                onPress={() => setKeyboardView("partials")}
+              >
+                <Text style={styles.buttonText}>Partials</Text>
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity
                 style={[styles.key, { justifyContent: "flex-end" }]}
                 onPress={addDot}
               >
                 <Entypo name="dot-single" size={24} color="white" />
               </TouchableOpacity>
-            ) : (
-              <TouchableOpacity style={[styles.key]}></TouchableOpacity>
             )}
             <TouchableOpacity style={styles.key} onPress={onDelete}>
               <Feather name="delete" size={24} color="white" />
@@ -92,7 +118,7 @@ const CustomKeyboard = ({
             ) : (
               <Pressable
                 style={styles.button}
-                onPress={() => setKeyboardView("rpe")}
+                onPress={() => setKeyboardView("RPE")}
               >
                 <Text style={styles.buttonText}>RPE</Text>
               </Pressable>
@@ -119,7 +145,7 @@ const CustomKeyboard = ({
         </View>
       )}
 
-      {keyboardView === "rpe" && (
+      {keyboardView === "RPE" && (
         <View style={styles.rpeView}>
           <View style={styles.header}>
             <Pressable style={styles.headerButton}>
@@ -159,6 +185,41 @@ const CustomKeyboard = ({
                 </Text>
               </Pressable>
             ))}
+          </View>
+        </View>
+      )}
+      {keyboardView === "partials" && (
+        <View style={styles.partialsContainer}>
+          <View style={styles.header}>
+            <Pressable style={styles.headerButton}>
+              <AntDesign name="question" size={24} color="white" />
+            </Pressable>
+            <Pressable
+              style={[styles.button, { width: 100 }]}
+              onPress={() => setKeyboardView("default")}
+            >
+              <Text style={styles.buttonText}>Partials</Text>
+            </Pressable>
+          </View>
+          <View style={styles.header}>
+            <Text style={styles.buttonText}>Enabled</Text>
+            <Switch
+              trackColor={{ false: "#767577", true: AppColors.blue }}
+              thumbColor={"#f4f3f4"}
+              ios_backgroundColor="#3e3e3e"
+              onValueChange={toggleSwitch}
+              value={isEnabled}
+            />
+          </View>
+          <View style={styles.picker}>
+            <MemoizedScrollPicker
+              value={partials as number}
+              setValue={setPartials}
+              data={partialOptions}
+              visibleItemCount={3}
+              disabled={!isEnabled}
+              backgroundColor="white"
+            />
           </View>
         </View>
       )}
@@ -244,6 +305,16 @@ const styles = StyleSheet.create({
   rpeButton: {
     width: 40,
     height: 60,
+    justifyContent: "center",
+  },
+  partialsContainer: {
+    flexDirection: "column",
+    height: "100%",
+    padding: 10,
+    gap: 10,
+  },
+  picker: {
+    alignItems: "center",
     justifyContent: "center",
   },
 });

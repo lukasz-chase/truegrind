@@ -9,6 +9,7 @@ import Animated, {
   withSpring,
   withTiming,
 } from "react-native-reanimated";
+import { formatTime } from "@/lib/helpers";
 
 type Props = {
   screenWidth: number;
@@ -54,7 +55,10 @@ const AutoRestTimeSettings = ({
         });
       }
     });
-
+  const timeOptions = Array.from({ length: 121 }, (_, i) => ({
+    value: i * 5,
+    label: formatTime(i * 5),
+  }));
   return (
     <GestureDetector gesture={panGesture}>
       <View style={styles.container}>
@@ -80,10 +84,11 @@ const AutoRestTimeSettings = ({
           />
         </View>
         <MemoizedScrollPicker
-          customDuration={customDuration}
-          setCustomDuration={setCustomDuration}
+          value={customDuration}
+          setValue={setCustomDuration}
           visibleItemCount={5}
           disabled={!isEnabled}
+          data={timeOptions}
         />
       </View>
     </GestureDetector>

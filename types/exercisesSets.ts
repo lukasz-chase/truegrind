@@ -8,4 +8,5 @@ export type ExerciseSet = {
   is_dropset: boolean;
   rpe: number | null;
   completed: boolean;
+  partials: number | null;
 };

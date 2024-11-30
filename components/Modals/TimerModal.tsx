@@ -25,6 +25,10 @@ export default function TimerModal({
   const [customTimerView, setCustomTimerView] = useState(false);
   const [customDuration, setCustomDuration] = useState(60);
   const { user } = userStore();
+  const timeOptions = Array.from({ length: 121 }, (_, i) => ({
+    value: i * 5,
+    label: formatTime(i * 5),
+  }));
   const {
     timeRemaining,
     isRunning,
@@ -122,11 +126,12 @@ export default function TimerModal({
             if (customTimerView) {
               return (
                 <MemoizedScrollPicker
-                  customDuration={customDuration}
-                  setCustomDuration={setCustomDuration}
+                  value={customDuration}
+                  setValue={setCustomDuration}
                   visibleItemCount={9}
                   textColor="black"
                   backgroundColor="gray"
+                  data={timeOptions}
                 />
               );
             }

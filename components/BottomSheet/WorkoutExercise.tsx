@@ -42,16 +42,16 @@ const WorkoutExercise = ({ workoutExercise }: Props) => {
         </View>
         <View style={styles.table}>
           <View style={[styles.row, styles.headerRow]}>
-            <Text style={[styles.cell, styles.headerCell, { flex: 1 }]}>
+            <Text style={[styles.cell, styles.headerCell, { flex: 0.5 }]}>
               Set
             </Text>
             <Text style={[styles.cell, styles.headerCell, { flex: 2 }]}>
               Previous
             </Text>
-            <Text style={[styles.cell, styles.headerCell, { flex: 1 }]}>
+            <Text style={[styles.cell, styles.headerCell, { flex: 1.2 }]}>
               Kg
             </Text>
-            <Text style={[styles.cell, styles.headerCell, { flex: 1 }]}>
+            <Text style={[styles.cell, styles.headerCell, { flex: 1.3 }]}>
               Reps
             </Text>
             <Text style={[styles.cell, styles.headerCell, { flex: 1 }]}>

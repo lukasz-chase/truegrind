@@ -1,6 +1,5 @@
 import { AppColors } from "@/constants/colors";
 import { supabase } from "@/lib/supabase";
-import { ExerciseSet } from "@/types/exercisesSets";
 import React, { useEffect, useState } from "react";
 import { Pressable, StyleSheet, Text } from "react-native";
 import AntDesign from "@expo/vector-icons/AntDesign";
@@ -9,14 +8,14 @@ type Props = {
   setOrder: number;
   exerciseId: string;
   userId: string;
-  updateRepsAndWeight: (newValue: { reps: number; weight: number }) => void;
+  bulkUpdateRepsAndWeight: (newValue: { reps: number; weight: number }) => void;
 };
 
 const SetHistory = ({
   exerciseId,
   setOrder,
   userId,
-  updateRepsAndWeight,
+  bulkUpdateRepsAndWeight,
 }: Props) => {
   const [disabled, setDisabled] = useState(false);
   const [exerciseHistory, setExerciseHistory] = useState<{
@@ -54,7 +53,7 @@ const SetHistory = ({
     return `${exerciseHistory.weight} x ${exerciseHistory.reps}`;
   };
   const handlePress = () => {
-    updateRepsAndWeight(exerciseHistory!);
+    bulkUpdateRepsAndWeight(exerciseHistory!);
     setDisabled(true);
   };
   return (
