@@ -66,11 +66,11 @@ const ExerciseOptionsModal = function ExerciseOptionsModal({
   const [customDuration, setCustomDuration] = useState(
     exerciseTimer ? exerciseTimer : 60
   );
-  const { refetchData } = useAppStore();
   const { openModal, closeModal: closeExercisesModal } =
     useWorkoutExercisesModal();
   const translateX = useSharedValue(0);
-  const { replaceExercise } = useActiveWorkout();
+  const { replaceWorkoutExercise, updateWorkoutExerciseField } =
+    useActiveWorkout();
 
   const switchToAutoRestScreen = () => {
     setCurrentScreen("autoRest");
@@ -84,7 +84,7 @@ const ExerciseOptionsModal = function ExerciseOptionsModal({
   };
 
   const replaceExerciseHandler = (exercise: Exercise) => {
-    replaceExercise(workoutExerciseId, exercise);
+    replaceWorkoutExercise(workoutExerciseId, exercise);
     closeExercisesModal();
     setShouldShowExercisesModal(false);
   };
@@ -106,16 +106,7 @@ const ExerciseOptionsModal = function ExerciseOptionsModal({
     setCurrentScreen("main");
   };
   const updateSettings = async () => {
-    try {
-      const { error } = await supabase
-        .from("workout_exercises")
-        .update({ timer: customDuration })
-        .eq("id", workoutExerciseId);
-      if (error) throw error;
-      refetchData();
-    } catch (err: any) {
-      console.error("Failed to update settings:", err.message);
-    }
+    updateWorkoutExerciseField(workoutExerciseId, "timer", customDuration);
   };
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [

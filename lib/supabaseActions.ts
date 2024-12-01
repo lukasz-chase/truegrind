@@ -9,15 +9,18 @@ import uuid from "react-native-uuid";
 export const updateWorkout = async (
   activeWorkout: Workout,
   initialActiveWorkout: Workout,
-  workoutHistoryId: string
+  workoutHistoryId: string,
+  isNewWorkout: boolean
 ) => {
   if (
     initialActiveWorkout.name !== activeWorkout.name ||
-    initialActiveWorkout.notes !== activeWorkout.notes
+    initialActiveWorkout.notes !== activeWorkout.notes ||
+    isNewWorkout
   ) {
+    const { workout_exercises, ...workoutDB } = activeWorkout;
     await supabase
       .from("workouts")
-      .update({ name: activeWorkout.name, notes: activeWorkout.notes })
+      .insert(workoutDB)
       .eq("id", activeWorkout.id)
       .select();
   }

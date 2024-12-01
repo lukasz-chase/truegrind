@@ -158,7 +158,7 @@ const WorkoutSet = ({ exerciseSet, exerciseId, exerciseTimer }: Props) => {
         <GestureHandlerRootView>
           <GestureDetector gesture={swipeGesture}>
             <Animated.View style={[styles.row, rowStyle]}>
-              <View style={[styles.cell, { flex: 0.5 }]}>
+              <View style={[styles.cell, { flex: 0.75 }]}>
                 <Pressable
                   style={[
                     styles.rowButton,
@@ -174,7 +174,7 @@ const WorkoutSet = ({ exerciseSet, exerciseId, exerciseTimer }: Props) => {
                   </Text>
                 </Pressable>
               </View>
-              <View style={[styles.cell, { flex: 2 }]}>
+              <View style={[styles.cell, { flex: 1.75 }]}>
                 <SetHistory
                   exerciseId={exerciseId}
                   setOrder={exerciseSet.order}

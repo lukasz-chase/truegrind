@@ -4,13 +4,21 @@ import { ExerciseSet } from "@/types/exercisesSets";
 import uuid from "react-native-uuid";
 import { Exercise } from "@/types/exercises";
 import useTimerStore from "./useTimer";
+import { WorkoutExercise } from "@/types/workoutExercise";
 
 interface ActiveWorkoutStore {
   initialActiveWorkout: Workout;
   activeWorkout: Workout;
   workoutWasUpdated: boolean;
+  isNewWorkout: boolean;
+  setIsNewWorkout: (value: boolean) => void;
   setActiveWorkout: (workout: Workout) => void;
-  addNewExercise: (exercise: Exercise) => void;
+  addNewWorkoutExercise: (exercise: Exercise) => void;
+  updateWorkoutExerciseField: (
+    workoutExerciseId: string,
+    field: keyof WorkoutExercise,
+    updatedValue: any
+  ) => void;
   updateWorkoutField: (field: keyof Workout, updatedValue: any) => void;
   addNewSet: (exerciseId: string) => void;
   updateExerciseSet: (
@@ -19,8 +27,8 @@ interface ActiveWorkoutStore {
     propertiesToUpdate: Partial<ExerciseSet>
   ) => void;
   deleteExerciseSet: (exerciseId: string, setId: string) => void;
-  removeExercise: (exerciseId: string) => void;
-  replaceExercise: (exerciseId: string, newExercise: Exercise) => void;
+  removeWorkoutExercise: (exerciseId: string) => void;
+  replaceWorkoutExercise: (exerciseId: string, newExercise: Exercise) => void;
 }
 
 const useActiveWorkout = create<ActiveWorkoutStore>((set, get) => ({
@@ -37,6 +45,8 @@ const useActiveWorkout = create<ActiveWorkoutStore>((set, get) => ({
     workout_exercises: [],
   },
   workoutWasUpdated: false,
+  isNewWorkout: false,
+  setIsNewWorkout: (value: boolean) => set({ isNewWorkout: value }),
   setActiveWorkout: (workout: Workout) => {
     const { endTimer } = useTimerStore.getState(); // Access the timer store's actions
     endTimer(); // Call the endTimer function from the timer store
@@ -49,7 +59,26 @@ const useActiveWorkout = create<ActiveWorkoutStore>((set, get) => ({
       workoutWasUpdated: true,
     }));
   },
-  addNewExercise: (exercise: Exercise) => {
+  updateWorkoutExerciseField: (
+    workoutExerciseId: string,
+    field: keyof WorkoutExercise,
+    updatedValue: any
+  ) => {
+    set((state) => ({
+      activeWorkout: {
+        ...state.activeWorkout,
+        workout_exercises: state.activeWorkout.workout_exercises?.map(
+          (workoutExercise) => {
+            if (workoutExercise.id === workoutExerciseId) {
+              return { ...workoutExercise, [field]: updatedValue };
+            }
+            return workoutExercise;
+          }
+        ),
+      },
+    }));
+  },
+  addNewWorkoutExercise: (exercise: Exercise) => {
     const workoutExercise = {
       id: uuid.v4(),
       notes: "",
@@ -70,7 +99,10 @@ const useActiveWorkout = create<ActiveWorkoutStore>((set, get) => ({
     }));
     get().addNewSet(workoutExercise.id);
   },
-  replaceExercise: (workoutExerciseId: string, newExercise: Exercise) => {
+  replaceWorkoutExercise: (
+    workoutExerciseId: string,
+    newExercise: Exercise
+  ) => {
     const newWorkoutExercise = {
       id: uuid.v4(),
       notes: "",
@@ -182,7 +214,7 @@ const useActiveWorkout = create<ActiveWorkoutStore>((set, get) => ({
       };
     });
   },
-  removeExercise: (workoutExerciseId: string) => {
+  removeWorkoutExercise: (workoutExerciseId: string) => {
     set((state) => {
       const updatedExercises = state.activeWorkout.workout_exercises?.filter(
         (workoutExercise) => workoutExercise.id !== workoutExerciseId

@@ -18,14 +18,14 @@ type CompleteSetButtonProps = {
   exerciseTimer: number;
 };
 
-const CompleteSetButton: React.FC<CompleteSetButtonProps> = ({
+const CompleteSetButton = ({
   updateStoreSetField,
   completed,
   reps,
   rowScale,
   exerciseTimer,
-}) => {
-  const { startTimer } = useTimerStore();
+}: CompleteSetButtonProps) => {
+  const { startTimer, endTimer, isRunning } = useTimerStore();
   const { openModal } = useWorkoutTimerModal();
   const { closeKeyboard } = useCustomKeyboard();
   const completeSet = () => {
@@ -41,6 +41,8 @@ const CompleteSetButton: React.FC<CompleteSetButtonProps> = ({
       if (exerciseTimer && exerciseTimer > 0) {
         startTimer(exerciseTimer);
         openModal();
+      } else if (!exerciseTimer && isRunning) {
+        endTimer();
       }
     } else {
       if (Platform.OS !== "web") {

@@ -5,6 +5,7 @@ import Animated, { LinearTransition } from "react-native-reanimated";
 import useActiveWorkout from "@/store/useActiveWorkout";
 import { Exercise } from "@/types/exercises";
 import useCustomKeyboard from "@/store/useCustomKeyboard";
+import useWorkoutTimer from "@/store/useWorkoutTimer";
 
 type Props = {
   close: () => void;
@@ -12,11 +13,16 @@ type Props = {
 
 const CustomFooter = ({ close }: Props) => {
   const { openModal, closeModal } = useWorkoutExercisesModal();
-  const { addNewExercise } = useActiveWorkout();
+  const { addNewWorkoutExercise } = useActiveWorkout();
   const { isVisible: IsKeyboardVisible } = useCustomKeyboard();
+  const { resetTimer } = useWorkoutTimer();
   const addExercise = (exercise: Exercise) => {
-    addNewExercise(exercise);
+    addNewWorkoutExercise(exercise);
     closeModal();
+  };
+  const closeBottomSheet = () => {
+    resetTimer();
+    close();
   };
   return (
     <>
@@ -33,7 +39,7 @@ const CustomFooter = ({ close }: Props) => {
         </Pressable>
         <Pressable
           style={[styles.footerButton, styles.cancelWorkoutButton]}
-          onPress={close}
+          onPress={closeBottomSheet}
         >
           <Text style={[styles.footerText, styles.cancelWorkoutButtonText]}>
             Cancel Workout

@@ -34,8 +34,12 @@ const CustomHeader = ({ sheetIndex, close, scrolledY }: Props) => {
   const scrolledValue = useSharedValue(scrolledY);
   const { formattedTime, resetTimer, startTimer } = useWorkoutTimer();
   const { endTimer, timeRemaining, isRunning, timerDuration } = useTimerStore();
-  const { activeWorkout, initialActiveWorkout, workoutWasUpdated } =
-    useActiveWorkout();
+  const {
+    activeWorkout,
+    initialActiveWorkout,
+    workoutWasUpdated,
+    isNewWorkout,
+  } = useActiveWorkout();
   const { refetchData } = useAppStore();
   const { isVisible, closeModal, openModal } = useWorkoutTimerModal();
   const { closeKeyboard } = useCustomKeyboard();
@@ -53,7 +57,8 @@ const CustomHeader = ({ sheetIndex, close, scrolledY }: Props) => {
       await updateWorkout(
         activeWorkout,
         initialActiveWorkout,
-        workoutHistoryId
+        workoutHistoryId,
+        isNewWorkout
       );
       const workoutExercisesHistoryIds =
         activeWorkout.workout_exercises?.map((workoutExercise) => ({

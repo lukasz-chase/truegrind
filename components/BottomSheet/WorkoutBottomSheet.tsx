@@ -20,9 +20,11 @@ type Props = {
 const WorkoutBottomSheet = ({ animatedIndex }: Props) => {
   const [sheetIndex, setSheetIndex] = useState(0);
   const [scrolledY, setScrolledY] = useState(0);
+
   const { setIsSheetVisible } = useBottomSheet();
   const { activeWorkout } = useActiveWorkout();
   const { closeKeyboard } = useCustomKeyboard();
+
   const sheetRef = useRef<BottomSheet>(null);
   const snapPoints = useMemo(() => [130, "90%"], []);
   const handleClosePress = useCallback(() => {

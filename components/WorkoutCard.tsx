@@ -50,8 +50,8 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderWidth: 1,
     borderColor: AppColors.black,
-    width: "48%",
     padding: 10,
+    width: "48%",
   },
   workoutCardTitle: {
     fontSize: 20,

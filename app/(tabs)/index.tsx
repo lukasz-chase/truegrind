@@ -19,17 +19,19 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as Haptics from "expo-haptics";
 import WorkoutExercisesModal from "@/components/Modals/WorkoutExercisesModal";
+import uuid from "react-native-uuid";
 
 export default function WorkoutScreen() {
   const [workouts, setWorkouts] = useState<Workout[]>([]);
   const [isVisible, setIsVisible] = useState(false);
   const { setIsSheetVisible } = useBottomSheet();
-  const { activeWorkout, setActiveWorkout } = useActiveWorkout();
-  const { session } = userStore();
+  const { activeWorkout, setActiveWorkout, setIsNewWorkout } =
+    useActiveWorkout();
+  const { user } = userStore();
   const { refetchNumber } = useAppStore();
   useEffect(() => {
     fetchWorkouts();
-  }, [session, refetchNumber]);
+  }, [user, refetchNumber]);
 
   const fetchWorkouts = async () => {
     try {
@@ -38,7 +40,7 @@ export default function WorkoutScreen() {
         .select(
           `id, name, notes, user_id, workout_exercises(id, timer, notes, order, exercises(id, name, image, muscle, equipment), exercise_sets(*))`
         )
-        .eq("user_id", session?.user?.id)
+        .eq("user_id", user?.id)
         .returns<Workout[]>();
       if (data) {
         setWorkouts(data);
@@ -55,7 +57,22 @@ export default function WorkoutScreen() {
   };
 
   const startWorkout = () => {
+    setIsNewWorkout(false);
     setIsVisible(false);
+    setIsSheetVisible(true);
+    if (Platform.OS !== "web") {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    }
+  };
+  const startAnEmptyWorkout = () => {
+    setIsNewWorkout(true);
+    setActiveWorkout({
+      id: uuid.v4(),
+      name: "Workout",
+      notes: "",
+      user_id: user!.id,
+      workout_exercises: [],
+    });
     setIsSheetVisible(true);
     if (Platform.OS !== "web") {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
@@ -68,7 +85,7 @@ export default function WorkoutScreen() {
         <Text style={styles.title}>Start Workout</Text>
         <TouchableOpacity
           style={styles.actionButton}
-          onPress={() => setIsSheetVisible(true)}
+          onPress={startAnEmptyWorkout}
         >
           <Text style={styles.actionButtonText}>Start an Empty Workout</Text>
         </TouchableOpacity>
@@ -79,7 +96,7 @@ export default function WorkoutScreen() {
           </TouchableOpacity>
         </View>
         <Text>My Templates ({workouts.length})</Text>
-        <ScrollView style={styles.workouts}>
+        <View style={styles.workouts}>
           {workouts.map((workout) => (
             <WorkoutCard
               key={workout.id}
@@ -87,7 +104,7 @@ export default function WorkoutScreen() {
               openModal={() => setIsVisible(true)}
             />
           ))}
-        </ScrollView>
+        </View>
       </View>
       {activeWorkout && (
         <WorkoutPreviewModal
@@ -147,7 +164,12 @@ const styles = StyleSheet.create({
     color: AppColors.blue,
   },
   workouts: {
+    width: "100%",
+    justifyContent: "space-between",
+    flexWrap: "wrap",
+    gap: 10,
     display: "flex",
+    flexDirection: "row",
     marginTop: 20,
   },
 });
