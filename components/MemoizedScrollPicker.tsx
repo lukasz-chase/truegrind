@@ -29,6 +29,7 @@ const MemoizedScrollPicker = memo(
       item: { value: number };
     }) => {
       setValue(value);
+      if (Platform.OS !== "web") Haptics.selectionAsync();
     };
     return (
       <View style={styles.scrollPicker}>
@@ -47,9 +48,7 @@ const MemoizedScrollPicker = memo(
             height: 40,
             backgroundColor: disabled ? "transparent" : backgroundColor,
           }}
-          onValueChanging={() => {
-            if (Platform.OS !== "web") Haptics.selectionAsync();
-          }}
+          onValueChanging={onValueChange}
         />
       </View>
     );
