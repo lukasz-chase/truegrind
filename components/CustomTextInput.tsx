@@ -1,0 +1,47 @@
+import { AppColors } from "@/constants/colors";
+import { useState } from "react";
+import { StyleSheet, TextInput } from "react-native";
+
+type Props = {
+  value: string;
+  onChangeText: (text: string) => void;
+  placeholder: string;
+  large?: boolean;
+};
+const CustomTextInput = ({
+  onChangeText,
+  value,
+  placeholder,
+  large,
+}: Props) => {
+  const [inputFocus, setInputFocus] = useState(false);
+
+  return (
+    <TextInput
+      placeholder={placeholder}
+      placeholderTextColor="#b3b1b1"
+      value={value}
+      onChangeText={onChangeText}
+      style={[
+        styles.input,
+        {
+          borderColor: inputFocus ? "black" : "white",
+          height: large ? 120 : 40,
+        },
+      ]}
+      underlineColorAndroid="transparent"
+      onFocus={() => setInputFocus(true)}
+      onBlur={() => setInputFocus(false)}
+    />
+  );
+};
+
+export default CustomTextInput;
+const styles = StyleSheet.create({
+  input: {
+    backgroundColor: AppColors.gray,
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    borderWidth: 1,
+  },
+});

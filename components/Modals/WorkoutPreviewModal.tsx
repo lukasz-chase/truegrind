@@ -8,10 +8,10 @@ import {
   FlatList,
   Pressable,
 } from "react-native";
-import EvilIcons from "@expo/vector-icons/EvilIcons";
 import ExerciseRow from "../ExerciseRow";
 import { Workout } from "@/types/workout";
 import { AppColors } from "@/constants/colors";
+import CloseButton from "../CloseButton";
 
 type Props = {
   visible: boolean;
@@ -38,9 +38,7 @@ export default function WorkoutPreviewModal({
           <TouchableWithoutFeedback>
             <View style={styles.modalContent}>
               <View style={styles.modalHeader}>
-                <Pressable style={styles.modalCloseButton} onPress={onClose}>
-                  <EvilIcons name="close" size={24} color="black" />
-                </Pressable>
+                <CloseButton onPress={onClose} />
                 <Text style={styles.modalHeaderTitle}>{workout.name}</Text>
                 <Pressable>
                   <Text style={styles.modalEditButton}>Edit</Text>

@@ -5,6 +5,8 @@ import { ExerciseSet } from "@/types/exercisesSets";
 import userStore from "@/store/userStore";
 import { UserProfile } from "@/types/user";
 import uuid from "react-native-uuid";
+import { Exercise } from "@/types/exercises";
+import { decode } from "base64-arraybuffer";
 
 export const updateWorkout = async (
   activeWorkout: Workout,
@@ -168,6 +170,62 @@ export const updateUserProfile = async (
   if (data) {
     userStore.setState({ user: data });
   }
+  if (error) {
+    console.log("error", error);
+  }
+};
+
+const getSignedUrl = async (bucketName: string, filePath: string) => {
+  const { data, error } = await supabase.storage
+    .from(bucketName)
+    .createSignedUrl(filePath, 60 * 60 * 24 * 9999);
+  if (error) {
+    console.log(error);
+    return undefined;
+  }
+  return data.signedUrl;
+};
+
+const uploadImageToBucket = async (
+  imageBase64: string,
+  filePath: string,
+  bucketName: string
+) => {
+  try {
+    const { data, error } = await supabase.storage
+      .from(bucketName)
+      .upload(filePath, decode(imageBase64), {
+        contentType: "image/png",
+      });
+    if (error) {
+      console.log("error", error);
+      return undefined;
+    }
+    if (data) {
+      const signedUrl = await getSignedUrl(bucketName, data.path);
+      if (signedUrl) {
+        return signedUrl;
+      }
+      return data?.fullPath;
+    }
+  } catch (error) {
+    console.log(error);
+    return undefined;
+  }
+};
+
+export const addExercise = async (exercise: Partial<Exercise>) => {
+  if (exercise.image) {
+    const imageUrl = await uploadImageToBucket(
+      exercise.image,
+      `${exercise.muscle}/${exercise.name}/png`,
+      "exercises"
+    );
+    if (imageUrl) {
+      exercise = { ...exercise, image: imageUrl };
+    }
+  }
+  const { data, error } = await supabase.from("exercises").insert(exercise);
   if (error) {
     console.log("error", error);
   }

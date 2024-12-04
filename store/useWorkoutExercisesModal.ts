@@ -3,14 +3,23 @@ import { create } from "zustand";
 
 interface ModalState {
   isVisible: boolean;
-  openModal: (onPress: (exercise: Exercise) => void) => void;
+  openModal: (
+    onPress: (exercises: Exercise[]) => void,
+    allowMultiple: boolean,
+    actionButtonLabel: "Add" | "Replace"
+  ) => void;
   closeModal: () => void;
-  onPress: (exercise: Exercise) => void;
+  onPress: (exercises: Exercise[]) => void;
+  allowMultiple: boolean;
+  actionButtonLabel: "Add" | "Replace";
 }
 
 const useWorkoutExercisesModal = create<ModalState>((set) => ({
+  allowMultiple: true,
   isVisible: false,
-  openModal: (onPress) => set({ isVisible: true, onPress }),
+  actionButtonLabel: "Add",
+  openModal: (onPress, allowMultiple, actionButtonLabel) =>
+    set({ isVisible: true, onPress, allowMultiple, actionButtonLabel }),
   closeModal: () => set({ isVisible: false }),
   onPress: () => {},
 }));

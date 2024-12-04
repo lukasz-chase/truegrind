@@ -8,7 +8,7 @@ import {
   TouchableWithoutFeedback,
   Text,
 } from "react-native";
-import { Pressable } from "react-native-gesture-handler";
+import { Pressable } from "react-native";
 
 type Props = {
   isVisible: boolean;

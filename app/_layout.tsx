@@ -1,20 +1,21 @@
 import { Stack } from "expo-router";
 import { useEffect } from "react";
 import { supabase } from "@/lib/supabase";
-import { setStatusBarStyle } from "expo-status-bar";
+import { setStatusBarStyle, StatusBar } from "expo-status-bar";
 import { useRouter } from "expo-router";
 import userStore from "@/store/userStore";
-import { AppState } from "react-native";
+import { AppState, Platform } from "react-native";
 import * as Notifications from "expo-notifications";
 import { getProfile } from "@/hooks/userProfile";
 
-Notifications.requestPermissionsAsync();
+if (Platform.OS !== "web") Notifications.requestPermissionsAsync();
 // Tells Supabase Auth to continuously refresh the session automatically if
 // the app is in the foreground. When this is added, you will continue to receive
 // `onAuthStateChange` events with the `TOKEN_REFRESHED` or `SIGNED_OUT` event
 // if the user's session is terminated. This should only be registered once.
 AppState.addEventListener("change", (state) => {
   if (state === "active") {
+    console.log("session refreshed");
     supabase.auth.startAutoRefresh();
   } else {
     supabase.auth.stopAutoRefresh();
@@ -53,13 +54,16 @@ export default function Root() {
   }, []);
 
   return (
-    <Stack>
-      {currentSession ? (
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      ) : (
-        <Stack.Screen name="sign-in" options={{ headerShown: false }} />
-      )}
-      <Stack.Screen name="+not-found" />
-    </Stack>
+    <>
+      <Stack>
+        {currentSession ? (
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        ) : (
+          <Stack.Screen name="sign-in" options={{ headerShown: false }} />
+        )}
+        <Stack.Screen name="+not-found" />
+      </Stack>
+      <StatusBar style="dark" />
+    </>
   );
 }

@@ -1,6 +1,5 @@
-import { Platform, Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import AnchoredModal from "./AnchoredModal";
-import EvilIcons from "@expo/vector-icons/EvilIcons";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { AnimatedCircularProgress } from "react-native-circular-progress";
 import { AppColors } from "@/constants/colors";
@@ -10,6 +9,7 @@ import MemoizedScrollPicker from "../MemoizedScrollPicker";
 import { formatTime } from "@/lib/helpers";
 import userStore from "@/store/userStore";
 import { updateUserProfile } from "@/lib/supabaseActions";
+import CloseButton from "../CloseButton";
 
 type Props = {
   isVisible: boolean;
@@ -68,15 +68,12 @@ export default function TimerModal({
     >
       <View style={styles.container}>
         <View style={styles.modalHeader}>
-          <Pressable
-            style={styles.headerButton}
+          <CloseButton
             onPress={() => {
               closeModal();
               setCustomTimerView(false);
             }}
-          >
-            <EvilIcons name="close" size={24} color="black" />
-          </Pressable>
+          />
           <Text style={styles.title}>Rest Timer</Text>
           <Pressable style={styles.headerButton}>
             <AntDesign name="question" size={24} color="black" />

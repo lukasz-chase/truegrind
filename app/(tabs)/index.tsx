@@ -7,19 +7,12 @@ import useActiveWorkout from "@/store/useActiveWorkout";
 import useBottomSheet from "@/store/useBottomSheet";
 import userStore from "@/store/userStore";
 import { Workout } from "@/types/workout";
-import React, { useState, useEffect } from "react";
-import {
-  ScrollView,
-  TouchableOpacity,
-  StyleSheet,
-  View,
-  Text,
-  Platform,
-} from "react-native";
+import { useState, useEffect } from "react";
+import { StyleSheet, View, Text, Platform, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as Haptics from "expo-haptics";
-import WorkoutExercisesModal from "@/components/Modals/WorkoutExercisesModal";
 import uuid from "react-native-uuid";
+import WorkoutExercisesModal from "@/components/Modals/WorkoutExercisesModal";
 
 export default function WorkoutScreen() {
   const [workouts, setWorkouts] = useState<Workout[]>([]);
@@ -83,17 +76,14 @@ export default function WorkoutScreen() {
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
         <Text style={styles.title}>Start Workout</Text>
-        <TouchableOpacity
-          style={styles.actionButton}
-          onPress={startAnEmptyWorkout}
-        >
+        <Pressable style={styles.actionButton} onPress={startAnEmptyWorkout}>
           <Text style={styles.actionButtonText}>Start an Empty Workout</Text>
-        </TouchableOpacity>
+        </Pressable>
         <View style={styles.templateHeader}>
           <Text style={styles.templatesTitle}>Templates</Text>
-          <TouchableOpacity style={styles.templatesButton}>
+          <Pressable style={styles.templatesButton}>
             <Text style={styles.templatesButtonText}>+ Template</Text>
-          </TouchableOpacity>
+          </Pressable>
         </View>
         <Text>My Templates ({workouts.length})</Text>
         <View style={styles.workouts}>

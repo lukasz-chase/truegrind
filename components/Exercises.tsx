@@ -1,22 +1,32 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/lib/supabase";
 import { Exercise } from "@/types/exercises";
-import { ScrollView, StyleSheet, View, TextInput } from "react-native";
+import { StyleSheet, View, Pressable, Text } from "react-native";
 import ExerciseRow from "@/components/ExerciseRow";
 import { AppColors } from "@/constants/colors";
-import RNPickerSelect from "react-native-picker-select";
+import { FlatList } from "react-native-gesture-handler";
+import ExerciseFiltersModal from "./Modals/ExerciseFiltersModal";
+import { equipmentFilters, muscleFilters } from "@/constants/exerciseFilters";
+import CustomTextInput from "./CustomTextInput";
 type Props = {
   onPress: (exercise: Exercise) => void;
+  selectedExercises: Exercise[];
 };
 
-const Exercises = ({ onPress }: Props) => {
+const Exercises = ({ onPress, selectedExercises }: Props) => {
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedMuscle, setSelectedMuscle] = useState("");
+  const [selectedEquipment, setSelectedEquipment] = useState("");
+  const [muscleModalVisible, setMuscleModalVisible] = useState(false);
+  const [equipmentModalVisible, setEquipmentModalVisible] = useState(false);
+
+  const muscleRef = useRef(null);
+  const equipmentRef = useRef(null);
 
   useEffect(() => {
     getExercises();
-  }, [searchQuery, selectedMuscle]);
+  }, [searchQuery, selectedMuscle, selectedEquipment]);
 
   const getExercises = async () => {
     // Build the query with filters
@@ -28,6 +38,10 @@ const Exercises = ({ onPress }: Props) => {
     // Apply muscle filter if selected
     if (selectedMuscle) {
       query = query.eq("muscle", selectedMuscle);
+    }
+
+    if (selectedEquipment) {
+      query = query.eq("equipment", selectedEquipment);
     }
 
     // Apply search filter if query is provided
@@ -44,89 +58,133 @@ const Exercises = ({ onPress }: Props) => {
     if (error) throw error;
   };
   return (
-    <View style={styles.container}>
-      <TextInput
-        placeholder="Search by name"
-        placeholderTextColor={AppColors.gray}
-        value={searchQuery}
-        onChangeText={setSearchQuery}
-        style={styles.input}
-        underlineColorAndroid="transparent"
-      />
-      <View style={styles.pickerContainer}>
-        <RNPickerSelect
-          placeholder={{ label: "Filter by Muscle Group", value: null }}
-          value={selectedMuscle}
-          onValueChange={(value) => setSelectedMuscle(value)}
-          disabled={false}
-          items={[
-            { label: "All Muscles", value: "" },
-            { label: "Chest", value: "chest" },
-            { label: "Back", value: "back" },
-            { label: "Legs", value: "legs" },
-            { label: "Arms", value: "arms" },
-            { label: "Shoulders", value: "shoulders" },
-          ]}
-          style={pickerSelectStyles}
+    <>
+      <View style={styles.container}>
+        <CustomTextInput
+          onChangeText={setSearchQuery}
+          value={searchQuery}
+          placeholder="Search"
+        />
+        <View style={styles.pickerContainer}>
+          <Pressable
+            style={[
+              styles.dropdownButton,
+              {
+                backgroundColor: selectedMuscle
+                  ? AppColors.blue
+                  : AppColors.gray,
+              },
+            ]}
+            onPress={() => {
+              setMuscleModalVisible(true);
+            }}
+            ref={muscleRef}
+          >
+            {selectedMuscle ? (
+              <Text style={[styles.dropdownButtonText, { color: "white" }]}>
+                {selectedMuscle}
+              </Text>
+            ) : (
+              <Text style={styles.dropdownButtonText}>Any Body Part</Text>
+            )}
+          </Pressable>
+          <Pressable
+            style={[
+              styles.dropdownButton,
+              {
+                backgroundColor: selectedEquipment
+                  ? AppColors.blue
+                  : AppColors.gray,
+              },
+            ]}
+            ref={equipmentRef}
+            onPress={() => {
+              setEquipmentModalVisible(true);
+            }}
+          >
+            {selectedEquipment ? (
+              <Text style={[styles.dropdownButtonText, { color: "white" }]}>
+                {selectedEquipment}
+              </Text>
+            ) : (
+              <Text style={styles.dropdownButtonText}>Any Equipment</Text>
+            )}
+          </Pressable>
+        </View>
+        <FlatList
+          data={exercises}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <ExerciseRow
+              exercise={item}
+              onPress={onPress}
+              isSelected={
+                !!selectedExercises.find((exercise) => exercise.id === item.id)
+              }
+            />
+          )}
         />
       </View>
-
-      <ScrollView style={styles.exercises}>
-        {exercises.map((exercise) => (
-          <ExerciseRow
-            key={exercise.id}
-            exercise={exercise}
-            onPress={onPress}
-          />
-        ))}
-      </ScrollView>
-    </View>
+      {!equipmentModalVisible && (
+        <ExerciseFiltersModal
+          data={muscleFilters}
+          anchorCorner="LEFT"
+          anchorRef={muscleRef}
+          closeModal={() => setMuscleModalVisible(false)}
+          isVisible={muscleModalVisible}
+          onPress={(muscle: string) => {
+            if (selectedMuscle === muscle) setSelectedMuscle("");
+            else setSelectedMuscle(muscle);
+            setMuscleModalVisible(false);
+          }}
+          value={selectedMuscle}
+        />
+      )}
+      {!muscleModalVisible && (
+        <ExerciseFiltersModal
+          data={equipmentFilters}
+          anchorCorner="RIGHT"
+          anchorRef={equipmentRef}
+          closeModal={() => setEquipmentModalVisible(false)}
+          isVisible={equipmentModalVisible}
+          onPress={(equipment: string) => {
+            if (selectedEquipment === equipment) setSelectedEquipment("");
+            else setSelectedEquipment(equipment);
+            setEquipmentModalVisible(false);
+          }}
+          value={selectedEquipment}
+        />
+      )}
+    </>
   );
 };
 const styles = StyleSheet.create({
   container: {
     width: "100%",
+    overflow: "hidden",
+    height: "100%",
   },
   searchContainer: {
     marginBottom: 12,
   },
-  input: {
-    backgroundColor: "#333",
-    color: "#fff",
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    height: 40,
-  },
   pickerContainer: {
-    height: 60,
-    marginVertical: 20,
+    marginVertical: 10,
     zIndex: 20,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   exercises: {},
-});
-const pickerSelectStyles = StyleSheet.create({
-  inputIOSContainer: {
-    pointerEvents: "none",
-  },
-  inputIOS: {
-    fontSize: 16,
-    paddingVertical: 12,
-    paddingHorizontal: 10,
-    borderWidth: 1,
-    borderColor: "gray",
-    borderRadius: 4,
-    color: "black",
-    paddingRight: 30, // to ensure the text is never behind the icon
-  },
-  inputAndroid: {
-    fontSize: 16,
-    paddingHorizontal: 10,
-    paddingVertical: 8,
-    borderWidth: 0.5,
-    borderColor: "purple",
+  dropdownButton: {
+    padding: 5,
     borderRadius: 8,
-    color: "black",
-    paddingRight: 30, // to ensure the text is never behind the icon
+    width: "48%",
+    alignItems: "center",
+  },
+  dropdownButtonText: {
+    fontWeight: "bold",
+    fontSize: 16,
   },
 });
+
 export default Exercises;

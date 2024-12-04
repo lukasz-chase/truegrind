@@ -7,6 +7,7 @@ import WorkoutBottomSheet from "@/components/BottomSheet/WorkoutBottomSheet";
 import { useSharedValue } from "react-native-reanimated";
 import useBottomSheet from "@/store/useBottomSheet";
 import { AppColors } from "@/constants/colors";
+import WorkoutExercisesModal from "@/components/Modals/WorkoutExercisesModal";
 
 export default function TabLayout() {
   const animatedIndex = useSharedValue(0);
@@ -16,11 +17,6 @@ export default function TabLayout() {
       <Tabs
         screenOptions={{
           tabBarActiveTintColor: AppColors.blue,
-          headerStyle: {
-            backgroundColor: AppColors.black,
-          },
-          headerShadowVisible: false,
-          headerTintColor: "#fff",
           tabBarStyle: {
             backgroundColor: AppColors.black,
             height: 70,

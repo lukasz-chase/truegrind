@@ -79,14 +79,14 @@ const useTimerStore = create<TimerState>()((set, get) => {
 
   const endTimer = async () => {
     if (timer) clearInterval(timer);
-    await Notifications.scheduleNotificationAsync({
-      content: {
-        title: "Time's Up!",
-        body: "Your timer is complete.",
-      },
-      trigger: null,
-    });
     if (Platform.OS !== "web") {
+      await Notifications.scheduleNotificationAsync({
+        content: {
+          title: "Time's Up!",
+          body: "Your timer is complete.",
+        },
+        trigger: null,
+      });
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     }
     timer = null; // Reset the timer variable

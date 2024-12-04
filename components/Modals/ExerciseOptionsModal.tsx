@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View } from "react-native";
-import { Pressable } from "react-native-gesture-handler";
+import { Pressable } from "react-native";
 import { AppColors } from "@/constants/colors";
 import RemoveExerciseModal from "./RemoveExerciseModal";
 import { useState } from "react";
@@ -10,8 +10,6 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 import AutoRestTimeSettings from "../AutoRestTimeSettings";
-import { supabase } from "@/lib/supabase";
-import useAppStore from "@/store/useAppStore";
 import { getOptions } from "@/lib/workoutOptions";
 import useWorkoutExercisesModal from "@/store/useWorkoutExercisesModal";
 import { Exercise } from "@/types/exercises";
@@ -66,13 +64,16 @@ const ExerciseOptionsModal = function ExerciseOptionsModal({
   const [customDuration, setCustomDuration] = useState(
     exerciseTimer ? exerciseTimer : 60
   );
+
+  const translateX = useSharedValue(0);
+
   const { openModal, closeModal: closeExercisesModal } =
     useWorkoutExercisesModal();
-  const translateX = useSharedValue(0);
   const { replaceWorkoutExercise, updateWorkoutExerciseField } =
     useActiveWorkout();
 
   const switchToAutoRestScreen = () => {
+    console.log("clicked");
     setCurrentScreen("autoRest");
     translateX.value = -MODAL_WIDTH;
   };
@@ -80,11 +81,12 @@ const ExerciseOptionsModal = function ExerciseOptionsModal({
   const onDismiss = () => {
     if (warningState.shouldShow)
       setWarningState((state) => ({ ...state, isVisible: true }));
-    if (shouldShowExercisesModal) openModal(replaceExerciseHandler);
+    if (shouldShowExercisesModal)
+      openModal(replaceExerciseHandler, false, "Replace");
   };
 
-  const replaceExerciseHandler = (exercise: Exercise) => {
-    replaceWorkoutExercise(workoutExerciseId, exercise);
+  const replaceExerciseHandler = (exercises: Exercise[]) => {
+    replaceWorkoutExercise(workoutExerciseId, exercises[0]);
     closeExercisesModal();
     setShouldShowExercisesModal(false);
   };

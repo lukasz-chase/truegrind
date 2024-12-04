@@ -16,8 +16,8 @@ const CustomFooter = ({ close }: Props) => {
   const { addNewWorkoutExercise } = useActiveWorkout();
   const { isVisible: IsKeyboardVisible } = useCustomKeyboard();
   const { resetTimer } = useWorkoutTimer();
-  const addExercise = (exercise: Exercise) => {
-    addNewWorkoutExercise(exercise);
+  const addExercises = (exercises: Exercise[]) => {
+    exercises.map((exercise) => addNewWorkoutExercise(exercise));
     closeModal();
   };
   const closeBottomSheet = () => {
@@ -30,7 +30,7 @@ const CustomFooter = ({ close }: Props) => {
         <Pressable
           style={[styles.footerButton, styles.addExerciseButton]}
           onPress={() => {
-            openModal(addExercise);
+            openModal(addExercises, true, "Add");
           }}
         >
           <Text style={[styles.footerText, styles.addExerciseButtonText]}>

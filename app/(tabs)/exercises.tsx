@@ -1,10 +1,20 @@
-import { StyleSheet, SafeAreaView } from "react-native";
+import { StyleSheet, SafeAreaView, View, Pressable, Text } from "react-native";
 import Exercises from "@/components/Exercises";
+import { AppColors } from "@/constants/colors";
 
 export default function ExercisesScreen() {
   return (
     <SafeAreaView style={styles.safeArea}>
-      <Exercises onPress={() => console.log("pressed")} />
+      <View style={styles.wrapper}>
+        <View style={styles.header}>
+          <Pressable>
+            <Text style={styles.headerButton}>New</Text>
+          </Pressable>
+          <Text style={styles.headerTitle}>Exercises</Text>
+          <View style={styles.headerSpacer} />
+        </View>
+        <Exercises onPress={() => console.log("pressed")} />
+      </View>
     </SafeAreaView>
   );
 }
@@ -12,5 +22,27 @@ export default function ExercisesScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
+  },
+  wrapper: {
+    padding: 20,
+  },
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 20,
+  },
+  headerButton: {
+    fontSize: 18,
+    color: AppColors.blue,
+  },
+  headerTitle: {
+    flex: 1,
+    textAlign: "center",
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  headerSpacer: {
+    width: 40, // Same width as the "New" button to balance spacing
   },
 });

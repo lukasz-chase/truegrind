@@ -93,7 +93,6 @@ export default function AnchoredModal({
       <TouchableWithoutFeedback onPress={closeModal}>
         <View style={styles.modalOverlay} />
       </TouchableWithoutFeedback>
-
       <View
         ref={modalRef}
         style={[
@@ -123,5 +122,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: "center",
     overflow: "hidden",
+    zIndex: 2, // This doesn't work well on Android
+    elevation: 10, // Add this for Android
   },
 });

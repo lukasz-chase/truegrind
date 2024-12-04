@@ -2,17 +2,29 @@ import React from "react";
 import { Image, StyleSheet, View, Text } from "react-native";
 import { Exercise } from "@/types/exercises";
 import { AppColors } from "@/constants/colors";
-import { Pressable } from "react-native-gesture-handler";
+import { Pressable } from "react-native";
 
 type Props = {
   exercise: Exercise;
   numberOfSets?: number;
   onPress: (exercise: Exercise) => void;
+  isSelected: boolean;
 };
 
-const ExerciseRow = ({ exercise, numberOfSets, onPress }: Props) => {
+const ExerciseRow = ({
+  exercise,
+  numberOfSets,
+  onPress,
+  isSelected,
+}: Props) => {
   return (
-    <Pressable onPress={() => onPress(exercise)} style={styles.exerciseItem}>
+    <Pressable
+      onPress={() => onPress(exercise)}
+      style={[
+        styles.exerciseItem,
+        { backgroundColor: isSelected ? AppColors.blue : "white" },
+      ]}
+    >
       <Image
         source={{ uri: exercise.image }}
         style={styles.exerciseImage}
@@ -20,7 +32,7 @@ const ExerciseRow = ({ exercise, numberOfSets, onPress }: Props) => {
       />
       <View style={styles.exerciseDetails}>
         <Text style={styles.exerciseName}>
-          {`${numberOfSets} x `}
+          {numberOfSets && `${numberOfSets} x `}
           {exercise.name}
         </Text>
         <View>
@@ -39,7 +51,6 @@ export default ExerciseRow;
 const styles = StyleSheet.create({
   exerciseItem: {
     borderRadius: 8,
-    marginVertical: 8,
     color: AppColors.black,
     flexDirection: "row",
     width: "100%",
@@ -51,20 +62,19 @@ const styles = StyleSheet.create({
     marginLeft: 12,
     flex: 1,
     justifyContent: "space-between",
-    paddingTop: 5,
-    paddingBottom: 5,
+    paddingHorizontal: 5,
   },
   exerciseImage: {
-    width: 70,
-    height: 70,
+    width: 50,
+    height: 50,
     borderRadius: 8,
   },
   exerciseName: {
     fontWeight: "bold",
-    fontSize: 18,
+    fontSize: 16,
     maxWidth: "100%", // Ensures it doesn't overflow its container
   },
   exerciseDetail: {
-    fontSize: 16,
+    fontSize: 14,
   },
 });
