@@ -6,13 +6,14 @@ import { useRouter } from "expo-router";
 import userStore from "@/store/userStore";
 import { AppState, Platform } from "react-native";
 import * as Notifications from "expo-notifications";
+import * as SplashScreen from "expo-splash-screen";
 import { getProfile } from "@/hooks/userProfile";
 
 if (Platform.OS !== "web") Notifications.requestPermissionsAsync();
-// Tells Supabase Auth to continuously refresh the session automatically if
-// the app is in the foreground. When this is added, you will continue to receive
-// `onAuthStateChange` events with the `TOKEN_REFRESHED` or `SIGNED_OUT` event
-// if the user's session is terminated. This should only be registered once.
+
+// Prevent the splash screen from hiding automatically
+SplashScreen.preventAutoHideAsync();
+
 AppState.addEventListener("change", (state) => {
   if (state === "active") {
     console.log("session refreshed");
@@ -25,6 +26,7 @@ AppState.addEventListener("change", (state) => {
 export default function Root() {
   const { session: currentSession } = userStore((state) => state);
   const router = useRouter();
+
   useEffect(() => {
     // Set the status bar style once the component is mounted
     setStatusBarStyle("dark");
@@ -32,6 +34,9 @@ export default function Root() {
     // Fetch the initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       userStore.setState({ session });
+
+      // After fetching the session, hide the splash screen
+      SplashScreen.hideAsync();
     });
 
     // Set up a listener for authentication state changes
@@ -47,7 +52,7 @@ export default function Root() {
       }
     });
 
-    // // Clean up the listener on unmount
+    // Clean up the listener on unmount
     return () => {
       authListener?.data.subscription.unsubscribe();
     };

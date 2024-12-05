@@ -84,6 +84,7 @@ const useTimerStore = create<TimerState>()((set, get) => {
         content: {
           title: "Time's Up!",
           body: "Your timer is complete.",
+          sound: "bell.mp3",
         },
         trigger: null,
       });
