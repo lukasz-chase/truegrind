@@ -8,13 +8,16 @@ import { FlatList } from "react-native-gesture-handler";
 import ExerciseFiltersModal from "./Modals/ExerciseFiltersModal";
 import { equipmentFilters, muscleFilters } from "@/constants/exerciseFilters";
 import CustomTextInput from "./CustomTextInput";
+import exercisesStore from "@/store/exercisesStore";
 type Props = {
   onPress: (exercise: Exercise) => void;
   selectedExercises: Exercise[];
 };
 
 const Exercises = ({ onPress, selectedExercises }: Props) => {
-  const [exercises, setExercises] = useState<Exercise[]>([]);
+  const { exercises, setExercises } = exercisesStore();
+  const [filteredExercises, setFilteredExercises] =
+    useState<Exercise[]>(exercises);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedMuscle, setSelectedMuscle] = useState("");
   const [selectedEquipment, setSelectedEquipment] = useState("");
@@ -25,37 +28,33 @@ const Exercises = ({ onPress, selectedExercises }: Props) => {
   const equipmentRef = useRef(null);
 
   useEffect(() => {
-    getExercises();
-  }, [searchQuery, selectedMuscle, selectedEquipment]);
+    if (exercises.length === 0) getExercises();
+  }, []);
+  useEffect(() => {
+    filterExercises();
+  }, [selectedEquipment, selectedMuscle, searchQuery]);
 
   const getExercises = async () => {
-    // Build the query with filters
-    let query = supabase
+    const { data, error } = await supabase
       .from("exercises")
       .select()
-      .order("name", { ascending: true });
-
-    // Apply muscle filter if selected
-    if (selectedMuscle) {
-      query = query.eq("muscle", selectedMuscle);
-    }
-
-    if (selectedEquipment) {
-      query = query.eq("equipment", selectedEquipment);
-    }
-
-    // Apply search filter if query is provided
-    if (searchQuery) {
-      query = query.ilike("name", `%${searchQuery}%`);
-    }
-
-    // Execute the query
-    const { data, error } = await query.returns<Exercise[]>();
-
+      .order("name", { ascending: true })
+      .returns<Exercise[]>();
     if (data) {
       setExercises(data);
+      setFilteredExercises(data);
     }
     if (error) throw error;
+  };
+  const filterExercises = () => {
+    const filteredExercises = exercises.filter((exercise) => {
+      return (
+        exercise.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
+        (selectedMuscle === "" || exercise.muscle === selectedMuscle) &&
+        (selectedEquipment === "" || exercise.equipment === selectedEquipment)
+      );
+    });
+    setFilteredExercises(filteredExercises);
   };
   return (
     <>
@@ -112,7 +111,7 @@ const Exercises = ({ onPress, selectedExercises }: Props) => {
           </Pressable>
         </View>
         <FlatList
-          data={exercises}
+          data={filteredExercises}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
             <ExerciseRow

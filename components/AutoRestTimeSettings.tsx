@@ -35,21 +35,18 @@ const AutoRestTimeSettings = ({
 
   const panGesture = Gesture.Pan()
     .onUpdate((event) => {
-      if (event.translationX > 50) {
-        // Translate modal while swiping
-        translateX.value = withTiming(
-          Math.min(event.translationX, SWIPE_THRESHOLD),
-          {
-            duration: 0,
-          }
-        );
+      const translationX = event.translationX;
+      if (translationX > 50) {
+        translateX.value = withTiming(Math.min(translationX, SWIPE_THRESHOLD), {
+          duration: 0,
+        });
       }
     })
     .onEnd((event) => {
-      if (event.translationX > SWIPE_THRESHOLD) {
+      const translationX = Number(event.translationX);
+      if (translationX > SWIPE_THRESHOLD) {
         runOnJS(switchToMainScreen)();
       } else {
-        // If swipe doesn't cross threshold, reset to the current screen
         translateX.value = withSpring(-screenWidth, {
           duration: 300,
         });

@@ -5,93 +5,83 @@ import { AppColors } from "@/constants/colors";
 import useActiveWorkout from "@/store/useActiveWorkout";
 import WorkoutSet from "./WorkoutSet";
 import Animated, { LinearTransition } from "react-native-reanimated";
-import ExerciseOptionsModal from "../Modals/ExerciseOptionsModal";
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import { WorkoutExercisePopulated } from "@/types/workoutExercise";
 import useCustomKeyboard from "@/store/useCustomKeyboard";
+import useExerciseOptionsModal from "@/store/useExerciseOptionsModal";
 
 type Props = {
   workoutExercise: WorkoutExercisePopulated;
 };
 const WorkoutExercise = ({ workoutExercise }: Props) => {
   const { addNewSet } = useActiveWorkout();
-  const [isVisible, setIsVisible] = useState(false);
+  const { openModal } = useExerciseOptionsModal();
   const buttonRef = useRef(null);
   const { closeKeyboard } = useCustomKeyboard();
   const onButtonPress = () => {
     closeKeyboard();
-    setIsVisible(true);
+    openModal({
+      buttonRef,
+      exerciseName: workoutExercise.exercises.name,
+      exerciseTimer: workoutExercise.timer,
+      workoutExerciseId: workoutExercise.id,
+    });
   };
-  const onModalClose = () => {
-    setIsVisible(false);
-  };
-  return (
-    <>
-      <Animated.View style={styles.container} layout={LinearTransition}>
-        <View style={styles.header}>
-          <Text style={styles.headerTitle}>
-            {workoutExercise.exercises.name}
-          </Text>
-          <Pressable
-            style={styles.headerOptions}
-            ref={buttonRef}
-            onPress={onButtonPress}
-          >
-            <SimpleLineIcons name="options" size={24} color={AppColors.blue} />
-          </Pressable>
-        </View>
-        <View style={styles.table}>
-          <View style={[styles.row, styles.headerRow]}>
-            <Text style={[styles.cell, styles.headerCell, { flex: 0.75 }]}>
-              Set
-            </Text>
-            <Text style={[styles.cell, styles.headerCell, { flex: 1.75 }]}>
-              Previous
-            </Text>
-            <Text style={[styles.cell, styles.headerCell, { flex: 1.2 }]}>
-              Kg
-            </Text>
-            <Text style={[styles.cell, styles.headerCell, { flex: 1.3 }]}>
-              Reps
-            </Text>
-            <Text style={[styles.cell, styles.headerCell, { flex: 1 }]}>
-              Done
-            </Text>
-          </View>
 
-          {workoutExercise.exercise_sets
-            .sort((a, b) => a.order - b.order)
-            .map((set) => (
-              <WorkoutSet
-                key={set.id}
-                exerciseSet={set}
-                exerciseId={workoutExercise.exercises.id}
-                exerciseTimer={workoutExercise.timer}
-              />
-            ))}
-        </View>
-        <Animated.View
-          layout={LinearTransition}
-          style={styles.addButtonContainer}
+  return (
+    <Animated.View style={styles.container} layout={LinearTransition}>
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>{workoutExercise.exercises.name}</Text>
+        <Pressable
+          style={styles.headerOptions}
+          ref={buttonRef}
+          onPress={onButtonPress}
         >
-          <TouchableOpacity
-            style={styles.addButton}
-            onPress={() => addNewSet(workoutExercise.id)}
-          >
-            <Text style={styles.addButtonText}>+ Add Set</Text>
-          </TouchableOpacity>
-        </Animated.View>
+          <SimpleLineIcons name="options" size={24} color={AppColors.blue} />
+        </Pressable>
+      </View>
+      <View style={styles.table}>
+        <View style={[styles.row, styles.headerRow]}>
+          <Text style={[styles.cell, styles.headerCell, { flex: 0.75 }]}>
+            Set
+          </Text>
+          <Text style={[styles.cell, styles.headerCell, { flex: 1.75 }]}>
+            Previous
+          </Text>
+          <Text style={[styles.cell, styles.headerCell, { flex: 1.2 }]}>
+            Kg
+          </Text>
+          <Text style={[styles.cell, styles.headerCell, { flex: 1.3 }]}>
+            Reps
+          </Text>
+          <Text style={[styles.cell, styles.headerCell, { flex: 1 }]}>
+            Done
+          </Text>
+        </View>
+
+        {workoutExercise.exercise_sets
+          .sort((a, b) => a.order - b.order)
+          .map((set) => (
+            <WorkoutSet
+              key={set.id}
+              exerciseSet={set}
+              exerciseId={workoutExercise.exercises.id}
+              exerciseTimer={workoutExercise.timer}
+            />
+          ))}
+      </View>
+      <Animated.View
+        layout={LinearTransition}
+        style={styles.addButtonContainer}
+      >
+        <TouchableOpacity
+          style={styles.addButton}
+          onPress={() => addNewSet(workoutExercise.id)}
+        >
+          <Text style={styles.addButtonText}>+ Add Set</Text>
+        </TouchableOpacity>
       </Animated.View>
-      <ExerciseOptionsModal
-        exerciseTimer={workoutExercise.timer}
-        exerciseName={workoutExercise.exercises.name}
-        workoutExerciseId={workoutExercise.id}
-        closeModal={onModalClose}
-        isVisible={isVisible}
-        setIsVisible={setIsVisible}
-        buttonRef={buttonRef}
-      />
-    </>
+    </Animated.View>
   );
 };
 

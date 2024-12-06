@@ -14,18 +14,9 @@ import { getOptions } from "@/lib/workoutOptions";
 import useWorkoutExercisesModal from "@/store/useWorkoutExercisesModal";
 import { Exercise } from "@/types/exercises";
 import useActiveWorkout from "@/store/useActiveWorkout";
+import useExerciseOptionsModal from "@/store/useExerciseOptionsModal";
 
 const MODAL_WIDTH = 275;
-
-type Props = {
-  workoutExerciseId: string;
-  exerciseName: string;
-  isVisible: boolean;
-  exerciseTimer: number | null;
-  closeModal: () => void;
-  setIsVisible: React.Dispatch<React.SetStateAction<boolean>>;
-  buttonRef: React.MutableRefObject<null>;
-};
 
 const OptionButton = ({
   title,
@@ -45,15 +36,10 @@ const OptionButton = ({
   </Pressable>
 );
 
-const ExerciseOptionsModal = function ExerciseOptionsModal({
-  workoutExerciseId,
-  exerciseName,
-  exerciseTimer,
-  closeModal,
-  isVisible,
-  setIsVisible,
-  buttonRef,
-}: Props) {
+const ExerciseOptionsModal = function ExerciseOptionsModal() {
+  const { isVisible, closeModal, exerciseProps } = useExerciseOptionsModal();
+  const { buttonRef, exerciseName, exerciseTimer, workoutExerciseId } =
+    exerciseProps;
   const [warningState, setWarningState] = useState({
     isVisible: false,
     shouldShow: false,
@@ -75,7 +61,7 @@ const ExerciseOptionsModal = function ExerciseOptionsModal({
   const switchToAutoRestScreen = () => {
     console.log("clicked");
     setCurrentScreen("autoRest");
-    translateX.value = -MODAL_WIDTH;
+    translateX.value = Number(-MODAL_WIDTH);
   };
 
   const onDismiss = () => {
@@ -98,7 +84,7 @@ const ExerciseOptionsModal = function ExerciseOptionsModal({
   const options = getOptions({
     exerciseTimer,
     switchToAutoRestScreen,
-    setIsVisible,
+    closeModal,
     setWarningState,
     openExercisesModal,
   });
@@ -112,7 +98,7 @@ const ExerciseOptionsModal = function ExerciseOptionsModal({
   };
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [
-      { translateX: withTiming(translateX.value, { duration: 300 }) },
+      { translateX: withTiming(Number(translateX.value), { duration: 300 }) },
     ],
   }));
 

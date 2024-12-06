@@ -7,6 +7,8 @@ import WorkoutBottomSheet from "@/components/BottomSheet/WorkoutBottomSheet";
 import { useSharedValue } from "react-native-reanimated";
 import useBottomSheet from "@/store/useBottomSheet";
 import { AppColors } from "@/constants/colors";
+import { SafeAreaView } from "react-native-safe-area-context";
+import ExerciseOptionsModal from "@/components/Modals/ExerciseOptionsModal";
 import WorkoutExercisesModal from "@/components/Modals/WorkoutExercisesModal";
 
 export default function TabLayout() {
@@ -44,6 +46,10 @@ export default function TabLayout() {
           />
         ))}
       </Tabs>
+      <SafeAreaView>
+        <ExerciseOptionsModal />
+        <WorkoutExercisesModal />
+      </SafeAreaView>
       {isSheetVisible && <WorkoutBottomSheet animatedIndex={animatedIndex} />}
     </GestureHandlerRootView>
   );

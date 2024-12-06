@@ -1,21 +1,34 @@
 import { StyleSheet, SafeAreaView, View, Pressable, Text } from "react-native";
 import Exercises from "@/components/Exercises";
 import { AppColors } from "@/constants/colors";
+import { useState } from "react";
+import NewExerciseModal from "@/components/Modals/NewExerciseModal";
 
 export default function ExercisesScreen() {
+  const [isVisible, setIsVisible] = useState(false);
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <View style={styles.wrapper}>
-        <View style={styles.header}>
-          <Pressable>
-            <Text style={styles.headerButton}>New</Text>
-          </Pressable>
-          <Text style={styles.headerTitle}>Exercises</Text>
-          <View style={styles.headerSpacer} />
+    <>
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.wrapper}>
+          <View style={styles.header}>
+            <Pressable onPress={() => setIsVisible(true)}>
+              <Text style={styles.headerButton}>New</Text>
+            </Pressable>
+            <Text style={styles.headerTitle}>Exercises</Text>
+            <View style={styles.headerSpacer} />
+          </View>
+          <Exercises
+            onPress={() => console.log("pressed")}
+            selectedExercises={[]}
+          />
         </View>
-        <Exercises onPress={() => console.log("pressed")} />
-      </View>
-    </SafeAreaView>
+      </SafeAreaView>
+      <NewExerciseModal
+        closeModal={() => setIsVisible(false)}
+        isVisible={isVisible}
+        onDismiss={() => {}}
+      />
+    </>
   );
 }
 

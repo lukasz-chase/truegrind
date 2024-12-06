@@ -44,44 +44,42 @@ const WorkoutBottomSheet = ({ animatedIndex }: Props) => {
   };
 
   return (
-    <>
-      <View style={styles.overlay}>
-        <Pressable style={styles.container} onPress={closeKeyboard}>
-          <BottomSheet
-            onClose={handleClosePress}
-            ref={sheetRef}
-            snapPoints={snapPoints}
-            enableDynamicSizing={false}
-            animateOnMount={true}
-            index={1}
-            handleStyle={styles.handle}
-            backdropComponent={CustomBackdrop}
-            animatedIndex={animatedIndex}
-            enableOverDrag={false}
-            onChange={handleSheetChanges}
-          >
-            <CustomHeader
-              sheetIndex={sheetIndex}
-              close={handleClosePress}
-              scrolledY={scrolledY}
-            />
-            <ScrollView onScroll={handleScroll} scrollEventThrottle={16}>
-              <WorkoutDetails />
-              {activeWorkout?.workout_exercises
-                ?.sort((a, b) => a.order - b.order)
-                .map((workoutExercise) => (
-                  <WorkoutExercise
-                    key={workoutExercise.id}
-                    workoutExercise={workoutExercise}
-                  />
-                ))}
-              <CustomFooter close={handleClosePress} />
-            </ScrollView>
-          </BottomSheet>
-        </Pressable>
-        <CustomKeyboard animatedIndex={animatedIndex} />
-      </View>
-    </>
+    <View style={styles.overlay}>
+      <Pressable style={styles.container} onPress={closeKeyboard}>
+        <BottomSheet
+          onClose={handleClosePress}
+          ref={sheetRef}
+          snapPoints={snapPoints}
+          enableDynamicSizing={false}
+          animateOnMount={true}
+          index={1}
+          handleStyle={styles.handle}
+          backdropComponent={CustomBackdrop}
+          animatedIndex={animatedIndex}
+          enableOverDrag={false}
+          onChange={handleSheetChanges}
+        >
+          <CustomHeader
+            sheetIndex={sheetIndex}
+            close={handleClosePress}
+            scrolledY={scrolledY}
+          />
+          <ScrollView onScroll={handleScroll} scrollEventThrottle={16}>
+            <WorkoutDetails />
+            {activeWorkout?.workout_exercises
+              ?.sort((a, b) => a.order - b.order)
+              .map((workoutExercise) => (
+                <WorkoutExercise
+                  key={workoutExercise.id}
+                  workoutExercise={workoutExercise}
+                />
+              ))}
+            <CustomFooter close={handleClosePress} />
+          </ScrollView>
+        </BottomSheet>
+      </Pressable>
+      <CustomKeyboard animatedIndex={animatedIndex} />
+    </View>
   );
 };
 

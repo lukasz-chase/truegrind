@@ -7,6 +7,7 @@ import { UserProfile } from "@/types/user";
 import uuid from "react-native-uuid";
 import { Exercise } from "@/types/exercises";
 import { decode } from "base64-arraybuffer";
+import exercisesStore from "@/store/exercisesStore";
 
 export const updateWorkout = async (
   activeWorkout: Workout,
@@ -218,14 +219,20 @@ export const addExercise = async (exercise: Partial<Exercise>) => {
   if (exercise.image) {
     const imageUrl = await uploadImageToBucket(
       exercise.image,
-      `${exercise.muscle}/${exercise.name}/png`,
+      `${exercise.muscle}/${exercise.name}.png`,
       "exercises"
     );
     if (imageUrl) {
       exercise = { ...exercise, image: imageUrl };
     }
   }
-  const { data, error } = await supabase.from("exercises").insert(exercise);
+  const { data, error } = await supabase
+    .from("exercises")
+    .insert(exercise)
+    .returns<Exercise>();
+  if (data) {
+    exercisesStore.getState().addExercise(data);
+  }
   if (error) {
     console.log("error", error);
   }

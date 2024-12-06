@@ -11,13 +11,13 @@ import { Text, View } from "react-native";
 export const getOptions = ({
   exerciseTimer,
   switchToAutoRestScreen,
-  setIsVisible,
+  closeModal,
   setWarningState,
   openExercisesModal,
 }: {
   exerciseTimer: number | null;
   switchToAutoRestScreen: () => void;
-  setIsVisible: React.Dispatch<React.SetStateAction<boolean>>;
+  closeModal: () => void;
   setWarningState: React.Dispatch<
     React.SetStateAction<{ isVisible: boolean; shouldShow: boolean }>
   >;
@@ -67,7 +67,7 @@ export const getOptions = ({
     title: "Remove Exercise",
     cb: () => {
       setWarningState((state) => ({ ...state, shouldShow: true }));
-      setIsVisible(false);
+      closeModal();
     },
   },
 ];

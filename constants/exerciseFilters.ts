@@ -2,7 +2,8 @@ export const muscleFilters = [
   { label: "Chest", value: "chest" },
   { label: "Back", value: "back" },
   { label: "Legs", value: "legs" },
-  { label: "Arms", value: "arms" },
+  { label: "Triceps", value: "triceps" },
+  { label: "Biceps", value: "biceps" },
   { label: "Shoulders", value: "shoulders" },
 ];
 export const equipmentFilters = [

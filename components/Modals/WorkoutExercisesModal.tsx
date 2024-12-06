@@ -15,8 +15,14 @@ import NewExerciseModal from "./NewExerciseModal";
 import { Exercise } from "@/types/exercises";
 
 export default function WorkoutExercisesModal() {
-  const { closeModal, isVisible, onPress, allowMultiple, actionButtonLabel } =
-    useWorkoutExercisesModal();
+  const {
+    closeModal,
+    isVisible,
+    onPress,
+    allowMultiple,
+    actionButtonLabel,
+    openModal,
+  } = useWorkoutExercisesModal();
   const [openNewExerciseModal, setOpenNewExerciseModal] = useState(false);
   const [isNewExerciseModalVisible, setIsNewExerciseModalVisible] =
     useState(false);
@@ -109,6 +115,7 @@ export default function WorkoutExercisesModal() {
           setIsNewExerciseModalVisible(false);
         }}
         isVisible={isNewExerciseModalVisible}
+        onDismiss={() => openModal(onPress, true, "Add")}
       />
     </>
   );

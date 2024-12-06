@@ -27,12 +27,17 @@ const PlaceholderImage = require("@/assets/images/ImagePlaceholder.png");
 
 type Props = {
   closeModal: () => void;
+  onDismiss: () => void;
   isVisible: boolean;
 };
 
 const MODAL_WIDTH = 350;
 
-export default function NewExerciseModal({ closeModal, isVisible }: Props) {
+export default function NewExerciseModal({
+  closeModal,
+  isVisible,
+  onDismiss,
+}: Props) {
   const [exerciseName, setExerciseName] = useState("");
   const [instructions, setInstructions] = useState("");
   const [bodyPart, setBodyPart] = useState("");
@@ -40,20 +45,19 @@ export default function NewExerciseModal({ closeModal, isVisible }: Props) {
   const [selectedImage, setSelectedImage] = useState<string | undefined>(
     undefined
   );
-  const { openModal, onPress } = useWorkoutExercisesModal();
   const [loading, setLoading] = useState(false);
   const [currentScreen, setCurrentScreen] = useState<
     "main" | "equipment" | "body"
   >("main");
   const dataIsFilled = exerciseName && bodyPart && equipment;
 
-  const translateX = useSharedValue(0);
+  const translateXSharedValue = useSharedValue(0);
 
   const pickImageAsync = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ["images"],
       allowsEditing: true,
-      quality: 0.2,
+      quality: 0.05,
       base64: true,
     });
     if (!result.canceled) {
@@ -69,12 +73,16 @@ export default function NewExerciseModal({ closeModal, isVisible }: Props) {
     value: number
   ) => {
     setCurrentScreen(screenName);
-    translateX.value = value;
+    translateXSharedValue.value = value;
   };
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [
-      { translateX: withTiming(translateX.value, { duration: 300 }) },
+      {
+        translateX: withTiming(translateXSharedValue.value, {
+          duration: 300,
+        }),
+      },
     ],
   }));
 
@@ -108,7 +116,7 @@ export default function NewExerciseModal({ closeModal, isVisible }: Props) {
       visible={isVisible}
       animationType="fade"
       onRequestClose={closeModal}
-      onDismiss={() => openModal(onPress, true)}
+      onDismiss={onDismiss}
     >
       {loading && <LoadingAnimation />}
       <TouchableWithoutFeedback onPress={closeModal}>
