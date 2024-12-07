@@ -70,6 +70,7 @@ const useCustomKeyboard = create<KeyboardState>((set) => ({
         keyboardView: "default",
         updateSet,
         partials: null,
+        selectedRPE: defaultRPE,
       };
     }),
   closeKeyboard: () => set({ isVisible: false, activeField: null }),

@@ -49,6 +49,10 @@ const CustomKeyboard = ({
   const toggleSwitch = (value: any) => {
     if (!value) {
       setPartials(null);
+    } else {
+      if (!partials) {
+        setPartials(1);
+      }
     }
 
     setIsEnabled((previousState) => !previousState);
