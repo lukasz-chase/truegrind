@@ -4,16 +4,18 @@ import SimpleLineIcons from "@expo/vector-icons/SimpleLineIcons";
 import { AppColors } from "@/constants/colors";
 import useActiveWorkout from "@/store/useActiveWorkout";
 import WorkoutSet from "./WorkoutSet";
-import Animated, { LinearTransition } from "react-native-reanimated";
+import Animated, { LinearTransition, runOnJS } from "react-native-reanimated";
 import { useRef } from "react";
 import { WorkoutExercisePopulated } from "@/types/workoutExercise";
 import useCustomKeyboard from "@/store/useCustomKeyboard";
 import useExerciseOptionsModal from "@/store/useExerciseOptionsModal";
+import { Gesture, GestureDetector } from "react-native-gesture-handler";
 
 type Props = {
   workoutExercise: WorkoutExercisePopulated;
+  setDragItemId: React.Dispatch<React.SetStateAction<string | null>>;
 };
-const WorkoutExercise = ({ workoutExercise }: Props) => {
+const WorkoutExercise = ({ workoutExercise, setDragItemId }: Props) => {
   const { addNewSet } = useActiveWorkout();
   const { openModal } = useExerciseOptionsModal();
   const buttonRef = useRef(null);
@@ -27,19 +29,25 @@ const WorkoutExercise = ({ workoutExercise }: Props) => {
       workoutExerciseId: workoutExercise.id,
     });
   };
-
+  const longPressGesture = Gesture.LongPress().onStart((event) => {
+    runOnJS(setDragItemId)(workoutExercise.id);
+  });
   return (
     <Animated.View style={styles.container} layout={LinearTransition}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>{workoutExercise.exercises.name}</Text>
-        <Pressable
-          style={styles.headerOptions}
-          ref={buttonRef}
-          onPress={onButtonPress}
-        >
-          <SimpleLineIcons name="options" size={24} color={AppColors.blue} />
-        </Pressable>
-      </View>
+      <GestureDetector gesture={longPressGesture}>
+        <View style={styles.header}>
+          <Text style={styles.headerTitle}>
+            {workoutExercise.exercises.name}
+          </Text>
+          <Pressable
+            style={styles.headerOptions}
+            ref={buttonRef}
+            onPress={onButtonPress}
+          >
+            <SimpleLineIcons name="options" size={24} color={AppColors.blue} />
+          </Pressable>
+        </View>
+      </GestureDetector>
       <View style={styles.table}>
         <View style={[styles.row, styles.headerRow]}>
           <Text style={[styles.cell, styles.headerCell, { flex: 0.75 }]}>
@@ -58,17 +66,14 @@ const WorkoutExercise = ({ workoutExercise }: Props) => {
             Done
           </Text>
         </View>
-
-        {workoutExercise.exercise_sets
-          .sort((a, b) => a.order - b.order)
-          .map((set) => (
-            <WorkoutSet
-              key={set.id}
-              exerciseSet={set}
-              exerciseId={workoutExercise.exercises.id}
-              exerciseTimer={workoutExercise.timer}
-            />
-          ))}
+        {workoutExercise.exercise_sets.map((set) => (
+          <WorkoutSet
+            key={set.id}
+            exerciseSet={set}
+            exerciseId={workoutExercise.exercises.id}
+            exerciseTimer={workoutExercise.timer}
+          />
+        ))}
       </View>
       <Animated.View
         layout={LinearTransition}

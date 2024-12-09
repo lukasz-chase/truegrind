@@ -64,7 +64,8 @@ export const updateWorkoutExercises = async (
     if (
       !initialExercise ||
       workoutExercise.notes !== initialExercise.notes ||
-      workoutExercise.timer !== initialExercise.timer
+      workoutExercise.timer !== initialExercise.timer ||
+      workoutExercise.order !== initialExercise.order
     ) {
       workoutExercisesToUpdate.push({
         ...workoutExerciseNotPopulated,

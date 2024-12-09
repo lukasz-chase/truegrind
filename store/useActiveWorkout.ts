@@ -34,9 +34,7 @@ interface ActiveWorkoutStore {
   deleteExerciseSet: (exerciseId: string, setId: string) => void;
   removeWorkoutExercise: (exerciseId: string) => void;
   replaceWorkoutExercise: (exerciseId: string, newExercise: Exercise) => void;
-  reorderWorkoutExercises: (
-    reorderedExercises: WorkoutExercisePopulated[]
-  ) => void;
+  reorderWorkoutExercises: (newOrder: string[]) => void;
 }
 
 const useActiveWorkout = create<ActiveWorkoutStore>()(
@@ -88,7 +86,7 @@ const useActiveWorkout = create<ActiveWorkoutStore>()(
         }));
       },
       addNewWorkoutExercise: (exercise: Exercise) => {
-        const workoutExercise = {
+        const newExercise: WorkoutExercisePopulated = {
           id: uuid.v4(),
           notes: "",
           order: (get().activeWorkout.workout_exercises?.length ?? 0) + 1,
@@ -96,17 +94,22 @@ const useActiveWorkout = create<ActiveWorkoutStore>()(
           exercises: exercise,
           exercise_sets: [],
         };
-        set((state) => ({
-          activeWorkout: {
-            ...state.activeWorkout,
-            workout_exercises: [
-              ...(state.activeWorkout.workout_exercises || []),
-              workoutExercise,
-            ],
-          },
-          workoutWasUpdated: true,
-        }));
-        get().addNewSet(workoutExercise.id);
+
+        set((state) => {
+          const updatedExercises = [
+            ...(state.activeWorkout.workout_exercises || []),
+            newExercise,
+          ];
+
+          return {
+            activeWorkout: {
+              ...state.activeWorkout,
+              workout_exercises: updatedExercises,
+            },
+            workoutWasUpdated: true,
+          };
+        });
+        get().addNewSet(newExercise.id);
       },
       replaceWorkoutExercise: (
         workoutExerciseId: string,
@@ -242,21 +245,28 @@ const useActiveWorkout = create<ActiveWorkoutStore>()(
           };
         });
       },
-      reorderWorkoutExercises: (reorderedExercises) => {
-        // Ensure that order is re-assigned based on the new positions
-        const updatedExercises = reorderedExercises.map((ex, index) => ({
-          ...ex,
-          order: index + 1,
-        }));
-        console.log(updatedExercises);
-        console.log(updatedExercises);
-        set((state) => ({
-          activeWorkout: {
-            ...state.activeWorkout,
-            workout_exercises: updatedExercises,
-          },
-          workoutWasUpdated: true,
-        }));
+      reorderWorkoutExercises: (newOrder: string[]) => {
+        set((state) => {
+          const currentExercises = state.activeWorkout.workout_exercises || [];
+
+          const updatedExercises = newOrder.map((id, index) => {
+            const exercise = currentExercises.find(
+              (exercise) => exercise.id === id
+            );
+            if (!exercise) return currentExercises[index];
+            return {
+              ...exercise,
+              order: index + 1,
+            };
+          });
+          return {
+            activeWorkout: {
+              ...state.activeWorkout,
+              workout_exercises: updatedExercises,
+            },
+            workoutWasUpdated: true,
+          };
+        });
       },
     }),
     {

@@ -6,12 +6,12 @@ import CustomHeader from "./CustomHeader";
 import CustomFooter from "./CustomFooter";
 import useBottomSheet from "@/store/useBottomSheet";
 import { SharedValue } from "react-native-reanimated";
-import WorkoutExercise from "./WorkoutExercise";
 import useActiveWorkout from "@/store/useActiveWorkout";
 import WorkoutDetails from "./WorkoutDetails";
 import CustomKeyboard from "../CustomKeyboard";
 import useCustomKeyboard from "@/store/useCustomKeyboard";
-import DraggableList from "../DraggableList";
+import DraggableList from "./DraggableExercisesList.tsx/DraggableList";
+import WorkoutExercise from "./WorkoutExercise";
 
 type Props = {
   animatedIndex: SharedValue<number>;
@@ -20,12 +20,14 @@ type Props = {
 const WorkoutBottomSheet = ({ animatedIndex }: Props) => {
   const [sheetIndex, setSheetIndex] = useState(0);
   const [scrolledY, setScrolledY] = useState(0);
-  const [draggingStart, setDraggingStart] = useState(false);
+  const [dragItemId, setDragItemId] = useState<string | null>(null);
+
   const { setIsSheetVisible } = useBottomSheet();
   const { activeWorkout, reorderWorkoutExercises } = useActiveWorkout();
   const { closeKeyboard } = useCustomKeyboard();
 
   const sheetRef = useRef<BottomSheet>(null);
+
   const snapPoints = useMemo(() => [130, "90%"], []);
 
   const handleClosePress = useCallback(() => {
@@ -39,11 +41,16 @@ const WorkoutBottomSheet = ({ animatedIndex }: Props) => {
     closeKeyboard();
     setSheetIndex(index);
   }, []);
+
   const handleScroll = (event: any) => {
     const scrollY = event.nativeEvent.contentOffset.y;
     setScrolledY(scrollY);
   };
 
+  const handleReorder = (newOrder: string[]) => {
+    reorderWorkoutExercises(newOrder);
+    setDragItemId(null);
+  };
   return (
     <View style={styles.overlay}>
       <Pressable style={styles.container} onPress={closeKeyboard}>
@@ -67,15 +74,28 @@ const WorkoutBottomSheet = ({ animatedIndex }: Props) => {
           />
           <BottomSheetScrollView onScroll={handleScroll}>
             <WorkoutDetails />
-            <DraggableList />
-            {/* {activeWorkout?.workout_exercises
-              ?.sort((a, b) => a.order - b.order)
-              .map((workoutExercise) => (
-                <WorkoutExercise
-                  key={workoutExercise.id}
-                  workoutExercise={workoutExercise}
-                />
-              ))} */}
+            {dragItemId && (
+              <DraggableList
+                data={
+                  activeWorkout?.workout_exercises?.sort(
+                    (a, b) => a.order - b.order
+                  ) ?? []
+                }
+                onReorder={handleReorder}
+                dragItemId={dragItemId}
+              />
+            )}
+
+            {!dragItemId &&
+              activeWorkout?.workout_exercises
+                ?.sort((a, b) => a.order - b.order)
+                .map((workoutExercise) => (
+                  <WorkoutExercise
+                    key={workoutExercise.id}
+                    workoutExercise={workoutExercise}
+                    setDragItemId={setDragItemId}
+                  />
+                ))}
             <CustomFooter close={handleClosePress} />
           </BottomSheetScrollView>
         </BottomSheet>

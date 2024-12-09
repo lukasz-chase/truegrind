@@ -1,4 +1,4 @@
-import DraggableList from "@/components/DraggableList";
+import DraggableList from "@/components/BottomSheet/DraggableExercisesList.tsx/DraggableList";
 import { AppColors } from "@/constants/colors";
 import { Text, View, StyleSheet, Pressable, SafeAreaView } from "react-native";
 
