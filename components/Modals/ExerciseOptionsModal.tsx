@@ -40,6 +40,11 @@ const ExerciseOptionsModal = function ExerciseOptionsModal() {
   const { isVisible, closeModal, exerciseProps } = useExerciseOptionsModal();
   const { buttonRef, exerciseName, exerciseTimer, workoutExerciseId } =
     exerciseProps;
+  const { openModal, closeModal: closeExercisesModal } =
+    useWorkoutExercisesModal();
+  const { replaceWorkoutExercise, updateWorkoutExerciseField } =
+    useActiveWorkout();
+
   const [warningState, setWarningState] = useState({
     isVisible: false,
     shouldShow: false,
@@ -52,11 +57,6 @@ const ExerciseOptionsModal = function ExerciseOptionsModal() {
   );
 
   const translateX = useSharedValue(0);
-
-  const { openModal, closeModal: closeExercisesModal } =
-    useWorkoutExercisesModal();
-  const { replaceWorkoutExercise, updateWorkoutExerciseField } =
-    useActiveWorkout();
 
   const switchToAutoRestScreen = () => {
     console.log("clicked");

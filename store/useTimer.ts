@@ -2,6 +2,7 @@ import { create } from "zustand";
 import * as Notifications from "expo-notifications";
 import { Platform } from "react-native";
 import * as Haptics from "expo-haptics";
+import { Audio } from "expo-av";
 
 type TimerState = {
   timerDuration: number; // Total timer duration in seconds
@@ -79,6 +80,10 @@ const useTimerStore = create<TimerState>()((set, get) => {
 
   const endTimer = async () => {
     if (timer) clearInterval(timer);
+    //TODO - FIX NOTIFICATIONS AND REMOVE THE SOUND
+    const { sound } = await Audio.Sound.createAsync(
+      require("@/assets/sounds/bell.mp3")
+    );
     if (Platform.OS !== "web") {
       await Notifications.scheduleNotificationAsync({
         content: {
@@ -88,6 +93,8 @@ const useTimerStore = create<TimerState>()((set, get) => {
         },
         trigger: null,
       });
+      await sound.playAsync();
+
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     }
     timer = null; // Reset the timer variable

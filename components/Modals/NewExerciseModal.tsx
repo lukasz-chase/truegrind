@@ -22,7 +22,6 @@ import { addExercise } from "@/lib/supabaseActions";
 import * as ImagePicker from "expo-image-picker";
 import { Image } from "expo-image";
 import LoadingAnimation from "../LoadingAnimation";
-import useWorkoutExercisesModal from "@/store/useWorkoutExercisesModal";
 const PlaceholderImage = require("@/assets/images/ImagePlaceholder.png");
 
 type Props = {

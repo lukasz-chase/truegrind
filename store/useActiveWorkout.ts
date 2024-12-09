@@ -56,8 +56,6 @@ const useActiveWorkout = create<ActiveWorkoutStore>()(
       isNewWorkout: false,
       setIsNewWorkout: (value: boolean) => set({ isNewWorkout: value }),
       setActiveWorkout: (workout: Workout) => {
-        const { endTimer } = useTimerStore.getState(); // Access the timer store's actions
-        endTimer(); // Call the endTimer function from the timer store
         set({ activeWorkout: workout, initialActiveWorkout: workout });
       },
       updateWorkoutField: (field: keyof Workout, updatedValue: any) => {
