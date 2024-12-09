@@ -1,14 +1,12 @@
+import DraggableList from "@/components/DraggableList";
 import { AppColors } from "@/constants/colors";
-import { Text, View, StyleSheet, Pressable } from "react-native";
+import { Text, View, StyleSheet, Pressable, SafeAreaView } from "react-native";
 
 export default function CalendarScreen() {
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <Text style={styles.text}>Calendar screen</Text>
-      <Pressable onPress={() => console.log("pressed")}>
-        <Text style={styles.text}>press</Text>
-      </Pressable>
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -18,6 +16,7 @@ const styles = StyleSheet.create({
     backgroundColor: AppColors.black,
     justifyContent: "center",
     alignItems: "center",
+    flexDirection: "column",
   },
   text: {
     color: "#fff",

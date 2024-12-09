@@ -1,7 +1,10 @@
 import React, { memo } from "react";
 import { Platform, StyleSheet, View } from "react-native";
 import * as Haptics from "expo-haptics";
-import WheelPicker from "@quidone/react-native-wheel-picker";
+import WheelPicker, {
+  PickerItem,
+  ValueChangedEvent,
+} from "@quidone/react-native-wheel-picker";
 
 type Props = {
   value: number;
@@ -23,21 +26,21 @@ const MemoizedScrollPicker = memo(
     visibleItemCount,
     data,
   }: Props) => {
-    const onValueChange = ({
-      item: { value },
-    }: {
-      item: { value: number };
-    }) => {
-      setValue(value);
+    const onValueChanged = ({
+      item: { value: val },
+    }: ValueChangedEvent<PickerItem<number>>) => {
+      if (disabled) return;
+      setValue(val);
       if (Platform.OS !== "web") Haptics.selectionAsync();
     };
+
     return (
-      <View style={styles.scrollPicker}>
+      <View style={[styles.scrollPicker, { height: 40 * visibleItemCount }]}>
         <WheelPicker
           readOnly={disabled}
           data={data}
           value={value}
-          onValueChanged={onValueChange}
+          onValueChanging={onValueChanged}
           visibleItemCount={visibleItemCount}
           itemTextStyle={{
             color: disabled ? "gray" : textColor,
@@ -48,7 +51,7 @@ const MemoizedScrollPicker = memo(
             height: 40,
             backgroundColor: disabled ? "transparent" : backgroundColor,
           }}
-          onValueChanging={onValueChange}
+          itemHeight={40}
         />
       </View>
     );
@@ -58,6 +61,7 @@ const MemoizedScrollPicker = memo(
 const styles = StyleSheet.create({
   scrollPicker: {
     width: "100%",
+    justifyContent: "center",
   },
 });
 

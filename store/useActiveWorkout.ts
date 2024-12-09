@@ -4,7 +4,10 @@ import { ExerciseSet } from "@/types/exercisesSets";
 import uuid from "react-native-uuid";
 import { Exercise } from "@/types/exercises";
 import useTimerStore from "./useTimer";
-import { WorkoutExercise } from "@/types/workoutExercise";
+import {
+  WorkoutExercise,
+  WorkoutExercisePopulated,
+} from "@/types/workoutExercise";
 import { createJSONStorage, persist } from "zustand/middleware";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -31,6 +34,9 @@ interface ActiveWorkoutStore {
   deleteExerciseSet: (exerciseId: string, setId: string) => void;
   removeWorkoutExercise: (exerciseId: string) => void;
   replaceWorkoutExercise: (exerciseId: string, newExercise: Exercise) => void;
+  reorderWorkoutExercises: (
+    reorderedExercises: WorkoutExercisePopulated[]
+  ) => void;
 }
 
 const useActiveWorkout = create<ActiveWorkoutStore>()(
@@ -235,6 +241,22 @@ const useActiveWorkout = create<ActiveWorkoutStore>()(
             workoutWasUpdated: true,
           };
         });
+      },
+      reorderWorkoutExercises: (reorderedExercises) => {
+        // Ensure that order is re-assigned based on the new positions
+        const updatedExercises = reorderedExercises.map((ex, index) => ({
+          ...ex,
+          order: index + 1,
+        }));
+        console.log(updatedExercises);
+        console.log(updatedExercises);
+        set((state) => ({
+          activeWorkout: {
+            ...state.activeWorkout,
+            workout_exercises: updatedExercises,
+          },
+          workoutWasUpdated: true,
+        }));
       },
     }),
     {

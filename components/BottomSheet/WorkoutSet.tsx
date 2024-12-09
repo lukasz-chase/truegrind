@@ -37,7 +37,12 @@ const WorkoutSet = ({ exerciseSet, exerciseId, exerciseTimer }: Props) => {
   const buttonWidth = useSharedValue(INITIAL_BUTTON_WIDTH);
 
   const [rowWidth, setRowWidth] = useState(0);
-  const [setLocalState, setSetLocalState] = useState({
+  const [setLocalState, setSetLocalState] = useState<{
+    reps: string;
+    weight: string;
+    partials: number | null;
+    rpe: number | null;
+  }>({
     reps: "",
     weight: "",
     partials: null,
@@ -54,15 +59,20 @@ const WorkoutSet = ({ exerciseSet, exerciseId, exerciseTimer }: Props) => {
     updateStoreSetField(newValue, name);
   };
 
-  const bulkUpdateRepsAndWeight = (newValue: {
+  const bulkUpdateSet = (newValue: {
     reps: number;
     weight: number;
+    rpe: number | null;
+    partials: number | null;
   }) => {
     setSetLocalState({
       ...setLocalState,
       reps: `${newValue.reps}`,
       weight: `${newValue.weight}`,
+      rpe: newValue.rpe,
+      partials: newValue.partials,
     });
+    console.log(newValue);
     updateExerciseSet(exerciseId, exerciseSet.id, { ...newValue });
   };
 
@@ -179,7 +189,7 @@ const WorkoutSet = ({ exerciseSet, exerciseId, exerciseTimer }: Props) => {
                   exerciseId={exerciseId}
                   setOrder={exerciseSet.order}
                   userId={user!.id}
-                  bulkUpdateRepsAndWeight={bulkUpdateRepsAndWeight}
+                  bulkUpdateSet={bulkUpdateSet}
                 />
               </View>
               <View style={[styles.cell, { flex: 1.25 }]}>
@@ -190,8 +200,8 @@ const WorkoutSet = ({ exerciseSet, exerciseId, exerciseTimer }: Props) => {
                   updateSet={updateSet}
                   fieldName="weight"
                   updateStoreSetField={updateStoreSetField}
-                  setRPE={setLocalState.rpe}
-                  partials={setLocalState.partials}
+                  localStateRpeValue={setLocalState.rpe}
+                  localStatePartialsValue={setLocalState.partials}
                 />
               </View>
 
@@ -203,8 +213,8 @@ const WorkoutSet = ({ exerciseSet, exerciseId, exerciseTimer }: Props) => {
                   updateSet={updateSet}
                   fieldName="reps"
                   updateStoreSetField={updateStoreSetField}
-                  setRPE={setLocalState.rpe}
-                  partials={setLocalState.partials}
+                  localStateRpeValue={setLocalState.rpe}
+                  localStatePartialsValue={setLocalState.partials}
                 />
               </View>
               <View style={[styles.cell, { flex: 1, alignItems: "center" }]}>

@@ -1,17 +1,17 @@
 import { useRef, useMemo, useCallback, useState } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
-import BottomSheet from "@gorhom/bottom-sheet";
+import BottomSheet, { BottomSheetScrollView } from "@gorhom/bottom-sheet";
 import CustomBackdrop from "./CustomBackdrop";
 import CustomHeader from "./CustomHeader";
 import CustomFooter from "./CustomFooter";
 import useBottomSheet from "@/store/useBottomSheet";
 import { SharedValue } from "react-native-reanimated";
 import WorkoutExercise from "./WorkoutExercise";
-import { ScrollView } from "react-native-gesture-handler";
 import useActiveWorkout from "@/store/useActiveWorkout";
 import WorkoutDetails from "./WorkoutDetails";
 import CustomKeyboard from "../CustomKeyboard";
 import useCustomKeyboard from "@/store/useCustomKeyboard";
+import DraggableList from "../DraggableList";
 
 type Props = {
   animatedIndex: SharedValue<number>;
@@ -20,13 +20,14 @@ type Props = {
 const WorkoutBottomSheet = ({ animatedIndex }: Props) => {
   const [sheetIndex, setSheetIndex] = useState(0);
   const [scrolledY, setScrolledY] = useState(0);
-
+  const [draggingStart, setDraggingStart] = useState(false);
   const { setIsSheetVisible } = useBottomSheet();
-  const { activeWorkout } = useActiveWorkout();
+  const { activeWorkout, reorderWorkoutExercises } = useActiveWorkout();
   const { closeKeyboard } = useCustomKeyboard();
 
   const sheetRef = useRef<BottomSheet>(null);
   const snapPoints = useMemo(() => [130, "90%"], []);
+
   const handleClosePress = useCallback(() => {
     closeKeyboard();
     setIsSheetVisible(false);
@@ -64,18 +65,19 @@ const WorkoutBottomSheet = ({ animatedIndex }: Props) => {
             close={handleClosePress}
             scrolledY={scrolledY}
           />
-          <ScrollView onScroll={handleScroll} scrollEventThrottle={16}>
+          <BottomSheetScrollView onScroll={handleScroll}>
             <WorkoutDetails />
-            {activeWorkout?.workout_exercises
+            <DraggableList />
+            {/* {activeWorkout?.workout_exercises
               ?.sort((a, b) => a.order - b.order)
               .map((workoutExercise) => (
                 <WorkoutExercise
                   key={workoutExercise.id}
                   workoutExercise={workoutExercise}
                 />
-              ))}
+              ))} */}
             <CustomFooter close={handleClosePress} />
-          </ScrollView>
+          </BottomSheetScrollView>
         </BottomSheet>
       </Pressable>
       <CustomKeyboard animatedIndex={animatedIndex} />

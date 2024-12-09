@@ -20,8 +20,8 @@ type SetInputProps = {
   updateSet: (newValue: any, name: keyof ExerciseSet) => void;
   fieldName: "weight" | "reps";
   updateStoreSetField: (newValue: any, name: keyof ExerciseSet) => void;
-  setRPE: number | null;
-  partials: number | null;
+  localStateRpeValue: number | null;
+  localStatePartialsValue: number | null;
 };
 
 const CARET_WIDTH = 2;
@@ -33,12 +33,17 @@ const SetInput = ({
   updateSet,
   fieldName,
   updateStoreSetField,
-  setRPE,
-  partials,
+  localStateRpeValue,
+  localStatePartialsValue,
 }: SetInputProps) => {
   const [wasThereValueOnPress, setWasThereValueOnPress] = useState(false);
   const [textWidth, setTextWidth] = useState(0);
-  const [rpe, setRpe] = useState<number | null>(setRPE);
+  const [rpe, setRpe] = useState<number | null>(localStateRpeValue);
+
+  useEffect(() => {
+    setRpe(localStateRpeValue);
+  }, [localStateRpeValue]);
+
   const repsInput = fieldName === "reps";
   const {
     openKeyboard,
@@ -90,7 +95,7 @@ const SetInput = ({
         {
           backgroundColor: completed ? AppColors.lightGreen : AppColors.gray,
           borderColor: isActive ? "black" : "transparent",
-          width: repsInput && (partials || rpe) ? "90%" : "100%",
+          width: repsInput && (localStatePartialsValue || rpe) ? "90%" : "100%",
         },
       ]}
       onPress={() => {
@@ -101,7 +106,7 @@ const SetInput = ({
           setRPELocallyAndInStore,
           updateSet
         );
-        if (partials) setPartials(partials);
+        if (localStatePartialsValue) setPartials(localStatePartialsValue);
         if (rpe) {
           const keyboardRPE = rpeValues.find((mapRpe) => rpe === mapRpe.value);
           setRPEInStore(keyboardRPE!);
@@ -136,9 +141,9 @@ const SetInput = ({
           <Text>{rpe}</Text>
         </View>
       )}
-      {repsInput && partials && (
+      {repsInput && localStatePartialsValue && (
         <View style={styles.partials}>
-          <Text>+{partials}</Text>
+          <Text>+{localStatePartialsValue}</Text>
         </View>
       )}
     </Pressable>
