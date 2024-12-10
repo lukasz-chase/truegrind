@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Dimensions, Pressable, StyleSheet, Text, View } from "react-native";
 import AnchoredModal from "./AnchoredModal";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { AnimatedCircularProgress } from "react-native-circular-progress";
@@ -10,18 +10,11 @@ import { formatTime } from "@/lib/helpers";
 import userStore from "@/store/userStore";
 import { updateUserProfile } from "@/lib/supabaseActions";
 import CloseButton from "../CloseButton";
+import useWorkoutTimerModal from "@/store/useWorkoutTimerModal";
 
-type Props = {
-  isVisible: boolean;
-  closeModal: () => void;
-  buttonRef: React.MutableRefObject<null>;
-};
+const screenWidth = Dimensions.get("window").width;
 
-export default function TimerModal({
-  closeModal,
-  isVisible,
-  buttonRef,
-}: Props) {
+export default function TimerModal() {
   const [customTimerView, setCustomTimerView] = useState(false);
   const [customDuration, setCustomDuration] = useState(60);
   const { user } = userStore();
@@ -38,7 +31,7 @@ export default function TimerModal({
     endTimer,
     timerDuration,
   } = useTimerStore();
-
+  const { closeModal, isVisible, buttonRef } = useWorkoutTimerModal();
   const handleTimerComplete = () => {
     endTimer();
     closeModal();
@@ -65,6 +58,7 @@ export default function TimerModal({
       }}
       anchorRef={buttonRef}
       anchorCorner="LEFT"
+      modalWidth={screenWidth * 0.9}
     >
       <View style={styles.container}>
         <View style={styles.modalHeader}>

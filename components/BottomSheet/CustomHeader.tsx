@@ -31,8 +31,7 @@ type Props = {
 
 const CustomHeader = ({ sheetIndex, close, scrolledY }: Props) => {
   const { animatedIndex, expand } = useBottomSheet();
-  const scrolledValue = useSharedValue(scrolledY);
-  const { formattedTime, resetTimer, startTimer } = useWorkoutTimer();
+  const { formattedTime, resetTimer } = useWorkoutTimer();
   const { endTimer, timeRemaining, isRunning, timerDuration } = useTimerStore();
   const {
     activeWorkout,
@@ -41,14 +40,22 @@ const CustomHeader = ({ sheetIndex, close, scrolledY }: Props) => {
     isNewWorkout,
   } = useActiveWorkout();
   const { refetchData } = useAppStore();
-  const { isVisible, closeModal, openModal } = useWorkoutTimerModal();
+  const { openModal, setButtonRef } = useWorkoutTimerModal();
   const { closeKeyboard } = useCustomKeyboard();
+
+  const scrolledValue = useSharedValue(scrolledY);
+
   const buttonRef = useRef(null);
 
-  useEffect(startTimer);
+  useEffect(() => {
+    setButtonRef(buttonRef);
+    //Remove start timer not sure why it was here
+  }, [buttonRef]);
+
   useEffect(() => {
     scrolledValue.value = scrolledY;
   }, [scrolledY]);
+
   const finishWorkout = async () => {
     closeKeyboard();
     if (!workoutWasUpdated) return;
@@ -162,11 +169,6 @@ const CustomHeader = ({ sheetIndex, close, scrolledY }: Props) => {
           </Pressable>
         </Animated.View>
       </Pressable>
-      <TimerModal
-        isVisible={isVisible}
-        closeModal={closeModal}
-        buttonRef={buttonRef}
-      />
     </>
   );
 };

@@ -10,6 +10,7 @@ import { AppColors } from "@/constants/colors";
 import { SafeAreaView } from "react-native-safe-area-context";
 import ExerciseOptionsModal from "@/components/Modals/ExerciseOptionsModal";
 import WorkoutExercisesModal from "@/components/Modals/WorkoutExercisesModal";
+import TimerModal from "@/components/Modals/TimerModal";
 
 export default function TabLayout() {
   const animatedIndex = useSharedValue(0);
@@ -47,6 +48,7 @@ export default function TabLayout() {
         ))}
       </Tabs>
       <SafeAreaView>
+        <TimerModal />
         <ExerciseOptionsModal />
         <WorkoutExercisesModal />
       </SafeAreaView>

@@ -56,7 +56,7 @@ const WorkoutSet = ({ exerciseSet, exerciseId, exerciseTimer }: Props) => {
 
   const updateSet = (newValue: any, name: keyof ExerciseSet) => {
     setSetLocalState((prev) => ({ ...prev, [name]: newValue }));
-    updateStoreSetField(newValue, name);
+    updateExerciseSetFields({ [name]: newValue });
   };
 
   const bulkUpdateSet = (newValue: {
@@ -72,12 +72,11 @@ const WorkoutSet = ({ exerciseSet, exerciseId, exerciseTimer }: Props) => {
       rpe: newValue.rpe,
       partials: newValue.partials,
     });
-    console.log(newValue);
     updateExerciseSet(exerciseId, exerciseSet.id, { ...newValue });
   };
 
-  const updateStoreSetField = (newValue: any, name: keyof ExerciseSet) => {
-    updateExerciseSet(exerciseId, exerciseSet.id, { [name]: newValue });
+  const updateExerciseSetFields = (newValues: Partial<ExerciseSet>) => {
+    updateExerciseSet(exerciseId, exerciseSet.id, newValues);
   };
 
   const handleHapticFeedback = () => {
@@ -199,7 +198,7 @@ const WorkoutSet = ({ exerciseSet, exerciseId, exerciseTimer }: Props) => {
                   exerciseSetId={exerciseSet.id}
                   updateSet={updateSet}
                   fieldName="weight"
-                  updateStoreSetField={updateStoreSetField}
+                  updateStoreSetField={updateExerciseSetFields}
                   localStateRpeValue={setLocalState.rpe}
                   localStatePartialsValue={setLocalState.partials}
                 />
@@ -212,18 +211,19 @@ const WorkoutSet = ({ exerciseSet, exerciseId, exerciseTimer }: Props) => {
                   exerciseSetId={exerciseSet.id}
                   updateSet={updateSet}
                   fieldName="reps"
-                  updateStoreSetField={updateStoreSetField}
+                  updateStoreSetField={updateExerciseSetFields}
                   localStateRpeValue={setLocalState.rpe}
                   localStatePartialsValue={setLocalState.partials}
                 />
               </View>
               <View style={[styles.cell, { flex: 1, alignItems: "center" }]}>
                 <CompleteSetButton
-                  updateStoreSetField={updateStoreSetField}
+                  updateStoreSetField={updateExerciseSetFields}
                   completed={exerciseSet.completed}
                   reps={setLocalState.reps}
                   rowScale={rowScale}
                   exerciseTimer={exerciseTimer}
+                  weight={setLocalState.weight}
                 />
               </View>
             </Animated.View>

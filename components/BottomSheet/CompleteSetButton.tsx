@@ -11,11 +11,12 @@ import useWorkoutTimerModal from "@/store/useWorkoutTimerModal";
 import useCustomKeyboard from "@/store/useCustomKeyboard";
 
 type CompleteSetButtonProps = {
-  updateStoreSetField: (value: any, name: keyof ExerciseSet) => void;
+  updateStoreSetField: (newValues: Partial<ExerciseSet>) => void;
   completed: boolean;
   reps: string;
   rowScale: Animated.SharedValue<number>;
   exerciseTimer: number;
+  weight: string;
 };
 
 const CompleteSetButton = ({
@@ -24,13 +25,17 @@ const CompleteSetButton = ({
   reps,
   rowScale,
   exerciseTimer,
+  weight,
 }: CompleteSetButtonProps) => {
   const { startTimer, endTimer, isRunning } = useTimerStore();
   const { openModal } = useWorkoutTimerModal();
   const { closeKeyboard } = useCustomKeyboard();
   const completeSet = () => {
     closeKeyboard();
-    updateStoreSetField(!completed, "completed");
+    updateStoreSetField({
+      completed: !completed,
+      weight: weight ? Number(weight) : 0,
+    });
     if (!completed) {
       if (Platform.OS !== "web") {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);

@@ -17,7 +17,7 @@ type SetInputProps = {
   exerciseSetId: string;
   updateSet: (newValue: any, name: keyof ExerciseSet) => void;
   fieldName: "weight" | "reps";
-  updateStoreSetField: (newValue: any, name: keyof ExerciseSet) => void;
+  updateStoreSetField: (newValues: Partial<ExerciseSet>) => void;
   localStateRpeValue: number | null;
   localStatePartialsValue: number | null;
 };
@@ -57,10 +57,10 @@ const SetInput = ({
 
   const setRPELocallyAndInStore = (value: number | null) => {
     setRpe(value);
-    updateStoreSetField(value, "rpe");
+    updateStoreSetField({ rpe: value });
   };
   const setValueHandler = (value: string) => {
-    if (repsInput && !value) updateStoreSetField(false, "completed");
+    if (repsInput && !value) updateStoreSetField({ completed: false });
     updateSet(value, fieldName);
     setWasThereValueOnPress(false);
   };
