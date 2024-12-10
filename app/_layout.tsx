@@ -9,8 +9,6 @@ import * as Notifications from "expo-notifications";
 import * as SplashScreen from "expo-splash-screen";
 import { getProfile } from "@/hooks/userProfile";
 
-if (Platform.OS !== "web") Notifications.requestPermissionsAsync();
-
 // Prevent the splash screen from hiding automatically
 SplashScreen.preventAutoHideAsync();
 
@@ -26,6 +24,13 @@ AppState.addEventListener("change", (state) => {
 export default function Root() {
   const { session: currentSession } = userStore((state) => state);
   const router = useRouter();
+
+  const askNotificationPermission = async () => {
+    const { status } = await Notifications.requestPermissionsAsync();
+    if (status === "granted") {
+      console.log("Notification permissions granted.");
+    }
+  };
 
   useEffect(() => {
     // Set the status bar style once the component is mounted
@@ -57,7 +62,9 @@ export default function Root() {
       authListener?.data.subscription.unsubscribe();
     };
   }, []);
-
+  useEffect(() => {
+    askNotificationPermission();
+  }, []);
   return (
     <>
       <Stack>

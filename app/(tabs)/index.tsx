@@ -12,6 +12,8 @@ import { StyleSheet, View, Text, Platform, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as Haptics from "expo-haptics";
 import uuid from "react-native-uuid";
+import * as Notifications from "expo-notifications";
+import { ScrollView } from "react-native-gesture-handler";
 
 export default function WorkoutScreen() {
   const [workouts, setWorkouts] = useState<Workout[]>([]);
@@ -71,6 +73,20 @@ export default function WorkoutScreen() {
     }
   };
 
+  const fireNotification = async () => {
+    console.log("fire notification");
+    if (Platform.OS !== "web") {
+      const data = await Notifications.scheduleNotificationAsync({
+        content: {
+          title: "Time's Up!",
+          body: "Your timer is complete.",
+          sound: "bell.mp3",
+        },
+        trigger: null,
+      });
+      console.log(data);
+    }
+  };
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
@@ -80,12 +96,12 @@ export default function WorkoutScreen() {
         </Pressable>
         <View style={styles.templateHeader}>
           <Text style={styles.templatesTitle}>Templates</Text>
-          <Pressable style={styles.templatesButton}>
+          <Pressable style={styles.templatesButton} onPress={fireNotification}>
             <Text style={styles.templatesButtonText}>+ Template</Text>
           </Pressable>
         </View>
         <Text>My Templates ({workouts.length})</Text>
-        <View style={styles.workouts}>
+        <ScrollView contentContainerStyle={styles.workouts}>
           {workouts.map((workout) => (
             <WorkoutCard
               key={workout.id}
@@ -93,7 +109,7 @@ export default function WorkoutScreen() {
               openModal={() => setIsVisible(true)}
             />
           ))}
-        </View>
+        </ScrollView>
       </View>
       {activeWorkout && (
         <WorkoutPreviewModal
@@ -152,12 +168,10 @@ const styles = StyleSheet.create({
     color: AppColors.blue,
   },
   workouts: {
-    width: "100%",
-    justifyContent: "space-between",
-    flexWrap: "wrap",
-    gap: 10,
-    display: "flex",
-    flexDirection: "row",
     marginTop: 20,
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+    gap: 10,
   },
 });

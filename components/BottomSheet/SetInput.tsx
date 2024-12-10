@@ -1,11 +1,9 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { StyleSheet, Pressable, View, Text } from "react-native";
 import { AppColors } from "@/constants/colors";
 import { ExerciseSet } from "@/types/exercisesSets";
 import useCustomKeyboard from "@/store/useCustomKeyboard";
 import Animated, {
-  Extrapolation,
-  interpolate,
   useAnimatedStyle,
   useSharedValue,
   withRepeat,
@@ -40,11 +38,8 @@ const SetInput = ({
   const [textWidth, setTextWidth] = useState(0);
   const [rpe, setRpe] = useState<number | null>(localStateRpeValue);
 
-  useEffect(() => {
-    setRpe(localStateRpeValue);
-  }, [localStateRpeValue]);
+  const caretOpacity = useSharedValue(0);
 
-  const repsInput = fieldName === "reps";
   const {
     openKeyboard,
     activeField: activeSetInput,
@@ -52,10 +47,13 @@ const SetInput = ({
     setRPEInStore,
   } = useCustomKeyboard();
 
+  const repsInput = fieldName === "reps";
   const setInputId = `${exerciseSetId}-${fieldName}`;
   const isActive = activeSetInput === setInputId;
 
-  const caretOpacity = useSharedValue(0);
+  useEffect(() => {
+    setRpe(localStateRpeValue);
+  }, [localStateRpeValue]);
 
   const setRPELocallyAndInStore = (value: number | null) => {
     setRpe(value);
@@ -67,27 +65,30 @@ const SetInput = ({
     setWasThereValueOnPress(false);
   };
 
-  useEffect(() => {
-    caretOpacity.value = withRepeat(withTiming(1, { duration: 500 }), -1, true);
-  }, []);
+  const handleInputPress = () => {
+    caretOpacity.value = 0;
+    caretOpacity.value = withRepeat(withTiming(1, { duration: 800 }), -1, true);
+    setWasThereValueOnPress(value !== "");
+    openKeyboard(
+      setInputId,
+      setValueHandler,
+      setRPELocallyAndInStore,
+      updateSet
+    );
+    if (localStatePartialsValue) setPartials(localStatePartialsValue);
+    if (rpe) {
+      const keyboardRPE = rpeValues.find((mapRpe) => rpe === mapRpe.value);
+      setRPEInStore(keyboardRPE!);
+    }
+  };
 
-  const animatedStyle = useAnimatedStyle(() => ({
-    opacity: interpolate(
-      caretOpacity.value,
-      [0, 1],
-      [0, 1],
-      Extrapolation.CLAMP
-    ),
-  }));
-  const caretStyle = useMemo(
-    () => [
-      {
-        left: textWidth < 4 ? 0 : textWidth + CARET_WIDTH,
-      },
-      animatedStyle,
-    ],
-    [animatedStyle, textWidth]
-  );
+  const caretStyle = useAnimatedStyle(() => {
+    return {
+      left: textWidth < 4 ? 0 : textWidth + CARET_WIDTH,
+      opacity: caretOpacity.value,
+    };
+  });
+
   return (
     <Pressable
       style={[
@@ -98,20 +99,7 @@ const SetInput = ({
           width: repsInput && (localStatePartialsValue || rpe) ? "90%" : "100%",
         },
       ]}
-      onPress={() => {
-        setWasThereValueOnPress(value !== 0);
-        openKeyboard(
-          setInputId,
-          setValueHandler,
-          setRPELocallyAndInStore,
-          updateSet
-        );
-        if (localStatePartialsValue) setPartials(localStatePartialsValue);
-        if (rpe) {
-          const keyboardRPE = rpeValues.find((mapRpe) => rpe === mapRpe.value);
-          setRPEInStore(keyboardRPE!);
-        }
-      }}
+      onPress={handleInputPress}
     >
       <View
         style={[
@@ -130,7 +118,7 @@ const SetInput = ({
             setTextWidth(event.nativeEvent.layout.width);
           }}
         >
-          {value === 0 ? "" : value}
+          {value !== "" && value}
         </Text>
         {isActive && !wasThereValueOnPress && (
           <Animated.View style={[styles.caret, caretStyle]} />
@@ -176,7 +164,7 @@ const styles = StyleSheet.create({
   caret: {
     position: "absolute",
     width: CARET_WIDTH,
-    height: 26,
+    height: 25,
     backgroundColor: AppColors.blue,
   },
   rpeBadge: {

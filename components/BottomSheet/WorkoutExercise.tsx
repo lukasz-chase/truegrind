@@ -4,8 +4,15 @@ import SimpleLineIcons from "@expo/vector-icons/SimpleLineIcons";
 import { AppColors } from "@/constants/colors";
 import useActiveWorkout from "@/store/useActiveWorkout";
 import WorkoutSet from "./WorkoutSet";
-import Animated, { LinearTransition, runOnJS } from "react-native-reanimated";
-import { useRef } from "react";
+import Animated, {
+  Extrapolation,
+  interpolate,
+  LinearTransition,
+  runOnJS,
+  useAnimatedStyle,
+  useDerivedValue,
+} from "react-native-reanimated";
+import { useMemo, useRef } from "react";
 import { WorkoutExercisePopulated } from "@/types/workoutExercise";
 import useCustomKeyboard from "@/store/useCustomKeyboard";
 import useExerciseOptionsModal from "@/store/useExerciseOptionsModal";
@@ -14,12 +21,24 @@ import { Gesture, GestureDetector } from "react-native-gesture-handler";
 type Props = {
   workoutExercise: WorkoutExercisePopulated;
   setDragItemId: React.Dispatch<React.SetStateAction<string | null>>;
+  dragItemId: string | null;
 };
-const WorkoutExercise = ({ workoutExercise, setDragItemId }: Props) => {
+const WorkoutExercise = ({
+  workoutExercise,
+  setDragItemId,
+  dragItemId,
+}: Props) => {
   const { addNewSet } = useActiveWorkout();
   const { openModal } = useExerciseOptionsModal();
-  const buttonRef = useRef(null);
   const { closeKeyboard } = useCustomKeyboard();
+
+  const buttonRef = useRef(null);
+
+  const isDraggedValue = useDerivedValue(
+    () => (dragItemId ? 1 : 0),
+    [dragItemId]
+  );
+
   const onButtonPress = () => {
     closeKeyboard();
     openModal({
@@ -32,8 +51,25 @@ const WorkoutExercise = ({ workoutExercise, setDragItemId }: Props) => {
   const longPressGesture = Gesture.LongPress().onStart((event) => {
     runOnJS(setDragItemId)(workoutExercise.id);
   });
+  const containerAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [
+      {
+        scale: interpolate(
+          isDraggedValue.value,
+          [0, 1],
+          [1, 0],
+          Extrapolation.CLAMP
+        ),
+      },
+    ],
+  }));
+
+  const containerStyle = useMemo(
+    () => [styles.container, containerAnimatedStyle],
+    [containerAnimatedStyle]
+  );
   return (
-    <Animated.View style={styles.container} layout={LinearTransition}>
+    <Animated.View style={containerStyle} layout={LinearTransition}>
       <GestureDetector gesture={longPressGesture}>
         <View style={styles.header}>
           <Text style={styles.headerTitle}>

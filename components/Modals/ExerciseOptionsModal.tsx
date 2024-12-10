@@ -103,7 +103,7 @@ const ExerciseOptionsModal = function ExerciseOptionsModal() {
   }));
 
   const closeWarningModal = () => {
-    setWarningState((state) => ({ ...state, isVisible: true }));
+    setWarningState((state) => ({ ...state, isVisible: false }));
   };
 
   const closeHandler = () => {

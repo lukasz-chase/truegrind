@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef } from "react";
 import Animated, {
-  Extrapolate,
+  Extrapolation,
   interpolate,
   useAnimatedStyle,
   useSharedValue,
@@ -93,7 +93,7 @@ const CustomHeader = ({ sheetIndex, close, scrolledY }: Props) => {
       animatedIndex.value,
       [0, 1],
       [0, 1],
-      Extrapolate.CLAMP
+      Extrapolation.CLAMP
     ),
   }));
 
@@ -107,7 +107,7 @@ const CustomHeader = ({ sheetIndex, close, scrolledY }: Props) => {
       animatedIndex.value,
       [0, 1],
       [1, 0],
-      Extrapolate.CLAMP
+      Extrapolation.CLAMP
     ),
   }));
   const opacityScroll = useAnimatedStyle(() => ({
@@ -115,7 +115,7 @@ const CustomHeader = ({ sheetIndex, close, scrolledY }: Props) => {
       scrolledValue.value,
       [0, 100],
       [0, 1],
-      Extrapolate.CLAMP
+      Extrapolation.CLAMP
     ),
   }));
 

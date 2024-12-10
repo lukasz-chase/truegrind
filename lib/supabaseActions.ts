@@ -23,7 +23,7 @@ export const updateWorkout = async (
     const { workout_exercises, ...workoutDB } = activeWorkout;
     await supabase
       .from("workouts")
-      .insert(workoutDB)
+      .upsert(workoutDB)
       .eq("id", activeWorkout.id)
       .select();
   }
@@ -230,9 +230,11 @@ export const addExercise = async (exercise: Partial<Exercise>) => {
   const { data, error } = await supabase
     .from("exercises")
     .insert(exercise)
-    .returns<Exercise>();
+    .select()
+    .returns<Exercise[]>();
+
   if (data) {
-    exercisesStore.getState().addExercise(data);
+    exercisesStore.getState().addExercise(data[0]);
   }
   if (error) {
     console.log("error", error);

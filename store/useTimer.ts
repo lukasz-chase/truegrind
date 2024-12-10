@@ -2,14 +2,13 @@ import { create } from "zustand";
 import * as Notifications from "expo-notifications";
 import { Platform } from "react-native";
 import * as Haptics from "expo-haptics";
-import { Audio } from "expo-av";
 
 type TimerState = {
   timerDuration: number; // Total timer duration in seconds
   timeRemaining: number; // Time left in seconds
   isRunning: boolean; // Timer running state
   endTime: number | null; // The time when the timer should end
-  startTimer: (timeLength: number) => void;
+  startTimer: (timeLength: number) => Promise<void>;
   addToTimer: (seconds: number) => void;
   reduceFromTimer: (seconds: number) => void;
   endTimer: () => void;
@@ -18,8 +17,23 @@ type TimerState = {
 const useTimerStore = create<TimerState>()((set, get) => {
   let timer: NodeJS.Timeout | null = null;
 
-  const startTimer = (timeLength: number) => {
+  const startTimer = async (timeLength: number) => {
     const endTime = Date.now() + timeLength * 1000;
+    // Schedule a notification to fire when the timer ends
+
+    if (Platform.OS !== "web") {
+      await Notifications.scheduleNotificationAsync({
+        content: {
+          title: "Time's Up!",
+          body: "Your timer is complete.",
+          sound: "bell.mp3",
+        },
+        trigger: {
+          type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
+          seconds: 10,
+        },
+      });
+    }
 
     timer = setInterval(() => {
       const { endTime } = get();
@@ -80,23 +94,9 @@ const useTimerStore = create<TimerState>()((set, get) => {
 
   const endTimer = async () => {
     if (timer) clearInterval(timer);
-    //TODO - FIX NOTIFICATIONS AND REMOVE THE SOUND
-    const { sound } = await Audio.Sound.createAsync(
-      require("@/assets/sounds/bell.mp3")
-    );
-    if (Platform.OS !== "web") {
-      await Notifications.scheduleNotificationAsync({
-        content: {
-          title: "Time's Up!",
-          body: "Your timer is complete.",
-          sound: "bell.mp3",
-        },
-        trigger: null,
-      });
-      await sound.playAsync();
 
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    }
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+
     timer = null; // Reset the timer variable
     set({
       timeRemaining: 0,

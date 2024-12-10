@@ -86,16 +86,16 @@ const WorkoutBottomSheet = ({ animatedIndex }: Props) => {
               />
             )}
 
-            {!dragItemId &&
-              activeWorkout?.workout_exercises
-                ?.sort((a, b) => a.order - b.order)
-                .map((workoutExercise) => (
-                  <WorkoutExercise
-                    key={workoutExercise.id}
-                    workoutExercise={workoutExercise}
-                    setDragItemId={setDragItemId}
-                  />
-                ))}
+            {activeWorkout?.workout_exercises
+              ?.sort((a, b) => a.order - b.order)
+              .map((workoutExercise) => (
+                <WorkoutExercise
+                  key={workoutExercise.id}
+                  workoutExercise={workoutExercise}
+                  setDragItemId={setDragItemId}
+                  dragItemId={dragItemId}
+                />
+              ))}
             <CustomFooter close={handleClosePress} />
           </BottomSheetScrollView>
         </BottomSheet>
