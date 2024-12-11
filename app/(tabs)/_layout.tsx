@@ -12,6 +12,7 @@ import ExerciseOptionsModal from "@/components/Modals/ExerciseOptionsModal";
 import WorkoutExercisesModal from "@/components/Modals/WorkoutExercisesModal";
 import TimerModal from "@/components/Modals/TimerModal";
 import SetOptionsModal from "@/components/Modals/SetOptionsModal";
+import WorkoutOptionsModal from "@/components/Modals/WorkoutOptionsModal";
 
 export default function TabLayout() {
   const animatedIndex = useSharedValue(0);
@@ -53,6 +54,7 @@ export default function TabLayout() {
         <ExerciseOptionsModal />
         <WorkoutExercisesModal />
         <SetOptionsModal />
+        <WorkoutOptionsModal />
       </SafeAreaView>
       {isSheetVisible && <WorkoutBottomSheet animatedIndex={animatedIndex} />}
     </GestureHandlerRootView>

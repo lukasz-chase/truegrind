@@ -240,3 +240,7 @@ export const addExercise = async (exercise: Partial<Exercise>) => {
     console.log("error", error);
   }
 };
+
+export const deleteWorkout = async (workoutId: string) => {
+  await supabase.from("workouts").delete().eq("id", workoutId);
+};

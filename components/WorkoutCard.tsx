@@ -1,9 +1,18 @@
 import { AppColors } from "@/constants/colors";
 import useActiveWorkout from "@/store/useActiveWorkout";
 import { Workout } from "@/types/workout";
-import React from "react";
-import { Platform, StyleSheet, Text, TouchableOpacity } from "react-native";
+import React, { useRef } from "react";
+import {
+  Platform,
+  Pressable,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import * as Haptics from "expo-haptics";
+import { SimpleLineIcons } from "@expo/vector-icons";
+import useWorkoutOptionsModal from "@/store/useWorkoutOptionsModal";
 
 type Props = {
   workout: Workout;
@@ -12,6 +21,9 @@ type Props = {
 
 const WorkoutCard = ({ workout, openModal }: Props) => {
   const { setActiveWorkout } = useActiveWorkout();
+  const { openModal: openOptionsModal } = useWorkoutOptionsModal();
+  const buttonRef = useRef(null);
+
   return (
     <TouchableOpacity
       style={styles.workoutCard}
@@ -23,7 +35,15 @@ const WorkoutCard = ({ workout, openModal }: Props) => {
         openModal();
       }}
     >
-      <Text style={styles.workoutCardTitle}>{workout.name}</Text>
+      <View style={styles.header}>
+        <Text style={styles.workoutCardTitle}>{workout.name}</Text>
+        <Pressable
+          ref={buttonRef}
+          onPress={() => openOptionsModal({ workoutId: workout.id, buttonRef })}
+        >
+          <SimpleLineIcons name="options" size={24} color={AppColors.blue} />
+        </Pressable>
+      </View>
       {workout.workout_exercises
         ?.sort((a, b) => a.order - b.order)
         .slice(0, 4)
@@ -60,6 +80,12 @@ const styles = StyleSheet.create({
   },
   workoutCardExercises: {
     textOverflow: "ellipsis",
+  },
+  header: {
+    width: "100%",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
 });
 
