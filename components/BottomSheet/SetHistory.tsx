@@ -4,41 +4,36 @@ import React, { useEffect, useState } from "react";
 import { Pressable, StyleSheet, Text } from "react-native";
 import AntDesign from "@expo/vector-icons/AntDesign";
 
+type SetHistoryProps = {
+  reps: number;
+  weight: number;
+  rpe: number | null;
+  partials: number | null;
+  is_warmup: boolean;
+  is_dropset: boolean;
+};
+
 type Props = {
   setOrder: number;
   exerciseId: string;
   userId: string;
-  bulkUpdateSet: (newValue: {
-    reps: number;
-    weight: number;
-    rpe: number | null;
-    partials: number | null;
-  }) => void;
+  bulkUpdateSet: (newValue: SetHistoryProps) => void;
 };
 
 const SetHistory = ({ exerciseId, setOrder, userId, bulkUpdateSet }: Props) => {
   const [disabled, setDisabled] = useState(false);
-  const [exerciseHistory, setExerciseHistory] = useState<{
-    reps: number;
-    weight: number;
-    rpe: number | null;
-    partials: number | null;
-  } | null>(null);
+  const [exerciseHistory, setExerciseHistory] =
+    useState<SetHistoryProps | null>(null);
   const fetchLastSet = async () => {
     const { data, error } = await supabase
       .from("sets_history")
-      .select(`reps, weight, rpe, partials`)
+      .select(`reps, weight, rpe, partials, is_warmup, is_dropset`)
       .eq("exercise_id", exerciseId)
       .eq("user_id", userId)
       .eq('"order"', setOrder)
       .order("created_at", { ascending: false })
       .limit(1)
-      .single<{
-        reps: number;
-        weight: number;
-        rpe: number | null;
-        partials: number | null;
-      }>();
+      .single<SetHistoryProps>();
     if (error) {
       //error code PGRST116 means there is no data
       setDisabled(true);
@@ -71,11 +66,14 @@ const SetHistory = ({ exerciseId, setOrder, userId, bulkUpdateSet }: Props) => {
         {exerciseHistory.weight} x {exerciseHistory.reps}
         {exerciseHistory.rpe && ` @${exerciseHistory.rpe} `}
         {exerciseHistory.partials && `+${exerciseHistory.partials}`}
+        {exerciseHistory.is_dropset && "(D)"}
+        {exerciseHistory.is_warmup && "(W)"}
       </Text>
     );
   };
   const handlePress = () => {
-    bulkUpdateSet(exerciseHistory!);
+    if (!exerciseHistory) return;
+    bulkUpdateSet(exerciseHistory);
     setDisabled(true);
   };
   return (

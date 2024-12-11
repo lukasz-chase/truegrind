@@ -15,26 +15,9 @@ import useWorkoutExercisesModal from "@/store/useWorkoutExercisesModal";
 import { Exercise } from "@/types/exercises";
 import useActiveWorkout from "@/store/useActiveWorkout";
 import useExerciseOptionsModal from "@/store/useExerciseOptionsModal";
+import ModalOptionButton from "./ModalOptionButton";
 
 const MODAL_WIDTH = 275;
-
-const OptionButton = ({
-  title,
-  Icon,
-  cb,
-  rightSide,
-}: {
-  title: string;
-  Icon: any;
-  cb: () => void;
-  rightSide?: any;
-}) => (
-  <Pressable style={styles.pressableButton} onPress={cb}>
-    {Icon}
-    <Text style={styles.pressableText}>{title}</Text>
-    {rightSide && rightSide}
-  </Pressable>
-);
 
 const ExerciseOptionsModal = function ExerciseOptionsModal() {
   const { isVisible, closeModal, exerciseProps } = useExerciseOptionsModal();
@@ -131,7 +114,7 @@ const ExerciseOptionsModal = function ExerciseOptionsModal() {
           <View style={styles.screen}>
             <View>
               {options.map((option) => (
-                <OptionButton key={option.title} {...option} />
+                <ModalOptionButton key={option.title} {...option} />
               ))}
             </View>
           </View>
@@ -164,39 +147,6 @@ const styles = StyleSheet.create({
   },
   screen: {
     width: "100%",
-  },
-  pressableButton: {
-    width: "100%",
-    paddingVertical: 12,
-    paddingHorizontal: 10,
-    borderRadius: 6,
-    marginVertical: 6,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-  },
-  pressableText: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "white",
-  },
-  pressableEndWrapper: {
-    marginLeft: "auto",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 5,
-    flexDirection: "row",
-  },
-  backButton: {
-    padding: 10,
-    backgroundColor: AppColors.blue,
-    borderRadius: 5,
-  },
-  autoRestText: {
-    color: "white",
-    fontSize: 18,
-    fontWeight: "bold",
-    marginTop: 20,
   },
 });
 

@@ -21,6 +21,7 @@ import CompleteSetButton from "./CompleteSetButton";
 import userStore from "@/store/userStore";
 import SetHistory from "./SetHistory";
 import SetInput from "./SetInput";
+import SetOrder from "./SetOrder";
 
 type Props = {
   exerciseSet: ExerciseSet;
@@ -42,11 +43,15 @@ const WorkoutSet = ({ exerciseSet, exerciseId, exerciseTimer }: Props) => {
     weight: string;
     partials: number | null;
     rpe: number | null;
+    is_warmup: boolean;
+    is_dropset: boolean;
   }>({
     reps: "",
     weight: "",
     partials: null,
     rpe: null,
+    is_warmup: false,
+    is_dropset: false,
   });
   const [hapticTriggered, setHapticTriggered] = useState(false);
   const [movedPassTreshold, setMovedPassTreshold] = useState(false);
@@ -59,18 +64,15 @@ const WorkoutSet = ({ exerciseSet, exerciseId, exerciseTimer }: Props) => {
     updateExerciseSetFields({ [name]: newValue });
   };
 
-  const bulkUpdateSet = (newValue: {
-    reps: number;
-    weight: number;
-    rpe: number | null;
-    partials: number | null;
-  }) => {
+  const bulkUpdateSet = (newValue: Partial<ExerciseSet>) => {
     setSetLocalState({
       ...setLocalState,
       reps: `${newValue.reps}`,
       weight: `${newValue.weight}`,
-      rpe: newValue.rpe,
-      partials: newValue.partials,
+      rpe: newValue.rpe!,
+      partials: newValue.partials!,
+      is_warmup: newValue.is_warmup!,
+      is_dropset: newValue.is_dropset!,
     });
     updateExerciseSet(exerciseId, exerciseSet.id, { ...newValue });
   };
@@ -168,20 +170,14 @@ const WorkoutSet = ({ exerciseSet, exerciseId, exerciseTimer }: Props) => {
           <GestureDetector gesture={swipeGesture}>
             <Animated.View style={[styles.row, rowStyle]}>
               <View style={[styles.cell, { flex: 0.75 }]}>
-                <Pressable
-                  style={[
-                    styles.rowButton,
-                    {
-                      backgroundColor: exerciseSet.completed
-                        ? AppColors.lightGreen
-                        : AppColors.gray,
-                    },
-                  ]}
-                >
-                  <Text style={[styles.cellText, styles.rowButtonText]}>
-                    {exerciseSet.order}
-                  </Text>
-                </Pressable>
+                <SetOrder
+                  isCompleted={exerciseSet.completed}
+                  order={exerciseSet.order}
+                  isWarmup={exerciseSet.is_warmup}
+                  isDropset={exerciseSet.is_dropset}
+                  exerciseId={exerciseId}
+                  exerciseSetId={exerciseSet.id}
+                />
               </View>
               <View style={[styles.cell, { flex: 1.75 }]}>
                 <SetHistory
@@ -265,22 +261,6 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     textAlign: "center",
     justifyContent: "center",
-  },
-
-  cellText: {
-    fontSize: 14,
-  },
-  rowButton: {
-    backgroundColor: AppColors.gray,
-    borderRadius: 10,
-    alignItems: "center",
-    justifyContent: "center",
-    height: 25,
-    paddingHorizontal: 10,
-  },
-  rowButtonText: {
-    fontSize: 16,
-    fontWeight: "bold",
   },
 });
 

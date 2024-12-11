@@ -11,6 +11,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import ExerciseOptionsModal from "@/components/Modals/ExerciseOptionsModal";
 import WorkoutExercisesModal from "@/components/Modals/WorkoutExercisesModal";
 import TimerModal from "@/components/Modals/TimerModal";
+import SetOptionsModal from "@/components/Modals/SetOptionsModal";
 
 export default function TabLayout() {
   const animatedIndex = useSharedValue(0);
@@ -51,6 +52,7 @@ export default function TabLayout() {
         <TimerModal />
         <ExerciseOptionsModal />
         <WorkoutExercisesModal />
+        <SetOptionsModal />
       </SafeAreaView>
       {isSheetVisible && <WorkoutBottomSheet animatedIndex={animatedIndex} />}
     </GestureHandlerRootView>
