@@ -109,23 +109,25 @@ const CustomHeader = ({ sheetIndex, close, scrolledY }: Props) => {
     [containerAnimatedStyle]
   );
 
-  const containerAnimatedStyleReverse = useAnimatedStyle(() => ({
-    opacity: interpolate(
+  const combinedAnimatedStyle = useAnimatedStyle(() => {
+    const opacityReverse = interpolate(
       animatedIndex.value,
       [0, 1],
       [1, 0],
       Extrapolation.CLAMP
-    ),
-  }));
-  const opacityScroll = useAnimatedStyle(() => ({
-    opacity: interpolate(
+    );
+    const opacityScroll = interpolate(
       scrolledValue.value,
       [0, 100],
       [0, 1],
       Extrapolation.CLAMP
-    ),
-  }));
+    );
 
+    // Blend the two animations into one style
+    return {
+      opacity: opacityReverse + opacityScroll,
+    };
+  });
   return (
     <>
       <Pressable
@@ -144,24 +146,10 @@ const CustomHeader = ({ sheetIndex, close, scrolledY }: Props) => {
           />
         </Animated.View>
 
-        <View style={styles.titleWrapper}>
-          <Animated.View
-            style={[
-              styles.titleContainer,
-              styles.absolute,
-              containerAnimatedStyleReverse,
-            ]}
-          >
-            <Text style={styles.headerTitle}>{activeWorkout.name}</Text>
-            <Text style={styles.headerTitleTime}>{formattedTime}</Text>
-          </Animated.View>
-          <Animated.View
-            style={[styles.titleContainer, styles.absolute, opacityScroll]}
-          >
-            <Text style={styles.headerTitle}>{activeWorkout.name}</Text>
-            <Text style={styles.headerTitleTime}>{formattedTime}</Text>
-          </Animated.View>
-        </View>
+        <Animated.View style={[styles.titleContainer, combinedAnimatedStyle]}>
+          <Text style={styles.headerTitle}>{activeWorkout.name}</Text>
+          <Text style={styles.headerTitleTime}>{formattedTime}</Text>
+        </Animated.View>
 
         <Animated.View style={containerStyle}>
           <Pressable style={styles.finishButton} onPress={finishWorkout}>
@@ -182,11 +170,6 @@ const styles = StyleSheet.create({
     height: 60,
     marginTop: -5,
     paddingHorizontal: 20,
-  },
-  titleWrapper: {
-    position: "relative",
-    height: 40,
-    paddingVertical: 10,
   },
   titleContainer: {
     alignItems: "center",
@@ -217,12 +200,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 18,
     textAlign: "center",
-  },
-  absolute: {
-    position: "absolute",
-    top: "0%",
-    left: "50%",
-    transform: [{ translateX: "-50%" }],
   },
 });
 

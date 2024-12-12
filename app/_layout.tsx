@@ -4,13 +4,21 @@ import { supabase } from "@/lib/supabase";
 import { setStatusBarStyle, StatusBar } from "expo-status-bar";
 import { useRouter } from "expo-router";
 import userStore from "@/store/userStore";
-import { AppState, Platform } from "react-native";
+import { Alert, AppState, Platform } from "react-native";
 import * as Notifications from "expo-notifications";
 import * as SplashScreen from "expo-splash-screen";
 import { getProfile } from "@/hooks/userProfile";
 
 // Prevent the splash screen from hiding automatically
 SplashScreen.preventAutoHideAsync();
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: true,
+  }),
+});
 
 AppState.addEventListener("change", (state) => {
   if (state === "active") {
@@ -29,6 +37,12 @@ export default function Root() {
     const { status } = await Notifications.requestPermissionsAsync();
     if (status === "granted") {
       console.log("Notification permissions granted.");
+    }
+    if (status !== "granted") {
+      Alert.alert(
+        "Permission Required",
+        "You need to grant notification permissions to use this feature."
+      );
     }
   };
 
@@ -63,6 +77,7 @@ export default function Root() {
     };
   }, []);
   useEffect(() => {
+    if (Platform.OS === "web") return;
     askNotificationPermission();
   }, []);
   return (

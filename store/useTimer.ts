@@ -16,25 +16,20 @@ type TimerState = {
 
 const useTimerStore = create<TimerState>()((set, get) => {
   let timer: NodeJS.Timeout | null = null;
+  let notificationId: string | null = null;
 
   const startTimer = async (timeLength: number) => {
     const endTime = Date.now() + timeLength * 1000;
-    // Schedule a notification to fire when the timer ends
-
     if (Platform.OS !== "web") {
-      await Notifications.scheduleNotificationAsync({
-        content: {
-          title: "Time's Up!",
-          body: "Your timer is complete.",
-          sound: "bell.mp3",
-        },
-        trigger: {
-          type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
-          seconds: 10,
-        },
-      });
+      if (notificationId) {
+        // Cancel the old notification if it exists
+        await Notifications.cancelScheduledNotificationAsync(notificationId);
+      }
+
+      scheduleNotification(timeLength);
     }
 
+    // Start the countdown timer
     timer = setInterval(() => {
       const { endTime } = get();
       if (!endTime) return;
@@ -70,6 +65,12 @@ const useTimerStore = create<TimerState>()((set, get) => {
         timeRemaining: newTimeRemaining,
         timerDuration: timerDuration + seconds,
       });
+
+      // Cancel and reschedule the notification
+      if (notificationId) {
+        Notifications.cancelScheduledNotificationAsync(notificationId);
+      }
+      scheduleNotification(newTimeRemaining);
     }
   };
 
@@ -85,8 +86,13 @@ const useTimerStore = create<TimerState>()((set, get) => {
         timerDuration: Math.max(timerDuration - seconds, 0),
       });
 
-      // Handle the case where time runs out immediately
-      if (newTimeRemaining === 0) {
+      // Cancel and reschedule the notification
+      if (notificationId) {
+        Notifications.cancelScheduledNotificationAsync(notificationId);
+      }
+      if (newTimeRemaining > 0) {
+        scheduleNotification(newTimeRemaining);
+      } else {
         endTimer();
       }
     }
@@ -95,15 +101,36 @@ const useTimerStore = create<TimerState>()((set, get) => {
   const endTimer = async () => {
     if (timer) clearInterval(timer);
 
+    if (notificationId) {
+      await Notifications.cancelScheduledNotificationAsync(notificationId);
+    }
+
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
 
+    notificationId = null; // Reset the notification variable
     timer = null; // Reset the timer variable
+
     set({
       timeRemaining: 0,
       isRunning: false,
       timerDuration: 0,
       endTime: null,
     });
+  };
+
+  const scheduleNotification = async (timeRemaining: number) => {
+    const id = await Notifications.scheduleNotificationAsync({
+      content: {
+        title: "Time's Up!",
+        body: "Your timer is complete.",
+        sound: "bell.mp3",
+      },
+      trigger: {
+        seconds: timeRemaining,
+        type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
+      },
+    });
+    notificationId = id;
   };
 
   return {

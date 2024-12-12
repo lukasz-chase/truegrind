@@ -7,7 +7,7 @@ import WorkoutBottomSheet from "@/components/BottomSheet/WorkoutBottomSheet";
 import { useSharedValue } from "react-native-reanimated";
 import useBottomSheet from "@/store/useBottomSheet";
 import { AppColors } from "@/constants/colors";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import ExerciseOptionsModal from "@/components/Modals/ExerciseOptionsModal";
 import WorkoutExercisesModal from "@/components/Modals/WorkoutExercisesModal";
 import TimerModal from "@/components/Modals/TimerModal";
@@ -19,44 +19,46 @@ export default function TabLayout() {
   const { isSheetVisible } = useBottomSheet();
   return (
     <GestureHandlerRootView>
-      <Tabs
-        screenOptions={{
-          tabBarActiveTintColor: AppColors.blue,
-          tabBarStyle: {
-            backgroundColor: AppColors.black,
-            height: 70,
-          },
-        }}
-        tabBar={(props) => (
-          <CustomTabBar {...props} animatedIndex={animatedIndex} />
-        )}
-      >
-        {NavigationData.map(({ name, icon, focusedIcon, title }) => (
-          <Tabs.Screen
-            name={name}
-            key={name}
-            options={{
-              title,
-              headerShown: false,
-              tabBarIcon: ({ color, focused }) => (
-                <FontAwesomeIcons
-                  name={focused ? focusedIcon : icon}
-                  color={color}
-                  size={24}
-                />
-              ),
-            }}
-          />
-        ))}
-      </Tabs>
-      <SafeAreaView>
-        <TimerModal />
-        <ExerciseOptionsModal />
-        <WorkoutExercisesModal />
-        <SetOptionsModal />
-        <WorkoutOptionsModal />
-      </SafeAreaView>
-      {isSheetVisible && <WorkoutBottomSheet animatedIndex={animatedIndex} />}
+      <SafeAreaProvider>
+        <Tabs
+          screenOptions={{
+            tabBarActiveTintColor: AppColors.blue,
+            tabBarStyle: {
+              backgroundColor: AppColors.black,
+              height: 70,
+            },
+          }}
+          tabBar={(props) => (
+            <CustomTabBar {...props} animatedIndex={animatedIndex} />
+          )}
+        >
+          {NavigationData.map(({ name, icon, focusedIcon, title }) => (
+            <Tabs.Screen
+              name={name}
+              key={name}
+              options={{
+                title,
+                headerShown: false,
+                tabBarIcon: ({ color, focused }) => (
+                  <FontAwesomeIcons
+                    name={focused ? focusedIcon : icon}
+                    color={color}
+                    size={24}
+                  />
+                ),
+              }}
+            />
+          ))}
+        </Tabs>
+        <SafeAreaView>
+          <TimerModal />
+          <ExerciseOptionsModal />
+          <WorkoutExercisesModal />
+          <SetOptionsModal />
+          <WorkoutOptionsModal />
+        </SafeAreaView>
+        {isSheetVisible && <WorkoutBottomSheet animatedIndex={animatedIndex} />}
+      </SafeAreaProvider>
     </GestureHandlerRootView>
   );
 }

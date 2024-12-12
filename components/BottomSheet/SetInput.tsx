@@ -182,8 +182,6 @@ const styles = StyleSheet.create({
   partials: {
     position: "absolute",
     right: -23,
-    top: "50%",
-    transform: [{ translateY: "-50%" }],
     alignItems: "center",
     justifyContent: "center",
   },

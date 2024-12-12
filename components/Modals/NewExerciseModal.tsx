@@ -155,9 +155,6 @@ export default function NewExerciseModal({
               large
             />
             <Pressable onPress={pickImageAsync} style={styles.imageContainer}>
-              <Text>Pick</Text>
-            </Pressable>
-            <Pressable onPress={pickImageAsync} style={styles.imageContainer}>
               <Image
                 source={
                   selectedImage
@@ -265,20 +262,21 @@ export default function NewExerciseModal({
 
 const styles = StyleSheet.create({
   modalOverlay: {
-    flex: 1,
     backgroundColor: "rgba(0, 0, 0, 0.5)", // semi-transparent background
+    position: "absolute",
+    width: "100%",
+    height: "100%",
+    top: 0,
+    left: 0,
   },
   modalContent: {
-    width: MODAL_WIDTH, // Adjust width as needed
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    transform: [{ translateY: "-50%" }, { translateX: "-50%" }],
+    width: MODAL_WIDTH,
     padding: 20,
     borderRadius: 10,
     alignItems: "center",
     backgroundColor: "white",
     overflow: "hidden",
+    margin: "auto",
   },
   header: {
     justifyContent: "space-between",
@@ -295,12 +293,11 @@ const styles = StyleSheet.create({
     flexDirection: "row",
   },
   imageContainer: {
-    flex: 1,
     marginHorizontal: "auto",
     marginVertical: 10,
   },
   image: {
-    width: "60%",
+    width: 200,
     aspectRatio: 1,
   },
   screen: {
