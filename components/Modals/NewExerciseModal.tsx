@@ -22,6 +22,7 @@ import { addExercise } from "@/lib/supabaseActions";
 import * as ImagePicker from "expo-image-picker";
 import { Image } from "expo-image";
 import LoadingAnimation from "../LoadingAnimation";
+import userStore from "@/store/userStore";
 const PlaceholderImage = require("@/assets/images/ImagePlaceholder.png");
 
 type Props = {
@@ -48,9 +49,12 @@ export default function NewExerciseModal({
   const [currentScreen, setCurrentScreen] = useState<
     "main" | "equipment" | "body"
   >("main");
+
   const dataIsFilled = exerciseName && bodyPart && equipment;
 
   const translateXSharedValue = useSharedValue(0);
+
+  const { user } = userStore();
 
   const pickImageAsync = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -94,6 +98,7 @@ export default function NewExerciseModal({
           muscle: bodyPart,
           equipment,
           image: selectedImage,
+          user_id: user?.id,
         });
         setEquipment("");
         setBodyPart("");

@@ -31,7 +31,11 @@ type Props = {
 
 const CustomHeader = ({ sheetIndex, close, scrolledY }: Props) => {
   const { animatedIndex, expand } = useBottomSheet();
-  const { formattedTime, resetTimer } = useWorkoutTimer();
+  const {
+    formattedTime,
+    resetTimer,
+    startTimer: startWorkoutTimer,
+  } = useWorkoutTimer();
   const { endTimer, timeRemaining, isRunning, timerDuration } = useTimerStore();
   const {
     activeWorkout,
@@ -55,6 +59,10 @@ const CustomHeader = ({ sheetIndex, close, scrolledY }: Props) => {
   useEffect(() => {
     scrolledValue.value = scrolledY;
   }, [scrolledY]);
+
+  useEffect(() => {
+    startWorkoutTimer();
+  }, []);
 
   const finishWorkout = async () => {
     closeKeyboard();

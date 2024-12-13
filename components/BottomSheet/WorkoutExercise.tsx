@@ -45,6 +45,7 @@ const WorkoutExercise = ({
       buttonRef,
       exerciseName: workoutExercise.exercises.name,
       exerciseTimer: workoutExercise.timer,
+      warmupTimer: workoutExercise.warmup_timer,
       workoutExerciseId: workoutExercise.id,
     });
   };
@@ -108,6 +109,7 @@ const WorkoutExercise = ({
             exerciseSet={set}
             exerciseId={workoutExercise.exercises.id}
             exerciseTimer={workoutExercise.timer}
+            warmupTimer={workoutExercise.warmup_timer}
           />
         ))}
       </View>

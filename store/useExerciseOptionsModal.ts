@@ -8,8 +8,11 @@ interface ModalState {
     workoutExerciseId: string;
     exerciseName: string;
     exerciseTimer: number | null;
+    warmupTimer: number | null;
     buttonRef: React.MutableRefObject<null>;
   };
+  setExerciseTimer: (exerciseTimer: number | null) => void;
+  setWarmupTimer: (warmupTimer: number | null) => void;
 }
 
 const useExerciseOptionsModal = create<ModalState>((set) => ({
@@ -21,8 +24,19 @@ const useExerciseOptionsModal = create<ModalState>((set) => ({
     workoutExerciseId: "",
     exerciseName: "",
     exerciseTimer: null,
+    warmupTimer: null,
     buttonRef: { current: null },
   },
+  setExerciseTimer: (exerciseTimer: number | null) =>
+    set((state) => ({
+      ...state,
+      exerciseProps: { ...state.exerciseProps, exerciseTimer },
+    })),
+  setWarmupTimer: (warmupTimer: number | null) =>
+    set((state) => ({
+      ...state,
+      exerciseProps: { ...state.exerciseProps, warmupTimer },
+    })),
 }));
 
 export default useExerciseOptionsModal;

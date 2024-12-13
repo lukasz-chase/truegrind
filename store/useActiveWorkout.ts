@@ -88,7 +88,8 @@ const useActiveWorkout = create<ActiveWorkoutStore>()(
           id: uuid.v4(),
           notes: "",
           order: (get().activeWorkout.workout_exercises?.length ?? 0) + 1,
-          timer: 0,
+          timer: null,
+          warmup_timer: null,
           exercises: exercise,
           exercise_sets: [],
         };
@@ -116,7 +117,8 @@ const useActiveWorkout = create<ActiveWorkoutStore>()(
         const newWorkoutExercise = {
           id: uuid.v4(),
           notes: "",
-          timer: 0,
+          timer: null,
+          warmup_timer: null,
           exercises: newExercise,
           exercise_sets: [],
         };

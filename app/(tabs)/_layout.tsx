@@ -20,6 +20,13 @@ export default function TabLayout() {
   return (
     <GestureHandlerRootView>
       <SafeAreaProvider>
+        <SafeAreaView>
+          <TimerModal />
+          <ExerciseOptionsModal />
+          <WorkoutExercisesModal />
+          <SetOptionsModal />
+          <WorkoutOptionsModal />
+        </SafeAreaView>
         <Tabs
           screenOptions={{
             tabBarActiveTintColor: AppColors.blue,
@@ -50,13 +57,6 @@ export default function TabLayout() {
             />
           ))}
         </Tabs>
-        <SafeAreaView>
-          <TimerModal />
-          <ExerciseOptionsModal />
-          <WorkoutExercisesModal />
-          <SetOptionsModal />
-          <WorkoutOptionsModal />
-        </SafeAreaView>
         {isSheetVisible && <WorkoutBottomSheet animatedIndex={animatedIndex} />}
       </SafeAreaProvider>
     </GestureHandlerRootView>

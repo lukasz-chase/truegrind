@@ -31,7 +31,7 @@ export default function WorkoutScreen() {
       const { data } = await supabase
         .from("workouts")
         .select(
-          `id, name, notes, user_id, workout_exercises(id, timer, notes, order, exercises(id, name, image, muscle, equipment), exercise_sets(*))`
+          `id, name, notes, user_id, workout_exercises(id, timer, notes, order, warmup_timer, exercises(id, name, image, muscle, equipment), exercise_sets(*))`
         )
         .eq("user_id", user?.id)
         .returns<Workout[]>();
@@ -86,16 +86,17 @@ export default function WorkoutScreen() {
           </Pressable>
         </View>
         <Text>My Templates ({workouts.length})</Text>
-        <ScrollView contentContainerStyle={styles.workouts}>
-          {workouts.map((workout) => (
-            <WorkoutCard
-              key={workout.id}
-              workout={workout}
-              openModal={() => setIsVisible(true)}
-            />
-          ))}
-        </ScrollView>
       </View>
+
+      <ScrollView contentContainerStyle={styles.workouts}>
+        {workouts.map((workout) => (
+          <WorkoutCard
+            key={workout.id}
+            workout={workout}
+            openModal={() => setIsVisible(true)}
+          />
+        ))}
+      </ScrollView>
       {activeWorkout && (
         <WorkoutPreviewModal
           visible={isVisible}
@@ -158,5 +159,7 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     justifyContent: "space-between",
     gap: 10,
+    paddingHorizontal: 20,
   },
+  workoutsWrapper: {},
 });

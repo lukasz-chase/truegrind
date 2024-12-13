@@ -15,8 +15,10 @@ type CompleteSetButtonProps = {
   completed: boolean;
   reps: string;
   rowScale: Animated.SharedValue<number>;
-  exerciseTimer: number;
+  exerciseTimer: number | null;
+  warmupTimer: number | null;
   weight: string;
+  isWarmup: boolean;
 };
 
 const CompleteSetButton = ({
@@ -25,7 +27,9 @@ const CompleteSetButton = ({
   reps,
   rowScale,
   exerciseTimer,
+  warmupTimer,
   weight,
+  isWarmup,
 }: CompleteSetButtonProps) => {
   const { startTimer, endTimer, isRunning } = useTimerStore();
   const { openModal } = useWorkoutTimerModal();
@@ -43,11 +47,20 @@ const CompleteSetButton = ({
       rowScale.value = withTiming(1.1, { duration: 100 }, () => {
         rowScale.value = withTiming(1, { duration: 100 });
       });
-      if (exerciseTimer && exerciseTimer > 0) {
-        startTimer(exerciseTimer);
-        openModal();
-      } else if (!exerciseTimer && isRunning) {
-        endTimer();
+      if (isWarmup) {
+        if (warmupTimer && warmupTimer > 0) {
+          startTimer(warmupTimer);
+          openModal();
+        } else if (!warmupTimer && isRunning) {
+          endTimer();
+        }
+      } else {
+        if (exerciseTimer && exerciseTimer > 0) {
+          startTimer(exerciseTimer);
+          openModal();
+        } else if (!exerciseTimer && isRunning) {
+          endTimer();
+        }
       }
     } else {
       if (Platform.OS !== "web") {

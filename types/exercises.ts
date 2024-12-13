@@ -5,4 +5,5 @@ export type Exercise = {
   equipment: string;
   instructions?: string;
   image?: string;
+  user_id: string | null;
 };

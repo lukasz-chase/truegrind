@@ -26,13 +26,19 @@ import SetOrder from "./SetOrder";
 type Props = {
   exerciseSet: ExerciseSet;
   exerciseId: string;
-  exerciseTimer: number;
+  exerciseTimer: number | null;
+  warmupTimer: number | null;
 };
 
 const INITIAL_BUTTON_WIDTH = 70;
 const BUTTON_MARGIN = 20;
 
-const WorkoutSet = ({ exerciseSet, exerciseId, exerciseTimer }: Props) => {
+const WorkoutSet = ({
+  exerciseSet,
+  exerciseId,
+  exerciseTimer,
+  warmupTimer,
+}: Props) => {
   const translateX = useSharedValue(0);
   const rowScale = useSharedValue(1);
   const buttonWidth = useSharedValue(INITIAL_BUTTON_WIDTH);
@@ -220,6 +226,8 @@ const WorkoutSet = ({ exerciseSet, exerciseId, exerciseTimer }: Props) => {
                   rowScale={rowScale}
                   exerciseTimer={exerciseTimer}
                   weight={setLocalState.weight}
+                  isWarmup={exerciseSet.is_warmup}
+                  warmupTimer={warmupTimer}
                 />
               </View>
             </Animated.View>

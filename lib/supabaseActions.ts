@@ -65,6 +65,7 @@ export const updateWorkoutExercises = async (
       !initialExercise ||
       workoutExercise.notes !== initialExercise.notes ||
       workoutExercise.timer !== initialExercise.timer ||
+      workoutExercise.warmup_timer !== initialExercise.warmup_timer ||
       workoutExercise.order !== initialExercise.order
     ) {
       workoutExercisesToUpdate.push({

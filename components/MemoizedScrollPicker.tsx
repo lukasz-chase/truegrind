@@ -29,8 +29,11 @@ const MemoizedScrollPicker = memo(
     const onValueChanged = ({
       item: { value: val },
     }: ValueChangedEvent<PickerItem<number>>) => {
-      if (disabled) return;
       setValue(val);
+      if (Platform.OS !== "web")
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    };
+    const onValueChanging = () => {
       if (Platform.OS !== "web") Haptics.selectionAsync();
     };
 
@@ -40,7 +43,8 @@ const MemoizedScrollPicker = memo(
           readOnly={disabled}
           data={data}
           value={value}
-          onValueChanging={onValueChanged}
+          onValueChanged={onValueChanged}
+          onValueChanging={onValueChanging}
           visibleItemCount={visibleItemCount}
           itemTextStyle={{
             color: disabled ? "gray" : textColor,
