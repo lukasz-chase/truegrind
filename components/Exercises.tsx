@@ -1,10 +1,9 @@
 import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/lib/supabase";
 import { Exercise } from "@/types/exercises";
-import { StyleSheet, View, Pressable, Text } from "react-native";
+import { StyleSheet, View, Pressable, Text, SectionList } from "react-native";
 import ExerciseRow from "@/components/ExerciseRow";
 import { AppColors } from "@/constants/colors";
-import { FlatList } from "react-native-gesture-handler";
 import ExerciseFiltersModal from "./Modals/ExerciseFiltersModal";
 import { equipmentFilters, muscleFilters } from "@/constants/exerciseFilters";
 import CustomTextInput from "./CustomTextInput";
@@ -30,9 +29,10 @@ const Exercises = ({ onPress, selectedExercises }: Props) => {
   useEffect(() => {
     if (exercises.length === 0) getExercises();
   }, []);
+
   useEffect(() => {
     filterExercises();
-  }, [selectedEquipment, selectedMuscle, searchQuery]);
+  }, [selectedEquipment, selectedMuscle, searchQuery, exercises]);
 
   const getExercises = async () => {
     const { data, error } = await supabase
@@ -46,16 +46,21 @@ const Exercises = ({ onPress, selectedExercises }: Props) => {
     }
     if (error) throw error;
   };
+
   const filterExercises = () => {
-    const filteredExercises = exercises.filter((exercise) => {
+    const filtered = exercises.filter((exercise) => {
       return (
         exercise.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
         (selectedMuscle === "" || exercise.muscle === selectedMuscle) &&
         (selectedEquipment === "" || exercise.equipment === selectedEquipment)
       );
     });
-    setFilteredExercises(filteredExercises);
+    setFilteredExercises(filtered);
   };
+
+  // Group exercises by first letter
+  const sections = groupExercisesByAlphabet(filteredExercises);
+
   return (
     <>
       <View style={styles.container}>
@@ -74,19 +79,19 @@ const Exercises = ({ onPress, selectedExercises }: Props) => {
                   : AppColors.gray,
               },
             ]}
-            onPress={() => {
-              setMuscleModalVisible(true);
-            }}
+            onPress={() => setMuscleModalVisible(true)}
             ref={muscleRef}
           >
-            {selectedMuscle ? (
-              <Text style={[styles.dropdownButtonText, { color: "white" }]}>
-                {selectedMuscle}
-              </Text>
-            ) : (
-              <Text style={styles.dropdownButtonText}>Any Body Part</Text>
-            )}
+            <Text
+              style={[
+                styles.dropdownButtonText,
+                { color: selectedMuscle ? "white" : "black" },
+              ]}
+            >
+              {selectedMuscle || "Any Body Part"}
+            </Text>
           </Pressable>
+
           <Pressable
             style={[
               styles.dropdownButton,
@@ -96,34 +101,41 @@ const Exercises = ({ onPress, selectedExercises }: Props) => {
                   : AppColors.gray,
               },
             ]}
+            onPress={() => setEquipmentModalVisible(true)}
             ref={equipmentRef}
-            onPress={() => {
-              setEquipmentModalVisible(true);
-            }}
           >
-            {selectedEquipment ? (
-              <Text style={[styles.dropdownButtonText, { color: "white" }]}>
-                {selectedEquipment}
-              </Text>
-            ) : (
-              <Text style={styles.dropdownButtonText}>Any Equipment</Text>
-            )}
+            <Text
+              style={[
+                styles.dropdownButtonText,
+                { color: selectedEquipment ? "white" : "black" },
+              ]}
+            >
+              {selectedEquipment || "Any Equipment"}
+            </Text>
           </Pressable>
         </View>
-        <FlatList
-          data={filteredExercises}
+
+        {/* Replace FlatList with SectionList */}
+        <SectionList
+          sections={sections}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
             <ExerciseRow
               exercise={item}
               onPress={onPress}
-              isSelected={
-                !!selectedExercises.find((exercise) => exercise.id === item.id)
-              }
+              isSelected={!!selectedExercises.find((ex) => ex.id === item.id)}
             />
+          )}
+          // Optional: show a letter header above each section
+          renderSectionHeader={({ section }) => (
+            <View style={styles.sectionHeader}>
+              <Text style={styles.sectionHeaderText}>{section.title}</Text>
+            </View>
           )}
         />
       </View>
+
+      {/* Muscle modal */}
       {!equipmentModalVisible && (
         <ExerciseFiltersModal
           data={muscleFilters}
@@ -139,6 +151,7 @@ const Exercises = ({ onPress, selectedExercises }: Props) => {
           value={selectedMuscle}
         />
       )}
+      {/* Equipment modal */}
       {!muscleModalVisible && (
         <ExerciseFiltersModal
           data={equipmentFilters}
@@ -157,6 +170,28 @@ const Exercises = ({ onPress, selectedExercises }: Props) => {
     </>
   );
 };
+
+// Utility function for grouping exercises by first letter
+function groupExercisesByAlphabet(exercises: Exercise[]) {
+  const grouped = exercises.reduce((acc, exercise) => {
+    // Grab first letter, uppercase it, or fallback to '#'
+    const firstLetter = exercise.name.charAt(0)?.toUpperCase() ?? "#";
+    if (!acc[firstLetter]) {
+      acc[firstLetter] = [];
+    }
+    acc[firstLetter].push(exercise);
+    return acc;
+  }, {} as Record<string, Exercise[]>);
+
+  // Convert object to array of { title, data } sorted by title
+  return Object.keys(grouped)
+    .sort()
+    .map((letter) => ({
+      title: letter,
+      data: grouped[letter],
+    }));
+}
+
 const styles = StyleSheet.create({
   container: {
     width: "100%",
@@ -183,6 +218,16 @@ const styles = StyleSheet.create({
   dropdownButtonText: {
     fontWeight: "bold",
     fontSize: 16,
+  },
+  sectionHeader: {
+    paddingVertical: 4,
+    paddingHorizontal: 10,
+    borderBottomWidth: 1,
+    borderColor: AppColors.gray,
+    backgroundColor: "white",
+  },
+  sectionHeaderText: {
+    fontWeight: "bold",
   },
 });
 

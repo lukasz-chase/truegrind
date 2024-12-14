@@ -34,6 +34,7 @@ export default function ExercisesScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
+    backgroundColor: "white",
   },
   wrapper: {
     padding: 20,
