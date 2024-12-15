@@ -8,6 +8,7 @@ import ExerciseFiltersModal from "./Modals/ExerciseFiltersModal";
 import { equipmentFilters, muscleFilters } from "@/constants/exerciseFilters";
 import CustomTextInput from "./CustomTextInput";
 import exercisesStore from "@/store/exercisesStore";
+
 type Props = {
   onPress: (exercise: Exercise) => void;
   selectedExercises: Exercise[];
@@ -23,11 +24,19 @@ const Exercises = ({ onPress, selectedExercises }: Props) => {
   const [muscleModalVisible, setMuscleModalVisible] = useState(false);
   const [equipmentModalVisible, setEquipmentModalVisible] = useState(false);
 
+  const [recentExercises, setRecentExercises] = useState<Exercise[]>([]);
+  const [frequentExercises, setFrequentExercises] = useState<Exercise[]>([]);
+
   const muscleRef = useRef(null);
   const equipmentRef = useRef(null);
 
   useEffect(() => {
-    if (exercises.length === 0) getExercises();
+    if (exercises.length === 0) {
+      getExercises();
+    }
+
+    getRecentExercises();
+    getFrequentExercises();
   }, []);
 
   useEffect(() => {
@@ -37,16 +46,67 @@ const Exercises = ({ onPress, selectedExercises }: Props) => {
   const getExercises = async () => {
     const { data, error } = await supabase
       .from("exercises")
-      .select()
+      .select("*")
       .order("name", { ascending: true })
       .returns<Exercise[]>();
+
+    if (error) {
+      console.error("Error fetching exercises:", error);
+      return;
+    }
     if (data) {
       setExercises(data);
       setFilteredExercises(data);
     }
-    if (error) throw error;
   };
 
+  const getRecentExercises = async () => {
+    const { data, error } = await supabase
+      .from("exercises_history")
+      .select("id, exercise_id, created_at, exercises!inner(*)")
+      .order("created_at", { ascending: false })
+      .limit(5);
+
+    if (error) {
+      console.error("Error fetching recent exercises:", error);
+      return;
+    }
+
+    if (data) {
+      const mapped = data.map((row) => row.exercises) as Exercise[];
+      setRecentExercises(mapped);
+    }
+  };
+
+  const getFrequentExercises = async () => {
+    const { data, error } = await supabase
+      .from("exercises")
+      .select("id, exercises_history(count)");
+
+    if (error) {
+      console.error("Error fetching frequent exercises:", error);
+      return;
+    }
+
+    if (data) {
+      const mostFrequentExercises = data
+        .sort(
+          (a, b) => a.exercises_history[0].count - b.exercises_history[0].count
+        )
+        .slice(0, 4)
+        .map((item) => item.id);
+      const { data: exercises, error } = await supabase
+        .from("exercises")
+        .select("*")
+        .in("id", mostFrequentExercises);
+
+      if (exercises) {
+        setFrequentExercises(exercises);
+      }
+    }
+  };
+
+  // Filter logic for the main exercise list
   const filterExercises = () => {
     const filtered = exercises.filter((exercise) => {
       return (
@@ -58,8 +118,16 @@ const Exercises = ({ onPress, selectedExercises }: Props) => {
     setFilteredExercises(filtered);
   };
 
-  // Group exercises by first letter
-  const sections = groupExercisesByAlphabet(filteredExercises);
+  // Utility: Group exercises by first letter (A–Z) for the default "All Exercises" section
+  const sectionsByAlphabet = groupExercisesByAlphabet(filteredExercises);
+
+  // Build the data for SectionList.
+  // We show two special sections for recent/frequent, followed by A–Z.
+  const sections = [
+    { title: "Recently Used", data: recentExercises },
+    { title: "Frequently Used", data: frequentExercises },
+    ...sectionsByAlphabet,
+  ];
 
   return (
     <>
@@ -115,7 +183,6 @@ const Exercises = ({ onPress, selectedExercises }: Props) => {
           </Pressable>
         </View>
 
-        {/* Replace FlatList with SectionList */}
         <SectionList
           sections={sections}
           keyExtractor={(item) => item.id}
@@ -126,7 +193,6 @@ const Exercises = ({ onPress, selectedExercises }: Props) => {
               isSelected={!!selectedExercises.find((ex) => ex.id === item.id)}
             />
           )}
-          // Optional: show a letter header above each section
           renderSectionHeader={({ section }) => (
             <View style={styles.sectionHeader}>
               <Text style={styles.sectionHeaderText}>{section.title}</Text>
@@ -151,6 +217,7 @@ const Exercises = ({ onPress, selectedExercises }: Props) => {
           value={selectedMuscle}
         />
       )}
+
       {/* Equipment modal */}
       {!muscleModalVisible && (
         <ExerciseFiltersModal
@@ -174,7 +241,6 @@ const Exercises = ({ onPress, selectedExercises }: Props) => {
 // Utility function for grouping exercises by first letter
 function groupExercisesByAlphabet(exercises: Exercise[]) {
   const grouped = exercises.reduce((acc, exercise) => {
-    // Grab first letter, uppercase it, or fallback to '#'
     const firstLetter = exercise.name.charAt(0)?.toUpperCase() ?? "#";
     if (!acc[firstLetter]) {
       acc[firstLetter] = [];
@@ -183,7 +249,7 @@ function groupExercisesByAlphabet(exercises: Exercise[]) {
     return acc;
   }, {} as Record<string, Exercise[]>);
 
-  // Convert object to array of { title, data } sorted by title
+  // Convert object to array of { title, data } sorted by the letter
   return Object.keys(grouped)
     .sort()
     .map((letter) => ({
@@ -198,9 +264,6 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     height: "100%",
   },
-  searchContainer: {
-    marginBottom: 12,
-  },
   pickerContainer: {
     marginVertical: 10,
     zIndex: 20,
@@ -208,7 +271,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
   },
-  exercises: {},
   dropdownButton: {
     padding: 5,
     borderRadius: 8,

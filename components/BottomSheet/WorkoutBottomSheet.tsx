@@ -53,20 +53,20 @@ const WorkoutBottomSheet = ({ animatedIndex }: Props) => {
   };
   return (
     <View style={styles.overlay}>
-      <Pressable style={styles.container} onPress={closeKeyboard}>
-        <BottomSheet
-          onClose={handleClosePress}
-          ref={sheetRef}
-          snapPoints={snapPoints}
-          enableDynamicSizing={false}
-          animateOnMount={true}
-          index={1}
-          handleStyle={styles.handle}
-          backdropComponent={CustomBackdrop}
-          animatedIndex={animatedIndex}
-          enableOverDrag={false}
-          onChange={handleSheetChanges}
-        >
+      <BottomSheet
+        onClose={handleClosePress}
+        ref={sheetRef}
+        snapPoints={snapPoints}
+        enableDynamicSizing={false}
+        animateOnMount={true}
+        index={1}
+        handleStyle={styles.handle}
+        backdropComponent={CustomBackdrop}
+        animatedIndex={animatedIndex}
+        enableOverDrag={false}
+        onChange={handleSheetChanges}
+      >
+        <Pressable style={styles.container} onPress={closeKeyboard}>
           <CustomHeader
             sheetIndex={sheetIndex}
             close={handleClosePress}
@@ -98,8 +98,8 @@ const WorkoutBottomSheet = ({ animatedIndex }: Props) => {
               ))}
             <CustomFooter close={handleClosePress} />
           </BottomSheetScrollView>
-        </BottomSheet>
-      </Pressable>
+        </Pressable>
+      </BottomSheet>
       <CustomKeyboard animatedIndex={animatedIndex} />
     </View>
   );
