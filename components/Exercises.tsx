@@ -9,6 +9,8 @@ import { equipmentFilters, muscleFilters } from "@/constants/exerciseFilters";
 import CustomTextInput from "./CustomTextInput";
 import exercisesStore from "@/store/exercisesStore";
 import LoadingAnimation from "./LoadingAnimation";
+import AntDesign from "@expo/vector-icons/AntDesign";
+import { groupExercisesByAlphabet } from "@/lib/helpers";
 
 type Props = {
   onPress: (exercise: Exercise) => void;
@@ -26,9 +28,16 @@ const Exercises = ({ onPress, selectedExercises }: Props) => {
   const [muscleModalVisible, setMuscleModalVisible] = useState(false);
   const [equipmentModalVisible, setEquipmentModalVisible] = useState(false);
   const [loading, setLoading] = useState(false);
-
+  const [isFiltering, setIsFiltering] = useState(false);
   const muscleRef = useRef(null);
   const equipmentRef = useRef(null);
+
+  const [collapsedSections, setCollapsedSections] = useState<
+    Record<string, boolean>
+  >({
+    "Recently Used": true,
+    "Frequently Used": true,
+  });
 
   useEffect(() => {
     getExercises();
@@ -36,6 +45,8 @@ const Exercises = ({ onPress, selectedExercises }: Props) => {
 
   useEffect(() => {
     filterExercises();
+    const filterBoolean = searchQuery || selectedMuscle || selectedEquipment;
+    setIsFiltering(!!filterBoolean);
   }, [selectedEquipment, selectedMuscle, searchQuery, exercises]);
 
   const getExercises = async () => {
@@ -94,7 +105,6 @@ const Exercises = ({ onPress, selectedExercises }: Props) => {
     }
   };
 
-  // Filter logic for the main exercise list
   const filterExercises = () => {
     const filtered = exercises.filter((exercise) => {
       return (
@@ -107,11 +117,20 @@ const Exercises = ({ onPress, selectedExercises }: Props) => {
   };
 
   const sectionsByAlphabet = groupExercisesByAlphabet(filteredExercises);
+
   const sections = [
     { title: "Recently Used", data: recentExercises },
     { title: "Frequently Used", data: frequentExercises },
     ...sectionsByAlphabet,
   ];
+
+  const collapsibleSections = sections.map((section) => {
+    const isCollapsed = collapsedSections[section.title];
+    return {
+      ...section,
+      data: isCollapsed ? [] : section.data,
+    };
+  });
 
   return (
     <>
@@ -169,7 +188,9 @@ const Exercises = ({ onPress, selectedExercises }: Props) => {
         </View>
 
         <SectionList
-          sections={sections}
+          sections={collapsibleSections.filter(
+            (section) => !(isFiltering && section.title.includes("Used"))
+          )}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
             <ExerciseRow
@@ -179,9 +200,22 @@ const Exercises = ({ onPress, selectedExercises }: Props) => {
             />
           )}
           renderSectionHeader={({ section }) => (
-            <View style={styles.sectionHeader}>
+            <Pressable
+              style={styles.sectionHeader}
+              onPress={() => {
+                setCollapsedSections((prev) => ({
+                  ...prev,
+                  [section.title]: !prev[section.title],
+                }));
+              }}
+            >
+              {collapsedSections[section.title] ? (
+                <AntDesign name="caretright" size={20} color="black" />
+              ) : (
+                <AntDesign name="caretdown" size={20} color="black" />
+              )}
               <Text style={styles.sectionHeaderText}>{section.title}</Text>
-            </View>
+            </Pressable>
           )}
         />
       </View>
@@ -223,26 +257,6 @@ const Exercises = ({ onPress, selectedExercises }: Props) => {
   );
 };
 
-// Utility function for grouping exercises by first letter
-function groupExercisesByAlphabet(exercises: Exercise[]) {
-  const grouped = exercises.reduce((acc, exercise) => {
-    const firstLetter = exercise.name.charAt(0)?.toUpperCase() ?? "#";
-    if (!acc[firstLetter]) {
-      acc[firstLetter] = [];
-    }
-    acc[firstLetter].push(exercise);
-    return acc;
-  }, {} as Record<string, Exercise[]>);
-
-  // Convert object to array of { title, data } sorted by the letter
-  return Object.keys(grouped)
-    .sort()
-    .map((letter) => ({
-      title: letter,
-      data: grouped[letter],
-    }));
-}
-
 const styles = StyleSheet.create({
   container: {
     width: "100%",
@@ -271,10 +285,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     borderBottomWidth: 1,
     borderColor: AppColors.gray,
-    backgroundColor: "white",
+    backgroundColor: AppColors.lightBlue,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
   },
   sectionHeaderText: {
     fontWeight: "bold",
+    fontSize: 16,
   },
 });
 
