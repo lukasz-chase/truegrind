@@ -7,7 +7,7 @@ import {
   Text,
 } from "react-native";
 import useWorkoutExercisesModal from "@/store/useWorkoutExercisesModal";
-import Exercises from "../Exercises";
+import Exercises from "../ExercisesList/Exercises";
 import { AppColors } from "@/constants/colors";
 import CloseButton from "../CloseButton";
 import { useState } from "react";

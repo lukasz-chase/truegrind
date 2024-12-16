@@ -1,5 +1,5 @@
 import { StyleSheet, View, Pressable, Text } from "react-native";
-import Exercises from "@/components/Exercises";
+import Exercises from "@/components/ExercisesList/Exercises";
 import { AppColors } from "@/constants/colors";
 import { useState } from "react";
 import NewExerciseModal from "@/components/Modals/NewExerciseModal";

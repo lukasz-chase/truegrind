@@ -1,16 +1,19 @@
-import { useState, useEffect, useRef } from "react";
-import { supabase } from "@/lib/supabase";
+import { useState, useEffect } from "react";
 import { Exercise } from "@/types/exercises";
 import { StyleSheet, View, Pressable, Text, SectionList } from "react-native";
 import ExerciseRow from "@/components/ExerciseRow";
 import { AppColors } from "@/constants/colors";
-import ExerciseFiltersModal from "./Modals/ExerciseFiltersModal";
 import { equipmentFilters, muscleFilters } from "@/constants/exerciseFilters";
-import CustomTextInput from "./CustomTextInput";
+import CustomTextInput from "../CustomTextInput";
 import exercisesStore from "@/store/exercisesStore";
-import LoadingAnimation from "./LoadingAnimation";
+import LoadingAnimation from "../LoadingAnimation";
 import AntDesign from "@expo/vector-icons/AntDesign";
-import { groupExercisesByAlphabet } from "@/lib/helpers";
+import {
+  getExercises,
+  getRecentExercises,
+  groupExercisesByAlphabet,
+} from "@/lib/exercisesService";
+import ExerciseFiltersDropdown from "./ExerciseFiltersDropdown";
 
 type Props = {
   onPress: (exercise: Exercise) => void;
@@ -25,12 +28,8 @@ const Exercises = ({ onPress, selectedExercises }: Props) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedMuscle, setSelectedMuscle] = useState("");
   const [selectedEquipment, setSelectedEquipment] = useState("");
-  const [muscleModalVisible, setMuscleModalVisible] = useState(false);
-  const [equipmentModalVisible, setEquipmentModalVisible] = useState(false);
   const [loading, setLoading] = useState(false);
   const [isFiltering, setIsFiltering] = useState(false);
-  const muscleRef = useRef(null);
-  const equipmentRef = useRef(null);
 
   const [collapsedSections, setCollapsedSections] = useState<
     Record<string, boolean>
@@ -40,7 +39,7 @@ const Exercises = ({ onPress, selectedExercises }: Props) => {
   });
 
   useEffect(() => {
-    getExercises();
+    fetchExercises();
   }, []);
 
   useEffect(() => {
@@ -49,60 +48,15 @@ const Exercises = ({ onPress, selectedExercises }: Props) => {
     setIsFiltering(!!filterBoolean);
   }, [selectedEquipment, selectedMuscle, searchQuery, exercises]);
 
-  const getExercises = async () => {
+  const fetchExercises = async () => {
     setLoading(true);
-    const { data, error } = await supabase
-      .from("exercises")
-      .select("*, exercises_history_count:exercises_history(count)")
-      .order("name", { ascending: true })
-      .returns<
-        (Exercise & {
-          exercises_history_count: { count: number }[];
-        })[]
-      >();
-
-    if (error) {
-      console.error("Error fetching exercises:", error);
-      return;
-    }
+    const data = await getExercises();
     if (!data) return;
-
-    const baseExercises = [...data].map((exercise) => {
-      const { exercises_history_count, ...baseExercise } = exercise;
-      return baseExercise;
-    });
-
-    const mostFrequentExercises = [...data]
-      .sort(
-        (a, b) =>
-          b.exercises_history_count[0].count -
-          a.exercises_history_count[0].count
-      )
-      .slice(0, 5);
-
+    const { baseExercises, mostFrequentExercises } = data;
     const mostRecentExercises = await getRecentExercises();
     setExercises(baseExercises, mostFrequentExercises, mostRecentExercises);
     setFilteredExercises(baseExercises);
     setLoading(false);
-  };
-
-  const getRecentExercises = async () => {
-    const { data, error } = await supabase
-      .from("exercises_history")
-      .select("created_at, exercises!inner(*)")
-      .order("created_at", { ascending: false })
-      .limit(5)
-      .returns<{ created_at: string; exercises: Exercise }[]>();
-
-    if (error) {
-      console.error("Error fetching recent exercises:", error);
-      return;
-    }
-
-    if (data) {
-      const mapped = data.map((row) => row.exercises) as Exercise[];
-      return mapped;
-    }
   };
 
   const filterExercises = () => {
@@ -142,49 +96,20 @@ const Exercises = ({ onPress, selectedExercises }: Props) => {
           placeholder="Search"
         />
         <View style={styles.pickerContainer}>
-          <Pressable
-            style={[
-              styles.dropdownButton,
-              {
-                backgroundColor: selectedMuscle
-                  ? AppColors.blue
-                  : AppColors.gray,
-              },
-            ]}
-            onPress={() => setMuscleModalVisible(true)}
-            ref={muscleRef}
-          >
-            <Text
-              style={[
-                styles.dropdownButtonText,
-                { color: selectedMuscle ? "white" : "black" },
-              ]}
-            >
-              {selectedMuscle || "Any Body Part"}
-            </Text>
-          </Pressable>
-
-          <Pressable
-            style={[
-              styles.dropdownButton,
-              {
-                backgroundColor: selectedEquipment
-                  ? AppColors.blue
-                  : AppColors.gray,
-              },
-            ]}
-            onPress={() => setEquipmentModalVisible(true)}
-            ref={equipmentRef}
-          >
-            <Text
-              style={[
-                styles.dropdownButtonText,
-                { color: selectedEquipment ? "white" : "black" },
-              ]}
-            >
-              {selectedEquipment || "Any Equipment"}
-            </Text>
-          </Pressable>
+          <ExerciseFiltersDropdown
+            buttonLabel="Any Body Part"
+            data={muscleFilters}
+            selectedValue={selectedMuscle}
+            setSelectedValue={setSelectedMuscle}
+            anchor="LEFT"
+          />
+          <ExerciseFiltersDropdown
+            buttonLabel="Any Equipment"
+            data={equipmentFilters}
+            selectedValue={selectedEquipment}
+            setSelectedValue={setSelectedEquipment}
+            anchor="RIGHT"
+          />
         </View>
 
         <SectionList
@@ -219,40 +144,6 @@ const Exercises = ({ onPress, selectedExercises }: Props) => {
           )}
         />
       </View>
-
-      {/* Muscle modal */}
-      {!equipmentModalVisible && (
-        <ExerciseFiltersModal
-          data={muscleFilters}
-          anchorCorner="LEFT"
-          anchorRef={muscleRef}
-          closeModal={() => setMuscleModalVisible(false)}
-          isVisible={muscleModalVisible}
-          onPress={(muscle: string) => {
-            if (selectedMuscle === muscle) setSelectedMuscle("");
-            else setSelectedMuscle(muscle);
-            setMuscleModalVisible(false);
-          }}
-          value={selectedMuscle}
-        />
-      )}
-
-      {/* Equipment modal */}
-      {!muscleModalVisible && (
-        <ExerciseFiltersModal
-          data={equipmentFilters}
-          anchorCorner="RIGHT"
-          anchorRef={equipmentRef}
-          closeModal={() => setEquipmentModalVisible(false)}
-          isVisible={equipmentModalVisible}
-          onPress={(equipment: string) => {
-            if (selectedEquipment === equipment) setSelectedEquipment("");
-            else setSelectedEquipment(equipment);
-            setEquipmentModalVisible(false);
-          }}
-          value={selectedEquipment}
-        />
-      )}
     </>
   );
 };
@@ -269,16 +160,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-  },
-  dropdownButton: {
-    padding: 5,
-    borderRadius: 8,
-    width: "48%",
-    alignItems: "center",
-  },
-  dropdownButtonText: {
-    fontWeight: "bold",
-    fontSize: 16,
   },
   sectionHeader: {
     paddingVertical: 4,
