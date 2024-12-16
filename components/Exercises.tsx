@@ -8,6 +8,7 @@ import ExerciseFiltersModal from "./Modals/ExerciseFiltersModal";
 import { equipmentFilters, muscleFilters } from "@/constants/exerciseFilters";
 import CustomTextInput from "./CustomTextInput";
 import exercisesStore from "@/store/exercisesStore";
+import LoadingAnimation from "./LoadingAnimation";
 
 type Props = {
   onPress: (exercise: Exercise) => void;
@@ -15,7 +16,8 @@ type Props = {
 };
 
 const Exercises = ({ onPress, selectedExercises }: Props) => {
-  const { exercises, setExercises } = exercisesStore();
+  const { exercises, setExercises, frequentExercises, recentExercises } =
+    exercisesStore();
   const [filteredExercises, setFilteredExercises] =
     useState<Exercise[]>(exercises);
   const [searchQuery, setSearchQuery] = useState("");
@@ -23,20 +25,13 @@ const Exercises = ({ onPress, selectedExercises }: Props) => {
   const [selectedEquipment, setSelectedEquipment] = useState("");
   const [muscleModalVisible, setMuscleModalVisible] = useState(false);
   const [equipmentModalVisible, setEquipmentModalVisible] = useState(false);
-
-  const [recentExercises, setRecentExercises] = useState<Exercise[]>([]);
-  const [frequentExercises, setFrequentExercises] = useState<Exercise[]>([]);
+  const [loading, setLoading] = useState(false);
 
   const muscleRef = useRef(null);
   const equipmentRef = useRef(null);
 
   useEffect(() => {
-    if (exercises.length === 0) {
-      getExercises();
-    }
-
-    getRecentExercises();
-    getFrequentExercises();
+    getExercises();
   }, []);
 
   useEffect(() => {
@@ -44,28 +39,49 @@ const Exercises = ({ onPress, selectedExercises }: Props) => {
   }, [selectedEquipment, selectedMuscle, searchQuery, exercises]);
 
   const getExercises = async () => {
+    setLoading(true);
     const { data, error } = await supabase
       .from("exercises")
-      .select("*")
+      .select("*, exercises_history_count:exercises_history(count)")
       .order("name", { ascending: true })
-      .returns<Exercise[]>();
+      .returns<
+        (Exercise & {
+          exercises_history_count: { count: number }[];
+        })[]
+      >();
 
     if (error) {
       console.error("Error fetching exercises:", error);
       return;
     }
-    if (data) {
-      setExercises(data);
-      setFilteredExercises(data);
-    }
+    if (!data) return;
+
+    const baseExercises = [...data].map((exercise) => {
+      const { exercises_history_count, ...baseExercise } = exercise;
+      return baseExercise;
+    });
+
+    const mostFrequentExercises = [...data]
+      .sort(
+        (a, b) =>
+          b.exercises_history_count[0].count -
+          a.exercises_history_count[0].count
+      )
+      .slice(0, 5);
+
+    const mostRecentExercises = await getRecentExercises();
+    setExercises(baseExercises, mostFrequentExercises, mostRecentExercises);
+    setFilteredExercises(baseExercises);
+    setLoading(false);
   };
 
   const getRecentExercises = async () => {
     const { data, error } = await supabase
       .from("exercises_history")
-      .select("id, exercise_id, created_at, exercises!inner(*)")
+      .select("created_at, exercises!inner(*)")
       .order("created_at", { ascending: false })
-      .limit(5);
+      .limit(5)
+      .returns<{ created_at: string; exercises: Exercise }[]>();
 
     if (error) {
       console.error("Error fetching recent exercises:", error);
@@ -74,35 +90,7 @@ const Exercises = ({ onPress, selectedExercises }: Props) => {
 
     if (data) {
       const mapped = data.map((row) => row.exercises) as Exercise[];
-      setRecentExercises(mapped);
-    }
-  };
-
-  const getFrequentExercises = async () => {
-    const { data, error } = await supabase
-      .from("exercises")
-      .select("id, exercises_history(count)");
-
-    if (error) {
-      console.error("Error fetching frequent exercises:", error);
-      return;
-    }
-
-    if (data) {
-      const mostFrequentExercises = data
-        .sort(
-          (a, b) => a.exercises_history[0].count - b.exercises_history[0].count
-        )
-        .slice(0, 4)
-        .map((item) => item.id);
-      const { data: exercises, error } = await supabase
-        .from("exercises")
-        .select("*")
-        .in("id", mostFrequentExercises);
-
-      if (exercises) {
-        setFrequentExercises(exercises);
-      }
+      return mapped;
     }
   };
 
@@ -118,11 +106,7 @@ const Exercises = ({ onPress, selectedExercises }: Props) => {
     setFilteredExercises(filtered);
   };
 
-  // Utility: Group exercises by first letter (A–Z) for the default "All Exercises" section
   const sectionsByAlphabet = groupExercisesByAlphabet(filteredExercises);
-
-  // Build the data for SectionList.
-  // We show two special sections for recent/frequent, followed by A–Z.
   const sections = [
     { title: "Recently Used", data: recentExercises },
     { title: "Frequently Used", data: frequentExercises },
@@ -131,6 +115,7 @@ const Exercises = ({ onPress, selectedExercises }: Props) => {
 
   return (
     <>
+      {loading && <LoadingAnimation />}
       <View style={styles.container}>
         <CustomTextInput
           onChangeText={setSearchQuery}

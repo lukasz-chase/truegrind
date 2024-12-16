@@ -3,13 +3,22 @@ import { create } from "zustand";
 
 type Store = {
   exercises: Exercise[];
-  setExercises: (exercises: Exercise[]) => void;
+  frequentExercises: Exercise[];
+  recentExercises: Exercise[];
+  setExercises: (
+    exercises: Exercise[],
+    frequentExercises?: Exercise[],
+    recentExercises?: Exercise[]
+  ) => void;
   addExercise: (exercise: Exercise) => void;
 };
 
 const exercisesStore = create<Store>((set) => ({
   exercises: [],
-  setExercises: (exercises) => set({ exercises }),
+  frequentExercises: [],
+  recentExercises: [],
+  setExercises: (exercises, frequentExercises, recentExercises) =>
+    set({ exercises, frequentExercises, recentExercises }),
   addExercise: (exercise) =>
     set((state) => ({ exercises: [...state.exercises, exercise] })),
 }));
