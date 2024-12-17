@@ -19,10 +19,10 @@ import Animated, {
 import { equipmentFilters, muscleFilters } from "@/constants/exerciseFilters";
 import CustomTextInput from "../CustomTextInput";
 import { addExercise } from "@/lib/supabaseActions";
-import * as ImagePicker from "expo-image-picker";
 import { Image } from "expo-image";
 import LoadingAnimation from "../LoadingAnimation";
 import userStore from "@/store/userStore";
+import { pickAndCompressImage } from "@/lib/images";
 const PlaceholderImage = require("@/assets/images/ImagePlaceholder.png");
 
 type Props = {
@@ -57,18 +57,9 @@ export default function NewExerciseModal({
   const { user } = userStore();
 
   const pickImageAsync = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ["images"],
-      allowsEditing: true,
-      quality: 0.05,
-      base64: true,
-    });
-    if (!result.canceled) {
-      console.log(result);
-      setSelectedImage(result.assets[0].base64!);
-    } else {
-      alert("You did not select any image.");
-    }
+    const pickedImage = await pickAndCompressImage();
+    if (!pickedImage) return;
+    setSelectedImage(pickedImage);
   };
 
   const switchToScreen = (
