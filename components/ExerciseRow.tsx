@@ -25,11 +25,20 @@ const ExerciseRow = ({
         { backgroundColor: isSelected ? AppColors.blue : "white" },
       ]}
     >
-      <Image
-        source={{ uri: exercise.image }}
-        style={styles.exerciseImage}
-        resizeMode="cover"
-      />
+      {exercise.image ? (
+        <Image
+          source={{ uri: exercise.image }}
+          style={styles.exerciseImage}
+          resizeMode="cover"
+        />
+      ) : (
+        <View style={styles.exerciseImage}>
+          <Text style={styles.exerciseImageText}>
+            {exercise.name.charAt(0)}
+          </Text>
+        </View>
+      )}
+
       <View style={styles.exerciseDetails}>
         <Text style={styles.exerciseName}>
           {numberOfSets && `${numberOfSets} x `}
@@ -68,6 +77,11 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 8,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  exerciseImageText: {
+    fontSize: 32,
   },
   exerciseName: {
     fontWeight: "bold",
