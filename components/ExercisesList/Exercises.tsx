@@ -14,6 +14,7 @@ import {
   groupExercisesByAlphabet,
 } from "@/lib/exercisesService";
 import ExerciseFiltersDropdown from "./ExerciseFiltersDropdown";
+import userStore from "@/store/userStore";
 
 type Props = {
   onPress: (exercise: Exercise) => void;
@@ -23,6 +24,8 @@ type Props = {
 const Exercises = ({ onPress, selectedExercises }: Props) => {
   const { exercises, setExercises, frequentExercises, recentExercises } =
     exercisesStore();
+  const { user } = userStore();
+
   const [filteredExercises, setFilteredExercises] =
     useState<Exercise[]>(exercises);
   const [searchQuery, setSearchQuery] = useState("");
@@ -50,10 +53,11 @@ const Exercises = ({ onPress, selectedExercises }: Props) => {
 
   const fetchExercises = async () => {
     setLoading(true);
-    const data = await getExercises();
+    if (!user) return;
+    const data = await getExercises(user.id);
     if (!data) return;
     const { baseExercises, mostFrequentExercises } = data;
-    const mostRecentExercises = await getRecentExercises();
+    const mostRecentExercises = await getRecentExercises(user.id);
     setExercises(baseExercises, mostFrequentExercises, mostRecentExercises);
     setFilteredExercises(baseExercises);
     setLoading(false);

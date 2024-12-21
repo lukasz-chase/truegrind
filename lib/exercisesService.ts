@@ -18,10 +18,11 @@ export const groupExercisesByAlphabet = (exercises: Exercise[]) => {
       data: grouped[letter],
     }));
 };
-export const getRecentExercises = async () => {
+export const getRecentExercises = async (userId: string) => {
   const { data, error } = await supabase
     .from("exercises_history")
     .select("created_at, exercises!inner(*)")
+    .or(`user_id.eq.${userId},user_id.is.null`, { foreignTable: "exercises" })
     .order("created_at", { ascending: false })
     .limit(5)
     .returns<{ created_at: string; exercises: Exercise }[]>();
@@ -36,10 +37,12 @@ export const getRecentExercises = async () => {
     return mapped;
   }
 };
-export const getExercises = async () => {
+export const getExercises = async (userId: string) => {
+  console.log(userId);
   const { data, error } = await supabase
     .from("exercises")
     .select("*, exercises_history_count:exercises_history(count)")
+    .or(`user_id.eq.${userId},user_id.is.null`)
     .order("name", { ascending: true })
     .returns<
       (Exercise & {

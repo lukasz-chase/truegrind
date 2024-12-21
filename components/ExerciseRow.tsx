@@ -4,6 +4,7 @@ import { Exercise } from "@/types/exercises";
 import { AppColors } from "@/constants/colors";
 import { Pressable } from "react-native";
 import { Image } from "expo-image";
+import ExerciseImage from "./ExerciseImage";
 
 type Props = {
   exercise: Exercise;
@@ -27,12 +28,7 @@ const ExerciseRow = ({
       ]}
     >
       {exercise.image ? (
-        <Image
-          source={{
-            uri: "data:image/jpeg;base64," + exercise.image,
-          }}
-          style={styles.exerciseImage}
-        />
+        <ExerciseImage imageUrl={exercise.image} height={50} width={50} />
       ) : (
         <View style={styles.exerciseImage}>
           <Text style={styles.exerciseImageText}>

@@ -1,4 +1,5 @@
 import CustomTextInput from "@/components/CustomTextInput";
+import ExerciseImage from "@/components/ExerciseImage";
 import { AppColors } from "@/constants/colors";
 import { pickAndCompressImage } from "@/lib/images";
 import { exerciseFormData } from "@/types/exerciseDetails";
@@ -53,15 +54,10 @@ const FormScreen = ({
         large
       />
       <Pressable onPress={pickImageAsync} style={styles.imageContainer}>
-        <Image
-          source={
-            exerciseData.image
-              ? {
-                  uri: exerciseData.image,
-                }
-              : PlaceholderImage
-          }
-          style={styles.image}
+        <ExerciseImage
+          imageUrl={exerciseData?.image ?? PlaceholderImage}
+          height={200}
+          width={200}
         />
       </Pressable>
       <Pressable
@@ -111,10 +107,6 @@ const styles = StyleSheet.create({
   imageContainer: {
     marginHorizontal: "auto",
     marginVertical: 10,
-  },
-  image: {
-    width: 200,
-    aspectRatio: 1,
   },
   link: {
     flexDirection: "row",
