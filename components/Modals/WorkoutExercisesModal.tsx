@@ -11,7 +11,7 @@ import Exercises from "../ExercisesList/Exercises";
 import { AppColors } from "@/constants/colors";
 import CloseButton from "../CloseButton";
 import { useState } from "react";
-import NewExerciseModal from "./NewExerciseModal";
+import ExerciseFormModal from "./ExerciseForm/ExerciseFormModal";
 import { Exercise } from "@/types/exercises";
 
 export default function WorkoutExercisesModal() {
@@ -110,12 +110,13 @@ export default function WorkoutExercisesModal() {
           />
         </View>
       </Modal>
-      <NewExerciseModal
+      <ExerciseFormModal
         closeModal={() => {
           setIsNewExerciseModalVisible(false);
         }}
         isVisible={isNewExerciseModalVisible}
         onDismiss={() => openModal(onPress, true, "Add")}
+        title="Add New Exercise"
       />
     </>
   );

@@ -1,8 +1,9 @@
 import React from "react";
-import { Image, StyleSheet, View, Text } from "react-native";
+import { StyleSheet, View, Text } from "react-native";
 import { Exercise } from "@/types/exercises";
 import { AppColors } from "@/constants/colors";
 import { Pressable } from "react-native";
+import { Image } from "expo-image";
 
 type Props = {
   exercise: Exercise;
@@ -27,9 +28,10 @@ const ExerciseRow = ({
     >
       {exercise.image ? (
         <Image
-          source={{ uri: exercise.image }}
+          source={{
+            uri: "data:image/jpeg;base64," + exercise.image,
+          }}
           style={styles.exerciseImage}
-          resizeMode="cover"
         />
       ) : (
         <View style={styles.exerciseImage}>

@@ -69,3 +69,17 @@ export const getExercises = async () => {
     mostFrequentExercises,
   };
 };
+export const getExercise = async (exerciseId: string) => {
+  const { data, error } = await supabase
+    .from("exercises")
+    .select("*")
+    .eq("id", exerciseId)
+    .returns<Exercise>();
+
+  if (error) {
+    console.error("Error fetching exercises:", error);
+    return;
+  }
+  if (!data) return;
+  return data;
+};

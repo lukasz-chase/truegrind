@@ -1,6 +1,6 @@
 import { StyleSheet, View } from "react-native";
 import { AppColors } from "@/constants/colors";
-import RemoveExerciseModal from "./RemoveExerciseModal";
+import WarningModal from "./WarningModal";
 import { useState } from "react";
 import AnchoredModal from "./AnchoredModal";
 import Animated, {
@@ -30,8 +30,11 @@ const ExerciseOptionsModal = function ExerciseOptionsModal() {
   } = useExerciseOptionsModal((state) => state.exerciseProps);
   const { openModal, closeModal: closeExercisesModal } =
     useWorkoutExercisesModal();
-  const { replaceWorkoutExercise, updateWorkoutExerciseField } =
-    useActiveWorkout();
+  const {
+    replaceWorkoutExercise,
+    updateWorkoutExerciseField,
+    removeWorkoutExercise,
+  } = useActiveWorkout();
 
   const [warningState, setWarningState] = useState({
     isVisible: false,
@@ -104,7 +107,10 @@ const ExerciseOptionsModal = function ExerciseOptionsModal() {
   ) => {
     updateWorkoutExerciseField(workoutExerciseId, timerName, timerValue);
   };
-
+  const removeExerciseHandler = () => {
+    removeWorkoutExercise(workoutExerciseId);
+    closeModal();
+  };
   return (
     <>
       <AnchoredModal
@@ -144,11 +150,14 @@ const ExerciseOptionsModal = function ExerciseOptionsModal() {
           </View>
         </Animated.View>
       </AnchoredModal>
-      <RemoveExerciseModal
-        workoutExerciseId={workoutExerciseId}
+      <WarningModal
         closeModal={closeWarningModal}
         isVisible={warningState.isVisible}
-        exerciseName={exerciseName}
+        title="Remove Exercise?"
+        subtitle={`This removes '${exerciseName}' and all of its sets from your
+        workout. You cannot undo this action.`}
+        onCancel={closeWarningModal}
+        onProceed={removeExerciseHandler}
       />
     </>
   );

@@ -13,6 +13,7 @@ import WorkoutExercisesModal from "@/components/Modals/WorkoutExercisesModal";
 import TimerModal from "@/components/Modals/TimerModal";
 import SetOptionsModal from "@/components/Modals/SetOptionsModal";
 import WorkoutOptionsModal from "@/components/Modals/WorkoutOptionsModal";
+import ExerciseDetailsModal from "@/components/Modals/ExerciseDetailsModal/ExerciseDetailsModal";
 
 export default function TabLayout() {
   const animatedIndex = useSharedValue(0);
@@ -26,6 +27,7 @@ export default function TabLayout() {
           <WorkoutExercisesModal />
           <SetOptionsModal />
           <WorkoutOptionsModal />
+          <ExerciseDetailsModal />
         </SafeAreaView>
         <Tabs
           screenOptions={{

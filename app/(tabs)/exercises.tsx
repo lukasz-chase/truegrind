@@ -2,11 +2,13 @@ import { StyleSheet, View, Pressable, Text } from "react-native";
 import Exercises from "@/components/ExercisesList/Exercises";
 import { AppColors } from "@/constants/colors";
 import { useState } from "react";
-import NewExerciseModal from "@/components/Modals/NewExerciseModal";
+import ExerciseFormModal from "@/components/Modals/ExerciseForm/ExerciseFormModal";
 import { SafeAreaView } from "react-native-safe-area-context";
+import useExerciseDetailsModal from "@/store/useExerciseDetailsModal";
 
 export default function ExercisesScreen() {
   const [isVisible, setIsVisible] = useState(false);
+  const { openModal } = useExerciseDetailsModal();
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.wrapper}>
@@ -18,14 +20,14 @@ export default function ExercisesScreen() {
           <View style={styles.headerSpacer} />
         </View>
         <Exercises
-          onPress={() => console.log("pressed")}
+          onPress={(exercise) => openModal(exercise)}
           selectedExercises={[]}
         />
       </View>
-      <NewExerciseModal
+      <ExerciseFormModal
         closeModal={() => setIsVisible(false)}
         isVisible={isVisible}
-        onDismiss={() => {}}
+        title="New Exercise"
       />
     </SafeAreaView>
   );

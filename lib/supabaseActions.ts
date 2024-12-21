@@ -217,8 +217,14 @@ const uploadImageToBucket = async (
   }
 };
 
-export const addExercise = async (exercise: Partial<Exercise>) => {
-  if (exercise.image) {
+export const upsertExercise = async ({
+  exercise,
+  imageWasChanged,
+}: {
+  exercise: Partial<Exercise>;
+  imageWasChanged: boolean;
+}) => {
+  if (exercise.image && imageWasChanged) {
     const imageUrl = await uploadImageToBucket(
       exercise.image,
       `${exercise.muscle}/${exercise.name}.png`,
@@ -230,12 +236,14 @@ export const addExercise = async (exercise: Partial<Exercise>) => {
   }
   const { data, error } = await supabase
     .from("exercises")
-    .insert(exercise)
+    .upsert(exercise)
     .select()
     .returns<Exercise[]>();
 
-  if (data) {
+  if (data && !exercise.id) {
     exercisesStore.getState().addExercise(data[0]);
+  } else {
+    exercisesStore.getState().replaceExercise(exercise as Exercise);
   }
   if (error) {
     console.log("error", error);
@@ -244,4 +252,18 @@ export const addExercise = async (exercise: Partial<Exercise>) => {
 
 export const deleteWorkout = async (workoutId: string) => {
   await supabase.from("workouts").delete().eq("id", workoutId);
+};
+
+export const deleteExercise = async (
+  exerciseId: string,
+  exerciseImage?: string
+) => {
+  if (exerciseImage) {
+    const pathAfterBucket = exerciseImage.split("exercises/")[1].split("?")[0];
+    // Decode the URL-encoded segments
+    const filePath = decodeURIComponent(pathAfterBucket);
+    await supabase.storage.from("exercises").remove([filePath]);
+  }
+  await supabase.from("exercises").delete().eq("id", exerciseId);
+  exercisesStore.getState().deleteExercise(exerciseId);
 };
