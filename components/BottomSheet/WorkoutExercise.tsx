@@ -12,11 +12,14 @@ import Animated, {
   useAnimatedStyle,
   useDerivedValue,
 } from "react-native-reanimated";
-import { useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { WorkoutExercisePopulated } from "@/types/workoutExercise";
 import useCustomKeyboard from "@/store/useCustomKeyboard";
 import useExerciseOptionsModal from "@/store/useExerciseOptionsModal";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
+import CustomTextInput from "../CustomTextInput";
+import CloseButton from "../CloseButton";
+import { exerciseHeader } from "@/constants/exerciseHeader";
 
 type Props = {
   workoutExercise: WorkoutExercisePopulated;
@@ -28,10 +31,18 @@ const WorkoutExercise = ({
   setDragItemId,
   dragItemId,
 }: Props) => {
-  const { addNewSet } = useActiveWorkout();
+  const { addNewSet, updateWorkoutExerciseField } = useActiveWorkout();
   const { openModal } = useExerciseOptionsModal();
   const { closeKeyboard } = useCustomKeyboard();
 
+  const [note, setNote] = useState(
+    workoutExercise?.note ?? { noteValue: "", showNote: false }
+  );
+  useEffect(() => {
+    if (workoutExercise.note) {
+      setNote(workoutExercise.note);
+    }
+  }, [workoutExercise.note]);
   const buttonRef = useRef(null);
 
   const isDraggedValue = useDerivedValue(
@@ -47,8 +58,21 @@ const WorkoutExercise = ({
       exerciseTimer: workoutExercise.timer,
       warmupTimer: workoutExercise.warmup_timer,
       workoutExerciseId: workoutExercise.id,
+      note,
     });
   };
+
+  const noteChangeHandler = (text: string) => {
+    const newNote = { ...note, noteValue: text };
+    setNote(newNote);
+    updateWorkoutExerciseField(workoutExercise.id, "note", newNote);
+  };
+  const removeNote = () => {
+    const newNote = { noteValue: "", showNote: false };
+    setNote(newNote);
+    updateWorkoutExerciseField(workoutExercise.id, "note", newNote);
+  };
+
   const longPressGesture = Gesture.LongPress().onStart((event) => {
     runOnJS(setDragItemId)(workoutExercise.id);
   });
@@ -85,23 +109,34 @@ const WorkoutExercise = ({
           </Pressable>
         </View>
       </GestureDetector>
+      {note.showNote && (
+        <View style={styles.textWrapper}>
+          <CustomTextInput
+            onChangeText={noteChangeHandler}
+            placeholder="Add a note"
+            value={note.noteValue}
+            backgroundColor="#FCF2CC"
+            textColor="#8F7F3B"
+          />
+          <CloseButton onPress={removeNote} />
+        </View>
+      )}
       <View style={styles.table}>
         <View style={[styles.row, styles.headerRow]}>
-          <Text style={[styles.cell, styles.headerCell, { flex: 0.75 }]}>
-            Set
-          </Text>
-          <Text style={[styles.cell, styles.headerCell, { flex: 1.75 }]}>
-            Previous
-          </Text>
-          <Text style={[styles.cell, styles.headerCell, { flex: 1.2 }]}>
-            Kg
-          </Text>
-          <Text style={[styles.cell, styles.headerCell, { flex: 1.3 }]}>
-            Reps
-          </Text>
-          <Text style={[styles.cell, styles.headerCell, { flex: 1 }]}>
-            Done
-          </Text>
+          {exerciseHeader.map((header) => {
+            return (
+              <Text
+                key={header.label}
+                style={[
+                  styles.cell,
+                  styles.headerCell,
+                  { flex: header.flexValue },
+                ]}
+              >
+                {header.label}
+              </Text>
+            );
+          })}
         </View>
         {workoutExercise.exercise_sets.map((set) => (
           <WorkoutSet
@@ -134,7 +169,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingHorizontal: 20,
+    paddingHorizontal: 10,
   },
   headerTitle: {
     color: AppColors.blue,
@@ -182,6 +217,13 @@ const styles = StyleSheet.create({
   addButtonText: {
     fontWeight: "500",
     fontSize: 18,
+  },
+  textWrapper: {
+    borderBottomColor: AppColors.gray,
+    borderBottomWidth: 2,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
 });
 

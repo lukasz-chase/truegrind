@@ -10,6 +10,7 @@ interface ModalState {
     exerciseTimer: number | null;
     warmupTimer: number | null;
     buttonRef: React.MutableRefObject<null>;
+    note: { noteValue: string; showNote: boolean };
   };
   setExerciseTimer: (exerciseTimer: number | null) => void;
   setWarmupTimer: (warmupTimer: number | null) => void;
@@ -26,6 +27,7 @@ const useExerciseOptionsModal = create<ModalState>((set) => ({
     exerciseTimer: null,
     warmupTimer: null,
     buttonRef: { current: null },
+    note: { noteValue: "", showNote: false },
   },
   setExerciseTimer: (exerciseTimer: number | null) =>
     set((state) => ({

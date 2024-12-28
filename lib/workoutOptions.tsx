@@ -14,6 +14,8 @@ export const getOptions = ({
   closeModal,
   setWarningState,
   openExercisesModal,
+  noteHandler,
+  generateNoteOptionName,
 }: {
   exerciseTimer: number | null;
   switchToAutoRestScreen: () => void;
@@ -22,11 +24,13 @@ export const getOptions = ({
     React.SetStateAction<{ isVisible: boolean; shouldShow: boolean }>
   >;
   openExercisesModal: () => void;
+  noteHandler: () => void;
+  generateNoteOptionName: () => string;
 }) => [
   {
     Icon: <EvilIcons name="pencil" size={24} color={AppColors.blue} />,
-    title: "Add a Note",
-    cb: () => setWarningState((state) => ({ ...state, shouldShow: true })),
+    title: generateNoteOptionName(),
+    cb: noteHandler,
   },
   {
     Icon: (

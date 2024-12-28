@@ -3,7 +3,7 @@ import { ExerciseSet } from "./exercisesSets";
 
 export type WorkoutExercise = {
   id: string;
-  notes: string;
+  note: { noteValue: string; showNote: boolean };
   timer: number | null;
   warmup_timer: number | null;
   exercise_id: string;
@@ -13,7 +13,7 @@ export type WorkoutExercise = {
 
 export type WorkoutExercisePopulated = {
   id: string;
-  notes: string;
+  note: { noteValue: string; showNote: boolean };
   timer: number | null;
   warmup_timer: number | null;
   order: number;

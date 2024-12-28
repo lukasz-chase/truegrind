@@ -60,10 +60,10 @@ export const updateWorkoutExercises = async (
       workout_id: workoutHistoryId,
       created_at: new Date().toISOString(),
     });
-
     if (
       !initialExercise ||
-      workoutExercise.notes !== initialExercise.notes ||
+      workoutExercise.note?.noteValue !== initialExercise.note?.noteValue ||
+      workoutExercise.note?.showNote !== initialExercise.note?.showNote ||
       workoutExercise.timer !== initialExercise.timer ||
       workoutExercise.warmup_timer !== initialExercise.warmup_timer ||
       workoutExercise.order !== initialExercise.order

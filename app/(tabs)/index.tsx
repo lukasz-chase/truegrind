@@ -31,7 +31,7 @@ export default function WorkoutScreen() {
       const { data } = await supabase
         .from("workouts")
         .select(
-          `id, name, notes, user_id, workout_exercises(id, timer, notes, order, warmup_timer, exercises(id, name, image, muscle, equipment), exercise_sets(*))`
+          `id, name, notes, user_id, workout_exercises(id, timer, note, order, warmup_timer, exercises(id, name, image, muscle, equipment), exercise_sets(*))`
         )
         .eq("user_id", user?.id)
         .returns<Workout[]>();

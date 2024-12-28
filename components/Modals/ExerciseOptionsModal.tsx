@@ -27,6 +27,7 @@ const ExerciseOptionsModal = function ExerciseOptionsModal() {
     exerciseTimer,
     workoutExerciseId,
     warmupTimer,
+    note,
   } = useExerciseOptionsModal((state) => state.exerciseProps);
   const { openModal, closeModal: closeExercisesModal } =
     useWorkoutExercisesModal();
@@ -71,12 +72,26 @@ const ExerciseOptionsModal = function ExerciseOptionsModal() {
     setShouldShowExercisesModal(true);
     closeModal();
   };
+
+  const noteHandler = () => {
+    updateWorkoutExerciseField(workoutExerciseId, "note", {
+      ...note,
+      showNote: !note.showNote,
+    });
+    closeModal();
+  };
+  const generateNoteOptionName = () => {
+    if (note.showNote) return "Remove note";
+    else return "New note";
+  };
   const options = getOptions({
     exerciseTimer,
     switchToAutoRestScreen,
     closeModal,
     setWarningState,
     openExercisesModal,
+    noteHandler,
+    generateNoteOptionName,
   });
   const switchToMainScreen = () => {
     translateX.value = 0;
