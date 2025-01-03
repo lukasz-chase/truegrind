@@ -9,11 +9,15 @@ type Props = {
 const ExerciseImage = ({ height, imageUrl, width }: Props) => {
   return (
     <Image
-      source={{
-        uri: imageUrl.includes("gif")
-          ? "data:image/jpeg;base64," + imageUrl
-          : imageUrl,
-      }}
+      source={
+        typeof imageUrl !== "string"
+          ? imageUrl
+          : {
+              uri: imageUrl.includes("gif")
+                ? "data:image/jpeg;base64," + imageUrl
+                : imageUrl,
+            }
+      }
       style={{ height, width }}
     />
   );

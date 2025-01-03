@@ -1,5 +1,6 @@
 import React from "react";
-import { Pressable, StyleSheet, Text } from "react-native";
+import { Platform, Pressable, StyleSheet, Text } from "react-native";
+import * as Haptics from "expo-haptics";
 
 type Props = {
   title: string;
@@ -10,13 +11,19 @@ type Props = {
 };
 
 const ModalOptionButton = ({ title, Icon, cb, rightSide, isActive }: Props) => {
+  const handlePress = () => {
+    if (Platform.OS !== "web") {
+      Haptics.selectionAsync();
+    }
+    cb();
+  };
   return (
     <Pressable
       style={[
         styles.pressableButton,
         { backgroundColor: isActive ? "#2E3C49" : "transparent" },
       ]}
-      onPress={cb}
+      onPress={handlePress}
     >
       {Icon}
       <Text style={styles.pressableText}>{title}</Text>

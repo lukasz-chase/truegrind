@@ -5,6 +5,7 @@ import {
   TouchableWithoutFeedback,
   Pressable,
   Text,
+  Platform,
 } from "react-native";
 import useWorkoutExercisesModal from "@/store/useWorkoutExercisesModal";
 import Exercises from "../ExercisesList/Exercises";
@@ -16,6 +17,7 @@ import { Exercise } from "@/types/exercises";
 import useActiveWorkout from "@/store/useActiveWorkout";
 import { generateSupersetColor } from "@/lib/helpers";
 import { WorkoutExercise } from "@/types/workoutExercise";
+import * as Haptics from "expo-haptics";
 
 export default function WorkoutExercisesModal() {
   const {
@@ -42,6 +44,9 @@ export default function WorkoutExercisesModal() {
     closeModalHandler();
   };
   const addChosenExercises = (exercise: Exercise) => {
+    if (Platform.OS !== "web") {
+      Haptics.selectionAsync();
+    }
     const isAlreadyChosen = chosenExercises.find(
       (chosenExercise) => chosenExercise.id === exercise.id
     );
@@ -58,6 +63,9 @@ export default function WorkoutExercisesModal() {
   const onPressHandler = (newExerciseProperties?: Partial<WorkoutExercise>) => {
     onPress(chosenExercises, newExerciseProperties);
     setChosenExercises([]);
+    if (Platform.OS !== "web") {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    }
   };
   const supersetExercisesHandler = () => {
     const currentSupersetColors = activeWorkout.workout_exercises?.map(
@@ -94,13 +102,16 @@ export default function WorkoutExercisesModal() {
               </Pressable>
             </View>
             <View style={styles.headerSection}>
-              <Pressable onPress={supersetExercisesHandler}>
+              <Pressable
+                onPress={supersetExercisesHandler}
+                disabled={chosenExercises.length <= 1}
+              >
                 <Text
                   style={[
                     styles.headerText,
                     {
                       color:
-                        chosenExercises.length > 0
+                        chosenExercises.length > 1
                           ? AppColors.blue
                           : AppColors.gray,
                       fontWeight: "bold",
@@ -110,7 +121,10 @@ export default function WorkoutExercisesModal() {
                   Superset
                 </Text>
               </Pressable>
-              <Pressable onPress={() => onPressHandler()}>
+              <Pressable
+                onPress={() => onPressHandler()}
+                disabled={chosenExercises.length < 1}
+              >
                 <Text
                   style={[
                     styles.headerText,
@@ -124,6 +138,7 @@ export default function WorkoutExercisesModal() {
                   ]}
                 >
                   {actionButtonLabel}
+                  {actionButtonLabel === "Add" && `(${chosenExercises.length})`}
                 </Text>
               </Pressable>
             </View>

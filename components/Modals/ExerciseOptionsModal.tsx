@@ -61,10 +61,14 @@ const ExerciseOptionsModal = function ExerciseOptionsModal() {
   };
 
   const onDismiss = () => {
-    if (warningState.shouldShow)
+    if (warningState.shouldShow) {
       setWarningState((state) => ({ ...state, isVisible: true }));
-    if (shouldShowExercisesModal)
+      setWarningState((state) => ({ ...state, shouldShow: false }));
+    }
+    if (shouldShowExercisesModal) {
       openModal(replaceExerciseHandler, false, "Replace");
+      setShouldShowExercisesModal(false);
+    }
   };
 
   const replaceExerciseHandler = (exercises: Exercise[]) => {

@@ -8,7 +8,6 @@ import {
   exerciseFormScreenType,
 } from "@/types/exerciseForm";
 import { MaterialIcons } from "@expo/vector-icons";
-import { Image } from "expo-image";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 const PlaceholderImage = require("@/assets/images/ImagePlaceholder.png");
 

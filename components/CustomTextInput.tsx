@@ -14,7 +14,7 @@ const CustomTextInput = ({
   onChangeText,
   value,
   placeholder,
-  large,
+  large = false,
   backgroundColor = AppColors.gray,
   textColor = "black",
 }: Props) => {
@@ -31,6 +31,7 @@ const CustomTextInput = ({
         {
           borderColor: inputFocus ? "black" : "white",
           height: large ? 120 : 40,
+          maxHeight: large ? 120 : 40,
           backgroundColor,
           color: textColor,
         },
