@@ -18,7 +18,10 @@ interface ActiveWorkoutStore {
   isNewWorkout: boolean;
   setIsNewWorkout: (value: boolean) => void;
   setActiveWorkout: (workout: Workout) => void;
-  addNewWorkoutExercise: (exercise: Exercise) => void;
+  addNewWorkoutExercise: (
+    exercise: Exercise,
+    newExerciseProperties?: Partial<WorkoutExercise>
+  ) => void;
   updateWorkoutExerciseField: (
     workoutExerciseId: string,
     field: keyof WorkoutExercise,
@@ -83,15 +86,17 @@ const useActiveWorkout = create<ActiveWorkoutStore>()(
           },
         }));
       },
-      addNewWorkoutExercise: (exercise: Exercise) => {
+      addNewWorkoutExercise: (exercise, newExerciseProperties) => {
         const newExercise: WorkoutExercisePopulated = {
           id: uuid.v4(),
-          notes: "",
+          note: { noteValue: "", showNote: false },
           order: (get().activeWorkout.workout_exercises?.length ?? 0) + 1,
           timer: null,
           warmup_timer: null,
           exercises: exercise,
           exercise_sets: [],
+          superset: null,
+          ...newExerciseProperties,
         };
 
         set((state) => {
@@ -116,11 +121,12 @@ const useActiveWorkout = create<ActiveWorkoutStore>()(
       ) => {
         const newWorkoutExercise = {
           id: uuid.v4(),
-          notes: "",
+          note: { noteValue: "", showNote: false },
           timer: null,
           warmup_timer: null,
           exercises: newExercise,
           exercise_sets: [],
+          superset: null,
         };
         set((state) => ({
           activeWorkout: {

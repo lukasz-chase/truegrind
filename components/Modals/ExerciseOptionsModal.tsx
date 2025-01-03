@@ -19,16 +19,14 @@ import ModalOptionButton from "./ModalOptionButton";
 const MODAL_WIDTH = 275;
 
 const ExerciseOptionsModal = function ExerciseOptionsModal() {
-  const { isVisible, closeModal, setExerciseTimer, setWarmupTimer } =
-    useExerciseOptionsModal((state) => state);
   const {
+    isVisible,
+    closeModal,
+    setExerciseTimer,
+    setWarmupTimer,
     buttonRef,
-    exerciseName,
-    exerciseTimer,
-    workoutExerciseId,
-    warmupTimer,
-    note,
-  } = useExerciseOptionsModal((state) => state.exerciseProps);
+    workoutExercise,
+  } = useExerciseOptionsModal((state) => state);
   const { openModal, closeModal: closeExercisesModal } =
     useWorkoutExercisesModal();
   const {
@@ -44,12 +42,19 @@ const ExerciseOptionsModal = function ExerciseOptionsModal() {
   const [shouldShowExercisesModal, setShouldShowExercisesModal] =
     useState(false);
   const [currentScreen, setCurrentScreen] = useState("main");
-
   const [currentTimer, setCurrentTimer] = useState<"timer" | "warmup_timer">(
     "timer"
   );
-
   const translateX = useSharedValue(0);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [
+      { translateX: withTiming(Number(translateX.value), { duration: 300 }) },
+    ],
+  }));
+
+  if (!workoutExercise) return null;
+
   const switchToAutoRestScreen = () => {
     setCurrentScreen("autoRest");
     translateX.value = Number(-MODAL_WIDTH);
@@ -63,7 +68,7 @@ const ExerciseOptionsModal = function ExerciseOptionsModal() {
   };
 
   const replaceExerciseHandler = (exercises: Exercise[]) => {
-    replaceWorkoutExercise(workoutExerciseId, exercises[0]);
+    replaceWorkoutExercise(workoutExercise.id, exercises[0]);
     closeExercisesModal();
     setShouldShowExercisesModal(false);
   };
@@ -74,35 +79,34 @@ const ExerciseOptionsModal = function ExerciseOptionsModal() {
   };
 
   const noteHandler = () => {
-    updateWorkoutExerciseField(workoutExerciseId, "note", {
-      ...note,
-      showNote: !note.showNote,
+    updateWorkoutExerciseField(workoutExercise.id, "note", {
+      ...workoutExercise.note,
+      showNote: !workoutExercise.note?.showNote,
     });
     closeModal();
   };
   const generateNoteOptionName = () => {
-    if (note.showNote) return "Remove note";
+    if (workoutExercise.note?.showNote) return "Remove note";
     else return "New note";
   };
+  const removeFromSuperset = () => {
+    updateWorkoutExerciseField(workoutExercise.id, "superset", null);
+  };
   const options = getOptions({
-    exerciseTimer,
+    exerciseTimer: workoutExercise.timer,
     switchToAutoRestScreen,
     closeModal,
     setWarningState,
     openExercisesModal,
     noteHandler,
     generateNoteOptionName,
+    removeFromSuperset,
+    superset: workoutExercise.superset,
   });
   const switchToMainScreen = () => {
     translateX.value = 0;
     setCurrentScreen("main");
   };
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [
-      { translateX: withTiming(Number(translateX.value), { duration: 300 }) },
-    ],
-  }));
 
   const closeWarningModal = () => {
     setWarningState((state) => ({ ...state, isVisible: false }));
@@ -120,10 +124,10 @@ const ExerciseOptionsModal = function ExerciseOptionsModal() {
     timerName: "timer" | "warmup_timer",
     timerValue: number | null
   ) => {
-    updateWorkoutExerciseField(workoutExerciseId, timerName, timerValue);
+    updateWorkoutExerciseField(workoutExercise.id, timerName, timerValue);
   };
   const removeExerciseHandler = () => {
-    removeWorkoutExercise(workoutExerciseId);
+    removeWorkoutExercise(workoutExercise.id);
     closeModal();
   };
   return (
@@ -131,7 +135,7 @@ const ExerciseOptionsModal = function ExerciseOptionsModal() {
       <AnchoredModal
         isVisible={isVisible}
         closeModal={closeHandler}
-        anchorRef={buttonRef}
+        anchorRef={buttonRef!}
         onDismiss={onDismiss}
         anchorCorner="RIGHT"
         backgroundColor={AppColors.darkBlue}
@@ -143,9 +147,11 @@ const ExerciseOptionsModal = function ExerciseOptionsModal() {
           {/* Main Screen */}
           <View style={styles.screen}>
             <View>
-              {options.map((option) => (
-                <ModalOptionButton key={option.title} {...option} />
-              ))}
+              {options.map((option) => {
+                if (option.conditionToDisplay) {
+                  return <ModalOptionButton key={option.title} {...option} />;
+                }
+              })}
             </View>
           </View>
 
@@ -153,9 +159,9 @@ const ExerciseOptionsModal = function ExerciseOptionsModal() {
             <AutoRestTimeSettings
               screenWidth={MODAL_WIDTH}
               translateX={translateX}
-              exerciseTimer={exerciseTimer}
+              exerciseTimer={workoutExercise.timer}
               setExerciseTimer={setExerciseTimer}
-              warmupTimer={warmupTimer}
+              warmupTimer={workoutExercise.warmup_timer}
               setWarmupTimer={setWarmupTimer}
               switchToMainScreen={switchToMainScreen}
               setCurrentTimer={setCurrentTimer}
@@ -169,7 +175,7 @@ const ExerciseOptionsModal = function ExerciseOptionsModal() {
         closeModal={closeWarningModal}
         isVisible={warningState.isVisible}
         title="Remove Exercise?"
-        subtitle={`This removes '${exerciseName}' and all of its sets from your
+        subtitle={`This removes '${workoutExercise.exercises.name}' and all of its sets from your
         workout. You cannot undo this action.`}
         onCancel={closeWarningModal}
         onProceed={removeExerciseHandler}

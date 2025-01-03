@@ -4,33 +4,20 @@ import SimpleLineIcons from "@expo/vector-icons/SimpleLineIcons";
 import { AppColors } from "@/constants/colors";
 import useActiveWorkout from "@/store/useActiveWorkout";
 import WorkoutSet from "./WorkoutSet";
-import Animated, {
-  Extrapolation,
-  interpolate,
-  LinearTransition,
-  runOnJS,
-  useAnimatedStyle,
-  useDerivedValue,
-} from "react-native-reanimated";
-import { useEffect, useMemo, useRef, useState } from "react";
+import Animated, { LinearTransition, runOnJS } from "react-native-reanimated";
+import { useEffect, useRef, useState } from "react";
 import { WorkoutExercisePopulated } from "@/types/workoutExercise";
 import useCustomKeyboard from "@/store/useCustomKeyboard";
 import useExerciseOptionsModal from "@/store/useExerciseOptionsModal";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import CustomTextInput from "../CustomTextInput";
-import CloseButton from "../CloseButton";
 import { exerciseHeader } from "@/constants/exerciseHeader";
 
 type Props = {
   workoutExercise: WorkoutExercisePopulated;
   setDragItemId: React.Dispatch<React.SetStateAction<string | null>>;
-  dragItemId: string | null;
 };
-const WorkoutExercise = ({
-  workoutExercise,
-  setDragItemId,
-  dragItemId,
-}: Props) => {
+const WorkoutExercise = ({ workoutExercise, setDragItemId }: Props) => {
   const { addNewSet, updateWorkoutExerciseField } = useActiveWorkout();
   const { openModal } = useExerciseOptionsModal();
   const { closeKeyboard } = useCustomKeyboard();
@@ -45,21 +32,9 @@ const WorkoutExercise = ({
   }, [workoutExercise.note]);
   const buttonRef = useRef(null);
 
-  const isDraggedValue = useDerivedValue(
-    () => (dragItemId ? 1 : 0),
-    [dragItemId]
-  );
-
   const onButtonPress = () => {
     closeKeyboard();
-    openModal({
-      buttonRef,
-      exerciseName: workoutExercise.exercises.name,
-      exerciseTimer: workoutExercise.timer,
-      warmupTimer: workoutExercise.warmup_timer,
-      workoutExerciseId: workoutExercise.id,
-      note,
-    });
+    openModal(buttonRef, workoutExercise);
   };
 
   const noteChangeHandler = (text: string) => {
@@ -67,34 +42,13 @@ const WorkoutExercise = ({
     setNote(newNote);
     updateWorkoutExerciseField(workoutExercise.id, "note", newNote);
   };
-  const removeNote = () => {
-    const newNote = { noteValue: "", showNote: false };
-    setNote(newNote);
-    updateWorkoutExerciseField(workoutExercise.id, "note", newNote);
-  };
 
   const longPressGesture = Gesture.LongPress().onStart((event) => {
     runOnJS(setDragItemId)(workoutExercise.id);
   });
-  const containerAnimatedStyle = useAnimatedStyle(() => ({
-    transform: [
-      {
-        scale: interpolate(
-          isDraggedValue.value,
-          [0, 1],
-          [1, 0],
-          Extrapolation.CLAMP
-        ),
-      },
-    ],
-  }));
 
-  const containerStyle = useMemo(
-    () => [styles.container, containerAnimatedStyle],
-    [containerAnimatedStyle]
-  );
   return (
-    <Animated.View style={containerStyle} layout={LinearTransition}>
+    <Animated.View style={styles.container} layout={LinearTransition}>
       <GestureDetector gesture={longPressGesture}>
         <View style={styles.header}>
           <Text style={styles.headerTitle}>
@@ -118,7 +72,6 @@ const WorkoutExercise = ({
             backgroundColor="#FCF2CC"
             textColor="#8F7F3B"
           />
-          <CloseButton onPress={removeNote} />
         </View>
       )}
       <View style={styles.table}>
@@ -164,7 +117,9 @@ const WorkoutExercise = ({
 };
 
 const styles = StyleSheet.create({
-  container: {},
+  container: {
+    flex: 1,
+  },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -219,11 +174,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
   textWrapper: {
-    borderBottomColor: AppColors.gray,
-    borderBottomWidth: 2,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+    marginVertical: 4,
   },
 });
 

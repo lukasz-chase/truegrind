@@ -16,6 +16,8 @@ export const getOptions = ({
   openExercisesModal,
   noteHandler,
   generateNoteOptionName,
+  removeFromSuperset,
+  superset,
 }: {
   exerciseTimer: number | null;
   switchToAutoRestScreen: () => void;
@@ -26,11 +28,14 @@ export const getOptions = ({
   openExercisesModal: () => void;
   noteHandler: () => void;
   generateNoteOptionName: () => string;
+  removeFromSuperset: () => void;
+  superset: string | null;
 }) => [
   {
     Icon: <EvilIcons name="pencil" size={24} color={AppColors.blue} />,
     title: generateNoteOptionName(),
     cb: noteHandler,
+    conditionToDisplay: true,
   },
   {
     Icon: (
@@ -42,6 +47,16 @@ export const getOptions = ({
     ),
     title: "Replace Exercise",
     cb: openExercisesModal,
+    conditionToDisplay: true,
+  },
+  {
+    Icon: <EvilIcons name="close" size={24} color={AppColors.red} />,
+    title: "Remove From Superset",
+    cb: () => {
+      removeFromSuperset();
+      closeModal();
+    },
+    conditionToDisplay: !!superset,
   },
   {
     Icon: <Ionicons name="timer-outline" size={24} color={AppColors.blue} />,
@@ -65,6 +80,7 @@ export const getOptions = ({
       </View>
     ),
     cb: switchToAutoRestScreen,
+    conditionToDisplay: true,
   },
   {
     Icon: <EvilIcons name="close" size={24} color={AppColors.red} />,
@@ -73,5 +89,6 @@ export const getOptions = ({
       setWarningState((state) => ({ ...state, shouldShow: true }));
       closeModal();
     },
+    conditionToDisplay: true,
   },
 ];

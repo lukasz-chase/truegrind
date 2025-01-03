@@ -10,10 +10,9 @@ const ExerciseImage = ({ height, imageUrl, width }: Props) => {
   return (
     <Image
       source={{
-        uri:
-          imageUrl.includes("png") || imageUrl.includes("jpg")
-            ? imageUrl
-            : "data:image/jpeg;base64," + imageUrl,
+        uri: imageUrl.includes("gif")
+          ? "data:image/jpeg;base64," + imageUrl
+          : imageUrl,
       }}
       style={{ height, width }}
     />

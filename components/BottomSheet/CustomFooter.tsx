@@ -6,6 +6,7 @@ import useActiveWorkout from "@/store/useActiveWorkout";
 import { Exercise } from "@/types/exercises";
 import useCustomKeyboard from "@/store/useCustomKeyboard";
 import useWorkoutTimer from "@/store/useWorkoutTimer";
+import { WorkoutExercise } from "@/types/workoutExercise";
 
 type Props = {
   close: () => void;
@@ -16,8 +17,13 @@ const CustomFooter = ({ close }: Props) => {
   const { addNewWorkoutExercise } = useActiveWorkout();
   const { isVisible: IsKeyboardVisible } = useCustomKeyboard();
   const { resetTimer } = useWorkoutTimer();
-  const addExercises = (exercises: Exercise[]) => {
-    exercises.map((exercise) => addNewWorkoutExercise(exercise));
+  const addExercises = (
+    exercises: Exercise[],
+    newExerciseProperties?: Partial<WorkoutExercise>
+  ) => {
+    exercises.map((exercise) =>
+      addNewWorkoutExercise(exercise, newExerciseProperties)
+    );
     closeModal();
   };
   const closeBottomSheet = () => {

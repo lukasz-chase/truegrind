@@ -12,6 +12,7 @@ import CustomKeyboard from "../CustomKeyboard";
 import useCustomKeyboard from "@/store/useCustomKeyboard";
 import DraggableList from "./DraggableExercisesList.tsx/DraggableList";
 import WorkoutExercise from "./WorkoutExercise";
+import WorkoutExerciseWrapper from "./WorkoutExerciseWrapper";
 
 type Props = {
   animatedIndex: SharedValue<number>;
@@ -89,12 +90,23 @@ const WorkoutBottomSheet = ({ animatedIndex }: Props) => {
             {activeWorkout?.workout_exercises
               ?.sort((a, b) => a.order - b.order)
               .map((workoutExercise) => (
-                <WorkoutExercise
-                  key={workoutExercise.id}
-                  workoutExercise={workoutExercise}
-                  setDragItemId={setDragItemId}
+                <WorkoutExerciseWrapper
                   dragItemId={dragItemId}
-                />
+                  key={workoutExercise.id}
+                >
+                  {workoutExercise.superset && (
+                    <View
+                      style={[
+                        styles.supersetIndicator,
+                        { backgroundColor: workoutExercise.superset },
+                      ]}
+                    />
+                  )}
+                  <WorkoutExercise
+                    workoutExercise={workoutExercise}
+                    setDragItemId={setDragItemId}
+                  />
+                </WorkoutExerciseWrapper>
               ))}
             <CustomFooter close={handleClosePress} />
           </BottomSheetScrollView>
@@ -116,6 +128,10 @@ const styles = StyleSheet.create({
   handle: {
     paddingTop: 5,
     paddingBottom: 0,
+  },
+  supersetIndicator: {
+    width: 2,
+    height: "100%",
   },
 });
 

@@ -13,6 +13,9 @@ import CloseButton from "../CloseButton";
 import { useState } from "react";
 import ExerciseFormModal from "./ExerciseForm/ExerciseFormModal";
 import { Exercise } from "@/types/exercises";
+import useActiveWorkout from "@/store/useActiveWorkout";
+import { generateSupersetColor } from "@/lib/helpers";
+import { WorkoutExercise } from "@/types/workoutExercise";
 
 export default function WorkoutExercisesModal() {
   const {
@@ -23,6 +26,7 @@ export default function WorkoutExercisesModal() {
     actionButtonLabel,
     openModal,
   } = useWorkoutExercisesModal();
+  const { activeWorkout } = useActiveWorkout();
   const [openNewExerciseModal, setOpenNewExerciseModal] = useState(false);
   const [isNewExerciseModalVisible, setIsNewExerciseModalVisible] =
     useState(false);
@@ -51,9 +55,16 @@ export default function WorkoutExercisesModal() {
     if (allowMultiple) setChosenExercises((state) => [...state, exercise]);
     else setChosenExercises([exercise]);
   };
-  const onPressHandler = () => {
-    onPress(chosenExercises);
+  const onPressHandler = (newExerciseProperties?: Partial<WorkoutExercise>) => {
+    onPress(chosenExercises, newExerciseProperties);
     setChosenExercises([]);
+  };
+  const supersetExercisesHandler = () => {
+    const currentSupersetColors = activeWorkout.workout_exercises?.map(
+      (exercise) => exercise.superset
+    );
+    const supersetColor = generateSupersetColor(currentSupersetColors);
+    onPressHandler({ superset: supersetColor });
   };
   return (
     <>
@@ -83,10 +94,23 @@ export default function WorkoutExercisesModal() {
               </Pressable>
             </View>
             <View style={styles.headerSection}>
-              <Text style={[styles.headerText, { color: AppColors.gray }]}>
-                Superset
-              </Text>
-              <Pressable onPress={onPressHandler}>
+              <Pressable onPress={supersetExercisesHandler}>
+                <Text
+                  style={[
+                    styles.headerText,
+                    {
+                      color:
+                        chosenExercises.length > 0
+                          ? AppColors.blue
+                          : AppColors.gray,
+                      fontWeight: "bold",
+                    },
+                  ]}
+                >
+                  Superset
+                </Text>
+              </Pressable>
+              <Pressable onPress={() => onPressHandler()}>
                 <Text
                   style={[
                     styles.headerText,

@@ -1,15 +1,22 @@
 import { Exercise } from "@/types/exercises";
+import { WorkoutExercise } from "@/types/workoutExercise";
 import { create } from "zustand";
 
 interface ModalState {
   isVisible: boolean;
   openModal: (
-    onPress: (exercises: Exercise[]) => void,
+    onPress: (
+      exercises: Exercise[],
+      newExerciseProperties?: Partial<WorkoutExercise>
+    ) => void,
     allowMultiple: boolean,
     actionButtonLabel: "Add" | "Replace"
   ) => void;
   closeModal: () => void;
-  onPress: (exercises: Exercise[]) => void;
+  onPress: (
+    exercises: Exercise[],
+    newExerciseProperties?: Partial<WorkoutExercise>
+  ) => void;
   allowMultiple: boolean;
   actionButtonLabel: "Add" | "Replace";
 }
