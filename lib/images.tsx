@@ -16,7 +16,8 @@ export const pickAndCompressImage = async () => {
         format: SaveFormat.JPEG,
       }
     );
-    return compress.base64!;
+    const extension = result.assets[0].mimeType!.split("/")[1];
+    return { url: compress.base64!, extension };
   } else {
     alert("You did not select any image.");
   }

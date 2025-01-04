@@ -220,14 +220,16 @@ const uploadImageToBucket = async (
 export const upsertExercise = async ({
   exercise,
   imageWasChanged,
+  imageExtension,
 }: {
   exercise: Partial<Exercise>;
   imageWasChanged: boolean;
+  imageExtension?: string | undefined;
 }) => {
   if (exercise.image && imageWasChanged) {
     const imageUrl = await uploadImageToBucket(
       exercise.image,
-      `${exercise.muscle}/${exercise.name}.png`,
+      `${exercise.muscle}/${exercise.name}.${imageExtension}`,
       "exercises"
     );
     if (imageUrl) {

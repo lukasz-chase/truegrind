@@ -35,23 +35,28 @@ const FormScreen = ({
     if (!pickedImage) return;
     setExerciseData((prev) => ({
       ...prev,
-      image: pickedImage,
+      image: pickedImage.url,
       imageWasChanged: true,
+      imageExtension: pickedImage.extension,
     }));
   };
   return (
     <>
-      <CustomTextInput
-        onChangeText={(text) => setExerciseProperty("name", text)}
-        value={exerciseData.name}
-        placeholder="Add Name"
-      />
-      <CustomTextInput
-        onChangeText={(text) => setExerciseProperty("instructions", text)}
-        value={exerciseData.instructions}
-        placeholder="Instructions"
-        large
-      />
+      <View style={{ height: 40 }}>
+        <CustomTextInput
+          onChangeText={(text) => setExerciseProperty("name", text)}
+          value={exerciseData.name}
+          placeholder="Add Name"
+        />
+      </View>
+      <View style={{ height: 120 }}>
+        <CustomTextInput
+          onChangeText={(text) => setExerciseProperty("instructions", text)}
+          value={exerciseData.instructions}
+          placeholder="Instructions"
+          large
+        />
+      </View>
       <Pressable onPress={pickImageAsync} style={styles.imageContainer}>
         <ExerciseImage
           imageUrl={exerciseData?.image ?? PlaceholderImage}

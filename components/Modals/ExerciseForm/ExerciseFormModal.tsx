@@ -51,6 +51,7 @@ export default function ExerciseFormModal({
     muscle: exercise?.muscle ?? "",
     equipment: exercise?.equipment ?? "",
     image: exercise?.image ?? undefined,
+    imageExtension: undefined,
     imageWasChanged: false,
   });
   const [currentScreen, setCurrentScreen] = useState<exerciseFormScreenType>(
@@ -69,6 +70,7 @@ export default function ExerciseFormModal({
       equipment: exercise?.equipment ?? "",
       image: exercise?.image ?? undefined,
       imageWasChanged: false,
+      imageExtension: undefined,
     });
   }, [exercise]);
 
@@ -99,7 +101,7 @@ export default function ExerciseFormModal({
     setIsLoading(true);
     try {
       if (dataIsFilled) {
-        const { imageWasChanged, ...rest } = exerciseData;
+        const { imageWasChanged, imageExtension, ...rest } = exerciseData;
         await upsertExercise({
           exercise: {
             ...exercise,
@@ -107,8 +109,18 @@ export default function ExerciseFormModal({
             user_id: user?.id,
           },
           imageWasChanged,
+          imageExtension,
         });
       }
+      setExerciseData({
+        name: "",
+        instructions: "",
+        muscle: "",
+        equipment: "",
+        image: undefined,
+        imageWasChanged: false,
+        imageExtension: undefined,
+      });
       closeModal();
     } catch (error) {
       console.log(error);

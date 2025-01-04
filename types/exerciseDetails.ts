@@ -13,4 +13,5 @@ export type exerciseFormData = {
   equipment: string;
   image: undefined | string;
   imageWasChanged: boolean;
+  imageExtension: string | undefined;
 };
