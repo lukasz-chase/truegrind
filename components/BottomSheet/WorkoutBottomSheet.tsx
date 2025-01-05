@@ -1,6 +1,9 @@
-import { useRef, useMemo, useCallback, useState } from "react";
+import { useRef, useMemo, useCallback, useState, useEffect } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
-import BottomSheet, { BottomSheetScrollView } from "@gorhom/bottom-sheet";
+import BottomSheet, {
+  BottomSheetScrollView,
+  BottomSheetScrollViewMethods,
+} from "@gorhom/bottom-sheet";
 import CustomBackdrop from "./CustomBackdrop";
 import CustomHeader from "./CustomHeader";
 import CustomFooter from "./CustomFooter";
@@ -23,11 +26,16 @@ const WorkoutBottomSheet = ({ animatedIndex }: Props) => {
   const [scrolledY, setScrolledY] = useState(0);
   const [dragItemId, setDragItemId] = useState<string | null>(null);
 
-  const { setIsSheetVisible } = useBottomSheet();
+  const { setIsSheetVisible, setBottomSheetScrollViewRef } = useBottomSheet();
   const { activeWorkout, reorderWorkoutExercises } = useActiveWorkout();
   const { closeKeyboard } = useCustomKeyboard();
 
   const sheetRef = useRef<BottomSheet>(null);
+  const scrollViewRef = useRef<BottomSheetScrollViewMethods>(null);
+
+  useEffect(() => {
+    setBottomSheetScrollViewRef(scrollViewRef);
+  }, [scrollViewRef]);
 
   const snapPoints = useMemo(() => [130, "90%"], []);
 
@@ -73,7 +81,7 @@ const WorkoutBottomSheet = ({ animatedIndex }: Props) => {
             close={handleClosePress}
             scrolledY={scrolledY}
           />
-          <BottomSheetScrollView onScroll={handleScroll}>
+          <BottomSheetScrollView ref={scrollViewRef} onScroll={handleScroll}>
             <WorkoutDetails />
             {dragItemId && (
               <DraggableList

@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { StyleSheet, Pressable, View, Text } from "react-native";
+import { useEffect, useRef, useState } from "react";
+import { StyleSheet, Pressable, View, Text, Dimensions } from "react-native";
 import { AppColors } from "@/constants/colors";
 import { ExerciseSet } from "@/types/exercisesSets";
 import useCustomKeyboard from "@/store/useCustomKeyboard";
@@ -9,7 +9,10 @@ import Animated, {
   withRepeat,
   withTiming,
 } from "react-native-reanimated";
-import { rpeValues } from "@/constants/keyboard";
+import { KEYBOARD_HEIGHT, rpeValues } from "@/constants/keyboard";
+import useBottomSheet from "@/store/useBottomSheet";
+
+const CARET_WIDTH = 2;
 
 type SetInputProps = {
   value: string | number;
@@ -21,8 +24,6 @@ type SetInputProps = {
   localStateRpeValue: number | null;
   localStatePartialsValue: number | null;
 };
-
-const CARET_WIDTH = 2;
 
 const SetInput = ({
   value,
@@ -40,12 +41,16 @@ const SetInput = ({
 
   const caretOpacity = useSharedValue(0);
 
+  const inputRef = useRef<View>(null);
+  const screenHeight = Dimensions.get("window").height;
+
   const {
     openKeyboard,
     activeField: activeSetInput,
     setPartials,
     setRPEInStore,
   } = useCustomKeyboard();
+  const { bottomSheetScrollViewRef } = useBottomSheet();
 
   const repsInput = fieldName === "reps";
   const setInputId = `${exerciseSetId}-${fieldName}`;
@@ -66,6 +71,18 @@ const SetInput = ({
   };
 
   const handleInputPress = () => {
+    inputRef.current?.measureInWindow((pageX, pageY, width, height) => {
+      const distanceFromBottom = screenHeight - (pageY + height);
+      if (distanceFromBottom <= 270) {
+        setTimeout(() => {
+          bottomSheetScrollViewRef?.current?.scrollTo({
+            y: KEYBOARD_HEIGHT,
+            animated: true,
+          });
+        }, 20);
+      }
+    });
+
     caretOpacity.value = 0;
     caretOpacity.value = withRepeat(withTiming(1, { duration: 800 }), -1, true);
     setWasThereValueOnPress(value !== "");
@@ -99,6 +116,7 @@ const SetInput = ({
           width: repsInput && (localStatePartialsValue || rpe) ? "90%" : "100%",
         },
       ]}
+      ref={inputRef}
       onPress={handleInputPress}
     >
       <View

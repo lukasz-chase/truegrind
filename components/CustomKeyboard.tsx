@@ -17,7 +17,7 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Feather from "@expo/vector-icons/Feather";
 import Entypo from "@expo/vector-icons/Entypo";
-import { keys, rpeValues } from "@/constants/keyboard";
+import { KEYBOARD_HEIGHT, keys, rpeValues } from "@/constants/keyboard";
 import MemoizedScrollPicker from "./MemoizedScrollPicker";
 import { useEffect, useState } from "react";
 const CustomKeyboard = ({
@@ -238,7 +238,7 @@ const styles = StyleSheet.create({
     width: "100%",
     backgroundColor: "#1C1C1C",
     paddingBottom: 20,
-    height: 270,
+    height: KEYBOARD_HEIGHT,
   },
   keyboard: {
     flexDirection: "row",

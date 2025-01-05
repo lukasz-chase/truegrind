@@ -16,7 +16,6 @@ import {
   updateWorkout,
   updateWorkoutExercises,
 } from "@/lib/supabaseActions";
-import TimerModal from "../Modals/TimerModal";
 import useTimerStore from "@/store/useTimer";
 import useWorkoutTimerModal from "@/store/useWorkoutTimerModal";
 import TimerButton from "./TimerButton";
@@ -53,7 +52,6 @@ const CustomHeader = ({ sheetIndex, close, scrolledY }: Props) => {
 
   useEffect(() => {
     setButtonRef(buttonRef);
-    //Remove start timer not sure why it was here
   }, [buttonRef]);
 
   useEffect(() => {

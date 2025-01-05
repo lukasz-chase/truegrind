@@ -38,3 +38,4 @@ export const rpeValues = [
     label: "Maximum exertion. No more reps possible",
   },
 ];
+export const KEYBOARD_HEIGHT = 270;
