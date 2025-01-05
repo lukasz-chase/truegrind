@@ -59,7 +59,11 @@ const FormScreen = ({
       </View>
       <Pressable onPress={pickImageAsync} style={styles.imageContainer}>
         <ExerciseImage
-          imageUrl={exerciseData?.image ?? PlaceholderImage}
+          imageUrl={
+            exerciseData?.image
+              ? `data:image/jpeg;base64,${exerciseData.image}`
+              : PlaceholderImage
+          }
           height={200}
           width={200}
         />

@@ -154,7 +154,12 @@ export default function WorkoutExercisesModal() {
           setIsNewExerciseModalVisible(false);
         }}
         isVisible={isNewExerciseModalVisible}
-        onDismiss={() => openModal(onPress, true, "Add")}
+        onDismiss={(exercise) => {
+          openModal(onPress, true, "Add");
+          if (exercise) {
+            setChosenExercises([exercise]);
+          }
+        }}
         title="Add New Exercise"
       />
     </>

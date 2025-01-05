@@ -29,7 +29,7 @@ import WarningModal from "../WarningModal";
 
 type Props = {
   closeModal: () => void;
-  onDismiss?: () => void;
+  onDismiss?: (exercise: Exercise | undefined) => void;
   isVisible: boolean;
   title: string;
   exercise?: Exercise;
@@ -57,6 +57,9 @@ export default function ExerciseFormModal({
   const [currentScreen, setCurrentScreen] = useState<exerciseFormScreenType>(
     exerciseFormScreensEnum.Main
   );
+  const [createdExercise, setCreatedExercise] = useState<
+    Exercise | undefined
+  >();
   const [isWarningModalVisible, setIsWarningModalVisible] = useState(false);
   const [openWarningModal, setOpenWarningModal] = useState(false);
 
@@ -102,7 +105,7 @@ export default function ExerciseFormModal({
     try {
       if (dataIsFilled) {
         const { imageWasChanged, imageExtension, ...rest } = exerciseData;
-        await upsertExercise({
+        const data = await upsertExercise({
           exercise: {
             ...exercise,
             ...rest,
@@ -111,6 +114,9 @@ export default function ExerciseFormModal({
           imageWasChanged,
           imageExtension,
         });
+        if (data) {
+          setCreatedExercise(data);
+        }
       }
       setExerciseData({
         name: "",
@@ -153,7 +159,7 @@ export default function ExerciseFormModal({
             setOpenWarningModal(false);
             setIsWarningModalVisible(true);
           } else {
-            if (onDismiss) onDismiss();
+            if (onDismiss) onDismiss(createdExercise);
           }
         }}
       >

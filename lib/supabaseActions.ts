@@ -244,11 +244,14 @@ export const upsertExercise = async ({
 
   if (data && !exercise.id) {
     exercisesStore.getState().addExercise(data[0]);
-  } else {
+    return data[0];
+  } else if (data && exercise.id) {
     exercisesStore.getState().replaceExercise(exercise as Exercise);
+    return exercise as Exercise;
   }
   if (error) {
     console.log("error", error);
+    return undefined;
   }
 };
 
