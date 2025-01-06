@@ -119,6 +119,7 @@ const Exercises = ({ onPress, selectedExercises }: Props) => {
         </View>
 
         <SectionList
+          contentContainerStyle={{ paddingBottom: 20 }}
           sections={collapsibleSections.filter(
             (section) => !(isFiltering && section.title.includes("Used"))
           )}

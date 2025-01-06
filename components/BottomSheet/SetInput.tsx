@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { StyleSheet, Pressable, View, Text, Dimensions } from "react-native";
+import { StyleSheet, Pressable, View, Text } from "react-native";
 import { AppColors } from "@/constants/colors";
 import { ExerciseSet } from "@/types/exercisesSets";
 import useCustomKeyboard from "@/store/useCustomKeyboard";
@@ -42,7 +42,6 @@ const SetInput = ({
   const caretOpacity = useSharedValue(0);
 
   const inputRef = useRef<View>(null);
-  const screenHeight = Dimensions.get("window").height;
 
   const {
     openKeyboard,
@@ -72,15 +71,15 @@ const SetInput = ({
 
   const handleInputPress = () => {
     inputRef.current?.measureInWindow((pageX, pageY, width, height) => {
-      const distanceFromBottom = screenHeight - (pageY + height);
-      if (distanceFromBottom <= 270) {
-        setTimeout(() => {
-          bottomSheetScrollViewRef?.current?.scrollTo({
-            y: KEYBOARD_HEIGHT,
-            animated: true,
-          });
-        }, 20);
-      }
+      setTimeout(() => {
+        bottomSheetScrollViewRef?.current
+          ?.getScrollResponder()
+          .scrollResponderScrollNativeHandleToKeyboard(
+            inputRef.current!,
+            KEYBOARD_HEIGHT * 2,
+            true
+          );
+      }, 20);
     });
 
     caretOpacity.value = 0;
