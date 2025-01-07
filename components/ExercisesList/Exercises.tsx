@@ -43,7 +43,7 @@ const Exercises = ({ onPress, selectedExercises }: Props) => {
 
   useEffect(() => {
     if (exercises.length === 0) fetchExercises();
-  }, []);
+  }, [exercises]);
 
   useEffect(() => {
     filterExercises();

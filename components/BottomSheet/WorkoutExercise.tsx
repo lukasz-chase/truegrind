@@ -12,6 +12,7 @@ import useExerciseOptionsModal from "@/store/useExerciseOptionsModal";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import CustomTextInput from "../CustomTextInput";
 import { exerciseHeader } from "@/constants/exerciseHeader";
+import useExerciseDetailsModal from "@/store/useExerciseDetailsModal";
 
 type Props = {
   workoutExercise: WorkoutExercisePopulated;
@@ -21,6 +22,7 @@ const WorkoutExercise = ({ workoutExercise, setDragItemId }: Props) => {
   const { addNewSet, updateWorkoutExerciseField } = useActiveWorkout();
   const { openModal } = useExerciseOptionsModal();
   const { closeKeyboard } = useCustomKeyboard();
+  const { openModal: openExerciseDetailsModal } = useExerciseDetailsModal();
 
   const [note, setNote] = useState(
     workoutExercise?.note ?? { noteValue: "", showNote: false }
@@ -30,6 +32,7 @@ const WorkoutExercise = ({ workoutExercise, setDragItemId }: Props) => {
       setNote(workoutExercise.note);
     }
   }, [workoutExercise.note]);
+
   const buttonRef = useRef(null);
 
   const onButtonPress = () => {
@@ -47,13 +50,19 @@ const WorkoutExercise = ({ workoutExercise, setDragItemId }: Props) => {
     runOnJS(setDragItemId)(workoutExercise.id);
   });
 
+  const openExerciseDetailsModalHandler = () => {
+    openExerciseDetailsModal(workoutExercise.exercises);
+  };
+
   return (
     <Animated.View style={styles.container} layout={LinearTransition}>
       <GestureDetector gesture={longPressGesture}>
         <View style={styles.header}>
-          <Text style={styles.headerTitle}>
-            {workoutExercise.exercises.name}
-          </Text>
+          <Pressable onPress={openExerciseDetailsModalHandler}>
+            <Text style={styles.headerTitle}>
+              {workoutExercise.exercises.name}
+            </Text>
+          </Pressable>
           <Pressable
             style={styles.headerOptions}
             ref={buttonRef}
