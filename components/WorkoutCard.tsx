@@ -28,7 +28,7 @@ const WorkoutCard = ({ workout, openModal }: Props) => {
     <TouchableOpacity
       style={styles.workoutCard}
       onPress={() => {
-        setActiveWorkout(workout);
+        setActiveWorkout(workout, true);
         if (Platform.OS !== "web") {
           Haptics.selectionAsync();
         }

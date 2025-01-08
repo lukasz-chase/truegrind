@@ -54,6 +54,7 @@ export default function WorkoutPreviewModal({
                     exercise={item.exercises}
                     numberOfSets={item.exercise_sets.length}
                     onPress={() => {}}
+                    isSelected={false}
                   />
                 )}
                 keyExtractor={(item) => item.id.toString()}

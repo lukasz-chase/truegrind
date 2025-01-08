@@ -3,7 +3,6 @@ import { Workout } from "@/types/workout";
 import { ExerciseSet } from "@/types/exercisesSets";
 import uuid from "react-native-uuid";
 import { Exercise } from "@/types/exercises";
-import useTimerStore from "./useTimer";
 import {
   WorkoutExercise,
   WorkoutExercisePopulated,
@@ -11,13 +10,32 @@ import {
 import { createJSONStorage, persist } from "zustand/middleware";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+const initialState = {
+  initialActiveWorkout: {
+    id: uuid.v4(),
+    name: "New workout",
+    user_id: "",
+    workout_exercises: [],
+  },
+  activeWorkout: {
+    id: uuid.v4(),
+    name: "New workout",
+    user_id: "",
+    workout_exercises: [],
+  },
+  workoutWasUpdated: false,
+  isNewWorkout: false,
+  persistedStorage: false,
+};
+
 interface ActiveWorkoutStore {
   initialActiveWorkout: Workout;
   activeWorkout: Workout;
   workoutWasUpdated: boolean;
   isNewWorkout: boolean;
+  persistedStorage: boolean;
   setIsNewWorkout: (value: boolean) => void;
-  setActiveWorkout: (workout: Workout) => void;
+  setActiveWorkout: (workout: Workout, clearSets?: boolean) => void;
   addNewWorkoutExercise: (
     exercise: Exercise,
     newExerciseProperties?: Partial<WorkoutExercise>
@@ -38,28 +56,50 @@ interface ActiveWorkoutStore {
   removeWorkoutExercise: (exerciseId: string) => void;
   replaceWorkoutExercise: (exerciseId: string, newExercise: Exercise) => void;
   reorderWorkoutExercises: (newOrder: string[]) => void;
+  resetActiveWorkout: () => void;
+  setPersistedStorage: (value: boolean) => void;
 }
 
 const useActiveWorkout = create<ActiveWorkoutStore>()(
   persist(
     (set, get) => ({
-      initialActiveWorkout: {
-        id: uuid.v4(),
-        name: "New workout",
-        user_id: "0",
-        workout_exercises: [],
-      },
-      activeWorkout: {
-        id: uuid.v4(),
-        name: "New workout",
-        user_id: "0",
-        workout_exercises: [],
-      },
-      workoutWasUpdated: false,
-      isNewWorkout: false,
+      initialActiveWorkout: initialState.initialActiveWorkout,
+      activeWorkout: initialState.activeWorkout,
+      workoutWasUpdated: initialState.workoutWasUpdated,
+      isNewWorkout: initialState.isNewWorkout,
+      persistedStorage: initialState.persistedStorage,
       setIsNewWorkout: (value: boolean) => set({ isNewWorkout: value }),
-      setActiveWorkout: (workout: Workout) => {
-        set({ activeWorkout: workout, initialActiveWorkout: workout });
+      setActiveWorkout: (workout, clearSets = true) => {
+        if (clearSets) {
+          const clearedWorkoutSets = workout.workout_exercises?.map(
+            (workoutExercise) => ({
+              ...workoutExercise,
+              exercise_sets: workoutExercise.exercise_sets?.map((set) => ({
+                ...set,
+                note: { noteValue: "", showNote: false },
+                partials: null,
+                completed: false,
+                is_dropset: false,
+                is_warmup: false,
+                reps: null,
+                weight: null,
+                rpe: null,
+              })),
+            })
+          );
+          set({
+            activeWorkout: {
+              ...workout,
+              workout_exercises: clearedWorkoutSets,
+            },
+            initialActiveWorkout: workout,
+          });
+        } else {
+          set({
+            activeWorkout: workout,
+            initialActiveWorkout: workout,
+          });
+        }
       },
       updateWorkoutField: (field: keyof Workout, updatedValue: any) => {
         set((state) => ({
@@ -274,6 +314,8 @@ const useActiveWorkout = create<ActiveWorkoutStore>()(
           };
         });
       },
+      resetActiveWorkout: () => set(initialState),
+      setPersistedStorage: (value: boolean) => set({ persistedStorage: value }),
     }),
     {
       name: "active-workout-storage",
@@ -283,6 +325,7 @@ const useActiveWorkout = create<ActiveWorkoutStore>()(
         activeWorkout: state.activeWorkout,
         workoutWasUpdated: state.workoutWasUpdated,
         isNewWorkout: state.isNewWorkout,
+        persistedStorage: true,
       }),
     }
   )

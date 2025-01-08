@@ -16,16 +16,33 @@ import { ScrollView } from "react-native-gesture-handler";
 
 export default function WorkoutScreen() {
   const [workouts, setWorkouts] = useState<Workout[]>([]);
-  const [isVisible, setIsVisible] = useState(false);
+  const [isWorkoutPreviewModalVisible, setIsWorkoutPreviewModalVisible] =
+    useState(false);
   const { setIsSheetVisible } = useBottomSheet();
-  const { activeWorkout, setActiveWorkout, setIsNewWorkout } =
-    useActiveWorkout();
+  const {
+    activeWorkout,
+    setActiveWorkout,
+    setIsNewWorkout,
+    persistedStorage,
+    setPersistedStorage,
+  } = useActiveWorkout();
   const { user } = userStore();
   const { refetchNumber } = useAppStore();
   useEffect(() => {
     fetchWorkouts();
   }, [user, refetchNumber]);
-
+  useEffect(() => {
+    //this means that the active workout wasnt persisted so clear the flag, otherwise it will open on workout click
+    if (!activeWorkout.user_id) {
+      setPersistedStorage(false);
+    }
+    //if there is an user id that means there is a valid activeWorkout
+    //we need to wait for user to load so the user.id check
+    //we check if the workout was saved by persisting so when user clicks on one of the workouts it doesnt automaticaly open the sheet
+    if (activeWorkout.user_id && user?.id && persistedStorage) {
+      setIsSheetVisible(true);
+    }
+  }, [activeWorkout, user, isWorkoutPreviewModalVisible]);
   const fetchWorkouts = async () => {
     try {
       const { data } = await supabase
@@ -37,12 +54,6 @@ export default function WorkoutScreen() {
         .returns<Workout[]>();
       if (data) {
         setWorkouts(data);
-        const activeWorkoutIndex = data.findIndex(
-          (workout) => workout.id === activeWorkout?.id
-        );
-        if (activeWorkoutIndex !== -1) {
-          setActiveWorkout(data[activeWorkoutIndex]);
-        }
       }
     } catch (error) {
       console.log(error);
@@ -51,7 +62,7 @@ export default function WorkoutScreen() {
 
   const startWorkout = () => {
     setIsNewWorkout(false);
-    setIsVisible(false);
+    setIsWorkoutPreviewModalVisible(false);
     setIsSheetVisible(true);
     if (Platform.OS !== "web") {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
@@ -93,14 +104,14 @@ export default function WorkoutScreen() {
           <WorkoutCard
             key={workout.id}
             workout={workout}
-            openModal={() => setIsVisible(true)}
+            openModal={() => setIsWorkoutPreviewModalVisible(true)}
           />
         ))}
       </ScrollView>
       {activeWorkout && (
         <WorkoutPreviewModal
-          visible={isVisible}
-          onClose={() => setIsVisible(false)}
+          visible={isWorkoutPreviewModalVisible}
+          onClose={() => setIsWorkoutPreviewModalVisible(false)}
           workout={activeWorkout}
           startWorkout={startWorkout}
         />

@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Text, View, StyleSheet, Platform } from "react-native";
-import { Pressable } from "react-native";
 import {
   GestureHandlerRootView,
   Gesture,
@@ -44,21 +43,6 @@ const WorkoutSet = ({
   const buttonWidth = useSharedValue(INITIAL_BUTTON_WIDTH);
 
   const [rowWidth, setRowWidth] = useState(0);
-  const [setLocalState, setSetLocalState] = useState<{
-    reps: string;
-    weight: string;
-    partials: number | null;
-    rpe: number | null;
-    is_warmup: boolean;
-    is_dropset: boolean;
-  }>({
-    reps: "",
-    weight: "",
-    partials: null,
-    rpe: null,
-    is_warmup: false,
-    is_dropset: false,
-  });
   const [hapticTriggered, setHapticTriggered] = useState(false);
   const [movedPassTreshold, setMovedPassTreshold] = useState(false);
 
@@ -66,20 +50,10 @@ const WorkoutSet = ({
   const { user } = userStore();
 
   const updateSet = (newValue: any, name: keyof ExerciseSet) => {
-    setSetLocalState((prev) => ({ ...prev, [name]: newValue }));
     updateExerciseSetFields({ [name]: newValue });
   };
 
   const bulkUpdateSet = (newValue: Partial<ExerciseSet>) => {
-    setSetLocalState({
-      ...setLocalState,
-      reps: `${newValue.reps}`,
-      weight: `${newValue.weight}`,
-      rpe: newValue.rpe!,
-      partials: newValue.partials!,
-      is_warmup: newValue.is_warmup!,
-      is_dropset: newValue.is_dropset!,
-    });
     updateExerciseSet(exerciseId, exerciseSet.id, { ...newValue });
   };
 
@@ -189,43 +163,43 @@ const WorkoutSet = ({
                 <SetHistory
                   exerciseId={exerciseId}
                   setOrder={exerciseSet.order}
-                  userId={user!.id}
+                  userId={user?.id!}
                   bulkUpdateSet={bulkUpdateSet}
                 />
               </View>
               <View style={[styles.cell, { flex: 1.25 }]}>
                 <SetInput
-                  value={setLocalState.weight}
+                  value={exerciseSet.weight}
                   completed={exerciseSet.completed}
                   exerciseSetId={exerciseSet.id}
                   updateSet={updateSet}
                   fieldName="weight"
                   updateStoreSetField={updateExerciseSetFields}
-                  localStateRpeValue={setLocalState.rpe}
-                  localStatePartialsValue={setLocalState.partials}
+                  localStateRpeValue={exerciseSet.rpe}
+                  localStatePartialsValue={exerciseSet.partials}
                 />
               </View>
 
               <View style={[styles.cell, { flex: 1.25 }]}>
                 <SetInput
-                  value={setLocalState.reps}
+                  value={exerciseSet.reps}
                   completed={exerciseSet.completed}
                   exerciseSetId={exerciseSet.id}
                   updateSet={updateSet}
                   fieldName="reps"
                   updateStoreSetField={updateExerciseSetFields}
-                  localStateRpeValue={setLocalState.rpe}
-                  localStatePartialsValue={setLocalState.partials}
+                  localStateRpeValue={exerciseSet.rpe}
+                  localStatePartialsValue={exerciseSet.partials}
                 />
               </View>
               <View style={[styles.cell, { flex: 1, alignItems: "center" }]}>
                 <CompleteSetButton
                   updateStoreSetField={updateExerciseSetFields}
                   completed={exerciseSet.completed}
-                  reps={setLocalState.reps}
+                  reps={exerciseSet.reps}
                   rowScale={rowScale}
                   exerciseTimer={exerciseTimer}
-                  weight={setLocalState.weight}
+                  weight={exerciseSet.weight}
                   isWarmup={exerciseSet.is_warmup}
                   warmupTimer={warmupTimer}
                 />

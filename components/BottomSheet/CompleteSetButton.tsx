@@ -13,11 +13,11 @@ import useCustomKeyboard from "@/store/useCustomKeyboard";
 type CompleteSetButtonProps = {
   updateStoreSetField: (newValues: Partial<ExerciseSet>) => void;
   completed: boolean;
-  reps: string;
+  reps: number | null;
   rowScale: Animated.SharedValue<number>;
   exerciseTimer: number | null;
   warmupTimer: number | null;
-  weight: string;
+  weight: number | null;
   isWarmup: boolean;
 };
 

@@ -23,7 +23,6 @@ const WorkoutExercise = ({ workoutExercise, setDragItemId }: Props) => {
   const { openModal } = useExerciseOptionsModal();
   const { closeKeyboard } = useCustomKeyboard();
   const { openModal: openExerciseDetailsModal } = useExerciseDetailsModal();
-
   const [note, setNote] = useState(
     workoutExercise?.note ?? { noteValue: "", showNote: false }
   );

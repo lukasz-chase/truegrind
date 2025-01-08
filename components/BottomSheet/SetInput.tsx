@@ -15,7 +15,7 @@ import useBottomSheet from "@/store/useBottomSheet";
 const CARET_WIDTH = 2;
 
 type SetInputProps = {
-  value: string | number;
+  value: number | null;
   completed: boolean;
   exerciseSetId: string;
   updateSet: (newValue: any, name: keyof ExerciseSet) => void;

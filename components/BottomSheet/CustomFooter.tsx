@@ -14,7 +14,7 @@ type Props = {
 
 const CustomFooter = ({ close }: Props) => {
   const { openModal, closeModal } = useWorkoutExercisesModal();
-  const { addNewWorkoutExercise } = useActiveWorkout();
+  const { addNewWorkoutExercise, resetActiveWorkout } = useActiveWorkout();
   const { isVisible: IsKeyboardVisible } = useCustomKeyboard();
   const { resetTimer } = useWorkoutTimer();
   const addExercises = (
@@ -29,6 +29,7 @@ const CustomFooter = ({ close }: Props) => {
   const closeBottomSheet = () => {
     resetTimer();
     close();
+    resetActiveWorkout();
   };
   return (
     <>

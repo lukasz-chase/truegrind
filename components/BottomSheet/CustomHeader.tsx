@@ -33,7 +33,9 @@ const CustomHeader = ({ sheetIndex, close, scrolledY }: Props) => {
   const {
     formattedTime,
     resetTimer,
+    isRunning: isWorkoutTimerRunning,
     startTimer: startWorkoutTimer,
+    resumeIfRunning,
   } = useWorkoutTimer();
   const { endTimer, timeRemaining, isRunning, timerDuration } = useTimerStore();
   const {
@@ -59,8 +61,9 @@ const CustomHeader = ({ sheetIndex, close, scrolledY }: Props) => {
   }, [scrolledY]);
 
   useEffect(() => {
-    startWorkoutTimer();
-  }, []);
+    if (!isWorkoutTimerRunning) startWorkoutTimer();
+    else resumeIfRunning();
+  }, [isWorkoutTimerRunning]);
 
   const finishWorkout = async () => {
     closeKeyboard();
