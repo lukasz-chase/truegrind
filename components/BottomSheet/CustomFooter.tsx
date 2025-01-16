@@ -17,12 +17,13 @@ const CustomFooter = ({ close }: Props) => {
   const { addNewWorkoutExercise, resetActiveWorkout } = useActiveWorkout();
   const { isVisible: IsKeyboardVisible } = useCustomKeyboard();
   const { resetTimer } = useWorkoutTimer();
-  const addExercises = (
+  const addExercises = async (
     exercises: Exercise[],
     newExerciseProperties?: Partial<WorkoutExercise>
   ) => {
-    exercises.map((exercise) =>
-      addNewWorkoutExercise(exercise, newExerciseProperties)
+    exercises.map(
+      async (exercise) =>
+        await addNewWorkoutExercise(exercise, newExerciseProperties)
     );
     closeModal();
   };

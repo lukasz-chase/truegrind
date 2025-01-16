@@ -83,9 +83,11 @@ const ExerciseOptionsModal = function ExerciseOptionsModal() {
   };
 
   const noteHandler = () => {
-    updateWorkoutExerciseField(workoutExercise.id, "note", {
-      ...workoutExercise.note,
-      showNote: !workoutExercise.note?.showNote,
+    updateWorkoutExerciseField(workoutExercise.id, {
+      note: {
+        ...workoutExercise.note,
+        showNote: !workoutExercise.note?.showNote,
+      },
     });
     closeModal();
   };
@@ -94,7 +96,7 @@ const ExerciseOptionsModal = function ExerciseOptionsModal() {
     else return "New note";
   };
   const removeFromSuperset = () => {
-    updateWorkoutExerciseField(workoutExercise.id, "superset", null);
+    updateWorkoutExerciseField(workoutExercise.id, { superset: null });
   };
   const options = getOptions({
     exerciseTimer: workoutExercise.timer,
@@ -128,11 +130,11 @@ const ExerciseOptionsModal = function ExerciseOptionsModal() {
     timerName: "timer" | "warmup_timer",
     timerValue: number | null
   ) => {
-    updateWorkoutExerciseField(workoutExercise.id, timerName, timerValue);
+    updateWorkoutExerciseField(workoutExercise.id, { [timerName]: timerValue });
   };
   const removeExerciseHandler = () => {
     removeWorkoutExercise(workoutExercise.id);
-    closeModal();
+    setWarningState({ isVisible: false, shouldShow: false });
   };
   return (
     <>

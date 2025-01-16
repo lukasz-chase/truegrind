@@ -42,7 +42,7 @@ const WorkoutExercise = ({ workoutExercise, setDragItemId }: Props) => {
   const noteChangeHandler = (text: string) => {
     const newNote = { ...note, noteValue: text };
     setNote(newNote);
-    updateWorkoutExerciseField(workoutExercise.id, "note", newNote);
+    updateWorkoutExerciseField(workoutExercise.id, { note: newNote });
   };
 
   const longPressGesture = Gesture.LongPress().onStart((event) => {

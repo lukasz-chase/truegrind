@@ -9,6 +9,7 @@ import {
 } from "@/types/workoutExercise";
 import { createJSONStorage, persist } from "zustand/middleware";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { supabase } from "@/lib/supabase";
 
 const initialState = {
   initialActiveWorkout: {
@@ -43,11 +44,10 @@ interface ActiveWorkoutStore {
   addNewWorkoutExercise: (
     exercise: Exercise,
     newExerciseProperties?: Partial<WorkoutExercise>
-  ) => void;
+  ) => Promise<void>;
   updateWorkoutExerciseField: (
     workoutExerciseId: string,
-    field: keyof WorkoutExercise,
-    updatedValue: any
+    propertiesToUpdate: Partial<WorkoutExercise>
   ) => void;
   updateWorkoutField: (field: keyof Workout, updatedValue: any) => void;
   addNewSet: (exerciseId: string) => void;
@@ -129,18 +129,14 @@ const useActiveWorkout = create<ActiveWorkoutStore>()(
           workoutWasUpdated: true,
         }));
       },
-      updateWorkoutExerciseField: (
-        workoutExerciseId: string,
-        field: keyof WorkoutExercise,
-        updatedValue: any
-      ) => {
+      updateWorkoutExerciseField: (workoutExerciseId, propertiesToUpdate) => {
         set((state) => ({
           activeWorkout: {
             ...state.activeWorkout,
             workout_exercises: state.activeWorkout.workout_exercises?.map(
               (workoutExercise) => {
                 if (workoutExercise.id === workoutExerciseId) {
-                  return { ...workoutExercise, [field]: updatedValue };
+                  return { ...workoutExercise, ...propertiesToUpdate };
                 }
                 return workoutExercise;
               }
@@ -148,7 +144,17 @@ const useActiveWorkout = create<ActiveWorkoutStore>()(
           },
         }));
       },
-      addNewWorkoutExercise: (exercise, newExerciseProperties) => {
+      addNewWorkoutExercise: async (exercise, newExerciseProperties) => {
+        const { data } = await supabase
+          .from("exercises_history")
+          .select("timer, warmup_timer")
+          .eq("exercise_id", exercise.id)
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .single<{ timer: number; warmup_timer: number }>();
+        if (data) {
+          newExerciseProperties = { ...newExerciseProperties, ...data };
+        }
         const newExercise: WorkoutExercisePopulated = {
           id: uuid.v4(),
           note: { noteValue: "", showNote: false },

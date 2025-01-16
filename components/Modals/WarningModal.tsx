@@ -27,7 +27,7 @@ export default function WarningModal({
   subtitle,
   onCancel,
   onProceed,
-  proceedButtonLabeL = "Cancel",
+  proceedButtonLabeL = "Delete",
   proceedButtonBgColor = AppColors.red,
 }: Props) {
   return (
