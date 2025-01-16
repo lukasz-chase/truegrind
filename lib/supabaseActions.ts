@@ -40,7 +40,8 @@ export const updateWorkoutExercises = async (
   activeWorkout: Workout,
   initialActiveWorkout: Workout,
   workoutHistoryId: string,
-  workoutExercisesHistoryIds: { id: string; historyId: string }[]
+  workoutExercisesHistoryIds: { id: string; historyId: string }[],
+  updateTemplate: boolean
 ) => {
   const workoutExercisesToUpdate: WorkoutExercise[] = [];
   const workoutExercisesHistoryToCreate: WorkoutExercise[] = [];
@@ -68,32 +69,39 @@ export const updateWorkoutExercises = async (
       workoutExercise.warmup_timer !== initialExercise.warmup_timer ||
       workoutExercise.order !== initialExercise.order
     ) {
-      workoutExercisesToUpdate.push({
-        ...workoutExerciseNotPopulated,
-        created_at: new Date().toISOString(),
-        exercise_id: workoutExercise.exercises.id,
-        workout_id: activeWorkout.id,
-      });
+      if ((updateTemplate && !initialExercise) || initialExercise) {
+        workoutExercisesToUpdate.push({
+          ...workoutExerciseNotPopulated,
+          created_at: !initialExercise
+            ? new Date().toISOString()
+            : (initialExercise as any).created_at,
+          exercise_id: workoutExercise.exercises.id,
+          workout_id: activeWorkout.id,
+        });
+      }
     }
   }
 
-  for (const initialWorkoutExercise of initialActiveWorkout.workout_exercises ||
-    []) {
-    const exists = activeWorkout.workout_exercises?.some(
-      (current) => current.id === initialWorkoutExercise.id
-    );
-    if (!exists) workoutExercisesToDelete.push(initialWorkoutExercise.id);
+  if (updateTemplate) {
+    for (const initialWorkoutExercise of initialActiveWorkout.workout_exercises ||
+      []) {
+      const exists = activeWorkout.workout_exercises?.some(
+        (current) => current.id === initialWorkoutExercise.id
+      );
+      if (!exists) workoutExercisesToDelete.push(initialWorkoutExercise.id);
+    }
+    if (workoutExercisesToDelete.length > 0) {
+      await supabase
+        .from("workout_exercises")
+        .delete()
+        .in("id", workoutExercisesToDelete);
+    }
+
+    if (workoutExercisesToUpdate.length > 0) {
+      await supabase.from("workout_exercises").upsert(workoutExercisesToUpdate);
+    }
   }
 
-  if (workoutExercisesToUpdate.length > 0) {
-    await supabase.from("workout_exercises").upsert(workoutExercisesToUpdate);
-  }
-  if (workoutExercisesToDelete.length > 0) {
-    await supabase
-      .from("workout_exercises")
-      .delete()
-      .in("id", workoutExercisesToDelete);
-  }
   await supabase
     .from("exercises_history")
     .insert(workoutExercisesHistoryToCreate);
@@ -261,10 +269,10 @@ export const deleteWorkout = async (workoutId: string) => {
 
 export const deleteExercise = async (
   exerciseId: string,
-  exerciseImage?: string
+  CustomImage?: string
 ) => {
-  if (exerciseImage) {
-    const pathAfterBucket = exerciseImage.split("exercises/")[1].split("?")[0];
+  if (CustomImage) {
+    const pathAfterBucket = CustomImage.split("exercises/")[1].split("?")[0];
     // Decode the URL-encoded segments
     const filePath = decodeURIComponent(pathAfterBucket);
     await supabase.storage.from("exercises").remove([filePath]);

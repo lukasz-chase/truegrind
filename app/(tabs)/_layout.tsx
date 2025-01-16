@@ -41,6 +41,14 @@ export default function TabLayout() {
             <CustomTabBar {...props} animatedIndex={animatedIndex} />
           )}
         >
+          <Tabs.Screen
+            name="workoutFinished"
+            key="workoutFinished"
+            options={{
+              href: null,
+              headerShown: false,
+            }}
+          />
           {NavigationData.map(({ name, icon, focusedIcon, title }) => (
             <Tabs.Screen
               name={name}

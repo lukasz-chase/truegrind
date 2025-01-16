@@ -1,26 +1,21 @@
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Animated, {
   Extrapolation,
   interpolate,
   useAnimatedStyle,
   useSharedValue,
 } from "react-native-reanimated";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text } from "react-native";
 import { useBottomSheet } from "@gorhom/bottom-sheet";
 import { AppColors } from "@/constants/colors";
 import useWorkoutTimer from "@/store/useWorkoutTimer";
 import useActiveWorkout from "@/store/useActiveWorkout";
-import useAppStore from "@/store/useAppStore";
-import {
-  updateExerciseSets,
-  updateWorkout,
-  updateWorkoutExercises,
-} from "@/lib/supabaseActions";
 import useTimerStore from "@/store/useTimer";
 import useWorkoutTimerModal from "@/store/useWorkoutTimerModal";
 import TimerButton from "./TimerButton";
-import uuid from "react-native-uuid";
 import useCustomKeyboard from "@/store/useCustomKeyboard";
+import { useRouter } from "expo-router";
+import WarningModal from "../Modals/WarningModal";
 
 type Props = {
   sheetIndex: number;
@@ -32,25 +27,22 @@ const CustomHeader = ({ sheetIndex, close, scrolledY }: Props) => {
   const { animatedIndex, expand } = useBottomSheet();
   const {
     formattedTime,
-    resetTimer,
     isRunning: isWorkoutTimerRunning,
     startTimer: startWorkoutTimer,
     resumeIfRunning,
   } = useWorkoutTimer();
-  const { endTimer, timeRemaining, isRunning, timerDuration } = useTimerStore();
-  const {
-    activeWorkout,
-    initialActiveWorkout,
-    workoutWasUpdated,
-    isNewWorkout,
-  } = useActiveWorkout();
-  const { refetchData } = useAppStore();
+  const { timeRemaining, isRunning, timerDuration } = useTimerStore();
+  const { activeWorkout, setActiveWorkout } = useActiveWorkout();
   const { openModal, setButtonRef } = useWorkoutTimerModal();
   const { closeKeyboard } = useCustomKeyboard();
+
+  const router = useRouter();
 
   const scrolledValue = useSharedValue(scrolledY);
 
   const buttonRef = useRef(null);
+
+  const [isWarningModalVisible, setIsWarningModalVisible] = useState(false);
 
   useEffect(() => {
     setButtonRef(buttonRef);
@@ -65,42 +57,37 @@ const CustomHeader = ({ sheetIndex, close, scrolledY }: Props) => {
     else resumeIfRunning();
   }, [isWorkoutTimerRunning]);
 
+  const finishWorkoutHandler = () => {
+    const notCompletedSets = activeWorkout.workout_exercises?.some((exercise) =>
+      exercise.exercise_sets?.some((set) => !set.completed)
+    );
+    if (notCompletedSets) {
+      setIsWarningModalVisible(true);
+    } else {
+      finishWorkout();
+    }
+  };
+
   const finishWorkout = async () => {
     closeKeyboard();
-    if (!workoutWasUpdated) return;
-    try {
-      const workoutHistoryId = uuid.v4();
-      await updateWorkout(
-        activeWorkout,
-        initialActiveWorkout,
-        workoutHistoryId,
-        isNewWorkout
-      );
-      const workoutExercisesHistoryIds =
-        activeWorkout.workout_exercises?.map((workoutExercise) => ({
-          historyId: uuid.v4(),
-          id: workoutExercise.id,
-        })) ?? [];
-      await updateWorkoutExercises(
-        activeWorkout,
-        initialActiveWorkout,
-        workoutHistoryId,
-        workoutExercisesHistoryIds
-      );
-      await updateExerciseSets(
-        activeWorkout,
-        initialActiveWorkout,
-        workoutExercisesHistoryIds
-      );
-
-      refetchData();
-      close();
-      resetTimer();
-      endTimer();
-    } catch (error) {
-      console.error("Error finishing workout:", error);
-      throw error;
-    }
+    router.navigate(`/workoutFinished`);
+    close();
+  };
+  const removeNotCompletedSets = () => {
+    const workoutWithoutNotCompletedSets = activeWorkout.workout_exercises?.map(
+      (exercise) => ({
+        ...exercise,
+        exercise_sets: exercise.exercise_sets?.filter((set) => set.completed),
+      })
+    );
+    setActiveWorkout(
+      {
+        ...activeWorkout,
+        workout_exercises: workoutWithoutNotCompletedSets,
+      },
+      false
+    );
+    finishWorkout();
   };
 
   // Animated styles
@@ -161,11 +148,21 @@ const CustomHeader = ({ sheetIndex, close, scrolledY }: Props) => {
         </Animated.View>
 
         <Animated.View style={containerStyle}>
-          <Pressable style={styles.finishButton} onPress={finishWorkout}>
+          <Pressable style={styles.finishButton} onPress={finishWorkoutHandler}>
             <Text style={styles.finishButtonText}>Finish</Text>
           </Pressable>
         </Animated.View>
       </Pressable>
+      <WarningModal
+        closeModal={() => setIsWarningModalVisible(false)}
+        isVisible={isWarningModalVisible}
+        title="Finish Workout?"
+        subtitle={`All invalid or empty sets will be removed.`}
+        onCancel={() => setIsWarningModalVisible(false)}
+        onProceed={removeNotCompletedSets}
+        proceedButtonBgColor={AppColors.green}
+        proceedButtonLabeL="Finish"
+      />
     </>
   );
 };

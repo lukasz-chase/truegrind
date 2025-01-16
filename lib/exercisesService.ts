@@ -38,7 +38,6 @@ export const getRecentExercises = async (userId: string) => {
   }
 };
 export const getExercises = async (userId: string) => {
-  console.log(userId);
   const { data, error } = await supabase
     .from("exercises")
     .select("*, exercises_history_count:exercises_history(count)")

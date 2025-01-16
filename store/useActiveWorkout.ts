@@ -35,7 +35,11 @@ interface ActiveWorkoutStore {
   isNewWorkout: boolean;
   persistedStorage: boolean;
   setIsNewWorkout: (value: boolean) => void;
-  setActiveWorkout: (workout: Workout, clearSets?: boolean) => void;
+  setActiveWorkout: (
+    workout: Workout,
+    clearSets?: boolean,
+    updateInitialWorkout?: boolean
+  ) => void;
   addNewWorkoutExercise: (
     exercise: Exercise,
     newExerciseProperties?: Partial<WorkoutExercise>
@@ -69,14 +73,17 @@ const useActiveWorkout = create<ActiveWorkoutStore>()(
       isNewWorkout: initialState.isNewWorkout,
       persistedStorage: initialState.persistedStorage,
       setIsNewWorkout: (value: boolean) => set({ isNewWorkout: value }),
-      setActiveWorkout: (workout, clearSets = true) => {
+      setActiveWorkout: (
+        workout,
+        clearSets = true,
+        updateInitialWorkout = true
+      ) => {
         if (clearSets) {
           const clearedWorkoutSets = workout.workout_exercises?.map(
             (workoutExercise) => ({
               ...workoutExercise,
               exercise_sets: workoutExercise.exercise_sets?.map((set) => ({
                 ...set,
-                note: { noteValue: "", showNote: false },
                 partials: null,
                 completed: false,
                 is_dropset: false,
@@ -87,18 +94,33 @@ const useActiveWorkout = create<ActiveWorkoutStore>()(
               })),
             })
           );
-          set({
-            activeWorkout: {
-              ...workout,
-              workout_exercises: clearedWorkoutSets,
-            },
-            initialActiveWorkout: workout,
-          });
+          if (updateInitialWorkout) {
+            set({
+              activeWorkout: {
+                ...workout,
+                workout_exercises: clearedWorkoutSets,
+              },
+              initialActiveWorkout: workout,
+            });
+          } else {
+            set({
+              activeWorkout: {
+                ...workout,
+                workout_exercises: clearedWorkoutSets,
+              },
+            });
+          }
         } else {
-          set({
-            activeWorkout: workout,
-            initialActiveWorkout: workout,
-          });
+          if (updateInitialWorkout) {
+            set({
+              activeWorkout: workout,
+            });
+          } else {
+            set({
+              activeWorkout: workout,
+              initialActiveWorkout: workout,
+            });
+          }
         }
       },
       updateWorkoutField: (field: keyof Workout, updatedValue: any) => {

@@ -22,7 +22,6 @@ Notifications.setNotificationHandler({
 
 AppState.addEventListener("change", (state) => {
   if (state === "active") {
-    console.log("session refreshed");
     supabase.auth.startAutoRefresh();
   } else {
     supabase.auth.stopAutoRefresh();

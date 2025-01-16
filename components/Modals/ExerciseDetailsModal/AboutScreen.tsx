@@ -7,7 +7,7 @@ const AboutScreen = ({ exercise }: { exercise: Exercise }) => {
       {exercise.image && (
         <Image
           source={{ uri: exercise.image }}
-          style={styles.exerciseImage}
+          style={styles.CustomImage}
           resizeMode="cover"
         />
       )}
@@ -18,7 +18,7 @@ const AboutScreen = ({ exercise }: { exercise: Exercise }) => {
 };
 
 const styles = StyleSheet.create({
-  exerciseImage: {
+  CustomImage: {
     width: "90%",
   },
 });

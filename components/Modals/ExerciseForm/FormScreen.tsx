@@ -1,5 +1,5 @@
 import CustomTextInput from "@/components/CustomTextInput";
-import ExerciseImage from "@/components/ExerciseImage";
+import CustomImage from "@/components/CustomImage";
 import { AppColors } from "@/constants/colors";
 import { pickAndCompressImage } from "@/lib/images";
 import { exerciseFormData } from "@/types/exerciseDetails";
@@ -58,7 +58,7 @@ const FormScreen = ({
         />
       </View>
       <Pressable onPress={pickImageAsync} style={styles.imageContainer}>
-        <ExerciseImage
+        <CustomImage
           imageUrl={
             exerciseData?.image
               ? `data:image/jpeg;base64,${exerciseData.image}`

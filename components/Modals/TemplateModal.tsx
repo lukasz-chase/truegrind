@@ -12,51 +12,44 @@ import { Pressable } from "react-native";
 type Props = {
   isVisible: boolean;
   closeModal: () => void;
-  title: string;
-  subtitle: string;
-  onCancel: () => void;
-  onProceed: () => void;
-  proceedButtonLabeL?: string;
-  proceedButtonBgColor?: string;
+  onPress: (value: boolean) => void;
 };
 
-export default function WarningModal({
+export default function TemplateModal({
   isVisible,
   closeModal,
-  title,
-  subtitle,
-  onCancel,
-  onProceed,
-  proceedButtonLabeL = "Cancel",
-  proceedButtonBgColor = AppColors.red,
+  onPress,
 }: Props) {
+  const closeModalHandler = () => {
+    closeModal();
+    onPress(false);
+  };
   return (
     <Modal
       transparent={true}
       visible={isVisible}
       animationType="fade"
-      onRequestClose={closeModal}
+      onRequestClose={closeModalHandler}
     >
-      <TouchableWithoutFeedback onPress={closeModal}>
+      <TouchableWithoutFeedback onPress={closeModalHandler}>
         <View style={styles.modalOverlay} />
       </TouchableWithoutFeedback>
 
       <View style={styles.modalContent}>
-        <Text style={styles.title}>{title}</Text>
-        <Text style={styles.subtitle}>{subtitle}</Text>
-        <View style={styles.buttonsWrapper}>
-          <Pressable style={styles.button} onPress={onCancel}>
-            <Text style={styles.buttonText}>Cancel</Text>
-          </Pressable>
-          <Pressable
-            style={[styles.button, { backgroundColor: proceedButtonBgColor }]}
-            onPress={onProceed}
-          >
-            <Text style={[styles.buttonText, { color: "white" }]}>
-              {proceedButtonLabeL}
-            </Text>
-          </Pressable>
-        </View>
+        <Text style={styles.title}>Update Template</Text>
+        <Text style={styles.subtitle}>
+          You've made changes from your original template. Would you like to
+          update it?
+        </Text>
+        <Pressable
+          style={[styles.buttonWrapper, { backgroundColor: AppColors.blue }]}
+          onPress={() => onPress(true)}
+        >
+          <Text style={styles.buttonText}>Update Template</Text>
+        </Pressable>
+        <Pressable style={styles.buttonWrapper} onPress={() => onPress(false)}>
+          <Text style={styles.buttonText}>Keep Original Template</Text>
+        </Pressable>
       </View>
     </Modal>
   );
@@ -89,19 +82,16 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontSize: 16,
   },
-  buttonsWrapper: {
-    flexDirection: "row",
-    gap: 15,
-  },
-  button: {
-    paddingVertical: 10,
+  buttonWrapper: {
+    paddingVertical: 20,
     borderRadius: 10,
-    flex: 1,
     backgroundColor: AppColors.gray,
+    width: "100%",
   },
   buttonText: {
     textAlign: "center",
     fontWeight: "bold",
     fontSize: 18,
+    color: "black",
   },
 });

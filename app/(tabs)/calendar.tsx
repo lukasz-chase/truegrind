@@ -1,6 +1,5 @@
-import DraggableList from "@/components/BottomSheet/DraggableExercisesList.tsx/DraggableList";
 import { AppColors } from "@/constants/colors";
-import { Text, View, StyleSheet, Pressable, SafeAreaView } from "react-native";
+import { Text, StyleSheet, SafeAreaView } from "react-native";
 
 export default function CalendarScreen() {
   return (

@@ -5,22 +5,21 @@ type Props = {
   imageUrl: string;
   height: number;
   width: number;
+  customStyle?: any;
 };
-const ExerciseImage = ({ height, imageUrl, width }: Props) => {
+const CustomImage = ({ height, imageUrl, width, customStyle }: Props) => {
   return (
     <Image
       source={
         typeof imageUrl !== "string"
           ? imageUrl
           : {
-              uri: imageUrl.includes("gif")
-                ? "data:image/jpeg;base64," + imageUrl
-                : imageUrl,
+              uri: imageUrl,
             }
       }
-      style={{ height, width }}
+      style={{ height, width, ...customStyle }}
     />
   );
 };
 
-export default ExerciseImage;
+export default CustomImage;

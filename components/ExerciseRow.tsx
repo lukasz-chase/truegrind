@@ -4,7 +4,7 @@ import { Exercise } from "@/types/exercises";
 import { AppColors } from "@/constants/colors";
 import { Pressable } from "react-native";
 import { Image } from "expo-image";
-import ExerciseImage from "./ExerciseImage";
+import CustomImage from "./CustomImage";
 
 type Props = {
   exercise: Exercise;
@@ -28,12 +28,10 @@ const ExerciseRow = ({
       ]}
     >
       {exercise.image ? (
-        <ExerciseImage imageUrl={exercise.image} height={50} width={50} />
+        <CustomImage imageUrl={exercise.image} height={50} width={50} />
       ) : (
-        <View style={styles.exerciseImage}>
-          <Text style={styles.exerciseImageText}>
-            {exercise.name.charAt(0)}
-          </Text>
+        <View style={styles.CustomImage}>
+          <Text style={styles.CustomImageText}>{exercise.name.charAt(0)}</Text>
         </View>
       )}
 
@@ -71,14 +69,14 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingHorizontal: 5,
   },
-  exerciseImage: {
+  CustomImage: {
     width: 50,
     height: 50,
     borderRadius: 8,
     alignItems: "center",
     justifyContent: "center",
   },
-  exerciseImageText: {
+  CustomImageText: {
     fontSize: 32,
   },
   exerciseName: {
