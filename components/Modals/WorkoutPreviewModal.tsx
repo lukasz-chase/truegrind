@@ -50,12 +50,22 @@ export default function WorkoutPreviewModal({
                   (a, b) => a.order - b.order
                 )}
                 renderItem={({ item }) => (
-                  <ExerciseRow
-                    exercise={item.exercises}
-                    numberOfSets={item.exercise_sets.length}
-                    onPress={() => {}}
-                    isSelected={false}
-                  />
+                  <View style={styles.workoutWrapper}>
+                    {item.superset && (
+                      <View
+                        style={[
+                          styles.supersetIndicator,
+                          { backgroundColor: item.superset },
+                        ]}
+                      />
+                    )}
+                    <ExerciseRow
+                      exercise={item.exercises}
+                      numberOfSets={item.exercise_sets.length}
+                      onPress={() => {}}
+                      isSelected={false}
+                    />
+                  </View>
                 )}
                 keyExtractor={(item) => item.id.toString()}
               />
@@ -120,5 +130,15 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 18,
     fontWeight: "bold",
+  },
+  workoutWrapper: {
+    flexDirection: "row",
+    gap: 6,
+    paddingLeft: 6,
+    paddingBottom: 6,
+  },
+  supersetIndicator: {
+    width: 2,
+    height: "100%",
   },
 });
