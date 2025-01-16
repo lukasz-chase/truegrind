@@ -49,6 +49,14 @@ export default function TabLayout() {
               headerShown: false,
             }}
           />
+          <Tabs.Screen
+            name="userForm"
+            key="userForm"
+            options={{
+              href: null,
+              headerShown: false,
+            }}
+          />
           {NavigationData.map(({ name, icon, focusedIcon, title }) => (
             <Tabs.Screen
               name={name}
