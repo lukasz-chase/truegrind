@@ -97,7 +97,7 @@ export default function ExerciseDetailsModal() {
       case exerciseDetailScreensEnum.History:
         return <HistoryScreen exercise={exercise} />;
       case exerciseDetailScreensEnum.Records:
-        return <RecordsScreen exercise={exercise} />;
+        return <RecordsScreen exerciseId={exercise.id} />;
     }
   };
 
@@ -110,6 +110,7 @@ export default function ExerciseDetailsModal() {
 
   const closeHandler = () => {
     closeModal();
+    setScreen(exerciseDetailScreensEnum.About);
     buttonBackgroundLeftPosition.value = 0;
   };
   const editExerciseHandler = () => {
