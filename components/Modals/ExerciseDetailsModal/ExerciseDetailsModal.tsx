@@ -62,7 +62,7 @@ export default function ExerciseDetailsModal() {
 
   useEffect(() => {
     if (exercise.id) getExercise(exercise.id);
-    if (exercise.instructions) {
+    if (exercise.instructions || exercise.image) {
       setScreen(exerciseDetailScreensEnum.About);
     } else {
       setScreen(exerciseDetailScreensEnum.Charts);
@@ -86,7 +86,12 @@ export default function ExerciseDetailsModal() {
   const renderScreen = () => {
     switch (screen) {
       case exerciseDetailScreensEnum.About:
-        return <AboutScreen exercise={exercise} />;
+        return (
+          <AboutScreen
+            instructions={exercise.instructions}
+            image={exercise.image}
+          />
+        );
       case exerciseDetailScreensEnum.Charts:
         return <ChartsScreen exercise={exercise} />;
       case exerciseDetailScreensEnum.History:
@@ -96,11 +101,12 @@ export default function ExerciseDetailsModal() {
     }
   };
 
-  const filteredScreenButtons = exercise.instructions
-    ? screenButtons
-    : screenButtons.filter(
-        (btn) => btn.name !== exerciseDetailScreensEnum.About
-      );
+  const filteredScreenButtons =
+    exercise.instructions || exercise.image
+      ? screenButtons
+      : screenButtons.filter(
+          (btn) => btn.name !== exerciseDetailScreensEnum.About
+        );
 
   const closeHandler = () => {
     closeModal();
