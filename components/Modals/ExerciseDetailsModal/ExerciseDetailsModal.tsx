@@ -95,7 +95,7 @@ export default function ExerciseDetailsModal() {
       case exerciseDetailScreensEnum.Charts:
         return <ChartsScreen exercise={exercise} />;
       case exerciseDetailScreensEnum.History:
-        return <HistoryScreen exercise={exercise} />;
+        return <HistoryScreen exerciseId={exercise.id} />;
       case exerciseDetailScreensEnum.Records:
         return <RecordsScreen exerciseId={exercise.id} />;
     }
@@ -192,6 +192,7 @@ const styles = StyleSheet.create({
   },
   modalContent: {
     width: "90%",
+    height: "60%",
     padding: 20,
     borderRadius: 10,
     alignItems: "center",

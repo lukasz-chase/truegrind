@@ -6,6 +6,7 @@ import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import AntDesign from "@expo/vector-icons/AntDesign";
+import { formatDate } from "@/lib/helpers";
 
 const WorkoutSummary = ({
   workout,
@@ -50,27 +51,7 @@ const WorkoutSummary = ({
       }
     });
   };
-  const formatDate = (date: Date) => {
-    const options: Intl.DateTimeFormatOptions = {
-      hour: "2-digit",
-      minute: "2-digit",
-      weekday: "long",
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-    };
 
-    // Format date
-    const formattedDate = new Intl.DateTimeFormat("en-GB", options).format(
-      date
-    );
-
-    // Format time separately
-    const hours = String(date.getHours()).padStart(2, "0");
-    const minutes = String(date.getMinutes()).padStart(2, "0");
-
-    return `${hours}:${minutes}, ${formattedDate}`;
-  };
   const weightLifted = () => {
     let totalWeight = 0;
     workout.workout_exercises?.forEach((workoutExercise) => {

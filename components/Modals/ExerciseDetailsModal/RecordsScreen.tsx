@@ -1,4 +1,5 @@
 import { AppColors } from "@/constants/colors";
+import { count1RM } from "@/lib/helpers";
 import { supabase } from "@/lib/supabase";
 import { useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
@@ -52,7 +53,7 @@ const RecordsScreen = ({ exerciseId }: { exerciseId: string }) => {
     for (const set of data) {
       const { reps, weight, created_at } = set;
 
-      const oneRM = weight * (1 + reps / 30);
+      const oneRM = count1RM(weight, reps);
       if (oneRM > bestOneRM) {
         bestOneRM = oneRM;
         bestOneRMDate = created_at;

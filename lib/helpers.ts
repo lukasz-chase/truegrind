@@ -51,3 +51,21 @@ export const getOrdinalSuffix = (number: number) => {
 
   return `${number}${suffix}`;
 };
+export const count1RM = (weight: number, reps: number) => {
+  return weight * (1 + reps / 30);
+};
+
+export const formatDate = (date: Date) => {
+  const options: Intl.DateTimeFormatOptions = {
+    hour: "2-digit",
+    minute: "2-digit",
+    weekday: "long",
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  };
+
+  const formattedDate = new Intl.DateTimeFormat("en-GB", options).format(date);
+
+  return `${formattedDate}`;
+};
