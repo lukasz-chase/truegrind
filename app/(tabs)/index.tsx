@@ -16,8 +16,7 @@ import { ScrollView } from "react-native-gesture-handler";
 
 export default function WorkoutScreen() {
   const [workouts, setWorkouts] = useState<Workout[]>([]);
-  const [isWorkoutPreviewModalVisible, setIsWorkoutPreviewModalVisible] =
-    useState(false);
+
   const { setIsSheetVisible } = useBottomSheet();
   const {
     activeWorkout,
@@ -42,7 +41,7 @@ export default function WorkoutScreen() {
     if (activeWorkout.user_id && user?.id && persistedStorage) {
       setIsSheetVisible(true);
     }
-  }, [activeWorkout, user, isWorkoutPreviewModalVisible]);
+  }, [activeWorkout, user]);
   const fetchWorkouts = async () => {
     try {
       const { data } = await supabase
@@ -60,14 +59,6 @@ export default function WorkoutScreen() {
     }
   };
 
-  const startWorkout = () => {
-    setIsNewWorkout(false);
-    setIsWorkoutPreviewModalVisible(false);
-    setIsSheetVisible(true);
-    if (Platform.OS !== "web") {
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    }
-  };
   const startAnEmptyWorkout = () => {
     setIsNewWorkout(true);
     setActiveWorkout({
@@ -101,21 +92,9 @@ export default function WorkoutScreen() {
 
       <ScrollView contentContainerStyle={styles.workouts}>
         {workouts.map((workout) => (
-          <WorkoutCard
-            key={workout.id}
-            workout={workout}
-            openModal={() => setIsWorkoutPreviewModalVisible(true)}
-          />
+          <WorkoutCard key={workout.id} workout={workout} />
         ))}
       </ScrollView>
-      {activeWorkout && (
-        <WorkoutPreviewModal
-          visible={isWorkoutPreviewModalVisible}
-          onClose={() => setIsWorkoutPreviewModalVisible(false)}
-          workout={activeWorkout}
-          startWorkout={startWorkout}
-        />
-      )}
     </SafeAreaView>
   );
 }

@@ -1,7 +1,7 @@
 import { AppColors } from "@/constants/colors";
 import useActiveWorkout from "@/store/useActiveWorkout";
 import { Workout } from "@/types/workout";
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import {
   Platform,
   Pressable,
@@ -13,55 +13,82 @@ import {
 import * as Haptics from "expo-haptics";
 import { SimpleLineIcons } from "@expo/vector-icons";
 import useWorkoutOptionsModal from "@/store/useWorkoutOptionsModal";
+import WorkoutPreviewModal from "./Modals/WorkoutPreviewModal";
+import useBottomSheet from "@/store/useBottomSheet";
 
 type Props = {
   workout: Workout;
-  openModal: () => void;
 };
 
-const WorkoutCard = ({ workout, openModal }: Props) => {
-  const { setActiveWorkout } = useActiveWorkout();
+const WorkoutCard = ({ workout }: Props) => {
+  const [isWorkoutPreviewModalVisible, setIsWorkoutPreviewModalVisible] =
+    useState(false);
+
   const { openModal: openOptionsModal } = useWorkoutOptionsModal();
+
+  const { activeWorkout, setActiveWorkout, setIsNewWorkout } =
+    useActiveWorkout();
+  const { setIsSheetVisible } = useBottomSheet();
+
   const buttonRef = useRef(null);
 
+  const startWorkout = () => {
+    setIsNewWorkout(false);
+    setIsWorkoutPreviewModalVisible(false);
+    setIsSheetVisible(true);
+    setActiveWorkout(workout, true);
+    if (Platform.OS !== "web") {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    }
+  };
+
   return (
-    <TouchableOpacity
-      style={styles.workoutCard}
-      onPress={() => {
-        setActiveWorkout(workout, true);
-        if (Platform.OS !== "web") {
-          Haptics.selectionAsync();
-        }
-        openModal();
-      }}
-    >
-      <View style={styles.header}>
-        <Text style={styles.workoutCardTitle}>{workout.name}</Text>
-        <Pressable
-          ref={buttonRef}
-          onPress={() => openOptionsModal({ workoutId: workout.id, buttonRef })}
-        >
-          <SimpleLineIcons name="options" size={24} color={AppColors.blue} />
-        </Pressable>
-      </View>
-      {workout.workout_exercises
-        ?.sort((a, b) => a.order - b.order)
-        .slice(0, 4)
-        .map((workout: { id: string; exercises: { name: string } }) => (
-          <Text
-            key={workout.id}
-            style={styles.workoutCardExercises}
-            numberOfLines={1}
+    <>
+      <TouchableOpacity
+        style={styles.workoutCard}
+        onPress={() => {
+          if (Platform.OS !== "web") {
+            Haptics.selectionAsync();
+          }
+          setIsWorkoutPreviewModalVisible(true);
+        }}
+      >
+        <View style={styles.header}>
+          <Text style={styles.workoutCardTitle}>{workout.name}</Text>
+          <Pressable
+            ref={buttonRef}
+            onPress={() =>
+              openOptionsModal({ workoutId: workout.id, buttonRef })
+            }
           >
-            {workout.exercises.name}
+            <SimpleLineIcons name="options" size={24} color={AppColors.blue} />
+          </Pressable>
+        </View>
+        {workout.workout_exercises
+          ?.sort((a, b) => a.order - b.order)
+          .slice(0, 4)
+          .map((workout: { id: string; exercises: { name: string } }) => (
+            <Text
+              key={workout.id}
+              style={styles.workoutCardExercises}
+              numberOfLines={1}
+            >
+              {workout.exercises.name}
+            </Text>
+          ))}
+        {workout.workout_exercises!.length > 4 && (
+          <Text style={styles.workoutCardExercises}>
+            & {workout.workout_exercises!.length - 4} more
           </Text>
-        ))}
-      {workout.workout_exercises!.length > 4 && (
-        <Text style={styles.workoutCardExercises}>
-          & {workout.workout_exercises!.length - 4} more
-        </Text>
-      )}
-    </TouchableOpacity>
+        )}
+      </TouchableOpacity>
+      <WorkoutPreviewModal
+        visible={isWorkoutPreviewModalVisible}
+        onClose={() => setIsWorkoutPreviewModalVisible(false)}
+        workout={workout}
+        startWorkout={startWorkout}
+      />
+    </>
   );
 };
 const styles = StyleSheet.create({

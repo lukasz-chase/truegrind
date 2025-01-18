@@ -8,6 +8,7 @@ import uuid from "react-native-uuid";
 import { Exercise } from "@/types/exercises";
 import { decode } from "base64-arraybuffer";
 import exercisesStore from "@/store/exercisesStore";
+import { areObjectsDifferent } from "./helpers";
 
 export const updateWorkout = async (
   activeWorkout: Workout,
@@ -16,8 +17,7 @@ export const updateWorkout = async (
   isNewWorkout: boolean
 ) => {
   if (
-    initialActiveWorkout.name !== activeWorkout.name ||
-    initialActiveWorkout.notes !== activeWorkout.notes ||
+    areObjectsDifferent(activeWorkout, initialActiveWorkout) ||
     isNewWorkout
   ) {
     const { workout_exercises, ...workoutDB } = activeWorkout;
@@ -63,11 +63,7 @@ export const updateWorkoutExercises = async (
     });
     if (
       !initialExercise ||
-      workoutExercise.note?.noteValue !== initialExercise.note?.noteValue ||
-      workoutExercise.note?.showNote !== initialExercise.note?.showNote ||
-      workoutExercise.timer !== initialExercise.timer ||
-      workoutExercise.warmup_timer !== initialExercise.warmup_timer ||
-      workoutExercise.order !== initialExercise.order
+      areObjectsDifferent(workoutExercise, initialExercise)
     ) {
       if ((updateTemplate && !initialExercise) || initialExercise) {
         workoutExercisesToUpdate.push({
