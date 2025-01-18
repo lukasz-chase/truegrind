@@ -5,11 +5,10 @@ import {
   TouchableWithoutFeedback,
   Pressable,
   Text,
+  Dimensions,
 } from "react-native";
 import { useEffect, useState } from "react";
-import LoadingAnimation from "@/components/LoadingAnimation";
 import useExerciseDetailsModal from "@/store/useExerciseDetailsModal";
-import { getExercise } from "@/lib/exercisesService";
 import CloseButton from "@/components/CloseButton";
 import userStore from "@/store/userStore";
 import Animated, {
@@ -26,8 +25,11 @@ import {
   exerciseDetailsScreenType,
 } from "@/types/exerciseDetails";
 import ExerciseFormModal from "../ExerciseForm/ExerciseFormModal";
+import { calculateMetrics, getExerciseData } from "@/lib/exercisesService";
+import { MetricsData } from "@/types/workoutMetrics";
 
 const BUTTON_WIDTH = 80;
+const screenWidth = Dimensions.get("window").width;
 
 const screenButtons = [
   {
@@ -50,24 +52,45 @@ const screenButtons = [
 
 export default function ExerciseDetailsModal() {
   const [loading, setLoading] = useState(false);
+
+  const [data, setData] = useState<MetricsData>({
+    history: [],
+    oneRMRecord: null,
+    weightRecord: null,
+    volumeRecord: null,
+  });
+
   const [isEditExerciseModalVisible, setIsEditExerciseModalVisible] =
     useState(false);
   const [openEditExerciseModal, setOpenEditExerciseModal] = useState(false);
 
-  const { isVisible, closeModal, exercise, screen, setScreen, openModal } =
+  const { isVisible, closeModal, exercise, screen, setScreen } =
     useExerciseDetailsModal();
   const { user } = userStore();
 
   const buttonBackgroundLeftPosition = useSharedValue(0);
 
   useEffect(() => {
-    if (exercise.id) getExercise(exercise.id);
+    fetchExerciseData();
     if (exercise.instructions || exercise.image) {
       setScreen(exerciseDetailScreensEnum.About);
     } else {
       setScreen(exerciseDetailScreensEnum.Charts);
     }
   }, [exercise]);
+
+  const fetchExerciseData = async () => {
+    setLoading(true);
+
+    const data = await getExerciseData(exercise.id, user!.id);
+
+    if (data) {
+      const calculatedMetrics = calculateMetrics(data);
+      setData(calculatedMetrics);
+    }
+
+    setLoading(false);
+  };
 
   const screenHandler = (
     position: number,
@@ -93,11 +116,18 @@ export default function ExerciseDetailsModal() {
           />
         );
       case exerciseDetailScreensEnum.Charts:
-        return <ChartsScreen exercise={exercise} />;
+        return <ChartsScreen data={data.history} loading={loading} />;
       case exerciseDetailScreensEnum.History:
-        return <HistoryScreen exerciseId={exercise.id} />;
+        return <HistoryScreen loading={loading} history={data.history} />;
       case exerciseDetailScreensEnum.Records:
-        return <RecordsScreen exerciseId={exercise.id} />;
+        return (
+          <RecordsScreen
+            loading={loading}
+            oneRMRecord={data.oneRMRecord}
+            volumeRecord={data.volumeRecord}
+            weightRecord={data.weightRecord}
+          />
+        );
     }
   };
 
@@ -128,7 +158,6 @@ export default function ExerciseDetailsModal() {
           if (openEditExerciseModal) setIsEditExerciseModalVisible(true);
         }}
       >
-        {loading && <LoadingAnimation />}
         <TouchableWithoutFeedback onPress={closeHandler}>
           <View style={styles.modalOverlay}></View>
         </TouchableWithoutFeedback>
@@ -191,7 +220,7 @@ const styles = StyleSheet.create({
     left: 0,
   },
   modalContent: {
-    width: "90%",
+    width: screenWidth - 40,
     height: "60%",
     padding: 20,
     borderRadius: 10,

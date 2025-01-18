@@ -2,7 +2,10 @@ import CustomImage from "@/components/CustomImage";
 import { StyleSheet, Text, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 
-type Props = { instructions: undefined | string; image: undefined | string };
+type Props = {
+  instructions: undefined | string;
+  image: undefined | string;
+};
 
 const AboutScreen = ({ instructions, image }: Props) => {
   return (

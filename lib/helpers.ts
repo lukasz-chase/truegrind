@@ -51,9 +51,6 @@ export const getOrdinalSuffix = (number: number) => {
 
   return `${number}${suffix}`;
 };
-export const count1RM = (weight: number, reps: number) => {
-  return weight * (1 + reps / 30);
-};
 
 export const formatDate = (date: Date) => {
   const options: Intl.DateTimeFormatOptions = {
@@ -89,4 +86,9 @@ export const areObjectsDifferent = (obj1: any, obj2: any): boolean => {
 
   // Check each key recursively
   return keys1.some((key) => areObjectsDifferent(obj1[key], obj2[key]));
+};
+
+export const formatDateShort = (dateString: string) => {
+  const date = new Date(dateString);
+  return `${date.getDate()}/${date.getMonth() + 1}`;
 };
