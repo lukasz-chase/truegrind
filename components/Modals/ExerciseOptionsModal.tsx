@@ -71,8 +71,8 @@ const ExerciseOptionsModal = function ExerciseOptionsModal() {
     }
   };
 
-  const replaceExerciseHandler = (exercises: Exercise[]) => {
-    replaceWorkoutExercise(workoutExercise.id, exercises[0]);
+  const replaceExerciseHandler = async (exercises: Exercise[]) => {
+    await replaceWorkoutExercise(workoutExercise.id, exercises[0]);
     closeExercisesModal();
     setShouldShowExercisesModal(false);
   };

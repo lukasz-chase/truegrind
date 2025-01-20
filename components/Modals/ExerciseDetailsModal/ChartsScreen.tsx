@@ -34,7 +34,6 @@ const ChartsScreen = ({
   const totalVolumeData = reversedData.map((h) =>
     h.highestVolumeSet ? h.highestVolumeSet.totalVolume : 0
   );
-
   const heaviestWeightData = reversedData.map((h) =>
     h.highestWeightSet ? h.highestWeightSet.weight : 0
   );
@@ -97,12 +96,11 @@ const ChartsScreen = ({
           labels,
           datasets: [{ data: heaviestWeightData }],
         }}
-        width={screenWidth - 50}
+        width={screenWidth - 65}
         height={220}
         chartConfig={chartConfig}
         bezier
         style={styles.chart}
-        fromZero
         yAxisSuffix="kg"
       />
 

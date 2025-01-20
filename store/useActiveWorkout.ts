@@ -10,6 +10,7 @@ import {
 import { createJSONStorage, persist } from "zustand/middleware";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { supabase } from "@/lib/supabase";
+import { getExerciseTimers } from "@/lib/exercisesService";
 
 const initialState = {
   initialActiveWorkout: {
@@ -58,7 +59,10 @@ interface ActiveWorkoutStore {
   ) => void;
   deleteExerciseSet: (exerciseId: string, setId: string) => void;
   removeWorkoutExercise: (exerciseId: string) => void;
-  replaceWorkoutExercise: (exerciseId: string, newExercise: Exercise) => void;
+  replaceWorkoutExercise: (
+    exerciseId: string,
+    newExercise: Exercise
+  ) => Promise<void>;
   reorderWorkoutExercises: (newOrder: string[]) => void;
   resetActiveWorkout: () => void;
   setPersistedStorage: (value: boolean) => void;
@@ -145,15 +149,9 @@ const useActiveWorkout = create<ActiveWorkoutStore>()(
         }));
       },
       addNewWorkoutExercise: async (exercise, newExerciseProperties) => {
-        const { data } = await supabase
-          .from("exercises_history")
-          .select("timer, warmup_timer")
-          .eq("exercise_id", exercise.id)
-          .order("created_at", { ascending: false })
-          .limit(1)
-          .single<{ timer: number; warmup_timer: number }>();
-        if (data) {
-          newExerciseProperties = { ...newExerciseProperties, ...data };
+        const timers = await getExerciseTimers(exercise.id);
+        if (timers) {
+          newExerciseProperties = { ...newExerciseProperties, ...timers };
         }
         const newExercise: WorkoutExercisePopulated = {
           id: uuid.v4(),
@@ -183,11 +181,11 @@ const useActiveWorkout = create<ActiveWorkoutStore>()(
         });
         get().addNewSet(newExercise.id);
       },
-      replaceWorkoutExercise: (
+      replaceWorkoutExercise: async (
         workoutExerciseId: string,
         newExercise: Exercise
       ) => {
-        const newWorkoutExercise = {
+        let newWorkoutExercise: WorkoutExercisePopulated = {
           id: uuid.v4(),
           note: { noteValue: "", showNote: false },
           timer: null,
@@ -195,7 +193,12 @@ const useActiveWorkout = create<ActiveWorkoutStore>()(
           exercises: newExercise,
           exercise_sets: [],
           superset: null,
+          order: 1,
         };
+        const timers = await getExerciseTimers(newExercise.id);
+        if (timers) {
+          newWorkoutExercise = { ...newWorkoutExercise, ...timers };
+        }
         set((state) => ({
           activeWorkout: {
             ...state.activeWorkout,
