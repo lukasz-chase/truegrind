@@ -1,5 +1,5 @@
 import { AppColors } from "@/constants/colors";
-import { StyleSheet, Text } from "react-native";
+import { Platform, StyleSheet, Text } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import CustomImage from "@/components/CustomImage";
 import { supabase } from "@/lib/supabase";
@@ -18,6 +18,7 @@ import {
 import useAppStore from "@/store/useAppStore";
 import useTimerStore from "@/store/useTimer";
 import useWorkoutTimer from "@/store/useWorkoutTimer";
+import * as Haptics from "expo-haptics";
 
 const TrophyImage = require("@/assets/images/trophy.webp");
 
@@ -128,6 +129,9 @@ export default function WorkoutFinishedScreen() {
       endTimer();
       resetActiveWorkout();
       setPersistedStorage(false);
+      if (Platform.OS !== "web") {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      }
     } catch (error) {
       console.error("Error finishing workout:", error);
       throw error;

@@ -35,3 +35,14 @@ export const NavigationData: {
     focusedIcon: "calendar",
   },
 ];
+export const hiddenScreens = [
+  {
+    name: "workoutFinished",
+  },
+  {
+    name: "userForm",
+  },
+  {
+    name: "metrics/[id]",
+  },
+];

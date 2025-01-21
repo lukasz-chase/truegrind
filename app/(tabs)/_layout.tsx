@@ -1,6 +1,6 @@
 import { Tabs } from "expo-router";
 import FontAwesomeIcons from "@expo/vector-icons/FontAwesome";
-import { NavigationData } from "@/constants/tabs";
+import { hiddenScreens, NavigationData } from "@/constants/tabs";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import CustomTabBar from "@/components/CustomTabBar";
 import WorkoutBottomSheet from "@/components/BottomSheet/WorkoutBottomSheet";
@@ -41,22 +41,17 @@ export default function TabLayout() {
             <CustomTabBar {...props} animatedIndex={animatedIndex} />
           )}
         >
-          <Tabs.Screen
-            name="workoutFinished"
-            key="workoutFinished"
-            options={{
-              href: null,
-              headerShown: false,
-            }}
-          />
-          <Tabs.Screen
-            name="userForm"
-            key="userForm"
-            options={{
-              href: null,
-              headerShown: false,
-            }}
-          />
+          {hiddenScreens.map((screen) => (
+            <Tabs.Screen
+              name={screen.name}
+              key={screen.name}
+              options={{
+                href: null,
+                headerShown: false,
+              }}
+            />
+          ))}
+
           {NavigationData.map(({ name, icon, focusedIcon, title }) => (
             <Tabs.Screen
               name={name}

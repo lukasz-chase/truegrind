@@ -68,9 +68,7 @@ export const updateWorkoutExercises = async (
       if ((updateTemplate && !initialExercise) || initialExercise) {
         workoutExercisesToUpdate.push({
           ...workoutExerciseNotPopulated,
-          created_at: !initialExercise
-            ? new Date().toISOString()
-            : (initialExercise as any).created_at,
+          created_at: new Date().toISOString(),
           exercise_id: workoutExercise.exercises.id,
           workout_id: activeWorkout.id,
         });
