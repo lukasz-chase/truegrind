@@ -1,9 +1,8 @@
 import CustomTextInput from "@/components/CustomTextInput";
-import { AppColors } from "@/constants/colors";
-import { supabase } from "@/lib/supabase";
+import { upsertUserProfile } from "@/lib/userService";
 import userStore from "@/store/userStore";
 import { useState } from "react";
-import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function userForm() {
@@ -22,11 +21,7 @@ export default function userForm() {
       updated_at: new Date(),
     };
 
-    const { error } = await supabase.from("profiles").upsert(updates);
-
-    if (error) {
-      console.log(error);
-    }
+    await upsertUserProfile(updates);
     setLoading(false);
   };
   return (

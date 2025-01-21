@@ -1,17 +1,9 @@
 import { AppColors } from "@/constants/colors";
-import { supabase } from "@/lib/supabase";
 import React, { useEffect, useState } from "react";
 import { Pressable, StyleSheet, Text } from "react-native";
 import AntDesign from "@expo/vector-icons/AntDesign";
-
-type SetHistoryProps = {
-  reps: number;
-  weight: number;
-  rpe: number | null;
-  partials: number | null;
-  is_warmup: boolean;
-  is_dropset: boolean;
-};
+import { SetHistoryProps } from "@/types/exercisesSets";
+import { fetchSetsHistory } from "@/lib/exerciseSetsService";
 
 type Props = {
   setOrder: number;
@@ -25,15 +17,11 @@ const SetHistory = ({ exerciseId, setOrder, userId, bulkUpdateSet }: Props) => {
   const [exerciseHistory, setExerciseHistory] =
     useState<SetHistoryProps | null>(null);
   const fetchLastSet = async () => {
-    const { data, error } = await supabase
-      .from("sets_history")
-      .select(`reps, weight, rpe, partials, is_warmup, is_dropset`)
-      .eq("exercise_id", exerciseId)
-      .eq("user_id", userId)
-      .eq('"order"', setOrder)
-      .order("created_at", { ascending: false })
-      .limit(1)
-      .single<SetHistoryProps>();
+    const { data, error } = await fetchSetsHistory(
+      exerciseId,
+      userId,
+      setOrder
+    );
     if (error) {
       //error code PGRST116 means there is no data
       setDisabled(true);

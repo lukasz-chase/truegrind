@@ -7,7 +7,6 @@ import {
   Text,
 } from "react-native";
 import { useEffect, useState } from "react";
-import { deleteExercise, upsertExercise } from "@/lib/supabaseActions";
 import LoadingAnimation from "../../LoadingAnimation";
 import userStore from "@/store/userStore";
 import {
@@ -26,6 +25,7 @@ import CloseButton from "@/components/CloseButton";
 import { AppColors } from "@/constants/colors";
 import { Exercise } from "@/types/exercises";
 import WarningModal from "../WarningModal";
+import { deleteExercise, upsertExercise } from "@/lib/exercisesService";
 
 type Props = {
   closeModal: () => void;

@@ -1,5 +1,4 @@
 import { AppColors } from "@/constants/colors";
-import { supabase } from "@/lib/supabase";
 import { Workout } from "@/types/workout";
 import { WorkoutExercisePopulated } from "@/types/workoutExercise";
 import React, { useEffect, useState } from "react";
@@ -7,6 +6,7 @@ import { StyleSheet, Text, View } from "react-native";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { formatDate } from "@/lib/helpers";
+import { fetchHighestWeightSet } from "@/lib/exerciseSetsService";
 
 const WorkoutSummary = ({
   workout,
@@ -29,11 +29,10 @@ const WorkoutSummary = ({
       );
 
       if (highestWeight === 0) return {};
-      const { data, error } = await supabase
-        .from("sets_history")
-        .select("id, weight")
-        .eq("exercise_id", workoutExercise.exercises.id)
-        .gte("weight", highestWeight);
+      const { data, error } = await fetchHighestWeightSet(
+        workoutExercise.exercises.id,
+        highestWeight
+      );
       return { data, error };
     });
 

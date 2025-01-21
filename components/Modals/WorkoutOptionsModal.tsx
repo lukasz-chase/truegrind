@@ -4,8 +4,8 @@ import AnchoredModal from "./AnchoredModal";
 import ModalOptionButton from "./ModalOptionButton";
 import { EvilIcons } from "@expo/vector-icons";
 import useWorkoutOptionsModal from "@/store/useWorkoutOptionsModal";
-import { deleteWorkout } from "@/lib/supabaseActions";
 import useAppStore from "@/store/useAppStore";
+import { deleteWorkout } from "@/lib/workoutServices";
 
 const MODAL_WIDTH = 150;
 

@@ -1,8 +1,6 @@
-import { AppColors } from "@/constants/colors";
 import { Platform, StyleSheet, Text } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import CustomImage from "@/components/CustomImage";
-import { supabase } from "@/lib/supabase";
 import { useCallback, useState } from "react";
 import { getOrdinalSuffix } from "@/lib/helpers";
 import useActiveWorkout from "@/store/useActiveWorkout";
@@ -10,15 +8,13 @@ import WorkoutSummary from "@/components/WorkoutSummary";
 import TemplateModal from "@/components/Modals/TemplateModal";
 import { useFocusEffect } from "expo-router";
 import uuid from "react-native-uuid";
-import {
-  updateExerciseSets,
-  updateWorkout,
-  updateWorkoutExercises,
-} from "@/lib/supabaseActions";
 import useAppStore from "@/store/useAppStore";
 import useTimerStore from "@/store/useTimer";
 import useWorkoutTimer from "@/store/useWorkoutTimer";
 import * as Haptics from "expo-haptics";
+import { fetchWorkoutsCount, updateWorkout } from "@/lib/workoutServices";
+import { updateWorkoutExercises } from "@/lib/workoutExerciseServices";
+import { updateExerciseSets } from "@/lib/exerciseSetsService";
 
 const TrophyImage = require("@/assets/images/trophy.webp");
 
@@ -43,7 +39,7 @@ export default function WorkoutFinishedScreen() {
 
   useFocusEffect(
     useCallback(() => {
-      fetchWorkoutsCount();
+      getWorkoutsCount();
       if (activeWorkout.user_id) {
         const filteredWorkout = {
           ...activeWorkout,
@@ -88,10 +84,8 @@ export default function WorkoutFinishedScreen() {
 
     return removedExercises || addedExercises;
   };
-  const fetchWorkoutsCount = async () => {
-    const { count, error } = await supabase
-      .from("workout_history")
-      .select("*", { count: "estimated", head: true });
+  const getWorkoutsCount = async () => {
+    const count = await fetchWorkoutsCount();
     if (count) {
       setWorkoutsCount(count);
     }

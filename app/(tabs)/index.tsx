@@ -1,7 +1,5 @@
-import WorkoutPreviewModal from "@/components/Modals/WorkoutPreviewModal";
 import WorkoutCard from "@/components/WorkoutCard";
 import { AppColors } from "@/constants/colors";
-import { supabase } from "@/lib/supabase";
 import useAppStore from "@/store/useAppStore";
 import useActiveWorkout from "@/store/useActiveWorkout";
 import useBottomSheet from "@/store/useBottomSheet";
@@ -13,6 +11,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import * as Haptics from "expo-haptics";
 import uuid from "react-native-uuid";
 import { ScrollView } from "react-native-gesture-handler";
+import { fetchWorkouts } from "@/lib/workoutServices";
 
 export default function WorkoutScreen() {
   const [workouts, setWorkouts] = useState<Workout[]>([]);
@@ -28,7 +27,7 @@ export default function WorkoutScreen() {
   const { user } = userStore();
   const { refetchNumber } = useAppStore();
   useEffect(() => {
-    fetchWorkouts();
+    getWorkouts();
   }, [user, refetchNumber]);
   useEffect(() => {
     //this means that the active workout wasnt persisted so clear the flag, otherwise it will open on workout click
@@ -42,15 +41,9 @@ export default function WorkoutScreen() {
       setIsSheetVisible(true);
     }
   }, [activeWorkout, user]);
-  const fetchWorkouts = async () => {
+  const getWorkouts = async () => {
     try {
-      const { data } = await supabase
-        .from("workouts")
-        .select(
-          `id, name, notes, user_id, workout_exercises(id, timer, note, order, warmup_timer, superset, exercises(id, name, image, muscle, equipment), exercise_sets(*))`
-        )
-        .eq("user_id", user?.id)
-        .returns<Workout[]>();
+      const data = await fetchWorkouts(user!.id);
       if (data) {
         setWorkouts(data);
       }

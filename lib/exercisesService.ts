@@ -2,6 +2,8 @@ import { Exercise } from "@/types/exercises";
 import { supabase } from "./supabase";
 import { ExerciseSet } from "@/types/exercisesSets";
 import { MetricsData } from "@/types/workoutMetrics";
+import exercisesStore from "@/store/exercisesStore";
+import { uploadImageToBucket } from "./supabaseActions";
 
 export const groupExercisesByAlphabet = (exercises: Exercise[]) => {
   const grouped = exercises.reduce((acc, exercise) => {
@@ -198,4 +200,55 @@ export const getHistoryExerciseData = async (exerciseId: string) => {
   if (error) console.log(error);
   if (data) return data;
   else return null;
+};
+
+export const upsertExercise = async ({
+  exercise,
+  imageWasChanged,
+  imageExtension,
+}: {
+  exercise: Partial<Exercise>;
+  imageWasChanged: boolean;
+  imageExtension?: string | undefined;
+}) => {
+  if (exercise.image && imageWasChanged) {
+    const imageUrl = await uploadImageToBucket(
+      exercise.image,
+      `${exercise.muscle}/${exercise.name}.${imageExtension}`,
+      "exercises"
+    );
+    if (imageUrl) {
+      exercise = { ...exercise, image: imageUrl };
+    }
+  }
+  const { data, error } = await supabase
+    .from("exercises")
+    .upsert(exercise)
+    .select()
+    .returns<Exercise[]>();
+
+  if (data && !exercise.id) {
+    exercisesStore.getState().addExercise(data[0]);
+    return data[0];
+  } else if (data && exercise.id) {
+    exercisesStore.getState().replaceExercise(exercise as Exercise);
+    return exercise as Exercise;
+  }
+  if (error) {
+    console.log("error", error);
+    return undefined;
+  }
+};
+export const deleteExercise = async (
+  exerciseId: string,
+  CustomImage?: string
+) => {
+  if (CustomImage) {
+    const pathAfterBucket = CustomImage.split("exercises/")[1].split("?")[0];
+    // Decode the URL-encoded segments
+    const filePath = decodeURIComponent(pathAfterBucket);
+    await supabase.storage.from("exercises").remove([filePath]);
+  }
+  await supabase.from("exercises").delete().eq("id", exerciseId);
+  exercisesStore.getState().deleteExercise(exerciseId);
 };

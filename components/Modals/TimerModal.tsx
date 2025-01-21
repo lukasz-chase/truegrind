@@ -8,9 +8,9 @@ import { useState } from "react";
 import MemoizedScrollPicker from "../MemoizedScrollPicker";
 import { formatTime } from "@/lib/helpers";
 import userStore from "@/store/userStore";
-import { updateUserProfile } from "@/lib/supabaseActions";
 import CloseButton from "../CloseButton";
 import useWorkoutTimerModal from "@/store/useWorkoutTimerModal";
+import { updateUserProfile } from "@/lib/userService";
 
 const screenWidth = Dimensions.get("window").width;
 

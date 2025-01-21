@@ -10,3 +10,11 @@ export type ExerciseSet = {
   completed: boolean;
   partials: number | null;
 };
+export type SetHistoryProps = {
+  reps: number;
+  weight: number;
+  rpe: number | null;
+  partials: number | null;
+  is_warmup: boolean;
+  is_dropset: boolean;
+};

@@ -1,5 +1,4 @@
 import { chartConfig } from "@/constants/chart";
-import { AppColors } from "@/constants/colors";
 import { formatDateShort } from "@/lib/helpers";
 import { WorkoutMetrics } from "@/types/workoutMetrics";
 import { Text, StyleSheet, Dimensions, ScrollView, View } from "react-native";
