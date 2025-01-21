@@ -21,6 +21,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import AddMetricsModal from "@/components/Modals/AddMetricsModal";
 import { bodyPartsToMeasure, corePartsToMeasure } from "@/constants/metrics";
 import { LineChart } from "react-native-chart-kit";
+import { chartConfig } from "@/constants/chart";
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -78,25 +79,7 @@ export default function MetricsDetails() {
     );
   };
 
-  const chartConfig = {
-    backgroundColor: "#ffffff",
-    backgroundGradientFrom: "#ffffff",
-    backgroundGradientTo: "#ffffff",
-    decimalPlaces: 0,
-    color: (opacity = 1) => `rgba(0, 0, 255, ${opacity})`,
-    labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-    style: {
-      borderRadius: 8,
-    },
-    propsForDots: {
-      r: "4",
-      strokeWidth: "2",
-      stroke: AppColors.darkBlue,
-    },
-  };
-
   const labels = measurements.map((m) => formatDateShort(m.created_at));
-
   return (
     <>
       <SafeAreaView style={styles.container}>
@@ -107,23 +90,25 @@ export default function MetricsDetails() {
           <Text style={styles.title}>{measurement.displayName}</Text>
           <Text>Edit</Text>
         </View>
-        {/* <LineChart
-          data={{
-            labels,
-            datasets: [
-              {
-                data: measurements.map((m) => m.value),
-              },
-            ],
-          }}
-          width={screenWidth - 50}
-          height={220}
-          chartConfig={chartConfig}
-          bezier
-          style={styles.chart}
-          fromZero
-          yAxisLabel={measurement.unit}
-        /> */}
+        {measurements.length > 0 && (
+          <LineChart
+            data={{
+              labels,
+              datasets: [
+                {
+                  data: measurements.map((m) => m.value),
+                },
+              ],
+            }}
+            width={screenWidth - 50}
+            height={220}
+            chartConfig={chartConfig}
+            bezier
+            style={styles.chart}
+            fromZero
+            yAxisSuffix={measurement.unit}
+          />
+        )}
         <Pressable
           style={styles.addButton}
           onPress={() => setIsMetricsModalVisible(true)}
