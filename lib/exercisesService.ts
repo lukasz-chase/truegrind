@@ -183,14 +183,18 @@ export const calculateMetrics = (data: any): MetricsData => {
   return { history: metrics, oneRMRecord, weightRecord, volumeRecord };
 };
 
-export const getExerciseTimers = async (exerciseId: string) => {
+export const getHistoryExerciseData = async (exerciseId: string) => {
   const { data, error } = await supabase
     .from("exercises_history")
-    .select("timer, warmup_timer")
+    .select("timer, warmup_timer, note")
     .eq("exercise_id", exerciseId)
     .order("created_at", { ascending: false })
     .limit(1)
-    .single<{ timer: number; warmup_timer: number }>();
+    .single<{
+      timer: number;
+      warmup_timer: number;
+      note: { noteValue: string; showNote: boolean };
+    }>();
   if (error) console.log(error);
   if (data) return data;
   else return null;

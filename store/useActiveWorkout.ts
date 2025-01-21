@@ -9,8 +9,7 @@ import {
 } from "@/types/workoutExercise";
 import { createJSONStorage, persist } from "zustand/middleware";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { supabase } from "@/lib/supabase";
-import { getExerciseTimers } from "@/lib/exercisesService";
+import { getHistoryExerciseData } from "@/lib/exercisesService";
 
 const initialState = {
   initialActiveWorkout: {
@@ -149,9 +148,9 @@ const useActiveWorkout = create<ActiveWorkoutStore>()(
         }));
       },
       addNewWorkoutExercise: async (exercise, newExerciseProperties) => {
-        const timers = await getExerciseTimers(exercise.id);
-        if (timers) {
-          newExerciseProperties = { ...newExerciseProperties, ...timers };
+        const data = await getHistoryExerciseData(exercise.id);
+        if (data) {
+          newExerciseProperties = { ...newExerciseProperties, ...data };
         }
         const newExercise: WorkoutExercisePopulated = {
           id: uuid.v4(),
@@ -195,9 +194,9 @@ const useActiveWorkout = create<ActiveWorkoutStore>()(
           superset: null,
           order: 1,
         };
-        const timers = await getExerciseTimers(newExercise.id);
-        if (timers) {
-          newWorkoutExercise = { ...newWorkoutExercise, ...timers };
+        const data = await getHistoryExerciseData(newExercise.id);
+        if (data) {
+          newWorkoutExercise = { ...newWorkoutExercise, ...data };
         }
         set((state) => ({
           activeWorkout: {
