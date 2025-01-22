@@ -29,12 +29,13 @@ export default function AddMetricsModal({
   const [inputValue, setInputValue] = useState("");
 
   const handleChange = (text: string) => {
-    const numericValue = text.replace(/[^0-9]/g, "");
-    setInputValue(numericValue);
+    setInputValue(text);
   };
   const saveHandler = () => {
     if (inputValue !== "") {
-      onPress(Number(inputValue));
+      const replacedValue = inputValue.replace(",", ".");
+      const numericValue = Number(replacedValue);
+      onPress(Number(numericValue));
       closeModal();
       setInputValue("");
     }

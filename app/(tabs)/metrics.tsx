@@ -11,6 +11,7 @@ import {
 import userStore from "@/store/userStore";
 import MeasurementList from "@/components/MeasurementList";
 import * as Haptics from "expo-haptics";
+import useMeasurementsStore from "@/store/useMeasurementsStore";
 
 export default function MetricsScreen() {
   const [isMetricsModalVisible, setIsMetricsModalVisible] = useState(false);
@@ -19,9 +20,11 @@ export default function MetricsScreen() {
     displayName: "",
     unit: "",
   });
-  const [measurements, setMeasurements] = useState<{
-    [key: string]: { value: number; unit: string };
-  }>({});
+  const {
+    addDisplayedMeasurement,
+    setDisplayedMeasurements,
+    displayedMeasurements,
+  } = useMeasurementsStore();
 
   const { user } = userStore();
 
@@ -30,7 +33,7 @@ export default function MetricsScreen() {
       try {
         if (user?.id) {
           const data = await fetchAllUserMeasurements(user.id);
-          setMeasurements(data);
+          setDisplayedMeasurements(data);
         }
       } catch (error) {
         console.error("Error fetching measurements", error);
@@ -64,13 +67,7 @@ export default function MetricsScreen() {
       if (Platform.OS !== "web") {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       }
-      setMeasurements((prev) => ({
-        ...prev,
-        [data.label]: {
-          unit: data.unit,
-          value: data.value,
-        },
-      }));
+      addDisplayedMeasurement(data);
     }
   };
   return (
@@ -81,13 +78,13 @@ export default function MetricsScreen() {
           <MeasurementList
             title="Core"
             items={corePartsToMeasure}
-            measurements={measurements}
+            measurements={displayedMeasurements}
             onPressPlus={openModalHandler}
           />
           <MeasurementList
             title="Body Parts"
             items={bodyPartsToMeasure}
-            measurements={measurements}
+            measurements={displayedMeasurements}
             onPressPlus={openModalHandler}
           />
         </ScrollView>

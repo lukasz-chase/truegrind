@@ -1,10 +1,8 @@
 import { Measurement } from "@/types/measurements";
 import { supabase } from "./supabase";
-import { bodyPartsToMeasure, corePartsToMeasure } from "@/constants/metrics";
+import { allMetrics } from "@/constants/metrics";
 
 export const fetchAllUserMeasurements = async (userId: string) => {
-  const allMetrics = [...corePartsToMeasure, ...bodyPartsToMeasure];
-
   const measurementsArray = await Promise.all(
     allMetrics.map(async (metric) => {
       const data = await fetchUserMeasurementsSingle(userId, metric.label);
@@ -54,7 +52,9 @@ export const fetchUserMeasurementsSingle = async (
     .limit(1)
     .returns<Measurement>()
     .single();
-  if (error) console.log(error);
+  if (error?.code !== "PGRST116") {
+    console.log(error);
+  }
   if (data) return data;
 };
 export const createMeasurement = async (measurement: Partial<Measurement>) => {
@@ -65,4 +65,8 @@ export const createMeasurement = async (measurement: Partial<Measurement>) => {
     .returns<Measurement[]>();
   if (error) console.log(error);
   if (data) return data[0];
+};
+
+export const deleteMeasurement = async (measurementId: string) => {
+  await supabase.from("measurements").delete().eq("id", measurementId);
 };

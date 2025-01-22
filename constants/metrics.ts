@@ -1,3 +1,5 @@
+import { MeasurementTimeRangeEnum } from "@/types/measurements";
+
 export const corePartsToMeasure = [
   {
     displayName: "Weight",
@@ -82,4 +84,13 @@ export const bodyPartsToMeasure = [
     label: "right_calf",
     unit: "cm",
   },
+];
+
+export const allMetrics = [...corePartsToMeasure, ...bodyPartsToMeasure];
+export const timePeriodButtons = [
+  { label: "All Time", value: MeasurementTimeRangeEnum.ALL },
+  { label: "1 Year", value: MeasurementTimeRangeEnum.ONE_YEAR },
+  { label: "6 Months", value: MeasurementTimeRangeEnum.SIX_MONTHS },
+  { label: "3 Months", value: MeasurementTimeRangeEnum.THREE_MONTHS },
+  { label: "1 Month", value: MeasurementTimeRangeEnum.ONE_MONTH },
 ];

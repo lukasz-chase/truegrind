@@ -2,10 +2,11 @@ import { AppColors } from "@/constants/colors";
 import { formatDate, formatDateShort } from "@/lib/helpers";
 import {
   createMeasurement,
+  deleteMeasurement,
   fetchUserMeasurements,
 } from "@/lib/measurementsService";
 import userStore from "@/store/userStore";
-import { Measurement } from "@/types/measurements";
+import { Measurement, MeasurementTimeRange } from "@/types/measurements";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import {
@@ -19,24 +20,31 @@ import {
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AddMetricsModal from "@/components/Modals/AddMetricsModal";
-import { bodyPartsToMeasure, corePartsToMeasure } from "@/constants/metrics";
+import { allMetrics, timePeriodButtons } from "@/constants/metrics";
 import { LineChart } from "react-native-chart-kit";
 import { chartConfig } from "@/constants/chart";
+import useMeasurementsStore from "@/store/useMeasurementsStore";
 
 const screenWidth = Dimensions.get("window").width;
 
 export default function MetricsDetails() {
   const [isMetricsModalVisible, setIsMetricsModalVisible] = useState(false);
-  const [measurements, setMeasurements] = useState<Measurement[]>([]);
+  const [isEditMode, setEditMode] = useState(false);
+  const [selectedRange, setSelectedRange] =
+    useState<MeasurementTimeRange>("all");
 
   const { id } = useLocalSearchParams();
   const { user } = userStore();
-
-  const measurement = [...corePartsToMeasure, ...bodyPartsToMeasure].find(
-    (m) => m.label === id
-  );
+  const {
+    getFilteredMeasurements,
+    setMeasurements,
+    addMeasurement,
+    removeMeasurement,
+  } = useMeasurementsStore();
+  const measurement = allMetrics.find((m) => m.label === id);
 
   const router = useRouter();
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -52,7 +60,9 @@ export default function MetricsDetails() {
     };
     fetchData();
   }, [user, id]);
+
   if (!measurement) return null;
+
   const addMeasurementHandler = async (value: number) => {
     const data = await createMeasurement({
       label: measurement.label,
@@ -63,66 +73,157 @@ export default function MetricsDetails() {
     });
 
     if (data) {
-      const updatedMeasurements = [data, ...measurements];
-      setMeasurements(updatedMeasurements);
+      addMeasurement(data);
     }
   };
 
-  const renderMeasurementItem = ({ item }: { item: Measurement }) => {
+  const calculateDifference = (
+    value: number,
+    index: number,
+    arr: Measurement[]
+  ) => {
+    if (!arr[index - 1]) {
+      return <Text style={styles.value}>-</Text>;
+    }
+    const prevMeasurement = arr[index - 1].value;
+    const difference = Math.floor(value - prevMeasurement);
+
+    if (difference > 0) {
+      return (
+        <Text style={[styles.value, { color: AppColors.green }]}>
+          +{difference}
+        </Text>
+      );
+    } else if (difference < 0) {
+      return (
+        <Text style={[styles.value, { color: AppColors.orange }]}>
+          {difference}
+        </Text>
+      );
+    } else {
+      return <Text style={styles.value}>0</Text>;
+    }
+  };
+
+  const deleteMeasurementHandler = async (
+    measurementId: string,
+    measurementLabeL: string
+  ) => {
+    await deleteMeasurement(measurementId);
+    removeMeasurement(measurementId, measurementLabeL);
+  };
+
+  const goBackHandler = () => {
+    setEditMode(false);
+    router.push("/metrics");
+  };
+
+  const filteredMeasurements = getFilteredMeasurements(selectedRange);
+
+  const labels = filteredMeasurements.map((m) => formatDateShort(m.created_at));
+  const data = filteredMeasurements.map((m) => m.value);
+
+  const renderMeasurementItem = ({
+    item,
+    index,
+  }: {
+    item: Measurement;
+    index: number;
+  }) => {
     return (
       <View style={styles.row}>
         <Text style={styles.date}>{formatDate(new Date(item.created_at))}</Text>
-        <Text style={styles.value}>
-          {item.value} {item.unit}
-        </Text>
+        <View style={{ flexDirection: "row", gap: 10, alignItems: "center" }}>
+          <Text style={styles.value}>
+            {item.value} {item.unit}
+          </Text>
+          {calculateDifference(item.value, index, filteredMeasurements)}
+          {isEditMode && (
+            <Pressable
+              onPress={() => deleteMeasurementHandler(item.id, item.label)}
+            >
+              <AntDesign name="delete" size={24} color={AppColors.red} />
+            </Pressable>
+          )}
+        </View>
       </View>
     );
   };
 
-  const labels = measurements.map((m) => formatDateShort(m.created_at));
   return (
     <>
       <SafeAreaView style={styles.container}>
         <View style={styles.header}>
-          <Pressable onPress={() => router.push("/metrics")}>
+          <Pressable onPress={goBackHandler}>
             <AntDesign name="left" size={24} color="black" />
           </Pressable>
           <Text style={styles.title}>{measurement.displayName}</Text>
-          <Text>Edit</Text>
+          <Pressable onPress={() => setEditMode(!isEditMode)}>
+            <Text style={{ fontSize: 18 }}>{isEditMode ? "Done" : "Edit"}</Text>
+          </Pressable>
         </View>
-        {measurements.length > 0 && (
-          <LineChart
-            data={{
-              labels,
-              datasets: [
-                {
-                  data: measurements.map((m) => m.value),
-                },
-              ],
-            }}
-            width={screenWidth - 50}
-            height={220}
-            chartConfig={chartConfig}
-            bezier
-            style={styles.chart}
-            fromZero
-            yAxisSuffix={measurement.unit}
-          />
+        {filteredMeasurements.length > 0 && (
+          <>
+            <View style={styles.filterContainer}>
+              {timePeriodButtons.map((btn) => (
+                <Pressable
+                  key={btn.value}
+                  style={[
+                    styles.filterButton,
+                    selectedRange === btn.value && styles.filterButtonActive,
+                  ]}
+                  onPress={() => setSelectedRange(btn.value)}
+                >
+                  <Text
+                    style={[
+                      styles.filterButtonText,
+                      selectedRange === btn.value &&
+                        styles.filterButtonTextActive,
+                    ]}
+                  >
+                    {btn.label}
+                  </Text>
+                </Pressable>
+              ))}
+            </View>
+            <LineChart
+              data={{
+                labels,
+                datasets: [
+                  {
+                    data,
+                  },
+                ],
+              }}
+              width={screenWidth - 50}
+              height={220}
+              chartConfig={chartConfig}
+              bezier
+              style={styles.chart}
+              fromZero
+              yAxisSuffix={measurement.unit}
+            />
+          </>
         )}
+
         <Pressable
           style={styles.addButton}
           onPress={() => setIsMetricsModalVisible(true)}
         >
           <Text style={styles.addButtonText}>Add Measurement</Text>
         </Pressable>
-        <Text style={styles.historyText}>HISTORY</Text>
+
+        <Text style={styles.historyText}>
+          {filteredMeasurements.length > 0 ? "HISTORY" : "NO MEASUREMENTS"}
+        </Text>
         <FlatList
-          data={measurements}
+          data={filteredMeasurements}
           keyExtractor={(item) => item.id.toString()}
           renderItem={renderMeasurementItem}
           contentContainerStyle={styles.listContainer}
         />
       </SafeAreaView>
+
       <AddMetricsModal
         closeModal={() => setIsMetricsModalVisible(false)}
         isVisible={isMetricsModalVisible}
@@ -145,34 +246,40 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
   },
-  chart: {
-    marginVertical: 8,
-    borderRadius: 8,
-  },
   title: {
     fontSize: 20,
     fontWeight: "bold",
     textAlign: "center",
   },
-  listContainer: {
+  // FILTER BUTTONS
+  filterContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    marginVertical: 10,
     gap: 10,
   },
-  row: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+  filterButton: {
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+    borderRadius: 8,
+    backgroundColor: "#EEE",
+    marginRight: 5,
   },
-  date: {
-    fontSize: 18,
+  filterButtonActive: {
+    backgroundColor: AppColors.blue,
+  },
+  filterButtonText: {
+    color: AppColors.black,
     fontWeight: "bold",
   },
-  value: {
-    fontSize: 18,
+  filterButtonTextActive: {
+    color: "white",
+    fontWeight: "bold",
   },
-  historyText: {
-    fontSize: 16,
-    color: AppColors.darkGray,
-    marginVertical: 10,
+  // CHART
+  chart: {
+    marginVertical: 8,
+    borderRadius: 8,
   },
   addButton: {
     width: "100%",
@@ -186,5 +293,25 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontSize: 18,
     fontWeight: "bold",
+  },
+  historyText: {
+    fontSize: 16,
+    color: AppColors.darkGray,
+    marginVertical: 10,
+  },
+  listContainer: {
+    gap: 10,
+  },
+  row: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  date: {
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  value: {
+    fontSize: 16,
   },
 });
