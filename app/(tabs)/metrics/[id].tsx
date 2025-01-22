@@ -82,10 +82,10 @@ export default function MetricsDetails() {
     index: number,
     arr: Measurement[]
   ) => {
-    if (!arr[index - 1]) {
+    if (!arr[index + 1]) {
       return <Text style={styles.value}>-</Text>;
     }
-    const prevMeasurement = arr[index - 1].value;
+    const prevMeasurement = arr[index + 1].value;
     const difference = Math.floor(value - prevMeasurement);
 
     if (difference > 0) {
@@ -120,8 +120,10 @@ export default function MetricsDetails() {
 
   const filteredMeasurements = getFilteredMeasurements(selectedRange);
 
-  const labels = filteredMeasurements.map((m) => formatDateShort(m.created_at));
-  const data = filteredMeasurements.map((m) => m.value);
+  const labels = filteredMeasurements
+    .map((m) => formatDateShort(m.created_at))
+    .toReversed();
+  const data = filteredMeasurements.map((m) => m.value).toReversed();
 
   const renderMeasurementItem = ({
     item,

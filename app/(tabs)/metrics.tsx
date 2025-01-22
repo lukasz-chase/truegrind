@@ -39,9 +39,10 @@ export default function MetricsScreen() {
         console.error("Error fetching measurements", error);
       }
     };
-
-    fetchData();
-  }, [user]);
+    if (Object.keys(displayedMeasurements).length === 0) {
+      fetchData();
+    }
+  }, [user, displayedMeasurements]);
   const openModalHandler = ({
     label,
     displayName,
