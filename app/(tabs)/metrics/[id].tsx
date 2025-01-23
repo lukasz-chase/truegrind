@@ -24,12 +24,12 @@ import { allMetrics, timePeriodButtons } from "@/constants/metrics";
 import { LineChart } from "react-native-chart-kit";
 import { chartConfig } from "@/constants/chart";
 import useMeasurementsStore from "@/store/useMeasurementsStore";
+import SwipeToDelete from "@/components/SwipeToDelete";
 
 const screenWidth = Dimensions.get("window").width;
 
 export default function MetricsDetails() {
   const [isMetricsModalVisible, setIsMetricsModalVisible] = useState(false);
-  const [isEditMode, setEditMode] = useState(false);
   const [selectedRange, setSelectedRange] =
     useState<MeasurementTimeRange>("all");
 
@@ -114,7 +114,6 @@ export default function MetricsDetails() {
   };
 
   const goBackHandler = () => {
-    setEditMode(false);
     router.push("/metrics");
   };
 
@@ -133,22 +132,21 @@ export default function MetricsDetails() {
     index: number;
   }) => {
     return (
-      <View style={styles.row}>
-        <Text style={styles.date}>{formatDate(new Date(item.created_at))}</Text>
-        <View style={{ flexDirection: "row", gap: 10, alignItems: "center" }}>
-          <Text style={styles.value}>
-            {item.value} {item.unit}
+      <SwipeToDelete
+        onDelete={() => deleteMeasurementHandler(item.id, item.label)}
+      >
+        <View style={styles.row}>
+          <Text style={styles.date}>
+            {formatDate(new Date(item.created_at))}
           </Text>
-          {calculateDifference(item.value, index, filteredMeasurements)}
-          {isEditMode && (
-            <Pressable
-              onPress={() => deleteMeasurementHandler(item.id, item.label)}
-            >
-              <AntDesign name="delete" size={24} color={AppColors.red} />
-            </Pressable>
-          )}
+          <View style={{ flexDirection: "row", gap: 10, alignItems: "center" }}>
+            <Text style={styles.value}>
+              {item.value} {item.unit}
+            </Text>
+            {calculateDifference(item.value, index, filteredMeasurements)}
+          </View>
         </View>
-      </View>
+      </SwipeToDelete>
     );
   };
 
@@ -160,9 +158,7 @@ export default function MetricsDetails() {
             <AntDesign name="left" size={24} color="black" />
           </Pressable>
           <Text style={styles.title}>{measurement.displayName}</Text>
-          <Pressable onPress={() => setEditMode(!isEditMode)}>
-            <Text style={{ fontSize: 18 }}>{isEditMode ? "Done" : "Edit"}</Text>
-          </Pressable>
+          <View style={{ width: 24 }} />
         </View>
         {filteredMeasurements.length > 0 && (
           <>
@@ -305,9 +301,11 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   row: {
+    height: 24,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    backgroundColor: "white",
   },
   date: {
     fontSize: 16,
