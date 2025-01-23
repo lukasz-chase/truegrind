@@ -1,5 +1,6 @@
 import { Split, SplitPopulated } from "@/types/split";
 import { supabase } from "./supabase";
+import { updateUserProfile } from "./userService";
 
 export const fetchUserSplitWithWorkouts = async (
   userId: string,
@@ -35,4 +36,18 @@ export const fetchSplits = async (userId: string) => {
   if (error) {
     console.log(error);
   }
+};
+
+export const createSplit = async (split: Partial<Split>) => {
+  const { data, error } = await supabase
+    .from("splits")
+    .insert(split)
+    .select("*")
+    .returns<Split[]>();
+  if (error) console.log(error);
+  if (data) return data[0];
+};
+
+export const deleteSplit = async (splitId: string) => {
+  await supabase.from("splits").delete().eq("id", splitId);
 };

@@ -1,3 +1,4 @@
+import NewSplit from "@/components/NewSplit";
 import SplitCard from "@/components/SplitCard";
 import { AppColors } from "@/constants/colors";
 import { fetchSplits } from "@/lib/splitsServices";
@@ -33,6 +34,12 @@ export default function SplitsScreen() {
       getSplits();
     }
   }, [user]);
+
+  const removeLocalSplit = (splitId: string) => {
+    const filteredSplits = splits?.filter((split) => split.id !== splitId);
+    setSplits(filteredSplits);
+  };
+
   if (loading)
     return (
       <SafeAreaView style={styles.container}>
@@ -48,22 +55,23 @@ export default function SplitsScreen() {
   if (!user) return null;
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.title}>Choose your split</Text>
+      <Text style={styles.title}>Create your own split</Text>
+      <NewSplit userId={user.id} refetchData={refetchData} />
+      <Text style={styles.title}>Or choose one</Text>
       <FlatList
         data={splits}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
-          <SplitCard split={item} userId={user!.id} refetchData={refetchData} />
+          <SplitCard
+            split={item}
+            userId={user!.id}
+            refetchData={refetchData}
+            isActiveSplit={item.id === user.active_split_id}
+            removeLocalSplit={removeLocalSplit}
+          />
         )}
         contentContainerStyle={styles.listContainer}
       />
-      <View style={{ marginTop: 10 }}>
-        <SplitCard
-          userId={user!.id}
-          split={{ id: "new", name: "Create New Split", user_id: "" }}
-          refetchData={refetchData}
-        />
-      </View>
     </SafeAreaView>
   );
 }
@@ -73,13 +81,15 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   title: {
-    fontSize: 32,
+    fontSize: 28,
+    textTransform: "uppercase",
     color: AppColors.black,
     paddingVertical: 20,
     fontWeight: "bold",
   },
   listContainer: {
     gap: 10,
+    height: "100%",
   },
   cardSkeleton: {
     width: "100%",

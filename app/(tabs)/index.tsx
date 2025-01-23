@@ -152,20 +152,28 @@ export default function WorkoutScreen() {
           </ScrollView>
         </>
       ) : (
-        <Link href="/splits" asChild>
-          <View style={styles.splitButton}>
-            <Text
-              style={[
-                styles.actionButtonText,
-                {
-                  color: AppColors.blue,
-                },
-              ]}
-            >
-              Choose a split
-            </Text>
-          </View>
-        </Link>
+        <View
+          style={{
+            height: "100%",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Pressable onPress={() => router.push("/splits")}>
+            <View style={styles.splitButton}>
+              <Text
+                style={[
+                  styles.actionButtonText,
+                  {
+                    color: AppColors.blue,
+                  },
+                ]}
+              >
+                Create a Split
+              </Text>
+            </View>
+          </Pressable>
+        </View>
       )}
     </SafeAreaView>
   );
