@@ -9,8 +9,8 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { supabase } from "@/lib/supabase";
-import { getProfile } from "@/hooks/userProfile";
 import { AppColors } from "@/constants/colors";
+import { getProfile } from "@/lib/userService";
 
 export default function Auth() {
   const [email, setEmail] = useState("");

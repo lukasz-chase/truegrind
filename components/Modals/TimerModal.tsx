@@ -46,7 +46,7 @@ export default function TimerModal() {
       const customTimers = user?.custom_timers || [];
       customTimers.unshift(customDuration);
       customTimers.pop();
-      await updateUserProfile(customTimers, user!.id);
+      await updateUserProfile(user!.id, { custom_timers: customTimers });
     }
   };
   return (

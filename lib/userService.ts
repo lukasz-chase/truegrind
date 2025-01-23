@@ -2,26 +2,40 @@ import { UserProfile } from "@/types/user";
 import { supabase } from "./supabase";
 import userStore from "@/store/userStore";
 
+export const getProfile = async (userId: string) => {
+  try {
+    const { data, error, status } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("id", userId)
+      .single();
+    if (error && status !== 406) {
+      throw error;
+    }
+    if (data) {
+      userStore.setState({ user: data });
+    }
+  } catch (error) {
+    if (error instanceof Error) {
+      throw error;
+    }
+  }
+};
+
 export const updateUserProfile = async (
-  customTimers: number[],
-  userId: string
+  userId: string,
+  propertiesToUpdate: Partial<UserProfile>
 ) => {
   const { data, error } = await supabase
     .from("profiles")
-    .update({ custom_timers: customTimers })
+    .update(propertiesToUpdate)
     .eq("id", userId)
-    .returns<UserProfile>();
+    .select("*")
+    .returns<UserProfile[]>();
   if (data) {
-    userStore.setState({ user: data });
+    userStore.setState({ user: data[0] });
   }
   if (error) {
     console.log("error", error);
-  }
-};
-export const upsertUserProfile = async (updates: any) => {
-  const { error } = await supabase.from("profiles").upsert(updates);
-
-  if (error) {
-    console.log(error);
   }
 };

@@ -5,5 +5,6 @@ export type Workout = {
   name: string;
   user_id: string;
   notes?: string;
+  split_id: string;
   workout_exercises?: WorkoutExercisePopulated[];
 };

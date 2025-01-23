@@ -48,6 +48,7 @@ export default function TabLayout() {
               options={{
                 href: null,
                 headerShown: false,
+                ...screen.additionalOptions,
               }}
             />
           ))}

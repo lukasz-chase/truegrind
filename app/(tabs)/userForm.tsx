@@ -1,27 +1,21 @@
 import CustomTextInput from "@/components/CustomTextInput";
-import { upsertUserProfile } from "@/lib/userService";
+import { updateUserProfile } from "@/lib/userService";
 import userStore from "@/store/userStore";
 import { useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function userForm() {
-  const { user, session } = userStore((state) => state);
+  const { user } = userStore((state) => state);
 
   const [username, setUsername] = useState(user?.username || "");
   const [loading, setLoading] = useState(false);
 
   const updateProfile = async () => {
     setLoading(true);
-    if (!session?.user) throw new Error("No user on the session!");
+    if (!user) throw new Error("No user on the session!");
 
-    const updates = {
-      id: session?.user.id,
-      username,
-      updated_at: new Date(),
-    };
-
-    await upsertUserProfile(updates);
+    await updateUserProfile(user.id, { username });
     setLoading(false);
   };
   return (

@@ -37,12 +37,22 @@ export const NavigationData: {
 ];
 export const hiddenScreens = [
   {
+    name: "splits",
+    additionalOptions: {
+      animation: "shift" as "shift",
+      tabBarStyle: { display: "none" as "none" }, // Explicitly cast "none"
+    },
+  },
+  {
     name: "workoutFinished",
+    additionalOptions: {},
   },
   {
     name: "userForm",
+    additionalOptions: {},
   },
   {
     name: "metrics/[id]",
+    additionalOptions: {},
   },
 ];

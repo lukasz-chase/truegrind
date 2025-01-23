@@ -7,7 +7,7 @@ import userStore from "@/store/userStore";
 import { Alert, AppState, Platform } from "react-native";
 import * as Notifications from "expo-notifications";
 import * as SplashScreen from "expo-splash-screen";
-import { getProfile } from "@/hooks/userProfile";
+import { getProfile } from "@/lib/userService";
 
 // Prevent the splash screen from hiding automatically
 SplashScreen.preventAutoHideAsync();
@@ -65,6 +65,7 @@ export default function Root() {
         router.replace("/sign-in");
       } else {
         getProfile(session.user.id);
+
         // Redirect to tabs if session exists (logged in)
         router.replace("/(tabs)");
       }
