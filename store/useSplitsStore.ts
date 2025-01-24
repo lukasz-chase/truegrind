@@ -2,13 +2,20 @@ import { Split } from "@/types/split";
 import { create } from "zustand";
 
 type Store = {
-  activeSplit: Split | null;
-  setActiveSplit: (split: Split) => void;
+  splits: Split[];
+  setSplits: (splits: Split[]) => void;
+  removeSplit: (splitId: string) => void;
+  addSplit: (split: Split) => void;
 };
 
-const useSplitStore = create<Store>((set) => ({
-  activeSplit: null,
-  setActiveSplit: (split: Split) => set({ activeSplit: split }),
+const useSplitsStore = create<Store>((set) => ({
+  splits: [],
+  setSplits: (splits) => set({ splits }),
+  removeSplit: (splitId) =>
+    set((state) => ({
+      splits: state.splits.filter((split) => split.id !== splitId),
+    })),
+  addSplit: (split) => set((state) => ({ splits: [...state.splits, split] })),
 }));
 
-export default useSplitStore;
+export default useSplitsStore;

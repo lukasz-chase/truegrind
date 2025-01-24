@@ -86,18 +86,19 @@ export default function MetricsDetails() {
       return <Text style={styles.value}>-</Text>;
     }
     const prevMeasurement = arr[index + 1].value;
-    const difference = Math.floor(value - prevMeasurement);
+    const difference = value - prevMeasurement;
+    const rounded = Number(difference.toFixed(2));
 
-    if (difference > 0) {
+    if (rounded > 0) {
       return (
         <Text style={[styles.value, { color: AppColors.green }]}>
-          +{difference}
+          +{rounded}
         </Text>
       );
-    } else if (difference < 0) {
+    } else if (rounded < 0) {
       return (
         <Text style={[styles.value, { color: AppColors.orange }]}>
-          {difference}
+          {rounded}
         </Text>
       );
     } else {

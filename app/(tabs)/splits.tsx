@@ -1,4 +1,3 @@
-import NewSplit from "@/components/NewSplit";
 import SplitCard from "@/components/SplitCard";
 import { AppColors } from "@/constants/colors";
 import { fetchSplits } from "@/lib/splitsServices";
@@ -6,15 +5,20 @@ import useAppStore from "@/store/useAppStore";
 import userStore from "@/store/userStore";
 import { Split } from "@/types/split";
 import { useEffect, useState } from "react";
-import { StyleSheet, View, Text, FlatList } from "react-native";
+import { StyleSheet, View, Text, FlatList, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import AntDesign from "@expo/vector-icons/AntDesign";
+import { useRouter } from "expo-router";
+import useSplitsStore from "@/store/useSplitsStore";
 
 export default function SplitsScreen() {
-  const [splits, setSplits] = useState<Split[]>();
   const [loading, setLoading] = useState(false);
 
   const { user } = userStore();
   const { refetchData } = useAppStore();
+  const { setSplits, splits, removeSplit } = useSplitsStore();
+
+  const router = useRouter();
 
   useEffect(() => {
     const getSplits = async () => {
@@ -30,15 +34,10 @@ export default function SplitsScreen() {
         setLoading(false);
       }
     };
-    if (user) {
+    if (user && splits.length === 0) {
       getSplits();
     }
   }, [user]);
-
-  const removeLocalSplit = (splitId: string) => {
-    const filteredSplits = splits?.filter((split) => split.id !== splitId);
-    setSplits(filteredSplits);
-  };
 
   if (loading)
     return (
@@ -55,8 +54,15 @@ export default function SplitsScreen() {
   if (!user) return null;
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.title}>Create your own split</Text>
-      <NewSplit userId={user.id} refetchData={refetchData} />
+      <Pressable
+        onPress={() => router.push("/newSplit")}
+        style={styles.newSplitButton}
+      >
+        <Text style={[styles.title, { color: "white" }]}>
+          Create your own split
+        </Text>
+        <AntDesign name="right" size={24} color="white" />
+      </Pressable>
       <Text style={styles.title}>Or choose one</Text>
       <FlatList
         data={splits}
@@ -67,7 +73,7 @@ export default function SplitsScreen() {
             userId={user!.id}
             refetchData={refetchData}
             isActiveSplit={item.id === user.active_split_id}
-            removeLocalSplit={removeLocalSplit}
+            removeLocalSplit={removeSplit}
           />
         )}
         contentContainerStyle={styles.listContainer}
@@ -79,6 +85,7 @@ export default function SplitsScreen() {
 const styles = StyleSheet.create({
   container: {
     padding: 10,
+    flex: 1,
   },
   title: {
     fontSize: 28,
@@ -89,12 +96,20 @@ const styles = StyleSheet.create({
   },
   listContainer: {
     gap: 10,
-    height: "100%",
   },
   cardSkeleton: {
     width: "100%",
     backgroundColor: "#E0E0E0",
     height: 60,
+    borderRadius: 10,
+  },
+  newSplitButton: {
+    width: "100%",
+    backgroundColor: AppColors.blue,
+    padding: 10,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
     borderRadius: 10,
   },
 });

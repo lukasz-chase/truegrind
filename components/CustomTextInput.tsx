@@ -26,6 +26,8 @@ const CustomTextInput = ({
       placeholderTextColor="#b3b1b1"
       value={value}
       onChangeText={onChangeText}
+      multiline={large}
+      numberOfLines={large ? 4 : 1}
       style={[
         styles.input,
         {

@@ -44,6 +44,13 @@ export const hiddenScreens = [
     },
   },
   {
+    name: "newSplit",
+    additionalOptions: {
+      animation: "shift" as "shift",
+      tabBarStyle: { display: "none" as "none" }, // Explicitly cast "none"
+    },
+  },
+  {
     name: "workoutFinished",
     additionalOptions: {},
   },

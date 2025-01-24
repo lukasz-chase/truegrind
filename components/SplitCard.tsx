@@ -49,7 +49,7 @@ const SplitCard = ({
           { backgroundColor: isActiveSplit ? AppColors.blue : "white" },
         ]}
       >
-        <Pressable onPress={chooseSplitHandler}>
+        <Pressable onPress={chooseSplitHandler} style={{ gap: 5 }}>
           <Text
             style={[
               styles.splitTitle,
@@ -58,6 +58,12 @@ const SplitCard = ({
           >
             {split.name}
           </Text>
+          {split.frequency && (
+            <Text style={styles.frequency}>{split.frequency}</Text>
+          )}
+          {split.description && (
+            <Text style={styles.description}>{split.description}</Text>
+          )}
         </Pressable>
       </View>
     </SwipeToDelete>
@@ -75,7 +81,13 @@ const styles = StyleSheet.create({
   splitTitle: {
     fontWeight: "bold",
     fontSize: 24,
-    textAlign: "center",
+  },
+  frequency: {
+    fontSize: 16,
+    color: AppColors.darkGray,
+  },
+  description: {
+    fontSize: 16,
   },
 });
 
