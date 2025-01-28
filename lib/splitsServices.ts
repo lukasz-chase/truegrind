@@ -1,6 +1,5 @@
 import { Split, SplitPopulated } from "@/types/split";
 import { supabase } from "./supabase";
-import { updateUserProfile } from "./userService";
 
 export const fetchUserSplitWithWorkouts = async (
   userId: string,

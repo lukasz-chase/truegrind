@@ -10,6 +10,7 @@ export type WorkoutExercise = {
   workout_id: string;
   created_at: string;
   superset: string | null;
+  user_id: string | null;
 };
 
 export type WorkoutExercisePopulated = {
@@ -21,4 +22,6 @@ export type WorkoutExercisePopulated = {
   exercises: Exercise;
   exercise_sets: ExerciseSet[];
   superset: string | null;
+  user_id: string | null;
+  created_at?: string;
 };

@@ -6,8 +6,10 @@ import {
   StyleSheet,
   TouchableWithoutFeedback,
   Text,
+  Platform,
 } from "react-native";
 import { Pressable } from "react-native";
+import * as Haptics from "expo-haptics";
 
 type Props = {
   isVisible: boolean;
@@ -30,6 +32,12 @@ export default function WarningModal({
   proceedButtonLabeL = "Delete",
   proceedButtonBgColor = AppColors.red,
 }: Props) {
+  const onProceedHandler = () => {
+    onProceed();
+    if (Platform.OS !== "web") {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    }
+  };
   return (
     <Modal
       transparent={true}
@@ -50,7 +58,7 @@ export default function WarningModal({
           </Pressable>
           <Pressable
             style={[styles.button, { backgroundColor: proceedButtonBgColor }]}
-            onPress={onProceed}
+            onPress={onProceedHandler}
           >
             <Text style={[styles.buttonText, { color: "white" }]}>
               {proceedButtonLabeL}

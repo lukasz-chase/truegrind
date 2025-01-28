@@ -185,11 +185,15 @@ export const calculateMetrics = (data: any): MetricsData => {
   return { history: metrics, oneRMRecord, weightRecord, volumeRecord };
 };
 
-export const getHistoryExerciseData = async (exerciseId: string) => {
+export const getHistoryExerciseData = async (
+  exerciseId: string,
+  userId: string
+) => {
   const { data, error } = await supabase
     .from("exercises_history")
     .select("timer, warmup_timer, note")
     .eq("exercise_id", exerciseId)
+    .eq("user_id", userId)
     .order("created_at", { ascending: false })
     .limit(1)
     .single<{

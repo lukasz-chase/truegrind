@@ -40,3 +40,39 @@ export const fetchWorkoutsCount = async () => {
   }
   if (error) console.log(error);
 };
+export const fetchExampleWorkouts = async (splitId: string) => {
+  const { data, error } = await supabase
+    .from("workouts")
+    .select("*, workout_exercises(*, exercises(*), exercise_sets(*))")
+    .eq("split_id", splitId)
+    .is("user_id", null);
+  if (data) {
+    return data;
+  }
+  if (error) console.log(error);
+};
+
+export const copyWorkout = async (workout: Workout, userId: string) => {
+  const workoutExercisesToCreate: any[] = [];
+  const { id, workout_exercises, created_at, ...rest } = workout;
+  const { data, error } = await supabase
+    .from("workouts")
+    .insert({ ...rest, user_id: userId })
+    .select("id")
+    .limit(1)
+    .single();
+  workout_exercises?.forEach((workoutExercise) => {
+    const { id, exercise_sets, exercises, created_at, ...rest } =
+      workoutExercise;
+    workoutExercisesToCreate.push({
+      ...rest,
+      user_id: userId,
+      workout_id: data?.id,
+    });
+  });
+  await supabase.from("workout_exercises").insert(workoutExercisesToCreate);
+  if (data) {
+    return data;
+  }
+  if (error) console.log(error);
+};

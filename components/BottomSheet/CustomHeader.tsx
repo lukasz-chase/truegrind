@@ -118,10 +118,10 @@ const CustomHeader = ({ sheetIndex, close, scrolledY }: Props) => {
       [0, 1],
       Extrapolation.CLAMP
     );
-
     // Blend the two animations into one style
     return {
       opacity: opacityReverse + opacityScroll,
+      flex: animatedIndex.value === 1 ? 2 : 4,
     };
   });
   return (
@@ -133,7 +133,7 @@ const CustomHeader = ({ sheetIndex, close, scrolledY }: Props) => {
         }}
         disabled={sheetIndex === 1}
       >
-        <Animated.View style={containerStyle} ref={buttonRef}>
+        <Animated.View style={[containerStyle]} ref={buttonRef}>
           <TimerButton
             openModal={openModal}
             isRunning={isRunning}
@@ -143,11 +143,13 @@ const CustomHeader = ({ sheetIndex, close, scrolledY }: Props) => {
         </Animated.View>
 
         <Animated.View style={[styles.titleContainer, combinedAnimatedStyle]}>
-          <Text style={styles.headerTitle}>{activeWorkout.name}</Text>
+          <Text style={styles.headerTitle} numberOfLines={1}>
+            {activeWorkout.name}
+          </Text>
           <Text style={styles.headerTitleTime}>{formattedTime}</Text>
         </Animated.View>
 
-        <Animated.View style={containerStyle}>
+        <Animated.View style={[containerStyle, { alignItems: "flex-end" }]}>
           <Pressable style={styles.finishButton} onPress={finishWorkoutHandler}>
             <Text style={styles.finishButtonText}>Finish</Text>
           </Pressable>
@@ -172,7 +174,6 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
     height: 60,
     marginTop: -5,
     paddingHorizontal: 20,
@@ -183,16 +184,17 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontWeight: "bold",
-    fontSize: 18,
+    fontSize: 16,
+    textOverflow: "ellipsis",
   },
   headerTitleTime: {
     fontSize: 18,
   },
   buttonContainer: {
     height: 40,
-    width: 80,
     display: "flex",
     justifyContent: "center",
+    flex: 1,
   },
   finishButton: {
     height: "100%",

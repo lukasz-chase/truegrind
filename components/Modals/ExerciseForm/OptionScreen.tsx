@@ -1,7 +1,7 @@
 import { AppColors } from "@/constants/colors";
 import { equipmentFilters, muscleFilters } from "@/constants/exerciseFilters";
-import { exerciseFormData } from "@/types/exerciseDetails";
 import {
+  exerciseFormData,
   exerciseFormScreensEnum,
   exerciseFormScreenType,
 } from "@/types/exerciseForm";

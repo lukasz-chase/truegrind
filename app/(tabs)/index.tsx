@@ -5,7 +5,14 @@ import useActiveWorkout from "@/store/useActiveWorkout";
 import useBottomSheet from "@/store/useBottomSheet";
 import userStore from "@/store/userStore";
 import { useState, useEffect } from "react";
-import { StyleSheet, View, Text, Platform, Pressable } from "react-native";
+import {
+  StyleSheet,
+  View,
+  Text,
+  Platform,
+  Pressable,
+  FlatList,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as Haptics from "expo-haptics";
 import uuid from "react-native-uuid";
@@ -13,9 +20,14 @@ import { ScrollView } from "react-native-gesture-handler";
 import { fetchUserSplitWithWorkouts } from "@/lib/splitsServices";
 import { SplitPopulated } from "@/types/split";
 import { Link, useRouter } from "expo-router";
+import { Workout } from "@/types/workout";
+import { fetchExampleWorkouts } from "@/lib/workoutServices";
 
 export default function WorkoutScreen() {
   const [split, setSplit] = useState<SplitPopulated | null>(null);
+  const [exampleWorkouts, setExampleWorkouts] = useState<Workout[] | null>(
+    null
+  );
   const [loading, setLoading] = useState(false);
 
   const { setIsSheetVisible } = useBottomSheet();
@@ -54,10 +66,14 @@ export default function WorkoutScreen() {
     try {
       const data = await fetchUserSplitWithWorkouts(
         user!.id,
-        user!.active_split_id
+        user!.active_split_id!
       );
+      const exampleData = await fetchExampleWorkouts(user!.active_split_id!);
       if (data) {
         setSplit(data);
+      }
+      if (exampleData) {
+        setExampleWorkouts(exampleData);
       }
     } catch (error) {
       console.log(error);
@@ -112,7 +128,7 @@ export default function WorkoutScreen() {
     <SafeAreaView style={styles.safeArea}>
       {split ? (
         <>
-          <View style={styles.container}>
+          <ScrollView contentContainerStyle={styles.container}>
             <Text style={styles.title}>Start Workout</Text>
             <Pressable onPress={() => router.push("/splits")}>
               <View style={styles.splitButton}>
@@ -142,13 +158,26 @@ export default function WorkoutScreen() {
                 <Text style={styles.templatesButtonText}>+ Template</Text>
               </Pressable>
             </View>
-            <Text>My Templates ({split.workouts.length})</Text>
-          </View>
-
-          <ScrollView contentContainerStyle={styles.workouts}>
-            {split.workouts.map((workout) => (
-              <WorkoutCard key={workout.id} workout={workout} />
-            ))}
+            <Text style={styles.templatesText}>
+              My Templates ({split.workouts.length})
+            </Text>
+            <View style={styles.workouts}>
+              {split.workouts.map((workout) => (
+                <WorkoutCard key={workout.id} workout={workout} />
+              ))}
+            </View>
+            {exampleWorkouts && (
+              <>
+                <Text style={[styles.templatesText, { marginTop: 20 }]}>
+                  Example Templates ({exampleWorkouts.length})
+                </Text>
+                <View style={styles.workouts}>
+                  {exampleWorkouts.map((workout) => (
+                    <WorkoutCard key={workout.id} workout={workout} />
+                  ))}
+                </View>
+              </>
+            )}
           </ScrollView>
         </>
       ) : (
@@ -218,6 +247,10 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
     alignItems: "center",
   },
+  templatesText: {
+    fontSize: 16,
+    fontWeight: "bold",
+  },
   templatesTitle: {
     fontSize: 24,
     color: AppColors.black,
@@ -239,7 +272,6 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     justifyContent: "space-between",
     gap: 10,
-    paddingHorizontal: 20,
   },
 
   // Skeleton styles

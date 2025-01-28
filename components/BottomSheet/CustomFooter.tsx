@@ -17,6 +17,7 @@ const CustomFooter = ({ close }: Props) => {
   const { addNewWorkoutExercise, resetActiveWorkout } = useActiveWorkout();
   const { isVisible: IsKeyboardVisible } = useCustomKeyboard();
   const { resetTimer } = useWorkoutTimer();
+
   const addExercises = async (
     exercises: Exercise[],
     newExerciseProperties?: Partial<WorkoutExercise>

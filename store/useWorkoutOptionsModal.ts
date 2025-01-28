@@ -1,3 +1,4 @@
+import { Workout } from "@/types/workout";
 import { create } from "zustand";
 
 interface ModalState {
@@ -5,7 +6,7 @@ interface ModalState {
   openModal: (exerciseProps: ModalState["workoutProps"]) => void;
   closeModal: () => void;
   workoutProps: {
-    workoutId: string;
+    workout: Workout | null;
     buttonRef: React.MutableRefObject<null>;
   };
 }
@@ -16,7 +17,7 @@ const useWorkoutOptionsModal = create<ModalState>((set) => ({
     set({ isVisible: true, workoutProps }),
   closeModal: () => set({ isVisible: false }),
   workoutProps: {
-    workoutId: "",
+    workout: null,
     buttonRef: { current: null },
   },
 }));

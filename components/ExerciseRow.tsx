@@ -3,7 +3,6 @@ import { StyleSheet, View, Text } from "react-native";
 import { Exercise } from "@/types/exercises";
 import { AppColors } from "@/constants/colors";
 import { Pressable } from "react-native";
-import { Image } from "expo-image";
 import CustomImage from "./CustomImage";
 
 type Props = {
@@ -37,7 +36,7 @@ const ExerciseRow = ({
 
       <View style={styles.exerciseDetails}>
         <Text style={styles.exerciseName}>
-          {numberOfSets && `${numberOfSets} x `}
+          {numberOfSets && numberOfSets !== 0 && `${numberOfSets} x `}
           {exercise.name}
         </Text>
         <View>

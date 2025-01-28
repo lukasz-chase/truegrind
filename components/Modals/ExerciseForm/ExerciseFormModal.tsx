@@ -10,10 +10,10 @@ import { useEffect, useState } from "react";
 import LoadingAnimation from "../../LoadingAnimation";
 import userStore from "@/store/userStore";
 import {
+  exerciseFormData,
   exerciseFormScreensEnum,
   exerciseFormScreenType,
 } from "@/types/exerciseForm";
-import { exerciseFormData } from "@/types/exerciseDetails";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -147,13 +147,26 @@ export default function ExerciseFormModal({
     closeModal();
   };
 
+  const closeModalHandler = () => {
+    closeModal();
+    setExerciseData({
+      name: "",
+      instructions: "",
+      muscle: "",
+      equipment: "",
+      image: undefined,
+      imageWasChanged: false,
+      imageExtension: undefined,
+    });
+  };
+
   return (
     <>
       <Modal
         transparent={true}
         visible={isVisible}
         animationType="fade"
-        onRequestClose={closeModal}
+        onRequestClose={closeModalHandler}
         onDismiss={() => {
           if (openWarningModal) {
             setOpenWarningModal(false);
@@ -164,7 +177,7 @@ export default function ExerciseFormModal({
         }}
       >
         {isLoading && <LoadingAnimation />}
-        <TouchableWithoutFeedback onPress={closeModal}>
+        <TouchableWithoutFeedback onPress={closeModalHandler}>
           <View style={styles.modalOverlay}></View>
         </TouchableWithoutFeedback>
         <View style={styles.modalContent}>
@@ -173,7 +186,7 @@ export default function ExerciseFormModal({
           >
             <View style={styles.screen}>
               <View style={styles.header}>
-                <CloseButton onPress={closeModal} />
+                <CloseButton onPress={closeModalHandler} />
                 <Text style={styles.title}>{title}</Text>
 
                 <Pressable

@@ -2,8 +2,8 @@ import CustomTextInput from "@/components/CustomTextInput";
 import CustomImage from "@/components/CustomImage";
 import { AppColors } from "@/constants/colors";
 import { pickAndCompressImage } from "@/lib/images";
-import { exerciseFormData } from "@/types/exerciseDetails";
 import {
+  exerciseFormData,
   exerciseFormScreensEnum,
   exerciseFormScreenType,
 } from "@/types/exerciseForm";
@@ -33,6 +33,7 @@ const FormScreen = ({
   const pickImageAsync = async () => {
     const pickedImage = await pickAndCompressImage();
     if (!pickedImage) return;
+    console.log(pickedImage.extension);
     setExerciseData((prev) => ({
       ...prev,
       image: pickedImage.url,
@@ -61,7 +62,7 @@ const FormScreen = ({
         <CustomImage
           imageUrl={
             exerciseData?.image
-              ? `data:image/jpeg;base64,${exerciseData.image}`
+              ? `data:image/${exerciseData.imageExtension};base64,${exerciseData.image}`
               : PlaceholderImage
           }
           height={200}

@@ -57,7 +57,10 @@ const WorkoutExercise = ({ workoutExercise, setDragItemId }: Props) => {
     <Animated.View style={styles.container} layout={LinearTransition}>
       <GestureDetector gesture={longPressGesture}>
         <View style={styles.header}>
-          <Pressable onPress={openExerciseDetailsModalHandler}>
+          <Pressable
+            onPress={openExerciseDetailsModalHandler}
+            style={styles.headerTitleButton}
+          >
             <Text style={styles.headerTitle}>
               {workoutExercise.exercises.name}
             </Text>
@@ -134,9 +137,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 10,
   },
+  headerTitleButton: {
+    flex: 1,
+  },
   headerTitle: {
     color: AppColors.blue,
     fontSize: 20,
+    width: "100%",
   },
   headerOptions: {
     backgroundColor: AppColors.lightBlue,

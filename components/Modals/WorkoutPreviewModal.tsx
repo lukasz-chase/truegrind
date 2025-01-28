@@ -12,6 +12,9 @@ import ExerciseRow from "../ExerciseRow";
 import { Workout } from "@/types/workout";
 import { AppColors } from "@/constants/colors";
 import CloseButton from "../CloseButton";
+import userStore from "@/store/userStore";
+import { copyWorkout } from "@/lib/workoutServices";
+import useAppStore from "@/store/useAppStore";
 
 type Props = {
   visible: boolean;
@@ -26,6 +29,12 @@ export default function WorkoutPreviewModal({
   startWorkout,
   workout,
 }: Props) {
+  const { user } = userStore();
+  const { refetchData } = useAppStore();
+  const copyWorkoutHandler = async () => {
+    await copyWorkout(workout, user!.id);
+    refetchData();
+  };
   return (
     <Modal
       transparent={true}
@@ -39,7 +48,9 @@ export default function WorkoutPreviewModal({
             <View style={styles.modalContent}>
               <View style={styles.modalHeader}>
                 <CloseButton onPress={onClose} />
-                <Text style={styles.modalHeaderTitle}>{workout.name}</Text>
+                <Text style={styles.modalHeaderTitle} numberOfLines={1}>
+                  {workout.name}
+                </Text>
                 <Pressable>
                   <Text style={styles.modalEditButton}>Edit</Text>
                 </Pressable>
@@ -69,9 +80,18 @@ export default function WorkoutPreviewModal({
                 )}
                 keyExtractor={(item) => item.id.toString()}
               />
-              <Pressable onPress={startWorkout} style={styles.actionButton}>
-                <Text style={styles.actionButtonText}>Start Workout</Text>
-              </Pressable>
+              {workout.user_id === user?.id ? (
+                <Pressable onPress={startWorkout} style={styles.actionButton}>
+                  <Text style={styles.actionButtonText}>Start Workout</Text>
+                </Pressable>
+              ) : (
+                <Pressable
+                  onPress={copyWorkoutHandler}
+                  style={styles.actionButton}
+                >
+                  <Text style={styles.actionButtonText}>Copy Workout</Text>
+                </Pressable>
+              )}
             </View>
           </TouchableWithoutFeedback>
         </View>
@@ -94,6 +114,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: "center",
     backgroundColor: "white",
+    minHeight: 150,
   },
   modalHeader: {
     display: "flex",
@@ -113,7 +134,9 @@ const styles = StyleSheet.create({
   },
   modalHeaderTitle: {
     fontWeight: "bold",
-    fontSize: 20,
+    fontSize: 18,
+    width: 180,
+    textAlign: "center",
   },
   modalEditButton: {
     color: AppColors.blue,

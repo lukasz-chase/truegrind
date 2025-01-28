@@ -15,6 +15,7 @@ import { Exercise } from "@/types/exercises";
 import useActiveWorkout from "@/store/useActiveWorkout";
 import useExerciseOptionsModal from "@/store/useExerciseOptionsModal";
 import ModalOptionButton from "./ModalOptionButton";
+import userStore from "@/store/userStore";
 
 const MODAL_WIDTH = 275;
 
@@ -34,6 +35,7 @@ const ExerciseOptionsModal = function ExerciseOptionsModal() {
     updateWorkoutExerciseField,
     removeWorkoutExercise,
   } = useActiveWorkout();
+  const { user } = userStore();
 
   const [warningState, setWarningState] = useState({
     isVisible: false,
@@ -72,7 +74,7 @@ const ExerciseOptionsModal = function ExerciseOptionsModal() {
   };
 
   const replaceExerciseHandler = async (exercises: Exercise[]) => {
-    await replaceWorkoutExercise(workoutExercise.id, exercises[0]);
+    await replaceWorkoutExercise(workoutExercise.id, exercises[0], user!.id);
     closeExercisesModal();
     setShouldShowExercisesModal(false);
   };

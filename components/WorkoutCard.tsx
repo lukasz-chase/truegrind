@@ -26,8 +26,7 @@ const WorkoutCard = ({ workout }: Props) => {
 
   const { openModal: openOptionsModal } = useWorkoutOptionsModal();
 
-  const { activeWorkout, setActiveWorkout, setIsNewWorkout } =
-    useActiveWorkout();
+  const { setActiveWorkout, setIsNewWorkout } = useActiveWorkout();
   const { setIsSheetVisible } = useBottomSheet();
 
   const buttonRef = useRef(null);
@@ -54,12 +53,13 @@ const WorkoutCard = ({ workout }: Props) => {
         }}
       >
         <View style={styles.header}>
-          <Text style={styles.workoutCardTitle}>{workout.name}</Text>
+          <Text style={[styles.workoutCardTitle, { flex: 2 }]}>
+            {workout.name}
+          </Text>
           <Pressable
             ref={buttonRef}
-            onPress={() =>
-              openOptionsModal({ workoutId: workout.id, buttonRef })
-            }
+            style={{ flex: 0.5 }}
+            onPress={() => openOptionsModal({ workout, buttonRef })}
           >
             <SimpleLineIcons name="options" size={24} color={AppColors.blue} />
           </Pressable>
@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
     width: "48%",
   },
   workoutCardTitle: {
-    fontSize: 20,
+    fontSize: 18,
     paddingBottom: 5,
     fontWeight: "bold",
   },
@@ -111,7 +111,6 @@ const styles = StyleSheet.create({
   header: {
     width: "100%",
     flexDirection: "row",
-    alignItems: "center",
     justifyContent: "space-between",
   },
 });

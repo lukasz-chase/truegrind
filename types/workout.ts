@@ -7,4 +7,5 @@ export type Workout = {
   notes?: string;
   split_id: string;
   workout_exercises?: WorkoutExercisePopulated[];
+  created_at?: string;
 };

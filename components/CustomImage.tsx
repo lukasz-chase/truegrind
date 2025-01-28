@@ -8,18 +8,7 @@ type Props = {
   customStyle?: any;
 };
 const CustomImage = ({ height, imageUrl, width, customStyle }: Props) => {
-  return (
-    <Image
-      source={
-        typeof imageUrl !== "string"
-          ? imageUrl
-          : {
-              uri: imageUrl,
-            }
-      }
-      style={{ height, width, ...customStyle }}
-    />
-  );
+  return <Image source={imageUrl} style={{ height, width, ...customStyle }} />;
 };
 
 export default CustomImage;

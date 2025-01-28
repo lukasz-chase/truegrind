@@ -12,7 +12,11 @@ export const updateExerciseSets = async (
   const exerciseSetsToUpdate: ExerciseSet[] = [];
   const exerciseHistorySets: ExerciseSet[] = [];
   const exerciseSetsToDelete: string[] = [];
-  const userId = userStore.getState().user?.id;
+  let userId = null;
+  const user = userStore.getState().user;
+  if (user?.id) {
+    userId = user.id;
+  }
   for (const workoutExercise of activeWorkout.workout_exercises || []) {
     let order = 1;
     for (const set of workoutExercise.exercise_sets || []) {

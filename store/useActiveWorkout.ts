@@ -10,6 +10,7 @@ import {
 import { createJSONStorage, persist } from "zustand/middleware";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getHistoryExerciseData } from "@/lib/exercisesService";
+import userStore from "./userStore";
 
 const initialState = {
   initialActiveWorkout: {
@@ -62,7 +63,8 @@ interface ActiveWorkoutStore {
   removeWorkoutExercise: (exerciseId: string) => void;
   replaceWorkoutExercise: (
     exerciseId: string,
-    newExercise: Exercise
+    newExercise: Exercise,
+    userId: string
   ) => Promise<void>;
   reorderWorkoutExercises: (newOrder: string[]) => void;
   resetActiveWorkout: () => void;
@@ -150,7 +152,9 @@ const useActiveWorkout = create<ActiveWorkoutStore>()(
         }));
       },
       addNewWorkoutExercise: async (exercise, newExerciseProperties) => {
-        const data = await getHistoryExerciseData(exercise.id);
+        const { user } = userStore.getState();
+        if (!user?.id) return;
+        const data = await getHistoryExerciseData(exercise.id, user.id);
         if (data) {
           newExerciseProperties = { ...newExerciseProperties, ...data };
         }
@@ -163,6 +167,7 @@ const useActiveWorkout = create<ActiveWorkoutStore>()(
           exercises: exercise,
           exercise_sets: [],
           superset: null,
+          user_id: user.id,
           ...newExerciseProperties,
         };
 
@@ -186,6 +191,8 @@ const useActiveWorkout = create<ActiveWorkoutStore>()(
         workoutExerciseId: string,
         newExercise: Exercise
       ) => {
+        const { user } = userStore.getState();
+        if (!user?.id) return;
         let newWorkoutExercise: WorkoutExercisePopulated = {
           id: uuid.v4(),
           note: { noteValue: "", showNote: false },
@@ -195,8 +202,9 @@ const useActiveWorkout = create<ActiveWorkoutStore>()(
           exercise_sets: [],
           superset: null,
           order: 1,
+          user_id: user.id,
         };
-        const data = await getHistoryExerciseData(newExercise.id);
+        const data = await getHistoryExerciseData(newExercise.id, user.id);
         if (data) {
           newWorkoutExercise = { ...newWorkoutExercise, ...data };
         }
@@ -219,7 +227,9 @@ const useActiveWorkout = create<ActiveWorkoutStore>()(
         }));
         get().addNewSet(newWorkoutExercise.id);
       },
-      addNewSet: (workoutExerciseId: string) => {
+      addNewSet: (workoutExerciseId) => {
+        const { user } = userStore.getState();
+        if (!user?.id) return;
         set((state) => {
           const updatedExercises = state.activeWorkout.workout_exercises?.map(
             (workoutExercise) => {
@@ -239,6 +249,7 @@ const useActiveWorkout = create<ActiveWorkoutStore>()(
                       rpe: null,
                       completed: false,
                       partials: null,
+                      user_id: user.id,
                     },
                   ],
                 };

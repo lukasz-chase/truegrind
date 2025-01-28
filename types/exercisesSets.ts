@@ -9,6 +9,7 @@ export type ExerciseSet = {
   rpe: number | null;
   completed: boolean;
   partials: number | null;
+  user_id: string | null;
 };
 export type SetHistoryProps = {
   reps: number;
@@ -17,4 +18,5 @@ export type SetHistoryProps = {
   partials: number | null;
   is_warmup: boolean;
   is_dropset: boolean;
+  user_id: string | null;
 };
