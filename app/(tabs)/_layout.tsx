@@ -14,10 +14,39 @@ import TimerModal from "@/components/Modals/TimerModal";
 import SetOptionsModal from "@/components/Modals/SetOptionsModal";
 import WorkoutOptionsModal from "@/components/Modals/WorkoutOptionsModal";
 import ExerciseDetailsModal from "@/components/Modals/ExerciseDetailsModal/ExerciseDetailsModal";
+import { useEffect } from "react";
+import useSplitsStore from "@/store/useSplitsStore";
+import userStore from "@/store/userStore";
+import { fetchUserSplitWithWorkouts } from "@/lib/splitsServices";
+import useAppStore from "@/store/useAppStore";
 
 export default function TabLayout() {
   const animatedIndex = useSharedValue(0);
   const { isSheetVisible } = useBottomSheet();
+  const { setActiveSplit, loading, setLoading } = useSplitsStore();
+  const { user } = userStore();
+  const { refetchNumber } = useAppStore();
+
+  useEffect(() => {
+    getUserActiveSplit();
+  }, [user, refetchNumber]);
+
+  const getUserActiveSplit = async () => {
+    setLoading(true);
+    try {
+      const data = await fetchUserSplitWithWorkouts(
+        user!.id,
+        user!.active_split_id!
+      );
+      if (data) {
+        setActiveSplit(data);
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <GestureHandlerRootView>
       <SafeAreaProvider>

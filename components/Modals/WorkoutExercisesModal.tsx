@@ -15,7 +15,7 @@ import { useState } from "react";
 import ExerciseFormModal from "./ExerciseForm/ExerciseFormModal";
 import { Exercise } from "@/types/exercises";
 import useActiveWorkout from "@/store/useActiveWorkout";
-import { generateSupersetColor } from "@/lib/helpers";
+import { generateNewColor } from "@/lib/helpers";
 import { WorkoutExercise } from "@/types/workoutExercise";
 import * as Haptics from "expo-haptics";
 
@@ -71,7 +71,7 @@ export default function WorkoutExercisesModal() {
     const currentSupersetColors = activeWorkout.workout_exercises?.map(
       (exercise) => exercise.superset
     );
-    const supersetColor = generateSupersetColor(currentSupersetColors);
+    const supersetColor = generateNewColor(currentSupersetColors);
     onPressHandler({ superset: supersetColor });
   };
   return (

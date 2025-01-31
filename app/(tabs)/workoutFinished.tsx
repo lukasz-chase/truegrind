@@ -2,7 +2,11 @@ import { Platform, StyleSheet, Text } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import CustomImage from "@/components/CustomImage";
 import { useCallback, useState } from "react";
-import { getOrdinalSuffix } from "@/lib/helpers";
+import {
+  generateNewColor,
+  getCalendarDateFormat,
+  getOrdinalSuffix,
+} from "@/lib/helpers";
 import useActiveWorkout from "@/store/useActiveWorkout";
 import WorkoutSummary from "@/components/WorkoutSummary";
 import TemplateModal from "@/components/Modals/TemplateModal";
@@ -15,6 +19,11 @@ import * as Haptics from "expo-haptics";
 import { fetchWorkoutsCount, updateWorkout } from "@/lib/workoutServices";
 import { updateWorkoutExercises } from "@/lib/workoutExerciseServices";
 import { updateExerciseSets } from "@/lib/exerciseSetsService";
+import {
+  fetchUserWorkoutCalendar,
+  upsertWorkoutCalendar,
+} from "@/lib/workoutCalendarService";
+import { WorkoutCalendarStatusEnum } from "@/types/workoutCalendar";
 
 const TrophyImage = require("@/assets/images/trophy.webp");
 
@@ -118,6 +127,23 @@ export default function WorkoutFinishedScreen() {
         initialActiveWorkout,
         workoutExercisesHistoryIds
       );
+      const userCalendarWorkouts = await fetchUserWorkoutCalendar(
+        activeWorkout.user_id
+      );
+      const currentColors = userCalendarWorkouts.map((data) => data.color);
+      const workoutCalendar = userCalendarWorkouts.find((workout) => {
+        return workout.workout_id === activeWorkout.id;
+      });
+      const color = workoutCalendar
+        ? workoutCalendar.color
+        : generateNewColor(currentColors);
+      await upsertWorkoutCalendar({
+        status: WorkoutCalendarStatusEnum.Completed,
+        user_id: activeWorkout.user_id,
+        scheduled_date: getCalendarDateFormat(),
+        workout_id: activeWorkout.id,
+        color,
+      });
       refetchData();
       resetTimer();
       endTimer();

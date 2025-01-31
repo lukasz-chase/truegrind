@@ -5,30 +5,21 @@ import useActiveWorkout from "@/store/useActiveWorkout";
 import useBottomSheet from "@/store/useBottomSheet";
 import userStore from "@/store/userStore";
 import { useState, useEffect } from "react";
-import {
-  StyleSheet,
-  View,
-  Text,
-  Platform,
-  Pressable,
-  FlatList,
-} from "react-native";
+import { StyleSheet, View, Text, Platform, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as Haptics from "expo-haptics";
 import uuid from "react-native-uuid";
 import { ScrollView } from "react-native-gesture-handler";
-import { fetchUserSplitWithWorkouts } from "@/lib/splitsServices";
-import { SplitPopulated } from "@/types/split";
-import { Link, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import { Workout } from "@/types/workout";
 import { fetchExampleWorkouts } from "@/lib/workoutServices";
+import useSplitsStore from "@/store/useSplitsStore";
 
 export default function WorkoutScreen() {
-  const [split, setSplit] = useState<SplitPopulated | null>(null);
   const [exampleWorkouts, setExampleWorkouts] = useState<Workout[] | null>(
     null
   );
-  const [loading, setLoading] = useState(false);
+  const [dataLoading, setDataLoading] = useState(false);
 
   const { setIsSheetVisible } = useBottomSheet();
   const {
@@ -40,11 +31,12 @@ export default function WorkoutScreen() {
   } = useActiveWorkout();
   const { user } = userStore();
   const { refetchNumber } = useAppStore();
+  const { activeSplit: split, loading } = useSplitsStore();
 
   const router = useRouter();
 
   useEffect(() => {
-    getWorkouts();
+    getExampleWorkouts();
   }, [user, refetchNumber]);
 
   useEffect(() => {
@@ -61,24 +53,17 @@ export default function WorkoutScreen() {
     }
   }, [activeWorkout, user]);
 
-  const getWorkouts = async () => {
-    setLoading(true);
+  const getExampleWorkouts = async () => {
+    setDataLoading(true);
     try {
-      const data = await fetchUserSplitWithWorkouts(
-        user!.id,
-        user!.active_split_id!
-      );
-      const exampleData = await fetchExampleWorkouts(user!.active_split_id!);
+      const data = await fetchExampleWorkouts(user!.active_split_id!);
       if (data) {
-        setSplit(data);
-      }
-      if (exampleData) {
-        setExampleWorkouts(exampleData);
+        setExampleWorkouts(data);
       }
     } catch (error) {
       console.log(error);
     } finally {
-      setLoading(false);
+      setDataLoading(false);
     }
   };
   const startAnEmptyWorkout = () => {
@@ -96,7 +81,7 @@ export default function WorkoutScreen() {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     }
   };
-  if (loading) {
+  if (loading || dataLoading) {
     return (
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.container}>

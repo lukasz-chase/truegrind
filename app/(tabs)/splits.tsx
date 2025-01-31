@@ -3,7 +3,6 @@ import { AppColors } from "@/constants/colors";
 import { fetchSplits } from "@/lib/splitsServices";
 import useAppStore from "@/store/useAppStore";
 import userStore from "@/store/userStore";
-import { Split } from "@/types/split";
 import { useEffect, useState } from "react";
 import { StyleSheet, View, Text, FlatList, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
