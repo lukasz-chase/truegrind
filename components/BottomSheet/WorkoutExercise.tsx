@@ -189,7 +189,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
   textWrapper: {
-    marginVertical: 4,
+    padding: 5,
   },
 });
 

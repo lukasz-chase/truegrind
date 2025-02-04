@@ -20,21 +20,19 @@ export default function userForm() {
   };
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.container}>
-        <View style={styles.verticallySpaced}>
-          <Text>Username</Text>
-          <CustomTextInput
-            onChangeText={setUsername}
-            placeholder="Username"
-            value={username}
-          />
-        </View>
+      <View style={styles.verticallySpaced}>
+        <Text>Username</Text>
+        <CustomTextInput
+          onChangeText={setUsername}
+          placeholder="Username"
+          value={username}
+        />
+      </View>
 
-        <View style={[styles.verticallySpaced]}>
-          <Pressable onPress={updateProfile} disabled={loading}>
-            <Text>{loading ? "Loading ..." : "Update"}</Text>
-          </Pressable>
-        </View>
+      <View style={[styles.verticallySpaced]}>
+        <Pressable onPress={updateProfile} disabled={loading}>
+          <Text>{loading ? "Loading ..." : "Update"}</Text>
+        </Pressable>
       </View>
     </SafeAreaView>
   );
@@ -42,14 +40,12 @@ export default function userForm() {
 
 const styles = StyleSheet.create({
   container: {
-    height: "100%",
-    justifyContent: "center",
+    width: "100%",
     alignItems: "center",
     padding: 20,
+    gap: 10,
   },
   verticallySpaced: {
-    paddingTop: 4,
-    paddingBottom: 4,
-    alignSelf: "stretch",
+    width: "100%",
   },
 });

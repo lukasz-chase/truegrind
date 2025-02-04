@@ -2,7 +2,7 @@ import { UserProfile } from "@/types/user";
 import { supabase } from "./supabase";
 import userStore from "@/store/userStore";
 
-export const getProfile = async (userId: string) => {
+export const setProfileInUserStore = async (userId: string) => {
   try {
     const { data, error, status } = await supabase
       .from("profiles")

@@ -55,29 +55,22 @@ export default function NewSplitScreen() {
         <Text style={styles.title}>New Split</Text>
         <View style={{ width: 24 }} />
       </View>
-      <View style={{ height: 50 }}>
-        <CustomTextInput
-          onChangeText={setSplitName}
-          value={splitName}
-          placeholder="Split Name*"
-        />
-      </View>
-
-      <View style={{ height: 50 }}>
-        <CustomTextInput
-          onChangeText={setFrequency}
-          value={frequency}
-          placeholder="Frequency. eg: 3-4 times a week"
-        />
-      </View>
-      <View style={{ height: 100 }}>
-        <CustomTextInput
-          onChangeText={setDescription}
-          value={description}
-          placeholder="Description"
-          large
-        />
-      </View>
+      <CustomTextInput
+        onChangeText={setSplitName}
+        value={splitName}
+        placeholder="Split Name*"
+      />
+      <CustomTextInput
+        onChangeText={setFrequency}
+        value={frequency}
+        placeholder="Frequency. eg: 3-4 times a week"
+      />
+      <CustomTextInput
+        onChangeText={setDescription}
+        value={description}
+        placeholder="Description"
+        large
+      />
       <Pressable
         style={[styles.actionButton, { opacity: !splitName ? 0.5 : 1 }]}
         onPress={createSplitHandler}
@@ -93,6 +86,7 @@ const styles = StyleSheet.create({
   container: {
     padding: 10,
     flex: 1,
+    gap: 10,
   },
   header: {
     paddingVertical: 10,

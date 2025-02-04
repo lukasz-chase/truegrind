@@ -94,13 +94,11 @@ const Exercises = ({ onPress, selectedExercises }: Props) => {
     <>
       {loading && <LoadingAnimation />}
       <View style={styles.container}>
-        <View style={styles.textWrapper}>
-          <CustomTextInput
-            onChangeText={setSearchQuery}
-            value={searchQuery}
-            placeholder="Search"
-          />
-        </View>
+        <CustomTextInput
+          onChangeText={setSearchQuery}
+          value={searchQuery}
+          placeholder="Search"
+        />
         <View style={styles.pickerContainer}>
           <ExerciseFiltersDropdown
             buttonLabel="Any Body Part"
@@ -160,9 +158,6 @@ const styles = StyleSheet.create({
     width: "100%",
     overflow: "hidden",
     height: "100%",
-  },
-  textWrapper: {
-    height: 40,
   },
   pickerContainer: {
     marginVertical: 10,

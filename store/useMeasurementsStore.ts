@@ -25,6 +25,7 @@ type Store = {
   addMeasurement: (measurement: Measurement) => void;
   removeMeasurement: (measurementId: string, measurementLabel: string) => void;
   getFilteredMeasurements: (range: MeasurementTimeRange) => Measurement[];
+  resetMeasurements: () => void;
 };
 
 const useMeasurementsStore = create<Store>()(
@@ -120,6 +121,8 @@ const useMeasurementsStore = create<Store>()(
           }
         });
       },
+      resetMeasurements: () =>
+        set({ measurements: [], displayedMeasurements: {} }),
     }),
     {
       name: "measurements-storage", // storage key name

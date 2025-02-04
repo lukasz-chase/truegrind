@@ -18,6 +18,7 @@ const ExerciseRow = ({
   onPress,
   isSelected,
 }: Props) => {
+  console.log(numberOfSets);
   return (
     <Pressable
       onPress={() => onPress(exercise)}
@@ -36,7 +37,7 @@ const ExerciseRow = ({
 
       <View style={styles.exerciseDetails}>
         <Text style={styles.exerciseName}>
-          {numberOfSets && numberOfSets !== 0 && `${numberOfSets} x `}
+          {numberOfSets && numberOfSets !== 0 ? `${numberOfSets} x ` : ""}
           {exercise.name}
         </Text>
         <View>

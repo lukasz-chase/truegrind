@@ -1,6 +1,6 @@
 import { AppColors } from "@/constants/colors";
 import { useState } from "react";
-import { StyleSheet, TextInput } from "react-native";
+import { KeyboardTypeOptions, StyleSheet, TextInput } from "react-native";
 
 type Props = {
   value: string;
@@ -9,6 +9,8 @@ type Props = {
   large?: boolean;
   backgroundColor?: string;
   textColor?: string;
+  keyboardType?: KeyboardTypeOptions;
+  secureTextEntry?: boolean;
 };
 const CustomTextInput = ({
   onChangeText,
@@ -17,6 +19,8 @@ const CustomTextInput = ({
   large = false,
   backgroundColor = AppColors.gray,
   textColor = "black",
+  keyboardType = "default",
+  secureTextEntry = false,
 }: Props) => {
   const [inputFocus, setInputFocus] = useState(false);
 
@@ -28,6 +32,8 @@ const CustomTextInput = ({
       onChangeText={onChangeText}
       multiline={large}
       numberOfLines={large ? 4 : 1}
+      keyboardType={keyboardType}
+      secureTextEntry={secureTextEntry}
       style={[
         styles.input,
         {
@@ -51,6 +57,5 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingHorizontal: 10,
     borderWidth: 1,
-    flex: 1,
   },
 });

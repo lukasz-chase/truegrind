@@ -115,6 +115,7 @@ const styles = StyleSheet.create({
     gap: 10,
     borderRadius: 8,
     overflow: "hidden",
+    paddingHorizontal: 10,
   },
   cell: {
     paddingVertical: 10,

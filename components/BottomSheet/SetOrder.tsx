@@ -76,7 +76,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     height: 25,
-    paddingHorizontal: 10,
+    width: 35,
   },
   rowButtonText: {
     fontSize: 16,

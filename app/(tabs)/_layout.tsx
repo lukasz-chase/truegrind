@@ -1,4 +1,4 @@
-import { Tabs } from "expo-router";
+import { Tabs, useRouter } from "expo-router";
 import FontAwesomeIcons from "@expo/vector-icons/FontAwesome";
 import { hiddenScreens, NavigationData } from "@/constants/tabs";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -27,9 +27,20 @@ export default function TabLayout() {
   const { user } = userStore();
   const { refetchNumber } = useAppStore();
 
+  const router = useRouter();
+
   useEffect(() => {
     getUserActiveSplit();
   }, [user, refetchNumber]);
+
+  useEffect(() => {
+    if (user) {
+      // If user is loaded, but has no active_split_id, push to /splits
+      if (!user.active_split_id) {
+        router.replace("/splits");
+      }
+    }
+  }, [user]);
 
   const getUserActiveSplit = async () => {
     setLoading(true);

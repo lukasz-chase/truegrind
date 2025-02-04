@@ -43,21 +43,17 @@ const FormScreen = ({
   };
   return (
     <>
-      <View style={{ height: 40 }}>
-        <CustomTextInput
-          onChangeText={(text) => setExerciseProperty("name", text)}
-          value={exerciseData.name}
-          placeholder="Add Name"
-        />
-      </View>
-      <View style={{ height: 120 }}>
-        <CustomTextInput
-          onChangeText={(text) => setExerciseProperty("instructions", text)}
-          value={exerciseData.instructions}
-          placeholder="Instructions"
-          large
-        />
-      </View>
+      <CustomTextInput
+        onChangeText={(text) => setExerciseProperty("name", text)}
+        value={exerciseData.name}
+        placeholder="Add Name"
+      />
+      <CustomTextInput
+        onChangeText={(text) => setExerciseProperty("instructions", text)}
+        value={exerciseData.instructions}
+        placeholder="Instructions"
+        large
+      />
       <Pressable onPress={pickImageAsync} style={styles.imageContainer}>
         <CustomImage
           imageUrl={

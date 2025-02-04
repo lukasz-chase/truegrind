@@ -7,7 +7,9 @@ import userStore from "@/store/userStore";
 import { Alert, AppState, Platform } from "react-native";
 import * as Notifications from "expo-notifications";
 import * as SplashScreen from "expo-splash-screen";
-import { getProfile } from "@/lib/userService";
+import { setProfileInUserStore } from "@/lib/userService";
+import useActiveWorkout from "@/store/useActiveWorkout";
+import useMeasurementsStore from "@/store/useMeasurementsStore";
 
 // Prevent the splash screen from hiding automatically
 SplashScreen.preventAutoHideAsync();
@@ -30,6 +32,8 @@ AppState.addEventListener("change", (state) => {
 
 export default function Root() {
   const { session: currentSession } = userStore((state) => state);
+  const { resetActiveWorkout } = useActiveWorkout();
+  const { resetMeasurements } = useMeasurementsStore();
   const router = useRouter();
 
   const askNotificationPermission = async () => {
@@ -61,10 +65,12 @@ export default function Root() {
     const authListener = supabase.auth.onAuthStateChange((_event, session) => {
       userStore.setState({ session });
       if (!session) {
+        resetActiveWorkout();
+        resetMeasurements();
         // Redirect to sign-in if session is null (logged out)
         router.replace("/sign-in");
       } else {
-        getProfile(session.user.id);
+        setProfileInUserStore(session.user.id);
 
         // Redirect to tabs if session exists (logged in)
         router.replace("/(tabs)");

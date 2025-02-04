@@ -52,7 +52,6 @@ export default function WorkoutScreen() {
       setIsSheetVisible(true);
     }
   }, [activeWorkout, user]);
-
   const getExampleWorkouts = async () => {
     setDataLoading(true);
     try {
@@ -81,7 +80,7 @@ export default function WorkoutScreen() {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     }
   };
-  if (loading || dataLoading) {
+  if (loading || dataLoading || !split) {
     return (
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.container}>
@@ -111,84 +110,52 @@ export default function WorkoutScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      {split ? (
-        <>
-          <ScrollView contentContainerStyle={styles.container}>
-            <Text style={styles.title}>Start Workout</Text>
-            <Pressable onPress={() => router.push("/splits")}>
-              <View style={styles.splitButton}>
-                <Text
-                  style={[
-                    styles.actionButtonText,
-                    {
-                      color: AppColors.blue,
-                    },
-                  ]}
-                >
-                  {split.name}
-                </Text>
-              </View>
-            </Pressable>
-            <Pressable
-              style={styles.actionButton}
-              onPress={startAnEmptyWorkout}
+      <ScrollView contentContainerStyle={styles.container}>
+        <Text style={styles.title}>Start Workout</Text>
+        <Pressable onPress={() => router.push("/splits")}>
+          <View style={styles.splitButton}>
+            <Text
+              style={[
+                styles.actionButtonText,
+                {
+                  color: AppColors.blue,
+                },
+              ]}
             >
-              <Text style={styles.actionButtonText}>
-                Start an Empty Workout
-              </Text>
-            </Pressable>
-            <View style={styles.templateHeader}>
-              <Text style={styles.templatesTitle}>Templates</Text>
-              <Pressable style={styles.templatesButton}>
-                <Text style={styles.templatesButtonText}>+ Template</Text>
-              </Pressable>
-            </View>
-            <Text style={styles.templatesText}>
-              My Templates ({split.workouts.length})
+              {split.name}
+            </Text>
+          </View>
+        </Pressable>
+        <Pressable style={styles.actionButton} onPress={startAnEmptyWorkout}>
+          <Text style={styles.actionButtonText}>Start an Empty Workout</Text>
+        </Pressable>
+        <View style={styles.templateHeader}>
+          <Text style={styles.templatesTitle}>Templates</Text>
+          <Pressable style={styles.templatesButton}>
+            <Text style={styles.templatesButtonText}>+ Template</Text>
+          </Pressable>
+        </View>
+        <Text style={styles.templatesText}>
+          My Templates ({split.workouts.length})
+        </Text>
+        <View style={styles.workouts}>
+          {split.workouts.map((workout) => (
+            <WorkoutCard key={workout.id} workout={workout} />
+          ))}
+        </View>
+        {exampleWorkouts && (
+          <>
+            <Text style={[styles.templatesText, { marginTop: 20 }]}>
+              Example Templates ({exampleWorkouts.length})
             </Text>
             <View style={styles.workouts}>
-              {split.workouts.map((workout) => (
+              {exampleWorkouts.map((workout) => (
                 <WorkoutCard key={workout.id} workout={workout} />
               ))}
             </View>
-            {exampleWorkouts && (
-              <>
-                <Text style={[styles.templatesText, { marginTop: 20 }]}>
-                  Example Templates ({exampleWorkouts.length})
-                </Text>
-                <View style={styles.workouts}>
-                  {exampleWorkouts.map((workout) => (
-                    <WorkoutCard key={workout.id} workout={workout} />
-                  ))}
-                </View>
-              </>
-            )}
-          </ScrollView>
-        </>
-      ) : (
-        <View
-          style={{
-            height: "100%",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <Pressable onPress={() => router.push("/splits")}>
-            <View style={styles.splitButton}>
-              <Text
-                style={[
-                  styles.actionButtonText,
-                  {
-                    color: AppColors.blue,
-                  },
-                ]}
-              >
-                Create a Split
-              </Text>
-            </View>
-          </Pressable>
-        </View>
-      )}
+          </>
+        )}
+      </ScrollView>
     </SafeAreaView>
   );
 }
