@@ -46,6 +46,12 @@
           "sounds": ["./assets/sounds/bell.mp3"],
           "enableBackgroundRemoteNotifications": false
         }
+      ],
+      [
+        "expo-calendar",
+        {
+          "calendarPermission": "The app needs to access your calendar."
+        }
       ]
     ],
     "experiments": {

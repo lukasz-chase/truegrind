@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { supabase } from "@/lib/supabase";
 import { AppColors } from "@/constants/colors";
-import { getProfile } from "@/lib/userService";
+import { setProfileInUserStore } from "@/lib/userService";
 
 export default function Auth() {
   const [email, setEmail] = useState("");
@@ -25,7 +25,7 @@ export default function Auth() {
     });
 
     if (error) Alert.alert(error.message);
-    if (data?.user) getProfile(data.user.id);
+    if (data?.user) setProfileInUserStore(data.user.id);
     setLoading(false);
   }
 

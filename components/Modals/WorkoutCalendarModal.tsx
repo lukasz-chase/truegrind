@@ -11,13 +11,22 @@ import {
 import CloseButton from "../CloseButton";
 import { Workout } from "@/types/workout";
 import { AppColors } from "@/constants/colors";
-import { upsertWorkoutCalendar } from "@/lib/workoutCalendarService";
+import {
+  deleteWorkoutCalendar,
+  upsertWorkoutCalendar,
+} from "@/lib/workoutCalendarService";
 import {
   WorkoutCalendarPopulated,
   WorkoutCalendarStatusEnum,
 } from "@/types/workoutCalendar";
 import { generateNewColor } from "@/lib/helpers";
 import * as Haptics from "expo-haptics";
+import {
+  addWorkoutToLocalCalendar,
+  removeWorkoutFromLocalCalendar,
+} from "@/lib/calendar";
+import DateTimePicker from "@react-native-community/datetimepicker";
+import { useEffect, useState } from "react";
 
 type Props = {
   isVisible: boolean;
@@ -38,6 +47,18 @@ export default function WorkoutCalendarModal({
   setWorkoutCalendarData,
   workoutCalendarData,
 }: Props) {
+  const [startTime, setStartTime] = useState(new Date());
+  const [endTime, setEndTime] = useState(new Date());
+
+  useEffect(() => {
+    const dateStr = pressedDate.dateString;
+    const [year, month, day] = dateStr.split("-").map(Number);
+    const newStartTime = new Date(year, month - 1, day, 9, 0);
+    const newEndTime = new Date(year, month - 1, day, 10, 30);
+    setStartTime(newStartTime);
+    setEndTime(newEndTime);
+  }, [pressedDate.dateString]);
+
   const getWorkoutColorByWorkoutId = (workoutId: string) => {
     const workoutCalendar = workoutCalendarData.find((workout) => {
       return workout.workout_id === workoutId;
@@ -47,33 +68,68 @@ export default function WorkoutCalendarModal({
   const addWorkoutToCalendar = (
     newWorkoutCalendarData: WorkoutCalendarPopulated
   ) => {
-    const previousWorkoutForThisDate = workoutCalendarData.findIndex(
+    const previousWorkoutIndexForThisDate = workoutCalendarData.findIndex(
       (workout) => {
         return workout.scheduled_date === newWorkoutCalendarData.scheduled_date;
       }
     );
-    if (previousWorkoutForThisDate !== -1) {
+    if (previousWorkoutIndexForThisDate !== -1) {
       const updatedWorkoutCalendarData = [...workoutCalendarData];
-      updatedWorkoutCalendarData[previousWorkoutForThisDate] =
+      updatedWorkoutCalendarData[previousWorkoutIndexForThisDate] =
         newWorkoutCalendarData;
       setWorkoutCalendarData(updatedWorkoutCalendarData);
       return;
     }
     setWorkoutCalendarData((prev) => [...prev, newWorkoutCalendarData]);
   };
-
+  const removeWorkoutFromCalendar = (scheduledDate: string) => {
+    const updatedWorkoutCalendarData = workoutCalendarData.filter((workout) => {
+      return workout.scheduled_date !== scheduledDate;
+    });
+    setWorkoutCalendarData(updatedWorkoutCalendarData);
+  };
   const assignWorkoutToDay = async (workout: Workout) => {
+    const alreadyInCalendar = workoutCalendarData.find((data) => {
+      return (
+        data.workout_id === workout.id &&
+        data.scheduled_date === pressedDate.dateString
+      );
+    });
+    if (alreadyInCalendar) {
+      await removeWorkoutFromLocalCalendar(alreadyInCalendar.calendar_event_id);
+      removeWorkoutFromCalendar(pressedDate.dateString);
+      deleteWorkoutCalendar(
+        workout.id,
+        pressedDate.dateString,
+        workout.user_id
+      );
+      if (Platform.OS !== "web") {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      }
+      closeModal();
+      return;
+    }
     const currentColors = workoutCalendarData.map((data) => data.color);
     const workoutInCalendarColor = getWorkoutColorByWorkoutId(workout.id);
     const color = workoutInCalendarColor
       ? workoutInCalendarColor
       : generateNewColor(currentColors);
+    const calendarData = {
+      name: workout.name,
+      startDateTime: startTime,
+      endDateTime: endTime,
+    };
+    const eventId = await addWorkoutToLocalCalendar(calendarData);
+    console.log({ eventId });
     const workoutCalendar = {
       user_id: workout.user_id,
       workout_id: workout.id,
       scheduled_date: pressedDate.dateString,
       status: WorkoutCalendarStatusEnum.Scheduled,
       color,
+      start_time: startTime,
+      end_time: endTime,
+      calendar_event_id: eventId,
     };
     const workoutCalendarPopulated = await upsertWorkoutCalendar(
       workoutCalendar
@@ -107,6 +163,23 @@ export default function WorkoutCalendarModal({
         <Text style={{ textAlign: "center", fontSize: 18 }}>
           Assign a workout for this day
         </Text>
+        <View style={styles.timePickerContainer}>
+          <Text style={styles.timePickerLabel}>Start Time:</Text>
+          <DateTimePicker
+            value={startTime}
+            mode="time"
+            onChange={(event, date) => date && setStartTime(date)}
+            style={styles.timePicker}
+          />
+          <Text style={styles.timePickerLabel}>End Time:</Text>
+          <DateTimePicker
+            value={endTime}
+            mode="time"
+            onChange={(event, date) => date && setEndTime(date)}
+            style={styles.timePicker}
+            accentColor={AppColors.black}
+          />
+        </View>
         <FlatList
           data={workouts}
           keyExtractor={(item) => item.id}
@@ -181,5 +254,18 @@ const styles = StyleSheet.create({
   },
   workoutButtonText: {
     fontSize: 18,
+  },
+  timePickerContainer: {
+    width: "100%",
+    gap: 10,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  timePickerLabel: {
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  timePicker: {
+    width: "100%",
   },
 });

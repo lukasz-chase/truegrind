@@ -114,3 +114,20 @@ export const updateMissedWorkouts = async (userId: string) => {
 
   return data;
 };
+
+export const deleteWorkoutCalendar = async (
+  workoutId: string,
+  scheduledDate: string,
+  userId: string
+) => {
+  const { error } = await supabase
+    .from("workout_calendar")
+    .delete()
+    .eq("workout_id", workoutId)
+    .eq("user_id", userId)
+    .eq("scheduled_date", scheduledDate);
+  if (error) {
+    console.error("Error removing workout from calendar", error);
+    return;
+  }
+};

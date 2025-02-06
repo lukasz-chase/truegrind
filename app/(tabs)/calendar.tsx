@@ -142,14 +142,27 @@ export default function CalendarScreen() {
       textColor = "white";
     }
     if (isCompleted) {
-      backgroundColor = AppColors.green;
-      textColor = "white";
-      icon = <Entypo name="check" size={CALENDAR_ICON_SIZE} color="black" />;
+      backgroundColor = dayData?.color || backgroundColor;
+      icon = (
+        <Entypo
+          name="check"
+          size={CALENDAR_ICON_SIZE}
+          color={AppColors.green}
+          style={styles.dayIcon}
+        />
+      );
     }
     if (isMissed) {
       backgroundColor = AppColors.gray;
       textColor = "white";
-      icon = <Entypo name="cross" size={CALENDAR_ICON_SIZE} color="black" />;
+      icon = (
+        <Entypo
+          name="cross"
+          size={CALENDAR_ICON_SIZE}
+          color={AppColors.red}
+          style={styles.dayIcon}
+        />
+      );
     }
 
     return { backgroundColor, textColor, icon, borderColor, textDecoration };
@@ -254,5 +267,10 @@ const styles = StyleSheet.create({
     position: "absolute",
     right: -CALENDAR_ICON_SIZE / 2,
     top: -CALENDAR_ICON_SIZE / 2,
+  },
+  dayIcon: {
+    textShadowColor: AppColors.black,
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 1,
   },
 });

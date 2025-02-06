@@ -16,6 +16,9 @@ export type WorkoutCalendarPopulated = {
   status: WorkoutCalendarStatusEnum;
   workouts: Workout;
   color: string;
+  start_time: Date;
+  end_time: Date;
+  calendar_event_id: string;
 };
 export type WorkoutCalendar = {
   id: string;
@@ -24,4 +27,7 @@ export type WorkoutCalendar = {
   scheduled_date: string;
   status: WorkoutCalendarStatusEnum;
   color: string;
+  start_time: Date;
+  end_time: Date;
+  calendar_event_id: string;
 };
