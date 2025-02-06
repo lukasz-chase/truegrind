@@ -115,7 +115,6 @@ export const removeWorkoutFromLocalCalendar = async (eventId: string) => {
   try {
     const upperCaseEventId = eventId.toUpperCase();
     await Calendar.deleteEventAsync(upperCaseEventId);
-    console.log(`Event ${upperCaseEventId} deleted successfully.`);
   } catch (error) {
     console.error("Error removing event:", error);
   }

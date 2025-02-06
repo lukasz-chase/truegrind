@@ -127,6 +127,7 @@ export default function WorkoutFinishedScreen() {
         initialActiveWorkout,
         workoutExercisesHistoryIds
       );
+
       const userCalendarWorkouts = await fetchUserWorkoutCalendar(
         activeWorkout.user_id
       );
@@ -137,13 +138,21 @@ export default function WorkoutFinishedScreen() {
       const color = workoutCalendar
         ? workoutCalendar.color
         : generateNewColor(currentColors);
+      const [minutes, seconds] = formattedTime.split(":").map(Number);
+      const now = new Date();
+      const startTime = new Date(
+        now.getTime() - (minutes * 60 + seconds) * 1000
+      );
       await upsertWorkoutCalendar({
         status: WorkoutCalendarStatusEnum.Completed,
         user_id: activeWorkout.user_id,
         scheduled_date: getCalendarDateFormat(),
         workout_id: activeWorkout.id,
         color,
+        start_time: startTime,
+        end_time: now,
       });
+
       refetchData();
       resetTimer();
       endTimer();

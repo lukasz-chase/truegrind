@@ -59,34 +59,21 @@ export const fetchUserWorkoutCalendarByDate = async (
   return data as WorkoutCalendar;
 };
 
-export const fetchUserWorkoutCalendar = async (userId: string) => {
+export const fetchUserWorkoutCalendar = async (
+  userId: string,
+  month: number
+) => {
   const today = new Date();
+  const year = today.getFullYear();
 
-  const startOfCurrentMonth = new Date(
-    today.getFullYear(),
-    today.getMonth(),
-    1,
-    0,
-    0,
-    0,
-    0
-  );
-  const endOfNextMonth = new Date(
-    today.getFullYear(),
-    today.getMonth() + 2,
-    0,
-    23,
-    59,
-    59,
-    999
-  );
-
+  const startOfMonth = new Date(year, month - 1, 1, 0, 0, 0, 0); // Corrected month offset
+  const endOfMonth = new Date(year, month, 0, 23, 59, 59, 999); // Last day of the month
   const { data, error } = await supabase
     .from("workout_calendar")
     .select("*, workouts(name)")
     .eq("user_id", userId)
-    .gte("scheduled_date", startOfCurrentMonth.toISOString())
-    .lte("scheduled_date", endOfNextMonth.toISOString())
+    .gte("scheduled_date", startOfMonth.toISOString())
+    .lte("scheduled_date", endOfMonth.toISOString())
     .returns<WorkoutCalendarPopulated[]>();
 
   if (error) {

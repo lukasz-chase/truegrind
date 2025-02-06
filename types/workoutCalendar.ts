@@ -18,7 +18,7 @@ export type WorkoutCalendarPopulated = {
   color: string;
   start_time: Date;
   end_time: Date;
-  calendar_event_id: string;
+  calendar_event_id?: string;
 };
 export type WorkoutCalendar = {
   id: string;
@@ -29,5 +29,5 @@ export type WorkoutCalendar = {
   color: string;
   start_time: Date;
   end_time: Date;
-  calendar_event_id: string;
+  calendar_event_id?: string;
 };

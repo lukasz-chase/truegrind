@@ -33,7 +33,6 @@ const FormScreen = ({
   const pickImageAsync = async () => {
     const pickedImage = await pickAndCompressImage();
     if (!pickedImage) return;
-    console.log(pickedImage.extension);
     setExerciseData((prev) => ({
       ...prev,
       image: pickedImage.url,

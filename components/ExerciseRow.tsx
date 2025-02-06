@@ -18,7 +18,6 @@ const ExerciseRow = ({
   onPress,
   isSelected,
 }: Props) => {
-  console.log(numberOfSets);
   return (
     <Pressable
       onPress={() => onPress(exercise)}

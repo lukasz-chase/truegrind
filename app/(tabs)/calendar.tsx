@@ -1,38 +1,25 @@
 import WorkoutCalendarModal from "@/components/Modals/WorkoutCalendarModal";
-import { AppColors } from "@/constants/colors";
 import {
   fetchUserWorkoutCalendar,
   updateMissedWorkouts,
 } from "@/lib/workoutCalendarService";
 import userStore from "@/store/userStore";
 import useSplitsStore from "@/store/useSplitsStore";
-import {
-  WorkoutCalendarPopulated,
-  WorkoutCalendarStatusEnum,
-} from "@/types/workoutCalendar";
+import { WorkoutCalendarPopulated } from "@/types/workoutCalendar";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import {
-  Text,
   StyleSheet,
   SafeAreaView,
-  Pressable,
   ScrollView,
   View,
+  FlatList,
 } from "react-native";
-import { CalendarList } from "react-native-calendars";
-import Entypo from "@expo/vector-icons/Entypo";
+import { Calendar } from "react-native-calendars";
 import useAppStore from "@/store/useAppStore";
-
-type DayDisplay = {
-  backgroundColor?: string;
-  textColor?: string;
-  icon?: JSX.Element | null;
-  borderColor?: string;
-  textDecoration: "none" | "line-through";
-};
-
-const CALENDAR_ICON_SIZE = 18;
+import WorkoutDay from "@/components/WorkoutDay";
+import LegendItem from "@/components/LegendItem";
+import { AppColors } from "@/constants/colors";
 
 export default function CalendarScreen() {
   const [isWorkoutCalendarModalVisible, setIsWorkoutCalendarModalVisible] =
@@ -44,6 +31,9 @@ export default function CalendarScreen() {
   const [workoutCalendarData, setWorkoutCalendarData] = useState<
     WorkoutCalendarPopulated[]
   >([]);
+  const [currentMonth, setCurrentMonth] = useState(new Date().getMonth() + 1);
+  const [loading, setLoading] = useState(true);
+
   const { activeSplit } = useSplitsStore();
   const { user } = userStore();
   const { refetchNumber, refetchData } = useAppStore();
@@ -54,14 +44,17 @@ export default function CalendarScreen() {
 
   useEffect(() => {
     setMissedWorkouts();
-  }, []);
+  }, [currentMonth]);
 
   const getWorkoutCalendarData = async () => {
     try {
-      const data = await fetchUserWorkoutCalendar(user!.id);
+      setLoading(true);
+      const data = await fetchUserWorkoutCalendar(user!.id, currentMonth);
       setWorkoutCalendarData(data);
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoading(false);
     }
   };
   const setMissedWorkouts = async () => {
@@ -95,130 +88,56 @@ export default function CalendarScreen() {
     const workoutCalendar = workoutCalendarData.find((workout) => {
       return workout.workout_id === workoutId;
     });
-    return workoutCalendar?.color;
+    return workoutCalendar!.color;
   };
 
-  const isPastToday = (date: { year: number; month: number; day: number }) => {
-    const today = new Date();
-    const isSameYear = date.year === today.getFullYear();
-    const isSameMonth = date.month === today.getMonth() + 1;
-
-    const isPastThisMonth =
-      isSameYear && isSameMonth && date.day < today.getDate();
-
-    return isPastThisMonth;
-  };
-  const getDayDisplay = (
-    date: { year: number; month: number; day: number; dateString: string },
-    state: string,
-    workoutCalendarData: WorkoutCalendarPopulated[]
-  ): DayDisplay => {
-    const dayData = workoutCalendarData.find(
-      (item) => item.scheduled_date === date.dateString
-    );
-
-    const isCompleted = dayData?.status === WorkoutCalendarStatusEnum.Completed;
-    const isMissed = dayData?.status === WorkoutCalendarStatusEnum.Missed;
-    const isScheduled = dayData?.status === WorkoutCalendarStatusEnum.Scheduled;
-    const isDisabled = isPastToday(date);
-
-    const isToday = state === "today";
-
-    let backgroundColor = "transparent";
-    let textColor = "black";
-    let borderColor = "transparent";
-    let textDecoration: "none" | "line-through" = "none";
-    let icon = null;
-    if (isDisabled) {
-      textDecoration = "line-through";
-    }
-    if (isToday) {
-      backgroundColor = AppColors.blue;
-      borderColor = "black";
-      textColor = "white";
-    }
-    if (isScheduled) {
-      backgroundColor = dayData?.color || backgroundColor;
-      textColor = "white";
-    }
-    if (isCompleted) {
-      backgroundColor = dayData?.color || backgroundColor;
-      icon = (
-        <Entypo
-          name="check"
-          size={CALENDAR_ICON_SIZE}
-          color={AppColors.green}
-          style={styles.dayIcon}
-        />
-      );
-    }
-    if (isMissed) {
-      backgroundColor = AppColors.gray;
-      textColor = "white";
-      icon = (
-        <Entypo
-          name="cross"
-          size={CALENDAR_ICON_SIZE}
-          color={AppColors.red}
-          style={styles.dayIcon}
-        />
-      );
-    }
-
-    return { backgroundColor, textColor, icon, borderColor, textDecoration };
-  };
   return (
-    <SafeAreaView>
-      <ScrollView
-        style={styles.legend}
-        horizontal
-        contentContainerStyle={styles.legendContainer}
-      >
-        {activeSplit.workouts
-          .filter((w) =>
-            workoutCalendarData.find((workout) => workout.workout_id === w.id)
-          )
-          .map((workout) => (
-            <View
-              key={workout.id}
-              style={[
-                styles.legendItem,
-                { backgroundColor: getWorkoutColorByWorkoutId(workout.id) },
-              ]}
-            >
-              <Text style={styles.legendItemText}>{workout.name}</Text>
-            </View>
-          ))}
-      </ScrollView>
-      <CalendarList
-        pastScrollRange={0}
-        futureScrollRange={1}
+    <SafeAreaView style={styles.container}>
+      <View style={{ flexGrow: 0 }}>
+        {loading ? (
+          <View style={[styles.legendsContainer, styles.legendsWrapper]}>
+            <View style={styles.legendSkeleton} />
+            <View style={styles.legendSkeleton} />
+            <View style={styles.legendSkeleton} />
+          </View>
+        ) : (
+          <ScrollView
+            style={styles.legendsWrapper}
+            contentContainerStyle={styles.legendsContainer}
+          >
+            {activeSplit.workouts
+              .filter((w) =>
+                workoutCalendarData.find(
+                  (workout) => workout.workout_id === w.id
+                )
+              )
+              .map((workout) => (
+                <LegendItem
+                  color={getWorkoutColorByWorkoutId(workout.id)}
+                  workoutName={workout.name}
+                />
+              ))}
+          </ScrollView>
+        )}
+      </View>
+
+      <Calendar
+        firstDay={1}
+        onMonthChange={({ month }: any) => {
+          setCurrentMonth(month);
+        }}
         dayComponent={({ date, state }: any) => {
-          const {
-            backgroundColor,
-            borderColor,
-            icon,
-            textColor,
-            textDecoration,
-          } = getDayDisplay(date, state, workoutCalendarData);
           return (
-            <Pressable
-              style={[styles.date, { backgroundColor, borderColor }]}
-              onPress={() => onDayPressHandler(date)}
-              disabled={isPastToday(date)}
-            >
-              <Text
-                style={[
-                  styles.dateText,
-                  { color: textColor, textDecorationLine: textDecoration },
-                ]}
-              >
-                {date.day}
-              </Text>
-              {icon && <View style={styles.iconContainer}>{icon}</View>}
-            </Pressable>
+            <WorkoutDay
+              date={date}
+              state={state}
+              onDayPress={onDayPressHandler}
+              workoutCalendarData={workoutCalendarData}
+              loading={loading}
+            />
           );
         }}
+        style={styles.calendar}
       />
       <WorkoutCalendarModal
         closeModal={() => setIsWorkoutCalendarModalVisible(false)}
@@ -233,44 +152,27 @@ export default function CalendarScreen() {
 }
 
 const styles = StyleSheet.create({
-  legend: {
+  container: {
+    height: "100%",
     backgroundColor: "white",
+  },
+  legendsWrapper: {
     width: "100%",
     padding: 10,
+    maxHeight: 150,
   },
-  legendContainer: {
+  legendsContainer: {
     gap: 10,
-  },
-  legendItem: {
     flexDirection: "row",
-    alignItems: "center",
-    padding: 8,
+    flexWrap: "wrap",
+  },
+  calendar: {
+    marginVertical: "auto",
+  },
+  legendSkeleton: {
+    height: 40,
+    width: 50,
+    backgroundColor: AppColors.gray,
     borderRadius: 10,
-  },
-  legendItemText: {
-    color: "white",
-  },
-  date: {
-    padding: 5,
-    borderRadius: 5,
-    borderWidth: 2,
-    width: 30,
-    height: 30,
-  },
-  today: {
-    backgroundColor: AppColors.blue,
-  },
-  dateText: {
-    textAlign: "center",
-  },
-  iconContainer: {
-    position: "absolute",
-    right: -CALENDAR_ICON_SIZE / 2,
-    top: -CALENDAR_ICON_SIZE / 2,
-  },
-  dayIcon: {
-    textShadowColor: AppColors.black,
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 1,
   },
 });
