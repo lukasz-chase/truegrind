@@ -29,6 +29,7 @@ import {
   upsertWorkoutCalendar,
 } from "@/lib/workoutCalendarService";
 import useWorkoutCalendar from "@/hooks/useworkoutCalendar";
+import CustomDateTimePicker from "../CustomDateTimePicker";
 
 type Props = {
   isVisible: boolean;
@@ -135,12 +136,12 @@ export default function WorkoutCalendarModal({
         <Text style={styles.subtitle}>Assign a workout for this day</Text>
 
         <View style={styles.timePickerContainer}>
-          <DateTimePickerField
+          <CustomDateTimePicker
             label="Start Time"
             value={startTime}
             onChange={setStartTime}
           />
-          <DateTimePickerField
+          <CustomDateTimePicker
             label="End Time"
             value={endTime}
             onChange={setEndTime}
@@ -173,19 +174,6 @@ export default function WorkoutCalendarModal({
     </Modal>
   );
 }
-
-const DateTimePickerField = ({ label, value, onChange }: any) => (
-  <View style={styles.timePickerWrapper}>
-    <Text style={styles.timePickerLabel}>{label}</Text>
-    <DateTimePicker
-      value={value}
-      mode="time"
-      minuteInterval={5}
-      onChange={(event, date) => date && onChange(date)}
-      style={{ marginLeft: -10 }}
-    />
-  </View>
-);
 
 const styles = StyleSheet.create({
   modalOverlay: {
@@ -239,13 +227,5 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
     marginVertical: 10,
     width: "100%",
-  },
-  timePickerWrapper: {
-    alignItems: "center",
-    gap: 10,
-  },
-  timePickerLabel: {
-    fontSize: 16,
-    fontWeight: "bold",
   },
 });

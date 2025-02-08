@@ -8,18 +8,13 @@ import useSplitsStore from "@/store/useSplitsStore";
 import { WorkoutCalendarPopulated } from "@/types/workoutCalendar";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import {
-  StyleSheet,
-  SafeAreaView,
-  ScrollView,
-  View,
-  FlatList,
-} from "react-native";
+import { StyleSheet, ScrollView, View } from "react-native";
 import { Calendar } from "react-native-calendars";
 import useAppStore from "@/store/useAppStore";
 import WorkoutDay from "@/components/WorkoutDay";
 import LegendItem from "@/components/LegendItem";
 import { AppColors } from "@/constants/colors";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function CalendarScreen() {
   const [isWorkoutCalendarModalVisible, setIsWorkoutCalendarModalVisible] =
