@@ -113,6 +113,7 @@ export default function CalendarScreen() {
               )
               .map((workout) => (
                 <LegendItem
+                  key={workout.id}
                   color={getWorkoutColorByWorkoutId(workout.id)}
                   workoutName={workout.name}
                 />

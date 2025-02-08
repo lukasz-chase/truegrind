@@ -90,9 +90,27 @@ const Exercises = ({ onPress, selectedExercises }: Props) => {
     };
   });
 
+  if (loading)
+    return (
+      <View style={styles.container}>
+        <View style={[styles.skeletonItem, { height: 40 }]} />
+        <View style={styles.pickerContainer}>
+          <View style={[styles.skeletonItem, { width: "48%", height: 30 }]} />
+          <View style={[styles.skeletonItem, { width: "48%", height: 30 }]} />
+        </View>
+        <View style={{ gap: 10, marginTop: 10 }}>
+          <View style={styles.skeletonItem} />
+          <View style={styles.skeletonItem} />
+          <View style={styles.skeletonItem} />
+          <View style={styles.skeletonItem} />
+          <View style={styles.skeletonItem} />
+          <View style={styles.skeletonItem} />
+          <View style={styles.skeletonItem} />
+        </View>
+      </View>
+    );
   return (
     <>
-      {loading && <LoadingAnimation />}
       <View style={styles.container}>
         <CustomTextInput
           onChangeText={setSearchQuery}
@@ -179,6 +197,11 @@ const styles = StyleSheet.create({
   sectionHeaderText: {
     fontWeight: "bold",
     fontSize: 16,
+  },
+  skeletonItem: {
+    height: 60,
+    width: "100%",
+    backgroundColor: AppColors.gray,
   },
 });
 
