@@ -19,6 +19,7 @@ import useSplitsStore from "@/store/useSplitsStore";
 import userStore from "@/store/userStore";
 import { fetchUserSplitWithWorkouts } from "@/lib/splitsServices";
 import useAppStore from "@/store/useAppStore";
+import InfoModal from "@/components/Modals/InfoModal";
 
 export default function TabLayout() {
   const animatedIndex = useSharedValue(0);
@@ -62,6 +63,7 @@ export default function TabLayout() {
     <GestureHandlerRootView>
       <SafeAreaProvider>
         <SafeAreaView>
+          <InfoModal />
           <TimerModal />
           <ExerciseOptionsModal />
           <WorkoutExercisesModal />

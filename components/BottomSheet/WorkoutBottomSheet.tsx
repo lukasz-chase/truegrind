@@ -11,7 +11,7 @@ import useBottomSheet from "@/store/useBottomSheet";
 import { SharedValue } from "react-native-reanimated";
 import useActiveWorkout from "@/store/useActiveWorkout";
 import WorkoutDetails from "./WorkoutDetails";
-import CustomKeyboard from "../CustomKeyboard";
+import CustomKeyboard from "../Keyboard/CustomKeyboard";
 import useCustomKeyboard from "@/store/useCustomKeyboard";
 import DraggableList from "./DraggableExercisesList.tsx/DraggableList";
 import WorkoutExercise from "./WorkoutExercise";

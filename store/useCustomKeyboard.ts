@@ -1,3 +1,4 @@
+import { KeyboardView, KeyboardViewEnum } from "@/types/customKeyboard";
 import { ExerciseSet } from "@/types/exercisesSets";
 import { create } from "zustand";
 
@@ -13,8 +14,8 @@ interface KeyboardState {
   updatedValue: string;
   selectedRPE: { value: number | null; label: string };
   partials: number | null;
-  keyboardView: "default" | "RPE" | "partials";
-  setKeyboardView: (view: "default" | "RPE" | "partials") => void;
+  keyboardView: KeyboardView;
+  setKeyboardView: (view: KeyboardView) => void;
   openKeyboard: (
     inputId: string,
     setValueHandler: (value: string) => void,
@@ -40,7 +41,7 @@ const useCustomKeyboard = create<KeyboardState>((set) => ({
   activeField: null,
   updatedValue: "",
   selectedRPE: defaultRPE,
-  keyboardView: "default",
+  keyboardView: KeyboardViewEnum.DEFAULT,
   partials: null,
   setRPELocallyAndInStore: () => {},
   setKeyboardView: (view) => set({ keyboardView: view }),

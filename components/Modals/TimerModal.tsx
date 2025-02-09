@@ -11,12 +11,16 @@ import userStore from "@/store/userStore";
 import CloseButton from "../CloseButton";
 import useWorkoutTimerModal from "@/store/useWorkoutTimerModal";
 import { updateUserProfile } from "@/lib/userService";
+import useInfoModal from "@/store/useInfoModall";
+import { timerInfo } from "@/constants/infoModal";
 
 const screenWidth = Dimensions.get("window").width;
 
 export default function TimerModal() {
   const [customTimerView, setCustomTimerView] = useState(false);
   const [customDuration, setCustomDuration] = useState(60);
+  const [shouldOpenInfoModal, setShouldOpenInfoModal] = useState(false);
+
   const { user } = userStore();
   const timeOptions = Array.from({ length: 121 }, (_, i) => ({
     value: i * 5,
@@ -32,6 +36,7 @@ export default function TimerModal() {
     timerDuration,
   } = useTimerStore();
   const { closeModal, isVisible, buttonRef } = useWorkoutTimerModal();
+  const { openModal: openInfoModal } = useInfoModal();
   const handleTimerComplete = () => {
     endTimer();
     closeModal();
@@ -59,6 +64,12 @@ export default function TimerModal() {
       anchorRef={buttonRef}
       anchorCorner="LEFT"
       modalWidth={screenWidth * 0.9}
+      onDismiss={() => {
+        if (shouldOpenInfoModal) {
+          openInfoModal(timerInfo.title, timerInfo.description);
+          setShouldOpenInfoModal(false);
+        }
+      }}
     >
       <View style={styles.container}>
         <View style={styles.modalHeader}>
@@ -69,7 +80,13 @@ export default function TimerModal() {
             }}
           />
           <Text style={styles.title}>Rest Timer</Text>
-          <Pressable style={styles.headerButton}>
+          <Pressable
+            style={styles.headerButton}
+            onPress={() => {
+              setShouldOpenInfoModal(true);
+              closeModal();
+            }}
+          >
             <AntDesign name="question" size={24} color="black" />
           </Pressable>
         </View>
