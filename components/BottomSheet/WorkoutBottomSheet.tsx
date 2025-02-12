@@ -74,6 +74,7 @@ const WorkoutBottomSheet = ({ animatedIndex }: Props) => {
         animatedIndex={animatedIndex}
         enableOverDrag={false}
         onChange={handleSheetChanges}
+        containerStyle={styles.sheetShadow}
       >
         <Pressable style={styles.container} onPress={closeKeyboard}>
           <CustomHeader
@@ -129,6 +130,13 @@ const styles = StyleSheet.create({
   overlay: {
     ...StyleSheet.absoluteFillObject,
     justifyContent: "flex-end",
+  },
+  sheetShadow: {
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: -3 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 6,
   },
   container: {
     flex: 1,

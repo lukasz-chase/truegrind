@@ -129,7 +129,8 @@ export default function WorkoutFinishedScreen() {
       );
 
       const userCalendarWorkouts = await fetchUserWorkoutCalendar(
-        activeWorkout.user_id
+        activeWorkout.user_id,
+        new Date().getMonth() + 1
       );
       const currentColors = userCalendarWorkouts.map((data) => data.color);
       const workoutCalendar = userCalendarWorkouts.find((workout) => {

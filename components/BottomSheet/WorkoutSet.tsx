@@ -11,6 +11,7 @@ import SetHistory from "./SetHistory";
 import SetInput from "./SetInput";
 import SetOrder from "./SetOrder";
 import SwipeToDelete from "@/components/SwipeToDelete";
+import { AppColors } from "@/constants/colors";
 
 type Props = {
   exerciseSet: ExerciseSet;
@@ -47,7 +48,16 @@ const WorkoutSet = ({
   };
   return (
     <SwipeToDelete onDelete={handleDelete}>
-      <Animated.View style={[styles.row]}>
+      <Animated.View
+        style={[
+          styles.row,
+          {
+            backgroundColor: exerciseSet.completed
+              ? AppColors.lightGreen
+              : "white",
+          },
+        ]}
+      >
         <View style={[styles.cell, { flex: 0.75 }]}>
           <SetOrder
             isCompleted={exerciseSet.completed}

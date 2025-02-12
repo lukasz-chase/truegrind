@@ -84,7 +84,7 @@ const SetInput = ({
 
     caretOpacity.value = 0;
     caretOpacity.value = withRepeat(withTiming(1, { duration: 800 }), -1, true);
-    setWasThereValueOnPress(value !== "");
+    setWasThereValueOnPress(!!value);
     openKeyboard(
       setInputId,
       setValueHandler,
@@ -104,7 +104,6 @@ const SetInput = ({
       opacity: caretOpacity.value,
     };
   });
-
   return (
     <Pressable
       style={[
@@ -135,8 +134,9 @@ const SetInput = ({
             setTextWidth(event.nativeEvent.layout.width);
           }}
         >
-          {value !== "" && value}
+          {value && value}
         </Text>
+
         {isActive && !wasThereValueOnPress && (
           <Animated.View style={[styles.caret, caretStyle]} />
         )}
