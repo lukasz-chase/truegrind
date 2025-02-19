@@ -6,6 +6,7 @@ import {
 } from "@/types/workoutCalendar";
 import { AppColors } from "@/constants/colors";
 import { isPastToday } from "@/utils/calendar";
+import { useRouter } from "expo-router";
 
 type Props = {
   date: { year: number; month: number; day: number; dateString: string };
@@ -31,6 +32,7 @@ export default function WorkoutDay({
       </View>
     );
   }
+  const router = useRouter();
   const dayData = workoutCalendarData.find(
     (item) => item.scheduled_date === date.dateString
   );
@@ -45,6 +47,16 @@ export default function WorkoutDay({
   let borderColor = "transparent";
   let textDecoration: "none" | "line-through" = "none";
   let icon = null;
+
+  const onDayPressWrapper = (date: any) => {
+    if (isDisabled && dayData?.workout_history_id) {
+      router.push(`/(tabs)/workoutHistory/${dayData?.workout_history_id}`);
+      return;
+    } else if (isDisabled) {
+      return;
+    }
+    onDayPress(date);
+  };
 
   if (isDisabled) textDecoration = "line-through";
   if (isToday) {
@@ -83,8 +95,7 @@ export default function WorkoutDay({
   return (
     <Pressable
       style={[styles.date, { backgroundColor, borderColor }]}
-      onPress={() => onDayPress(date)}
-      disabled={isDisabled}
+      onPress={() => onDayPressWrapper(date)}
     >
       <Text
         style={[

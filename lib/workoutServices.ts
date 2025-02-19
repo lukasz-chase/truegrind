@@ -6,24 +6,27 @@ export const updateWorkout = async (
   activeWorkout: Workout,
   initialActiveWorkout: Workout,
   workoutHistoryId: string,
-  isNewWorkout: boolean
+  isNewWorkout: boolean,
+  workoutTime: string
 ) => {
   if (
     areObjectsDifferent(activeWorkout, initialActiveWorkout) ||
     isNewWorkout
   ) {
     const { workout_exercises, ...workoutDB } = activeWorkout;
-    await supabase
+    const { data } = await supabase
       .from("workouts")
       .upsert(workoutDB)
       .eq("id", activeWorkout.id)
       .select();
+    console.log(data);
   }
   const { workout_exercises, id, ...workoutNotPopulated } = activeWorkout;
   const workoutHistory = {
     ...workoutNotPopulated,
     id: workoutHistoryId,
     created_at: new Date().toISOString(),
+    workout_time: workoutTime,
   };
   await supabase.from("workout_history").insert(workoutHistory);
 };
@@ -71,6 +74,32 @@ export const copyWorkout = async (workout: Workout, userId: string) => {
     });
   });
   await supabase.from("workout_exercises").insert(workoutExercisesToCreate);
+  if (data) {
+    return data;
+  }
+  if (error) console.log(error);
+};
+export const fetchWorkoutHistory = async (
+  workoutHistoryId: string,
+  userId: string
+) => {
+  const { data, error } = await supabase
+    .from("workout_history")
+    .select(
+      `
+      *,
+      workout_exercises:exercises_history(
+        *,
+        exercises(*),
+        exercise_sets:sets_history(*)
+      )
+    `
+    )
+    .eq("id", workoutHistoryId)
+    .eq("user_id", userId)
+    .limit(1)
+    .single();
+
   if (data) {
     return data;
   }

@@ -43,7 +43,7 @@ export default function WorkoutFinishedScreen() {
   const { resetTimer, formattedTime } = useWorkoutTimer();
   const [workout, setWorkout] = useState({
     ...activeWorkout,
-    workoutTime: formattedTime,
+    workout_time: formattedTime,
   });
 
   useFocusEffect(
@@ -58,7 +58,7 @@ export default function WorkoutFinishedScreen() {
         };
         setWorkout({
           ...filteredWorkout,
-          workoutTime: formattedTime,
+          workout_time: formattedTime,
         });
       }
       const exercisesChanged = haveExercisesChanged();
@@ -108,7 +108,8 @@ export default function WorkoutFinishedScreen() {
         activeWorkout,
         initialActiveWorkout,
         workoutHistoryId,
-        isNewWorkout
+        isNewWorkout,
+        formattedTime
       );
       const workoutExercisesHistoryIds =
         activeWorkout.workout_exercises?.map((workoutExercise) => ({
@@ -152,6 +153,7 @@ export default function WorkoutFinishedScreen() {
         color,
         start_time: startTime,
         end_time: now,
+        workout_history_id: workoutHistoryId,
       });
 
       refetchData();

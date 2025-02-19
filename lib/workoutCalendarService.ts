@@ -17,7 +17,6 @@ export const upsertWorkoutCalendar = async (
     const workoutCalendarData = previousWorkoutForThisDate
       ? { ...previousWorkoutForThisDate, ...workoutCalendar }
       : workoutCalendar;
-    console.log(workoutCalendarData);
     const { data, error } = await supabase
       .from("workout_calendar")
       .upsert(workoutCalendarData)

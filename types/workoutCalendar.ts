@@ -19,6 +19,7 @@ export type WorkoutCalendarPopulated = {
   start_time: Date;
   end_time: Date;
   calendar_event_id?: string;
+  workout_history_id?: string | null;
 };
 export type WorkoutCalendar = {
   id: string;
@@ -30,4 +31,5 @@ export type WorkoutCalendar = {
   start_time: Date;
   end_time: Date;
   calendar_event_id?: string;
+  workout_history_id?: string | null;
 };

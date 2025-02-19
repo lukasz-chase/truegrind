@@ -47,13 +47,20 @@ const CustomDateTimePicker = ({ label, value, onChange }: any) => {
           )}
         </>
       ) : (
+        // <DateTimePicker
+        //   value={value}
+        //   mode="time"
+        //   is24Hour={true}
+        //   minuteInterval={5}
+        //   display="spinner"
+        //   onChange={onDateChange}
+        // />
         <DateTimePicker
           value={value}
           mode="time"
-          is24Hour={true}
           minuteInterval={5}
-          display="spinner"
           onChange={onDateChange}
+          style={{ marginLeft: -10 }}
         />
       )}
     </View>

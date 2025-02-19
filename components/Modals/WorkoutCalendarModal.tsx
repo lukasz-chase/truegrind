@@ -103,6 +103,7 @@ export default function WorkoutCalendarModal({
       start_time: startTime,
       end_time: endTime,
       calendar_event_id: eventId,
+      workout_history_id: null,
     };
 
     const populatedData = await upsertWorkoutCalendar(newWorkoutCalendar);
@@ -190,6 +191,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "white",
     margin: "auto",
+    maxHeight: 600,
   },
   title: {
     fontWeight: "bold",
@@ -216,7 +218,6 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     borderRadius: 5,
     alignItems: "center",
-    width: "100%",
   },
   workoutButtonText: {
     fontSize: 18,

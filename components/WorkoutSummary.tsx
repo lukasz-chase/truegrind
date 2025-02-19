@@ -1,5 +1,5 @@
 import { AppColors } from "@/constants/colors";
-import { Workout } from "@/types/workout";
+import { WorkoutHistory } from "@/types/workout";
 import { WorkoutExercisePopulated } from "@/types/workoutExercise";
 import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
@@ -8,11 +8,7 @@ import AntDesign from "@expo/vector-icons/AntDesign";
 import { formatDate } from "@/lib/helpers";
 import { fetchHighestWeightSet } from "@/lib/exerciseSetsService";
 
-const WorkoutSummary = ({
-  workout,
-}: {
-  workout: Workout & { workoutTime: string };
-}) => {
+const WorkoutSummary = ({ workout }: { workout: WorkoutHistory }) => {
   const [PRs, setPRs] = useState(0);
   useEffect(() => {
     searchPRs();
@@ -81,13 +77,13 @@ const WorkoutSummary = ({
   return (
     <View style={styles.wrapper}>
       <Text style={[styles.columnText, { fontWeight: "bold" }]}>
-        {workout.name}
+        {workout?.name}
       </Text>
       <Text style={styles.columnText}>{formatDate(new Date())}</Text>
       <View style={styles.header}>
         <View style={styles.headerItem}>
           <AntDesign name="clockcircle" size={24} color={AppColors.black} />
-          <Text style={styles.columnText}>{workout.workoutTime}</Text>
+          <Text style={styles.columnText}>{workout.workout_time}</Text>
         </View>
         <View style={styles.headerItem}>
           <FontAwesome6

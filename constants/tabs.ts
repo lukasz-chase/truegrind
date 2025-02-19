@@ -62,4 +62,8 @@ export const hiddenScreens = [
     name: "metrics/[id]",
     additionalOptions: {},
   },
+  {
+    name: "workoutHistory/[id]",
+    additionalOptions: {},
+  },
 ];
