@@ -20,7 +20,7 @@ export const upsertWorkoutCalendar = async (
     const { data, error } = await supabase
       .from("workout_calendar")
       .upsert(workoutCalendarData)
-      .select("*, workouts(name)")
+      .select("*, workout_history(name)")
       .returns<WorkoutCalendarPopulated>()
       .limit(1)
       .single();
@@ -70,7 +70,7 @@ export const fetchUserWorkoutCalendar = async (
   const endOfMonth = new Date(year, month, 0, 23, 59, 59, 999); // Last day of the month
   const { data, error } = await supabase
     .from("workout_calendar")
-    .select("*, workouts(name)")
+    .select("*, workout_history(name)")
     .eq("user_id", userId)
     .gte("scheduled_date", startOfMonth.toISOString())
     .lte("scheduled_date", endOfMonth.toISOString())

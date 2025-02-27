@@ -7,19 +7,19 @@ export const updateWorkout = async (
   initialActiveWorkout: Workout,
   workoutHistoryId: string,
   isNewWorkout: boolean,
-  workoutTime: string
+  workoutTime: string,
+  updateTemplate: boolean
 ) => {
   if (
-    areObjectsDifferent(activeWorkout, initialActiveWorkout) ||
-    isNewWorkout
+    (areObjectsDifferent(activeWorkout, initialActiveWorkout) ||
+      isNewWorkout) &&
+    updateTemplate
   ) {
     const { workout_exercises, ...workoutDB } = activeWorkout;
-    const { data } = await supabase
+    await supabase
       .from("workouts")
       .upsert(workoutDB)
-      .eq("id", activeWorkout.id)
-      .select();
-    console.log(data);
+      .eq("id", activeWorkout.id);
   }
   const { workout_exercises, id, ...workoutNotPopulated } = activeWorkout;
   const workoutHistory = {

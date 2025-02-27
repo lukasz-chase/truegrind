@@ -34,29 +34,27 @@ const CustomFooter = ({ close }: Props) => {
     resetActiveWorkout();
   };
   return (
-    <>
-      <Animated.View layout={LinearTransition}>
-        <Pressable
-          style={[styles.footerButton, styles.addExerciseButton]}
-          onPress={() => {
-            openModal(addExercises, true, "Add");
-          }}
-        >
-          <Text style={[styles.footerText, styles.addExerciseButtonText]}>
-            Add Exercises
-          </Text>
-        </Pressable>
-        <Pressable
-          style={[styles.footerButton, styles.cancelWorkoutButton]}
-          onPress={closeBottomSheet}
-        >
-          <Text style={[styles.footerText, styles.cancelWorkoutButtonText]}>
-            Cancel Workout
-          </Text>
-        </Pressable>
-        <View style={{ height: IsKeyboardVisible ? 100 : 50 }} />
-      </Animated.View>
-    </>
+    <Animated.View layout={LinearTransition}>
+      <Pressable
+        style={[styles.footerButton, styles.addExerciseButton]}
+        onPress={() => {
+          openModal(addExercises, true, "Add");
+        }}
+      >
+        <Text style={[styles.footerText, styles.addExerciseButtonText]}>
+          Add Exercises
+        </Text>
+      </Pressable>
+      <Pressable
+        style={[styles.footerButton, styles.cancelWorkoutButton]}
+        onPress={closeBottomSheet}
+      >
+        <Text style={[styles.footerText, styles.cancelWorkoutButtonText]}>
+          Cancel Workout
+        </Text>
+      </Pressable>
+      <View style={{ height: IsKeyboardVisible ? 100 : 50 }} />
+    </Animated.View>
   );
 };
 

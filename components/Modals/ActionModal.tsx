@@ -20,9 +20,10 @@ type Props = {
   onProceed: () => void;
   proceedButtonLabeL?: string;
   proceedButtonBgColor?: string;
+  cancelButtonLabel?: string;
 };
 
-export default function WarningModal({
+export default function ActionModal({
   isVisible,
   closeModal,
   title,
@@ -31,6 +32,7 @@ export default function WarningModal({
   onProceed,
   proceedButtonLabeL = "Delete",
   proceedButtonBgColor = AppColors.red,
+  cancelButtonLabel = "Cancel",
 }: Props) {
   const onProceedHandler = () => {
     onProceed();
@@ -54,7 +56,7 @@ export default function WarningModal({
         <Text style={styles.subtitle}>{subtitle}</Text>
         <View style={styles.buttonsWrapper}>
           <Pressable style={styles.button} onPress={onCancel}>
-            <Text style={styles.buttonText}>Cancel</Text>
+            <Text style={styles.buttonText}>{cancelButtonLabel}</Text>
           </Pressable>
           <Pressable
             style={[styles.button, { backgroundColor: proceedButtonBgColor }]}

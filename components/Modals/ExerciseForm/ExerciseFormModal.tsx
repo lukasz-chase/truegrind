@@ -24,7 +24,7 @@ import OptionScreen from "./OptionScreen";
 import CloseButton from "@/components/CloseButton";
 import { AppColors } from "@/constants/colors";
 import { Exercise } from "@/types/exercises";
-import WarningModal from "../WarningModal";
+import ActionModal from "../ActionModal";
 import { deleteExercise, upsertExercise } from "@/lib/exercisesService";
 
 type Props = {
@@ -60,8 +60,8 @@ export default function ExerciseFormModal({
   const [createdExercise, setCreatedExercise] = useState<
     Exercise | undefined
   >();
-  const [isWarningModalVisible, setIsWarningModalVisible] = useState(false);
-  const [openWarningModal, setOpenWarningModal] = useState(false);
+  const [isActionModalVisible, setIsActionModalVisible] = useState(false);
+  const [openActionModal, setOpenActionModal] = useState(false);
 
   const { user } = userStore();
 
@@ -139,11 +139,11 @@ export default function ExerciseFormModal({
     setIsLoading(true);
     await deleteExercise(exercise.id, exercise.image);
     setIsLoading(false);
-    setIsWarningModalVisible(false);
+    setIsActionModalVisible(false);
   };
 
-  const openWarningModalHandler = () => {
-    setOpenWarningModal(true);
+  const openActionModalHandler = () => {
+    setOpenActionModal(true);
     closeModal();
   };
 
@@ -168,9 +168,9 @@ export default function ExerciseFormModal({
         animationType="fade"
         onRequestClose={closeModalHandler}
         onDismiss={() => {
-          if (openWarningModal) {
-            setOpenWarningModal(false);
-            setIsWarningModalVisible(true);
+          if (openActionModal) {
+            setOpenActionModal(false);
+            setIsActionModalVisible(true);
           } else {
             if (onDismiss) onDismiss(createdExercise);
           }
@@ -222,7 +222,7 @@ export default function ExerciseFormModal({
             />
           </Animated.View>
           {exercise && (
-            <Pressable disabled={!exercise} onPress={openWarningModalHandler}>
+            <Pressable disabled={!exercise} onPress={openActionModalHandler}>
               <Text style={[styles.title, { color: AppColors.red }]}>
                 Delete
               </Text>
@@ -230,12 +230,12 @@ export default function ExerciseFormModal({
           )}
         </View>
       </Modal>
-      <WarningModal
-        closeModal={() => setIsWarningModalVisible(false)}
-        isVisible={isWarningModalVisible}
+      <ActionModal
+        closeModal={() => setIsActionModalVisible(false)}
+        isVisible={isActionModalVisible}
         title="Delete exercise"
         subtitle={`Are you sure you want to delete ${exercise?.name}?`}
-        onCancel={() => setIsWarningModalVisible(false)}
+        onCancel={() => setIsActionModalVisible(false)}
         onProceed={deleteExerciseHandler}
       />
     </>

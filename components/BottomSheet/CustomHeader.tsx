@@ -15,7 +15,7 @@ import useWorkoutTimerModal from "@/store/useWorkoutTimerModal";
 import TimerButton from "./TimerButton";
 import useCustomKeyboard from "@/store/useCustomKeyboard";
 import { useRouter } from "expo-router";
-import WarningModal from "../Modals/WarningModal";
+import ActionModal from "../Modals/ActionModal";
 
 type Props = {
   sheetIndex: number;
@@ -42,7 +42,7 @@ const CustomHeader = ({ sheetIndex, close, scrolledY }: Props) => {
 
   const buttonRef = useRef(null);
 
-  const [isWarningModalVisible, setIsWarningModalVisible] = useState(false);
+  const [isActionModalVisible, setIsActionModalVisible] = useState(false);
 
   useEffect(() => {
     setButtonRef(buttonRef);
@@ -62,7 +62,7 @@ const CustomHeader = ({ sheetIndex, close, scrolledY }: Props) => {
       exercise.exercise_sets?.some((set) => !set.completed)
     );
     if (notCompletedSets) {
-      setIsWarningModalVisible(true);
+      setIsActionModalVisible(true);
     } else {
       finishWorkout();
     }
@@ -155,12 +155,12 @@ const CustomHeader = ({ sheetIndex, close, scrolledY }: Props) => {
           </Pressable>
         </Animated.View>
       </Pressable>
-      <WarningModal
-        closeModal={() => setIsWarningModalVisible(false)}
-        isVisible={isWarningModalVisible}
+      <ActionModal
+        closeModal={() => setIsActionModalVisible(false)}
+        isVisible={isActionModalVisible}
         title="Finish Workout?"
         subtitle={`All invalid or empty sets will be removed.`}
-        onCancel={() => setIsWarningModalVisible(false)}
+        onCancel={() => setIsActionModalVisible(false)}
         onProceed={removeNotCompletedSets}
         proceedButtonBgColor={AppColors.green}
         proceedButtonLabeL="Finish"

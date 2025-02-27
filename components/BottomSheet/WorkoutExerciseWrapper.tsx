@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
+import Animated, { LinearTransition } from "react-native-reanimated";
 
 type Props = {
   dragItemId: string | null;
@@ -11,9 +12,12 @@ const WorkoutExerciseWrapper = ({ dragItemId, children }: Props) => {
     setIsDragged(!!dragItemId);
   }, [dragItemId]);
   return (
-    <View style={[styles.workoutWrapper, isDragged && styles.collapsed]}>
+    <Animated.View
+      style={[styles.workoutWrapper, isDragged && styles.collapsed]}
+      layout={LinearTransition}
+    >
       {children}
-    </View>
+    </Animated.View>
   );
 };
 const styles = StyleSheet.create({

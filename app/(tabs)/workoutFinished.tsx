@@ -9,7 +9,6 @@ import {
 } from "@/lib/helpers";
 import useActiveWorkout from "@/store/useActiveWorkout";
 import WorkoutSummary from "@/components/WorkoutSummary";
-import TemplateModal from "@/components/Modals/TemplateModal";
 import { useFocusEffect } from "expo-router";
 import uuid from "react-native-uuid";
 import useAppStore from "@/store/useAppStore";
@@ -24,12 +23,15 @@ import {
   upsertWorkoutCalendar,
 } from "@/lib/workoutCalendarService";
 import { WorkoutCalendarStatusEnum } from "@/types/workoutCalendar";
+import ActionModal from "@/components/Modals/ActionModal";
+import { saveTemplate, updateTemplate } from "@/constants/actionModal";
 
 const TrophyImage = require("@/assets/images/trophy.webp");
 
 export default function WorkoutFinishedScreen() {
   const [workoutsCount, setWorkoutsCount] = useState(0);
-  const [isTemplateModalVisible, setIsTemplateModalVisible] = useState(false);
+  const [isActionModalVisible, setIsActionModalVisible] = useState(false);
+  const [actionModalProps, setActionModalProps] = useState(updateTemplate);
   const {
     activeWorkout,
     initialActiveWorkout,
@@ -62,9 +64,12 @@ export default function WorkoutFinishedScreen() {
         });
       }
       const exercisesChanged = haveExercisesChanged();
-
-      if (exercisesChanged) {
-        setIsTemplateModalVisible(true);
+      if (isNewWorkout) {
+        setActionModalProps(saveTemplate);
+        setIsActionModalVisible(true);
+      } else if (exercisesChanged) {
+        setActionModalProps(updateTemplate);
+        setIsActionModalVisible(true);
       } else {
         saveWorkout(false);
       }
@@ -101,7 +106,7 @@ export default function WorkoutFinishedScreen() {
   };
   const saveWorkout = async (updateTemplate: boolean) => {
     if (!workoutWasUpdated) return;
-    setIsTemplateModalVisible(false);
+    setIsActionModalVisible(false);
     try {
       const workoutHistoryId = uuid.v4();
       await updateWorkout(
@@ -109,7 +114,8 @@ export default function WorkoutFinishedScreen() {
         initialActiveWorkout,
         workoutHistoryId,
         isNewWorkout,
-        formattedTime
+        formattedTime,
+        updateTemplate
       );
       const workoutExercisesHistoryIds =
         activeWorkout.workout_exercises?.map((workoutExercise) => ({
@@ -184,10 +190,15 @@ export default function WorkoutFinishedScreen() {
         </Text>
         <WorkoutSummary workout={workout} />
       </SafeAreaView>
-      <TemplateModal
-        closeModal={() => setIsTemplateModalVisible(false)}
-        isVisible={isTemplateModalVisible}
-        onPress={saveWorkout}
+      <ActionModal
+        closeModal={() => setIsActionModalVisible(false)}
+        isVisible={isActionModalVisible}
+        onCancel={() => saveWorkout(false)}
+        onProceed={() => saveWorkout(true)}
+        subtitle={actionModalProps.subtitle}
+        title={actionModalProps.title}
+        proceedButtonLabeL={actionModalProps.proceedButtonLabeL}
+        cancelButtonLabel={actionModalProps.cancelButtonLabel}
       />
     </>
   );

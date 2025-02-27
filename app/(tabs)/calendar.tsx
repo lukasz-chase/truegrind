@@ -83,7 +83,15 @@ export default function CalendarScreen() {
     const workoutCalendar = workoutCalendarData.find((workout) => {
       return workout.workout_id === workoutId;
     });
-    return workoutCalendar!.color;
+
+    return workoutCalendar?.color ?? AppColors.darkGray;
+  };
+
+  const getUniqueCalendarData = () => {
+    return workoutCalendarData.filter(
+      (item, index, self) =>
+        index === self.findIndex((t) => t.workout_id === item.workout_id)
+    );
   };
 
   return (
@@ -100,19 +108,15 @@ export default function CalendarScreen() {
             style={styles.legendsWrapper}
             contentContainerStyle={styles.legendsContainer}
           >
-            {activeSplit.workouts
-              .filter((w) =>
-                workoutCalendarData.find(
-                  (workout) => workout.workout_id === w.id
-                )
-              )
-              .map((workout) => (
-                <LegendItem
-                  key={workout.id}
-                  color={getWorkoutColorByWorkoutId(workout.id)}
-                  workoutName={workout.name}
-                />
-              ))}
+            {getUniqueCalendarData().map((workoutCalendar) => (
+              <LegendItem
+                key={workoutCalendar.id}
+                color={getWorkoutColorByWorkoutId(workoutCalendar.workout_id)}
+                workoutName={
+                  workoutCalendar.workout_history?.name ?? "Undefined"
+                }
+              />
+            ))}
           </ScrollView>
         )}
       </View>

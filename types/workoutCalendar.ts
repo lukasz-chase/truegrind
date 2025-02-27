@@ -20,6 +20,7 @@ export type WorkoutCalendarPopulated = {
   end_time: Date;
   calendar_event_id?: string;
   workout_history_id?: string | null;
+  workout_history?: { name: string };
 };
 export type WorkoutCalendar = {
   id: string;

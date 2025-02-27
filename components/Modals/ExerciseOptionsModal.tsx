@@ -1,6 +1,6 @@
 import { StyleSheet, View } from "react-native";
 import { AppColors } from "@/constants/colors";
-import WarningModal from "./WarningModal";
+import ActionModal from "./ActionModal";
 import { useState } from "react";
 import AnchoredModal from "./AnchoredModal";
 import Animated, {
@@ -116,7 +116,7 @@ const ExerciseOptionsModal = function ExerciseOptionsModal() {
     setCurrentScreen("main");
   };
 
-  const closeWarningModal = () => {
+  const closeActionModal = () => {
     setWarningState((state) => ({ ...state, isVisible: false }));
   };
 
@@ -179,13 +179,13 @@ const ExerciseOptionsModal = function ExerciseOptionsModal() {
           </View>
         </Animated.View>
       </AnchoredModal>
-      <WarningModal
-        closeModal={closeWarningModal}
+      <ActionModal
+        closeModal={closeActionModal}
         isVisible={warningState.isVisible}
         title="Remove Exercise?"
         subtitle={`This removes '${workoutExercise.exercises.name}' and all of its sets from your
         workout. You cannot undo this action.`}
-        onCancel={closeWarningModal}
+        onCancel={closeActionModal}
         onProceed={removeExerciseHandler}
       />
     </>

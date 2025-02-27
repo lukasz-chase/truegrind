@@ -8,14 +8,14 @@ import useAppStore from "@/store/useAppStore";
 import { copyWorkout, deleteWorkout } from "@/lib/workoutServices";
 import userStore from "@/store/userStore";
 import AntDesign from "@expo/vector-icons/AntDesign";
-import WarningModal from "../Modals/WarningModal";
+import ActionModal from "../Modals/ActionModal";
 import { useState } from "react";
 
 const MODAL_WIDTH = 150;
 
 const WorkoutOptionsModal = function ExerciseOptionsModal() {
-  const [isWarningModalVisible, setIsWarningModalVisible] = useState(false);
-  const [openWarningModal, setOpenWarningModal] = useState(false);
+  const [isActionModalVisible, setIsActionModalVisible] = useState(false);
+  const [openActionModal, setOpenActionModal] = useState(false);
 
   const { isVisible, closeModal, workoutProps } = useWorkoutOptionsModal();
   const { buttonRef, workout } = workoutProps;
@@ -25,16 +25,16 @@ const WorkoutOptionsModal = function ExerciseOptionsModal() {
     await deleteWorkout(workout!.id);
     refetchData();
     closeModal();
-    setIsWarningModalVisible(false);
-    setOpenWarningModal(false);
+    setIsActionModalVisible(false);
+    setOpenActionModal(false);
   };
   const copyWorkoutHandler = async () => {
     await copyWorkout(workout!, user!.id);
     refetchData();
     closeModal();
   };
-  const openWarningModalHandler = () => {
-    setOpenWarningModal(true);
+  const openActionModalHandler = () => {
+    setOpenActionModal(true);
     closeModal();
   };
   const options = [
@@ -47,7 +47,7 @@ const WorkoutOptionsModal = function ExerciseOptionsModal() {
     {
       Icon: <EvilIcons name="close" size={24} color="red" />,
       title: "Delete",
-      cb: openWarningModalHandler,
+      cb: openActionModalHandler,
       conditionToDisplay: workout?.user_id === user?.id,
     },
   ];
@@ -62,9 +62,9 @@ const WorkoutOptionsModal = function ExerciseOptionsModal() {
         backgroundColor={AppColors.darkBlue}
         modalWidth={MODAL_WIDTH}
         onDismiss={() => {
-          if (openWarningModal) {
-            setOpenWarningModal(false);
-            setIsWarningModalVisible(true);
+          if (openActionModal) {
+            setOpenActionModal(false);
+            setIsActionModalVisible(true);
           }
         }}
       >
@@ -76,12 +76,12 @@ const WorkoutOptionsModal = function ExerciseOptionsModal() {
           })}
         </View>
       </AnchoredModal>
-      <WarningModal
-        closeModal={() => setIsWarningModalVisible(false)}
-        isVisible={isWarningModalVisible}
+      <ActionModal
+        closeModal={() => setIsActionModalVisible(false)}
+        isVisible={isActionModalVisible}
         title="Delete Workout"
         subtitle={`Are you sure you want to delete ${workout?.name}?`}
-        onCancel={() => setIsWarningModalVisible(false)}
+        onCancel={() => setIsActionModalVisible(false)}
         onProceed={deleteWorkoutHandler}
       />
     </>
