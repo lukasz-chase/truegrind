@@ -2,12 +2,25 @@ import { Workout } from "@/types/workout";
 import { areObjectsDifferent } from "./helpers";
 import { supabase } from "./supabase";
 
+export const createWorkoutHistory = async (
+  workout: Workout,
+  workoutHistoryId: string,
+  workoutTime: string
+) => {
+  const { workout_exercises, id, ...workoutNotPopulated } = workout;
+  const workoutHistory = {
+    ...workoutNotPopulated,
+    id: workoutHistoryId,
+    created_at: new Date().toISOString(),
+    workout_time: workoutTime,
+  };
+  await supabase.from("workout_history").insert(workoutHistory);
+};
+
 export const updateWorkout = async (
   activeWorkout: Workout,
   initialActiveWorkout: Workout,
-  workoutHistoryId: string,
   isNewWorkout: boolean,
-  workoutTime: string,
   updateTemplate: boolean
 ) => {
   if (
@@ -21,14 +34,6 @@ export const updateWorkout = async (
       .upsert(workoutDB)
       .eq("id", activeWorkout.id);
   }
-  const { workout_exercises, id, ...workoutNotPopulated } = activeWorkout;
-  const workoutHistory = {
-    ...workoutNotPopulated,
-    id: workoutHistoryId,
-    created_at: new Date().toISOString(),
-    workout_time: workoutTime,
-  };
-  await supabase.from("workout_history").insert(workoutHistory);
 };
 export const deleteWorkout = async (workoutId: string) => {
   await supabase.from("workouts").delete().eq("id", workoutId);
@@ -104,4 +109,20 @@ export const fetchWorkoutHistory = async (
     return data;
   }
   if (error) console.log(error);
+};
+
+export const fetchWorkout = async (id: string, userId: string) => {
+  const { data, error } = await supabase
+    .from("workouts")
+    .select("*, workout_exercises(*, exercises(*), exercise_sets(*))")
+    .eq("id", id)
+    .eq("user_id", userId)
+    .limit(1)
+    .single();
+  if (error) console.log(error);
+  if (data) {
+    return data;
+  } else {
+    return null;
+  }
 };

@@ -15,6 +15,7 @@ import CloseButton from "../CloseButton";
 import userStore from "@/store/userStore";
 import { copyWorkout } from "@/lib/workoutServices";
 import useAppStore from "@/store/useAppStore";
+import { useRouter } from "expo-router";
 
 type Props = {
   visible: boolean;
@@ -31,9 +32,16 @@ export default function WorkoutPreviewModal({
 }: Props) {
   const { user } = userStore();
   const { refetchData } = useAppStore();
+
+  const router = useRouter();
+
   const copyWorkoutHandler = async () => {
     await copyWorkout(workout, user!.id);
     refetchData();
+  };
+  const editWorkoutTemplate = () => {
+    router.push(`/template/${workout?.id}`);
+    onClose();
   };
   return (
     <Modal
@@ -51,7 +59,7 @@ export default function WorkoutPreviewModal({
                 <Text style={styles.modalHeaderTitle} numberOfLines={1}>
                   {workout.name}
                 </Text>
-                <Pressable>
+                <Pressable onPress={editWorkoutTemplate}>
                   <Text style={styles.modalEditButton}>Edit</Text>
                 </Pressable>
               </View>

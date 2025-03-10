@@ -6,12 +6,9 @@ import { supabase } from "./supabase";
 export const updateWorkoutExercises = async (
   activeWorkout: Workout,
   initialActiveWorkout: Workout,
-  workoutHistoryId: string,
-  workoutExercisesHistoryIds: { id: string; historyId: string }[],
   updateTemplate: boolean
 ) => {
   const workoutExercisesToUpdate: WorkoutExercise[] = [];
-  const workoutExercisesHistoryToCreate: WorkoutExercise[] = [];
   const workoutExercisesToDelete: string[] = [];
 
   for (const workoutExercise of activeWorkout.workout_exercises || []) {
@@ -20,14 +17,7 @@ export const updateWorkoutExercises = async (
     );
     const { exercise_sets, exercises, ...workoutExerciseNotPopulated } =
       workoutExercise;
-    workoutExercisesHistoryToCreate.push({
-      ...workoutExerciseNotPopulated,
-      id: workoutExercisesHistoryIds.find((e) => e.id === workoutExercise.id)!
-        .historyId,
-      exercise_id: workoutExercise.exercises.id,
-      workout_id: workoutHistoryId,
-      created_at: new Date().toISOString(),
-    });
+
     if (
       !initialExercise ||
       areObjectsDifferent(workoutExercise, initialExercise)
@@ -51,6 +41,7 @@ export const updateWorkoutExercises = async (
       );
       if (!exists) workoutExercisesToDelete.push(initialWorkoutExercise.id);
     }
+
     if (workoutExercisesToDelete.length > 0) {
       await supabase
         .from("workout_exercises")
@@ -61,6 +52,27 @@ export const updateWorkoutExercises = async (
     if (workoutExercisesToUpdate.length > 0) {
       await supabase.from("workout_exercises").upsert(workoutExercisesToUpdate);
     }
+  }
+};
+
+export const createWorkoutExercisesHistory = async (
+  activeWorkout: Workout,
+  workoutHistoryId: string,
+  workoutExercisesHistoryIds: { id: string; historyId: string }[]
+) => {
+  const workoutExercisesHistoryToCreate: WorkoutExercise[] = [];
+
+  for (const workoutExercise of activeWorkout.workout_exercises || []) {
+    const { exercise_sets, exercises, ...workoutExerciseNotPopulated } =
+      workoutExercise;
+    workoutExercisesHistoryToCreate.push({
+      ...workoutExerciseNotPopulated,
+      id: workoutExercisesHistoryIds.find((e) => e.id === workoutExercise.id)!
+        .historyId,
+      exercise_id: workoutExercise.exercises.id,
+      workout_id: workoutHistoryId,
+      created_at: new Date().toISOString(),
+    });
   }
 
   await supabase

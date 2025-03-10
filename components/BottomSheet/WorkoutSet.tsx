@@ -18,6 +18,13 @@ type Props = {
   exerciseId: string;
   exerciseTimer: number | null;
   warmupTimer: number | null;
+  updateExerciseSet: (
+    exerciseId: string,
+    setId: string,
+    propertiesToUpdate: Partial<ExerciseSet>
+  ) => void;
+  deleteExerciseSet: (exerciseId: string, setId: string) => void;
+  isEditTemplate?: boolean;
 };
 
 const WorkoutSet = ({
@@ -25,10 +32,12 @@ const WorkoutSet = ({
   exerciseId,
   exerciseTimer,
   warmupTimer,
+  updateExerciseSet,
+  deleteExerciseSet,
+  isEditTemplate = false,
 }: Props) => {
   const rowScale = useSharedValue(1);
 
-  const { updateExerciseSet, deleteExerciseSet } = useActiveWorkout();
   const { user } = userStore();
 
   const updateSet = (newValue: any, name: keyof ExerciseSet) => {
@@ -111,6 +120,7 @@ const WorkoutSet = ({
             weight={exerciseSet.weight}
             isWarmup={exerciseSet.is_warmup}
             warmupTimer={warmupTimer}
+            disabled={isEditTemplate}
           />
         </View>
       </Animated.View>

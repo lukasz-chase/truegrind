@@ -66,4 +66,10 @@ export const hiddenScreens = [
     name: "workoutHistory/[id]",
     additionalOptions: {},
   },
+  {
+    name: "template/[id]",
+    additionalOptions: {
+      tabBarStyle: { display: "none" as "none" }, // Explicitly cast "none"
+    },
+  },
 ];

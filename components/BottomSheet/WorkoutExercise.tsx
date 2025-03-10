@@ -2,24 +2,46 @@ import { Pressable, Text, TouchableOpacity, View } from "react-native";
 import { StyleSheet } from "react-native";
 import SimpleLineIcons from "@expo/vector-icons/SimpleLineIcons";
 import { AppColors } from "@/constants/colors";
-import useActiveWorkout from "@/store/useActiveWorkout";
 import WorkoutSet from "./WorkoutSet";
 import Animated, { LinearTransition, runOnJS } from "react-native-reanimated";
 import { useEffect, useRef, useState } from "react";
-import { WorkoutExercisePopulated } from "@/types/workoutExercise";
+import {
+  WorkoutExercise as WorkoutExerciseType,
+  WorkoutExercisePopulated,
+} from "@/types/workoutExercise";
 import useCustomKeyboard from "@/store/useCustomKeyboard";
 import useExerciseOptionsModal from "@/store/useExerciseOptionsModal";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import CustomTextInput from "../CustomTextInput";
 import { exerciseHeader } from "@/constants/exerciseHeader";
 import useExerciseDetailsModal from "@/store/useExerciseDetailsModal";
+import { ExerciseSet } from "@/types/exercisesSets";
 
 type Props = {
   workoutExercise: WorkoutExercisePopulated;
   setDragItemId: React.Dispatch<React.SetStateAction<string | null>>;
+  updateWorkoutExerciseField: (
+    workoutExerciseId: string,
+    propertiesToUpdate: Partial<WorkoutExerciseType>
+  ) => void;
+  addNewSet: (exerciseId: string) => void;
+  updateExerciseSet: (
+    exerciseId: string,
+    setId: string,
+    propertiesToUpdate: Partial<ExerciseSet>
+  ) => void;
+  deleteExerciseSet: (exerciseId: string, setId: string) => void;
+  isEditTemplate?: boolean;
 };
-const WorkoutExercise = ({ workoutExercise, setDragItemId }: Props) => {
-  const { addNewSet, updateWorkoutExerciseField } = useActiveWorkout();
+const WorkoutExercise = ({
+  workoutExercise,
+  setDragItemId,
+  addNewSet,
+  updateWorkoutExerciseField,
+  updateExerciseSet,
+  deleteExerciseSet,
+  isEditTemplate = false,
+}: Props) => {
   const { openModal } = useExerciseOptionsModal();
   const { closeKeyboard } = useCustomKeyboard();
   const { openModal: openExerciseDetailsModal } = useExerciseDetailsModal();
@@ -109,6 +131,9 @@ const WorkoutExercise = ({ workoutExercise, setDragItemId }: Props) => {
             exerciseId={workoutExercise.exercises.id}
             exerciseTimer={workoutExercise.timer}
             warmupTimer={workoutExercise.warmup_timer}
+            updateExerciseSet={updateExerciseSet}
+            deleteExerciseSet={deleteExerciseSet}
+            isEditTemplate={isEditTemplate}
           />
         ))}
       </View>

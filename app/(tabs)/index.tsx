@@ -80,6 +80,10 @@ export default function WorkoutScreen() {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     }
   };
+  const newTemplateHandler = () => {
+    const templateId = uuid.v4();
+    router.push(`/template/${templateId}`);
+  };
   if (loading || dataLoading || !split) {
     return (
       <SafeAreaView style={styles.safeArea}>
@@ -131,7 +135,10 @@ export default function WorkoutScreen() {
         </Pressable>
         <View style={styles.templateHeader}>
           <Text style={styles.templatesTitle}>Templates</Text>
-          <Pressable style={styles.templatesButton}>
+          <Pressable
+            style={styles.templatesButton}
+            onPress={newTemplateHandler}
+          >
             <Text style={styles.templatesButtonText}>+ Template</Text>
           </Pressable>
         </View>

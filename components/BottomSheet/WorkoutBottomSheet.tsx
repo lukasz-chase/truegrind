@@ -27,7 +27,15 @@ const WorkoutBottomSheet = ({ animatedIndex }: Props) => {
   const [dragItemId, setDragItemId] = useState<string | null>(null);
 
   const { setIsSheetVisible, setBottomSheetScrollViewRef } = useBottomSheet();
-  const { activeWorkout, reorderWorkoutExercises } = useActiveWorkout();
+  const {
+    activeWorkout,
+    reorderWorkoutExercises,
+    updateWorkoutField,
+    addNewSet,
+    deleteExerciseSet,
+    updateExerciseSet,
+    updateWorkoutExerciseField,
+  } = useActiveWorkout();
   const { closeKeyboard } = useCustomKeyboard();
 
   const sheetRef = useRef<BottomSheet>(null);
@@ -83,7 +91,10 @@ const WorkoutBottomSheet = ({ animatedIndex }: Props) => {
             scrolledY={scrolledY}
           />
           <BottomSheetScrollView ref={scrollViewRef} onScroll={handleScroll}>
-            <WorkoutDetails />
+            <WorkoutDetails
+              workout={activeWorkout}
+              updateWorkoutField={updateWorkoutField}
+            />
             {dragItemId && (
               <DraggableList
                 data={
@@ -114,6 +125,10 @@ const WorkoutBottomSheet = ({ animatedIndex }: Props) => {
                   <WorkoutExercise
                     workoutExercise={workoutExercise}
                     setDragItemId={setDragItemId}
+                    addNewSet={addNewSet}
+                    deleteExerciseSet={deleteExerciseSet}
+                    updateExerciseSet={updateExerciseSet}
+                    updateWorkoutExerciseField={updateWorkoutExerciseField}
                   />
                 </WorkoutExerciseWrapper>
               ))}

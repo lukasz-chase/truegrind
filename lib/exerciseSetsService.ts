@@ -7,20 +7,14 @@ import uuid from "react-native-uuid";
 export const updateExerciseSets = async (
   activeWorkout: Workout,
   initialActiveWorkout: Workout,
-  workoutExercisesHistoryIds: { id: string; historyId: string }[]
+  isEditTemplate = false
 ) => {
   const exerciseSetsToUpdate: ExerciseSet[] = [];
-  const exerciseHistorySets: ExerciseSet[] = [];
   const exerciseSetsToDelete: string[] = [];
-  let userId = null;
-  const user = userStore.getState().user;
-  if (user?.id) {
-    userId = user.id;
-  }
   for (const workoutExercise of activeWorkout.workout_exercises || []) {
     let order = 1;
     for (const set of workoutExercise.exercise_sets || []) {
-      if (set.completed) {
+      if (set.completed || isEditTemplate) {
         const setUpdated = {
           ...set,
           created_at: new Date().toISOString(),
@@ -29,18 +23,6 @@ export const updateExerciseSets = async (
           workout_exercise_id: workoutExercise.id,
         };
         exerciseSetsToUpdate.push(setUpdated);
-
-        const workoutExerciseHistoricId = workoutExercisesHistoryIds.find(
-          (e) => e.id === workoutExercise.id
-        )!.historyId;
-        const historySet = {
-          ...setUpdated,
-          id: uuid.v4(),
-          workout_exercise_id: workoutExerciseHistoricId,
-          exercise_id: workoutExercise.exercises.id,
-          user_id: userId,
-        };
-        exerciseHistorySets.push(historySet);
       }
     }
   }
@@ -60,13 +42,54 @@ export const updateExerciseSets = async (
 
   if (exerciseSetsToUpdate.length > 0) {
     await supabase.from("exercise_sets").upsert(exerciseSetsToUpdate);
-    await supabase.from("sets_history").upsert(exerciseHistorySets);
   }
   if (exerciseSetsToDelete.length > 0) {
     await supabase
       .from("exercise_sets")
       .delete()
       .in("id", exerciseSetsToDelete);
+  }
+};
+
+export const createExerciseSetsHistory = async (
+  activeWorkout: Workout,
+  workoutExercisesHistoryIds: { id: string; historyId: string }[]
+) => {
+  const exerciseHistorySets: ExerciseSet[] = [];
+  const userId = userStore.getState().user?.id || null;
+
+  for (const workoutExercise of activeWorkout.workout_exercises || []) {
+    let order = 1;
+    for (const set of workoutExercise.exercise_sets || []) {
+      if (set.completed) {
+        const setUpdated = {
+          ...set,
+          created_at: new Date().toISOString(),
+          completed: false,
+          order: order++,
+          workout_exercise_id: workoutExercise.id,
+        };
+
+        const workoutExerciseHistoricId = workoutExercisesHistoryIds.find(
+          (e) => e.id === workoutExercise.id
+        )?.historyId;
+
+        if (workoutExerciseHistoricId) {
+          const historySet = {
+            ...setUpdated,
+            id: uuid.v4(),
+            workout_exercise_id: workoutExerciseHistoricId,
+            exercise_id: workoutExercise.exercises.id,
+            user_id: userId,
+          };
+          exerciseHistorySets.push(historySet);
+        }
+      }
+    }
+  }
+
+  if (exerciseHistorySets.length > 0) {
+    await supabase.from("sets_history").upsert(exerciseHistorySets);
   }
 };
 

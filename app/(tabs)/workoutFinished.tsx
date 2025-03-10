@@ -15,9 +15,19 @@ import useAppStore from "@/store/useAppStore";
 import useTimerStore from "@/store/useTimer";
 import useWorkoutTimer from "@/store/useWorkoutTimer";
 import * as Haptics from "expo-haptics";
-import { fetchWorkoutsCount, updateWorkout } from "@/lib/workoutServices";
-import { updateWorkoutExercises } from "@/lib/workoutExerciseServices";
-import { updateExerciseSets } from "@/lib/exerciseSetsService";
+import {
+  createWorkoutHistory,
+  fetchWorkoutsCount,
+  updateWorkout,
+} from "@/lib/workoutServices";
+import {
+  createWorkoutExercisesHistory,
+  updateWorkoutExercises,
+} from "@/lib/workoutExerciseServices";
+import {
+  createExerciseSetsHistory,
+  updateExerciseSets,
+} from "@/lib/exerciseSetsService";
 import {
   fetchUserWorkoutCalendar,
   upsertWorkoutCalendar,
@@ -112,10 +122,13 @@ export default function WorkoutFinishedScreen() {
       await updateWorkout(
         activeWorkout,
         initialActiveWorkout,
-        workoutHistoryId,
         isNewWorkout,
-        formattedTime,
         updateTemplate
+      );
+      await createWorkoutHistory(
+        activeWorkout,
+        workoutHistoryId,
+        formattedTime
       );
       const workoutExercisesHistoryIds =
         activeWorkout.workout_exercises?.map((workoutExercise) => ({
@@ -125,16 +138,18 @@ export default function WorkoutFinishedScreen() {
       await updateWorkoutExercises(
         activeWorkout,
         initialActiveWorkout,
-        workoutHistoryId,
-        workoutExercisesHistoryIds,
         updateTemplate
       );
-      await updateExerciseSets(
+      await createWorkoutExercisesHistory(
         activeWorkout,
-        initialActiveWorkout,
+        workoutHistoryId,
         workoutExercisesHistoryIds
       );
-
+      await updateExerciseSets(activeWorkout, initialActiveWorkout);
+      await createExerciseSetsHistory(
+        activeWorkout,
+        workoutExercisesHistoryIds
+      );
       const userCalendarWorkouts = await fetchUserWorkoutCalendar(
         activeWorkout.user_id,
         new Date().getMonth() + 1
@@ -199,6 +214,7 @@ export default function WorkoutFinishedScreen() {
         title={actionModalProps.title}
         proceedButtonLabeL={actionModalProps.proceedButtonLabeL}
         cancelButtonLabel={actionModalProps.cancelButtonLabel}
+        buttonsLayout="column"
       />
     </>
   );

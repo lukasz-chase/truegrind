@@ -21,6 +21,7 @@ type Props = {
   proceedButtonLabeL?: string;
   proceedButtonBgColor?: string;
   cancelButtonLabel?: string;
+  buttonsLayout?: "row" | "column";
 };
 
 export default function ActionModal({
@@ -33,6 +34,7 @@ export default function ActionModal({
   proceedButtonLabeL = "Delete",
   proceedButtonBgColor = AppColors.red,
   cancelButtonLabel = "Cancel",
+  buttonsLayout = "row",
 }: Props) {
   const onProceedHandler = () => {
     onProceed();
@@ -54,12 +56,19 @@ export default function ActionModal({
       <View style={styles.modalContent}>
         <Text style={styles.title}>{title}</Text>
         <Text style={styles.subtitle}>{subtitle}</Text>
-        <View style={styles.buttonsWrapper}>
-          <Pressable style={styles.button} onPress={onCancel}>
+        <View style={[styles.buttonsWrapper, { flexDirection: buttonsLayout }]}>
+          <Pressable
+            style={[styles.button, buttonsLayout === "row" && { flex: 1 }]}
+            onPress={onCancel}
+          >
             <Text style={styles.buttonText}>{cancelButtonLabel}</Text>
           </Pressable>
           <Pressable
-            style={[styles.button, { backgroundColor: proceedButtonBgColor }]}
+            style={[
+              styles.button,
+              { backgroundColor: proceedButtonBgColor },
+              buttonsLayout === "row" && { flex: 1 },
+            ]}
             onPress={onProceedHandler}
           >
             <Text style={[styles.buttonText, { color: "white" }]}>
@@ -100,13 +109,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   buttonsWrapper: {
-    flexDirection: "row",
     gap: 15,
+    width: "100%",
   },
   button: {
-    paddingVertical: 10,
+    padding: 10,
     borderRadius: 10,
-    flex: 1,
     backgroundColor: AppColors.gray,
   },
   buttonText: {

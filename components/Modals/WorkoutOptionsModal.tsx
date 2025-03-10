@@ -10,8 +10,9 @@ import userStore from "@/store/userStore";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import ActionModal from "../Modals/ActionModal";
 import { useState } from "react";
+import { useRouter } from "expo-router";
 
-const MODAL_WIDTH = 150;
+const MODAL_WIDTH = 170;
 
 const WorkoutOptionsModal = function ExerciseOptionsModal() {
   const [isActionModalVisible, setIsActionModalVisible] = useState(false);
@@ -21,6 +22,7 @@ const WorkoutOptionsModal = function ExerciseOptionsModal() {
   const { buttonRef, workout } = workoutProps;
   const { refetchData } = useAppStore();
   const { user } = userStore();
+  const router = useRouter();
   const deleteWorkoutHandler = async () => {
     await deleteWorkout(workout!.id);
     refetchData();
@@ -37,6 +39,10 @@ const WorkoutOptionsModal = function ExerciseOptionsModal() {
     setOpenActionModal(true);
     closeModal();
   };
+  const editTemplateHandler = () => {
+    router.push(`/template/${workout?.id}`);
+    closeModal();
+  };
   const options = [
     {
       Icon: <AntDesign name="copy1" size={24} color="white" />,
@@ -45,7 +51,13 @@ const WorkoutOptionsModal = function ExerciseOptionsModal() {
       conditionToDisplay: workout?.user_id !== user?.id,
     },
     {
-      Icon: <EvilIcons name="close" size={24} color="red" />,
+      Icon: <EvilIcons name="pencil" size={24} color={AppColors.blue} />,
+      title: "Edit template",
+      cb: editTemplateHandler,
+      conditionToDisplay: workout?.user_id === user?.id,
+    },
+    {
+      Icon: <EvilIcons name="close" size={24} color={AppColors.red} />,
       title: "Delete",
       cb: openActionModalHandler,
       conditionToDisplay: workout?.user_id === user?.id,

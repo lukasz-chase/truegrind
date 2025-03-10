@@ -9,6 +9,7 @@ import { ExerciseSet } from "@/types/exercisesSets";
 import useTimerStore from "@/store/useTimer";
 import useWorkoutTimerModal from "@/store/useWorkoutTimerModal";
 import useCustomKeyboard from "@/store/useCustomKeyboard";
+import Octicons from "@expo/vector-icons/Octicons";
 
 type CompleteSetButtonProps = {
   updateStoreSetField: (newValues: Partial<ExerciseSet>) => void;
@@ -19,6 +20,7 @@ type CompleteSetButtonProps = {
   warmupTimer: number | null;
   weight: number | null;
   isWarmup: boolean;
+  disabled: boolean;
 };
 
 const CompleteSetButton = ({
@@ -30,6 +32,7 @@ const CompleteSetButton = ({
   warmupTimer,
   weight,
   isWarmup,
+  disabled,
 }: CompleteSetButtonProps) => {
   const { startTimer, endTimer, isRunning } = useTimerStore();
   const { openModal } = useWorkoutTimerModal();
@@ -78,10 +81,18 @@ const CompleteSetButton = ({
           opacity: !reps ? 0.3 : 1,
         },
       ]}
-      disabled={!reps}
+      disabled={!reps || disabled}
       onPress={completeSet}
     >
-      <AntDesign name="check" size={20} color={completed ? "white" : "black"} />
+      {disabled ? (
+        <Octicons name="dash" size={24} color="black" />
+      ) : (
+        <AntDesign
+          name="check"
+          size={20}
+          color={completed ? "white" : "black"}
+        />
+      )}
     </Pressable>
   );
 };
