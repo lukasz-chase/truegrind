@@ -30,6 +30,7 @@ export default function Auth() {
   }
 
   async function signUpWithEmail() {
+    if (!email || !password) return Alert.alert("Inputs cant be empty");
     setLoading(true);
     const {
       data: { session },
@@ -37,8 +38,13 @@ export default function Auth() {
     } = await supabase.auth.signUp({
       email: email,
       password: password,
+      options: {
+        data: {
+          custom_timers: [60, 120, 180, 240],
+        },
+      },
     });
-
+    console.log(error);
     if (error) Alert.alert(error.message);
     if (!session)
       Alert.alert("Please check your inbox for email verification!");
@@ -68,24 +74,29 @@ export default function Auth() {
           placeholderTextColor="#888"
         />
       </View>
-      <Pressable
-        style={[styles.button, loading && styles.buttonDisabled]}
-        disabled={loading}
-        onPress={signInWithEmail}
-      >
-        {loading ? (
-          <ActivityIndicator color="#fff" />
-        ) : (
-          <Text style={styles.buttonText}>Sign In</Text>
-        )}
-      </Pressable>
-      <Pressable
-        style={[styles.buttonOutline, loading && styles.buttonOutlineDisabled]}
-        disabled={loading}
-        onPress={signUpWithEmail}
-      >
-        <Text style={styles.buttonOutlineText}>Sign Up</Text>
-      </Pressable>
+      {loading ? (
+        <ActivityIndicator color="#fff" />
+      ) : (
+        <>
+          <Pressable
+            style={[styles.button, loading && styles.buttonDisabled]}
+            disabled={loading}
+            onPress={signInWithEmail}
+          >
+            <Text style={styles.buttonText}>Sign In</Text>
+          </Pressable>
+          <Pressable
+            style={[
+              styles.buttonOutline,
+              loading && styles.buttonOutlineDisabled,
+            ]}
+            disabled={loading}
+            onPress={signUpWithEmail}
+          >
+            <Text style={styles.buttonOutlineText}>Sign Up</Text>
+          </Pressable>
+        </>
+      )}
     </View>
   );
 }
