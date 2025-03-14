@@ -148,9 +148,11 @@ const ExerciseOptionsModal = function ExerciseOptionsModal() {
         anchorCorner="RIGHT"
         backgroundColor={AppColors.darkBlue}
         modalWidth={MODAL_WIDTH}
+        alignItems="flex-start"
+        padding={0}
       >
         <Animated.View
-          style={[styles.container, animatedStyle, { width: MODAL_WIDTH }]}
+          style={[styles.container, animatedStyle, { width: MODAL_WIDTH * 2 }]}
         >
           {/* Main Screen */}
           <View style={styles.screen}>
@@ -164,18 +166,20 @@ const ExerciseOptionsModal = function ExerciseOptionsModal() {
           </View>
 
           <View style={styles.screen}>
-            <AutoRestTimeSettings
-              screenWidth={MODAL_WIDTH}
-              translateX={translateX}
-              exerciseTimer={workoutExercise.timer}
-              setExerciseTimer={setExerciseTimer}
-              warmupTimer={workoutExercise.warmup_timer}
-              setWarmupTimer={setWarmupTimer}
-              switchToMainScreen={switchToMainScreen}
-              setCurrentTimer={setCurrentTimer}
-              currentTimer={currentTimer}
-              updateTimer={updateTimer}
-            />
+            <View style={{ flex: 1 }}>
+              <AutoRestTimeSettings
+                screenWidth={MODAL_WIDTH}
+                translateX={translateX}
+                exerciseTimer={workoutExercise.timer}
+                setExerciseTimer={setExerciseTimer}
+                warmupTimer={workoutExercise.warmup_timer}
+                setWarmupTimer={setWarmupTimer}
+                switchToMainScreen={switchToMainScreen}
+                setCurrentTimer={setCurrentTimer}
+                currentTimer={currentTimer}
+                updateTimer={updateTimer}
+              />
+            </View>
           </View>
         </Animated.View>
       </AnchoredModal>
@@ -197,7 +201,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
   },
   screen: {
-    width: "100%",
+    width: MODAL_WIDTH,
+    padding: 5,
   },
 });
 

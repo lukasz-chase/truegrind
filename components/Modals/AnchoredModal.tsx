@@ -16,6 +16,8 @@ type Props = {
   backgroundColor?: string;
   modalWidth?: DimensionValue;
   onDismiss?: () => void;
+  padding?: number;
+  alignItems?: "flex-start" | "flex-end" | "center";
   children: any;
 };
 
@@ -27,6 +29,8 @@ export default function AnchoredModal({
   backgroundColor = "white",
   modalWidth = "90%",
   onDismiss,
+  padding = 10,
+  alignItems = "center",
   children,
 }: Props) {
   const [modalPosition, setModalPosition] = useState({
@@ -102,6 +106,8 @@ export default function AnchoredModal({
             left: modalPosition.left,
             backgroundColor,
             width: modalWidth,
+            alignItems,
+            padding,
           },
         ]}
       >
@@ -118,9 +124,7 @@ const styles = StyleSheet.create({
   },
   modalContent: {
     position: "absolute",
-    padding: 10,
     borderRadius: 10,
-    alignItems: "center",
     overflow: "hidden",
     zIndex: 2, // This doesn't work well on Android
     elevation: 10, // Add this for Android
