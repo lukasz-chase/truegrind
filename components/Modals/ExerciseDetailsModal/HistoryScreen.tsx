@@ -19,7 +19,13 @@ const HistoryScreen = ({
         <Skeleton />
       </View>
     );
-
+  if (!history || history.length === 0) {
+    return (
+      <View style={{ gap: 10 }}>
+        <Text style={[styles.title]}>No history found</Text>
+      </View>
+    );
+  }
   const renderItem = ({ item }: { item: any }) => (
     <View style={styles.itemContainer}>
       <Text style={styles.title}>{item.workoutName}</Text>

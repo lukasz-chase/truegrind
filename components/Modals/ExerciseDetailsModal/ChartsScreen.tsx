@@ -23,6 +23,17 @@ const ChartsScreen = ({
       </ScrollView>
     );
   }
+  if (!data || data.length === 0) {
+    return (
+      <ScrollView style={styles.container}>
+        <Text
+          style={[styles.chartTitle, { textAlign: "center", fontSize: 18 }]}
+        >
+          No workout data available.
+        </Text>
+      </ScrollView>
+    );
+  }
   const reversedData = data.toReversed();
 
   const labels = reversedData.map((h) => formatDateShort(h.workoutDate));
@@ -39,7 +50,6 @@ const ChartsScreen = ({
   );
 
   const maxRepsData = reversedData.map((h) => h.maxConsecutiveReps || 0);
-
   return (
     <ScrollView style={styles.container}>
       <Text style={styles.chartTitle}>1RM Progression</Text>

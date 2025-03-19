@@ -94,7 +94,7 @@ export const getExerciseData = async (exerciseId: string, userId: string) => {
   const { data, error } = await supabase
     .from("workout_history")
     .select(
-      "name, created_at, exercises_history!inner(id, sets_history!inner(*))"
+      "id, name, created_at, exercises_history!inner(id, sets_history!inner(*))"
     )
     .eq("exercises_history.sets_history.exercise_id", exerciseId)
     .eq("exercises_history.sets_history.user_id", userId)

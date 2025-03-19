@@ -6,6 +6,7 @@ export interface MetricsData {
 }
 
 export interface WorkoutMetrics {
+  id: string;
   workoutName: string;
   workoutDate: string;
   exercisesMetrics: ExerciseMetric[];
