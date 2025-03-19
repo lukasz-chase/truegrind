@@ -1,4 +1,4 @@
-import { AppColors } from "@/constants/colors";
+import { defaultActionModalState } from "@/constants/actionModal";
 import { create } from "zustand";
 
 interface Props {
@@ -22,20 +22,10 @@ interface ModalState {
 const useActionModal = create<ModalState>((set, get) => ({
   isVisible: false,
   openModal: (props) => {
-    const currentProps = get().props;
-    set({ isVisible: true, props: { ...currentProps, ...props } });
+    set({ isVisible: true, props: { ...defaultActionModalState, ...props } });
   },
   closeModal: () => set({ isVisible: false }),
-  props: {
-    title: "",
-    subtitle: "",
-    onCancel: () => {},
-    onProceed: () => {},
-    proceedButtonLabeL: "Delete",
-    proceedButtonBgColor: AppColors.red,
-    cancelButtonLabel: "Cancel",
-    buttonsLayout: "row",
-  },
+  props: defaultActionModalState,
 }));
 
 export default useActionModal;
