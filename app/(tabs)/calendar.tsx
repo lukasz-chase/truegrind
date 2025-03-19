@@ -113,7 +113,8 @@ export default function CalendarScreen() {
                 key={workoutCalendar.id}
                 color={getWorkoutColorByWorkoutId(workoutCalendar.workout_id)}
                 workoutName={
-                  workoutCalendar.workout_history?.name ?? "Undefined"
+                  workoutCalendar.workout_history?.name ??
+                  workoutCalendar.workouts.name
                 }
               />
             ))}

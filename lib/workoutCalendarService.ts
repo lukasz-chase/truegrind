@@ -70,7 +70,7 @@ export const fetchUserWorkoutCalendar = async (
   const endOfMonth = new Date(year, month, 0, 23, 59, 59, 999); // Last day of the month
   const { data, error } = await supabase
     .from("workout_calendar")
-    .select("*, workout_history(name)")
+    .select("*, workout_history(name), workouts(name)")
     .eq("user_id", userId)
     .gte("scheduled_date", startOfMonth.toISOString())
     .lte("scheduled_date", endOfMonth.toISOString())
