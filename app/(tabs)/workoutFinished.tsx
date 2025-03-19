@@ -35,6 +35,7 @@ import {
 import { WorkoutCalendarStatusEnum } from "@/types/workoutCalendar";
 import { saveTemplate, updateTemplate } from "@/constants/actionModal";
 import useActionModal from "@/store/useActionModal";
+import userStore from "@/store/userStore";
 
 const TrophyImage = require("@/assets/images/trophy.webp");
 
@@ -53,6 +54,7 @@ export default function WorkoutFinishedScreen() {
   const { endTimer } = useTimerStore();
   const { resetTimer, formattedTime } = useWorkoutTimer();
   const { openModal } = useActionModal();
+  const { user } = userStore();
 
   const [workout, setWorkout] = useState({
     ...activeWorkout,
@@ -124,7 +126,7 @@ export default function WorkoutFinishedScreen() {
     return removedExercises || addedExercises;
   };
   const getWorkoutsCount = async () => {
-    const count = await fetchWorkoutsCount();
+    const count = await fetchWorkoutsCount(user?.id!);
     if (count) {
       setWorkoutsCount(count);
     }

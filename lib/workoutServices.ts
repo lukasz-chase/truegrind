@@ -39,10 +39,11 @@ export const deleteWorkout = async (workoutId: string) => {
   await supabase.from("workouts").delete().eq("id", workoutId);
 };
 
-export const fetchWorkoutsCount = async () => {
+export const fetchWorkoutsCount = async (userId: string) => {
   const { count, error } = await supabase
     .from("workout_history")
-    .select("*", { count: "estimated", head: true });
+    .select("*", { count: "estimated", head: true })
+    .eq("user_id", userId);
   if (count) {
     return count;
   }
