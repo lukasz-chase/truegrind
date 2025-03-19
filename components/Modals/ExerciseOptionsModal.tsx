@@ -1,6 +1,5 @@
 import { StyleSheet, View } from "react-native";
 import { AppColors } from "@/constants/colors";
-import ActionModal from "./ActionModal";
 import { useState } from "react";
 import AnchoredModal from "./AnchoredModal";
 import Animated, {
@@ -16,6 +15,7 @@ import useActiveWorkout from "@/store/useActiveWorkout";
 import useExerciseOptionsModal from "@/store/useExerciseOptionsModal";
 import ModalOptionButton from "./ModalOptionButton";
 import userStore from "@/store/userStore";
+import useActionModal from "@/store/useActionModal";
 
 const MODAL_WIDTH = 275;
 
@@ -36,11 +36,8 @@ const ExerciseOptionsModal = function ExerciseOptionsModal() {
     removeWorkoutExercise,
   } = useActiveWorkout();
   const { user } = userStore();
-
-  const [warningState, setWarningState] = useState({
-    isVisible: false,
-    shouldShow: false,
-  });
+  const { openModal: openWarningModal } = useActionModal();
+  const [shouldShowWarningModal, setShouldShowWarningModal] = useState(false);
   const [shouldShowExercisesModal, setShouldShowExercisesModal] =
     useState(false);
   const [currentScreen, setCurrentScreen] = useState("main");
@@ -57,20 +54,32 @@ const ExerciseOptionsModal = function ExerciseOptionsModal() {
 
   if (!workoutExercise) return null;
 
+  const closeModalHandler = () => {
+    closeModal();
+    setCurrentTimer("timer");
+    if (currentScreen === "autoRest") {
+      switchToMainScreen();
+    }
+  };
+
   const switchToAutoRestScreen = () => {
     setCurrentScreen("autoRest");
     translateX.value = Number(-MODAL_WIDTH);
   };
 
-  const onDismiss = () => {
-    if (warningState.shouldShow) {
-      setWarningState((state) => ({ ...state, isVisible: true }));
-      setWarningState((state) => ({ ...state, shouldShow: false }));
-    }
-    if (shouldShowExercisesModal) {
-      openModal(replaceExerciseHandler, false, "Replace");
-      setShouldShowExercisesModal(false);
-    }
+  const openWarningModalHandler = () => {
+    openWarningModal({
+      title: "Remove Exercise?",
+      subtitle: `This removes '${workoutExercise.exercises.name}' and all of its sets from your
+    workout. You cannot undo this action.`,
+      onProceed: removeExerciseHandler,
+    });
+    closeModalHandler();
+  };
+
+  const openExerciseModalHandler = () => {
+    openModal(replaceExerciseHandler, false, "Replace");
+    closeModalHandler();
   };
 
   const replaceExerciseHandler = async (exercises: Exercise[]) => {
@@ -81,7 +90,7 @@ const ExerciseOptionsModal = function ExerciseOptionsModal() {
 
   const openExercisesModal = () => {
     setShouldShowExercisesModal(true);
-    closeModal();
+    closeModalHandler();
   };
 
   const noteHandler = () => {
@@ -91,7 +100,7 @@ const ExerciseOptionsModal = function ExerciseOptionsModal() {
         showNote: !workoutExercise.note?.showNote,
       },
     });
-    closeModal();
+    closeModalHandler();
   };
   const generateNoteOptionName = () => {
     if (workoutExercise.note?.showNote) return "Remove note";
@@ -103,8 +112,8 @@ const ExerciseOptionsModal = function ExerciseOptionsModal() {
   const options = getOptions({
     exerciseTimer: workoutExercise.timer,
     switchToAutoRestScreen,
-    closeModal,
-    setWarningState,
+    openWarningModalHandler,
+    openExerciseModalHandler,
     openExercisesModal,
     noteHandler,
     generateNoteOptionName,
@@ -116,18 +125,6 @@ const ExerciseOptionsModal = function ExerciseOptionsModal() {
     setCurrentScreen("main");
   };
 
-  const closeActionModal = () => {
-    setWarningState((state) => ({ ...state, isVisible: false }));
-  };
-
-  const closeHandler = () => {
-    closeModal();
-    setCurrentTimer("timer");
-    if (currentScreen === "autoRest") {
-      switchToMainScreen();
-    }
-  };
-
   const updateTimer = (
     timerName: "timer" | "warmup_timer",
     timerValue: number | null
@@ -136,63 +133,51 @@ const ExerciseOptionsModal = function ExerciseOptionsModal() {
   };
   const removeExerciseHandler = () => {
     removeWorkoutExercise(workoutExercise.id);
-    setWarningState({ isVisible: false, shouldShow: false });
   };
-  return (
-    <>
-      <AnchoredModal
-        isVisible={isVisible}
-        closeModal={closeHandler}
-        anchorRef={buttonRef!}
-        onDismiss={onDismiss}
-        anchorCorner="RIGHT"
-        backgroundColor={AppColors.darkBlue}
-        modalWidth={MODAL_WIDTH}
-        alignItems="flex-start"
-        padding={0}
-      >
-        <Animated.View
-          style={[styles.container, animatedStyle, { width: MODAL_WIDTH * 2 }]}
-        >
-          {/* Main Screen */}
-          <View style={styles.screen}>
-            <View>
-              {options.map((option) => {
-                if (option.conditionToDisplay) {
-                  return <ModalOptionButton key={option.title} {...option} />;
-                }
-              })}
-            </View>
-          </View>
 
-          <View style={styles.screen}>
-            <View style={{ flex: 1 }}>
-              <AutoRestTimeSettings
-                screenWidth={MODAL_WIDTH}
-                translateX={translateX}
-                exerciseTimer={workoutExercise.timer}
-                setExerciseTimer={setExerciseTimer}
-                warmupTimer={workoutExercise.warmup_timer}
-                setWarmupTimer={setWarmupTimer}
-                switchToMainScreen={switchToMainScreen}
-                setCurrentTimer={setCurrentTimer}
-                currentTimer={currentTimer}
-                updateTimer={updateTimer}
-              />
-            </View>
+  return (
+    <AnchoredModal
+      isVisible={isVisible}
+      closeModal={closeModalHandler}
+      anchorRef={buttonRef!}
+      anchorCorner="RIGHT"
+      backgroundColor={AppColors.darkBlue}
+      modalWidth={MODAL_WIDTH}
+      alignItems="flex-start"
+      padding={0}
+    >
+      <Animated.View
+        style={[styles.container, animatedStyle, { width: MODAL_WIDTH * 2 }]}
+      >
+        {/* Main Screen */}
+        <View style={styles.screen}>
+          <View>
+            {options.map((option) => {
+              if (option.conditionToDisplay) {
+                return <ModalOptionButton key={option.title} {...option} />;
+              }
+            })}
           </View>
-        </Animated.View>
-      </AnchoredModal>
-      <ActionModal
-        closeModal={closeActionModal}
-        isVisible={warningState.isVisible}
-        title="Remove Exercise?"
-        subtitle={`This removes '${workoutExercise.exercises.name}' and all of its sets from your
-        workout. You cannot undo this action.`}
-        onCancel={closeActionModal}
-        onProceed={removeExerciseHandler}
-      />
-    </>
+        </View>
+
+        <View style={styles.screen}>
+          <View style={{ flex: 1 }}>
+            <AutoRestTimeSettings
+              screenWidth={MODAL_WIDTH}
+              translateX={translateX}
+              exerciseTimer={workoutExercise.timer}
+              setExerciseTimer={setExerciseTimer}
+              warmupTimer={workoutExercise.warmup_timer}
+              setWarmupTimer={setWarmupTimer}
+              switchToMainScreen={switchToMainScreen}
+              setCurrentTimer={setCurrentTimer}
+              currentTimer={currentTimer}
+              updateTimer={updateTimer}
+            />
+          </View>
+        </View>
+      </Animated.View>
+    </AnchoredModal>
   );
 };
 

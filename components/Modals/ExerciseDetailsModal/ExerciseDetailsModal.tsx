@@ -62,7 +62,6 @@ export default function ExerciseDetailsModal() {
 
   const [isEditExerciseModalVisible, setIsEditExerciseModalVisible] =
     useState(false);
-  const [openEditExerciseModal, setOpenEditExerciseModal] = useState(false);
 
   const { isVisible, closeModal, exercise, screen, setScreen } =
     useExerciseDetailsModal();
@@ -144,7 +143,7 @@ export default function ExerciseDetailsModal() {
     buttonBackgroundLeftPosition.value = 0;
   };
   const editExerciseHandler = () => {
-    setOpenEditExerciseModal(true);
+    setIsEditExerciseModalVisible(true);
     closeHandler();
   };
   return (
@@ -154,9 +153,6 @@ export default function ExerciseDetailsModal() {
         visible={isVisible}
         animationType="fade"
         onRequestClose={closeHandler}
-        onDismiss={() => {
-          if (openEditExerciseModal) setIsEditExerciseModalVisible(true);
-        }}
       >
         <TouchableWithoutFeedback onPress={closeHandler}>
           <View style={styles.modalOverlay}></View>
@@ -198,10 +194,7 @@ export default function ExerciseDetailsModal() {
         </View>
       </Modal>
       <ExerciseFormModal
-        closeModal={() => {
-          setIsEditExerciseModalVisible(false);
-          setOpenEditExerciseModal(false);
-        }}
+        closeModal={() => setIsEditExerciseModalVisible(false)}
         isVisible={isEditExerciseModalVisible}
         title="Update Exercise"
         exercise={exercise}

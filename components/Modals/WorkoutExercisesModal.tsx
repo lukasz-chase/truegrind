@@ -29,7 +29,6 @@ export default function WorkoutExercisesModal() {
     openModal,
   } = useWorkoutExercisesModal();
   const { activeWorkout } = useActiveWorkout();
-  const [openNewExerciseModal, setOpenNewExerciseModal] = useState(false);
   const [isNewExerciseModalVisible, setIsNewExerciseModalVisible] =
     useState(false);
   const [chosenExercises, setChosenExercises] = useState<Exercise[]>([]);
@@ -40,7 +39,7 @@ export default function WorkoutExercisesModal() {
   };
 
   const openNewExerciseModalHandler = () => {
-    setOpenNewExerciseModal(true);
+    setIsNewExerciseModalVisible(true);
     closeModalHandler();
   };
   const addChosenExercises = (exercise: Exercise) => {
@@ -74,6 +73,13 @@ export default function WorkoutExercisesModal() {
     const supersetColor = generateNewColor(currentSupersetColors);
     onPressHandler({ superset: supersetColor });
   };
+  const closeExerciseFormModalHandler = (exercise: Exercise | undefined) => {
+    openModal(onPress, true, "Add");
+    if (exercise) {
+      setChosenExercises([exercise]);
+    }
+    setIsNewExerciseModalVisible(false);
+  };
   return (
     <>
       <Modal
@@ -81,12 +87,6 @@ export default function WorkoutExercisesModal() {
         visible={isVisible}
         animationType="fade"
         onRequestClose={closeModal}
-        onDismiss={() => {
-          if (openNewExerciseModal) {
-            setOpenNewExerciseModal(false);
-            setIsNewExerciseModalVisible(true);
-          }
-        }}
       >
         <TouchableWithoutFeedback onPress={closeModalHandler}>
           <View style={styles.modalOverlay}></View>
@@ -150,16 +150,8 @@ export default function WorkoutExercisesModal() {
         </View>
       </Modal>
       <ExerciseFormModal
-        closeModal={() => {
-          setIsNewExerciseModalVisible(false);
-        }}
+        closeModal={closeExerciseFormModalHandler}
         isVisible={isNewExerciseModalVisible}
-        onDismiss={(exercise) => {
-          openModal(onPress, true, "Add");
-          if (exercise) {
-            setChosenExercises([exercise]);
-          }
-        }}
         title="Add New Exercise"
       />
     </>

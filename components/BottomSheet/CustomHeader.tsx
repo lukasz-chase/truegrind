@@ -15,7 +15,7 @@ import useWorkoutTimerModal from "@/store/useWorkoutTimerModal";
 import TimerButton from "./TimerButton";
 import useCustomKeyboard from "@/store/useCustomKeyboard";
 import { useRouter } from "expo-router";
-import ActionModal from "../Modals/ActionModal";
+import useActionModal from "@/store/useActionModal";
 
 type Props = {
   sheetIndex: number;
@@ -35,14 +35,13 @@ const CustomHeader = ({ sheetIndex, close, scrolledY }: Props) => {
   const { activeWorkout, setActiveWorkout } = useActiveWorkout();
   const { openModal, setButtonRef } = useWorkoutTimerModal();
   const { closeKeyboard } = useCustomKeyboard();
+  const { openModal: openActionModal } = useActionModal();
 
   const router = useRouter();
 
   const scrolledValue = useSharedValue(scrolledY);
 
   const buttonRef = useRef(null);
-
-  const [isActionModalVisible, setIsActionModalVisible] = useState(false);
 
   useEffect(() => {
     setButtonRef(buttonRef);
@@ -62,7 +61,13 @@ const CustomHeader = ({ sheetIndex, close, scrolledY }: Props) => {
       exercise.exercise_sets?.some((set) => !set.completed)
     );
     if (notCompletedSets) {
-      setIsActionModalVisible(true);
+      openActionModal({
+        title: "Finish Workout?",
+        subtitle: `All invalid or empty sets will be removed.`,
+        onProceed: removeNotCompletedSets,
+        proceedButtonBgColor: AppColors.green,
+        proceedButtonLabeL: "Finish",
+      });
     } else {
       finishWorkout();
     }
@@ -125,47 +130,35 @@ const CustomHeader = ({ sheetIndex, close, scrolledY }: Props) => {
     };
   });
   return (
-    <>
-      <Pressable
-        style={styles.headerContainer}
-        onPress={() => {
-          if (sheetIndex === 0) expand();
-        }}
-        disabled={sheetIndex === 1}
-      >
-        <Animated.View style={[containerStyle]} ref={buttonRef}>
-          <TimerButton
-            openModal={openModal}
-            isRunning={isRunning}
-            timeRemaining={timeRemaining}
-            totalDuration={timerDuration}
-          />
-        </Animated.View>
+    <Pressable
+      style={styles.headerContainer}
+      onPress={() => {
+        if (sheetIndex === 0) expand();
+      }}
+      disabled={sheetIndex === 1}
+    >
+      <Animated.View style={[containerStyle]} ref={buttonRef}>
+        <TimerButton
+          openModal={openModal}
+          isRunning={isRunning}
+          timeRemaining={timeRemaining}
+          totalDuration={timerDuration}
+        />
+      </Animated.View>
 
-        <Animated.View style={[styles.titleContainer, combinedAnimatedStyle]}>
-          <Text style={styles.headerTitle} numberOfLines={1}>
-            {activeWorkout.name}
-          </Text>
-          <Text style={styles.headerTitleTime}>{formattedTime}</Text>
-        </Animated.View>
+      <Animated.View style={[styles.titleContainer, combinedAnimatedStyle]}>
+        <Text style={styles.headerTitle} numberOfLines={1}>
+          {activeWorkout.name}
+        </Text>
+        <Text style={styles.headerTitleTime}>{formattedTime}</Text>
+      </Animated.View>
 
-        <Animated.View style={[containerStyle, { alignItems: "flex-end" }]}>
-          <Pressable style={styles.finishButton} onPress={finishWorkoutHandler}>
-            <Text style={styles.finishButtonText}>Finish</Text>
-          </Pressable>
-        </Animated.View>
-      </Pressable>
-      <ActionModal
-        closeModal={() => setIsActionModalVisible(false)}
-        isVisible={isActionModalVisible}
-        title="Finish Workout?"
-        subtitle={`All invalid or empty sets will be removed.`}
-        onCancel={() => setIsActionModalVisible(false)}
-        onProceed={removeNotCompletedSets}
-        proceedButtonBgColor={AppColors.green}
-        proceedButtonLabeL="Finish"
-      />
-    </>
+      <Animated.View style={[containerStyle, { alignItems: "flex-end" }]}>
+        <Pressable style={styles.finishButton} onPress={finishWorkoutHandler}>
+          <Text style={styles.finishButtonText}>Finish</Text>
+        </Pressable>
+      </Animated.View>
+    </Pressable>
   );
 };
 

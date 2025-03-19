@@ -11,8 +11,8 @@ import { Text, View } from "react-native";
 export const getOptions = ({
   exerciseTimer,
   switchToAutoRestScreen,
-  closeModal,
-  setWarningState,
+  openWarningModalHandler,
+  openExerciseModalHandler,
   openExercisesModal,
   noteHandler,
   generateNoteOptionName,
@@ -21,10 +21,8 @@ export const getOptions = ({
 }: {
   exerciseTimer: number | null;
   switchToAutoRestScreen: () => void;
-  closeModal: () => void;
-  setWarningState: React.Dispatch<
-    React.SetStateAction<{ isVisible: boolean; shouldShow: boolean }>
-  >;
+  openWarningModalHandler: () => void;
+  openExerciseModalHandler: () => void;
   openExercisesModal: () => void;
   noteHandler: () => void;
   generateNoteOptionName: () => string;
@@ -52,10 +50,7 @@ export const getOptions = ({
   {
     Icon: <EvilIcons name="close" size={24} color={AppColors.red} />,
     title: "Remove From Superset",
-    cb: () => {
-      removeFromSuperset();
-      closeModal();
-    },
+    cb: openExerciseModalHandler,
     conditionToDisplay: !!superset,
   },
   {
@@ -85,10 +80,7 @@ export const getOptions = ({
   {
     Icon: <EvilIcons name="close" size={24} color={AppColors.red} />,
     title: "Remove Exercise",
-    cb: () => {
-      setWarningState((state) => ({ ...state, shouldShow: true }));
-      closeModal();
-    },
+    cb: openWarningModalHandler,
     conditionToDisplay: true,
   },
 ];

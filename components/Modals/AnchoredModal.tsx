@@ -15,7 +15,6 @@ type Props = {
   anchorCorner: "RIGHT" | "LEFT";
   backgroundColor?: string;
   modalWidth?: DimensionValue;
-  onDismiss?: () => void;
   padding?: number;
   alignItems?: "flex-start" | "flex-end" | "center";
   children: any;
@@ -28,7 +27,6 @@ export default function AnchoredModal({
   anchorCorner,
   backgroundColor = "white",
   modalWidth = "90%",
-  onDismiss,
   padding = 10,
   alignItems = "center",
   children,
@@ -90,9 +88,6 @@ export default function AnchoredModal({
       visible={isVisible}
       animationType="fade"
       onRequestClose={closeModal}
-      onDismiss={() => {
-        if (onDismiss) onDismiss();
-      }}
     >
       <TouchableWithoutFeedback onPress={closeModal}>
         <View style={styles.modalOverlay} />

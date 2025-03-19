@@ -19,7 +19,6 @@ const screenWidth = Dimensions.get("window").width;
 export default function TimerModal() {
   const [customTimerView, setCustomTimerView] = useState(false);
   const [customDuration, setCustomDuration] = useState(60);
-  const [shouldOpenInfoModal, setShouldOpenInfoModal] = useState(false);
 
   const { user } = userStore();
   const timeOptions = Array.from({ length: 121 }, (_, i) => ({
@@ -37,9 +36,20 @@ export default function TimerModal() {
   } = useTimerStore();
   const { closeModal, isVisible, buttonRef } = useWorkoutTimerModal();
   const { openModal: openInfoModal } = useInfoModal();
+
+  const closeModalHandler = () => {
+    closeModal();
+    setCustomTimerView(false);
+  };
+
+  const openInfoModalHandler = () => {
+    openInfoModal(timerInfo.title, timerInfo.description);
+    closeModalHandler();
+  };
+
   const handleTimerComplete = () => {
     endTimer();
-    closeModal();
+    closeModalHandler();
   };
 
   const customTimerHandler = async () => {
@@ -57,36 +67,16 @@ export default function TimerModal() {
   return (
     <AnchoredModal
       isVisible={isVisible}
-      closeModal={() => {
-        closeModal();
-        setCustomTimerView(false);
-      }}
+      closeModal={closeModalHandler}
       anchorRef={buttonRef}
       anchorCorner="LEFT"
       modalWidth={screenWidth * 0.9}
-      onDismiss={() => {
-        if (shouldOpenInfoModal) {
-          openInfoModal(timerInfo.title, timerInfo.description);
-          setShouldOpenInfoModal(false);
-        }
-      }}
     >
       <View style={styles.container}>
         <View style={styles.modalHeader}>
-          <CloseButton
-            onPress={() => {
-              closeModal();
-              setCustomTimerView(false);
-            }}
-          />
+          <CloseButton onPress={closeModalHandler} />
           <Text style={styles.title}>Rest Timer</Text>
-          <Pressable
-            style={styles.headerButton}
-            onPress={() => {
-              setShouldOpenInfoModal(true);
-              closeModal();
-            }}
-          >
+          <Pressable style={styles.headerButton} onPress={openInfoModalHandler}>
             <AntDesign name="question" size={24} color="black" />
           </Pressable>
         </View>

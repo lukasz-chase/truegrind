@@ -33,15 +33,14 @@ import {
   upsertWorkoutCalendar,
 } from "@/lib/workoutCalendarService";
 import { WorkoutCalendarStatusEnum } from "@/types/workoutCalendar";
-import ActionModal from "@/components/Modals/ActionModal";
 import { saveTemplate, updateTemplate } from "@/constants/actionModal";
+import useActionModal from "@/store/useActionModal";
 
 const TrophyImage = require("@/assets/images/trophy.webp");
 
 export default function WorkoutFinishedScreen() {
   const [workoutsCount, setWorkoutsCount] = useState(0);
-  const [isActionModalVisible, setIsActionModalVisible] = useState(false);
-  const [actionModalProps, setActionModalProps] = useState(updateTemplate);
+
   const {
     activeWorkout,
     initialActiveWorkout,
@@ -53,6 +52,8 @@ export default function WorkoutFinishedScreen() {
   const { refetchData } = useAppStore();
   const { endTimer } = useTimerStore();
   const { resetTimer, formattedTime } = useWorkoutTimer();
+  const { openModal } = useActionModal();
+
   const [workout, setWorkout] = useState({
     ...activeWorkout,
     workout_time: formattedTime,
@@ -75,11 +76,25 @@ export default function WorkoutFinishedScreen() {
       }
       const exercisesChanged = haveExercisesChanged();
       if (isNewWorkout) {
-        setActionModalProps(saveTemplate);
-        setIsActionModalVisible(true);
+        openModal({
+          onCancel: () => saveWorkout(false),
+          onProceed: () => saveWorkout(true),
+          subtitle: saveTemplate.subtitle,
+          title: saveTemplate.title,
+          proceedButtonLabeL: saveTemplate.proceedButtonLabeL,
+          cancelButtonLabel: saveTemplate.cancelButtonLabel,
+          buttonsLayout: "column",
+        });
       } else if (exercisesChanged) {
-        setActionModalProps(updateTemplate);
-        setIsActionModalVisible(true);
+        openModal({
+          onCancel: () => saveWorkout(false),
+          onProceed: () => saveWorkout(true),
+          subtitle: updateTemplate.subtitle,
+          title: updateTemplate.title,
+          proceedButtonLabeL: updateTemplate.proceedButtonLabeL,
+          cancelButtonLabel: updateTemplate.cancelButtonLabel,
+          buttonsLayout: "column",
+        });
       } else {
         saveWorkout(false);
       }
@@ -116,7 +131,6 @@ export default function WorkoutFinishedScreen() {
   };
   const saveWorkout = async (updateTemplate: boolean) => {
     if (!workoutWasUpdated) return;
-    setIsActionModalVisible(false);
     try {
       const workoutHistoryId = uuid.v4();
       await updateWorkout(
@@ -190,33 +204,21 @@ export default function WorkoutFinishedScreen() {
       throw error;
     }
   };
+
   return (
-    <>
-      <SafeAreaView style={styles.container}>
-        <CustomImage
-          customStyle={{ borderRadius: "50%" }}
-          imageUrl={TrophyImage}
-          height={200}
-          width={200}
-        />
-        <Text style={styles.title}>Congratulations!</Text>
-        <Text style={styles.subtitle}>
-          You completed your {getOrdinalSuffix(workoutsCount)} workout!
-        </Text>
-        <WorkoutSummary workout={workout} />
-      </SafeAreaView>
-      <ActionModal
-        closeModal={() => setIsActionModalVisible(false)}
-        isVisible={isActionModalVisible}
-        onCancel={() => saveWorkout(false)}
-        onProceed={() => saveWorkout(true)}
-        subtitle={actionModalProps.subtitle}
-        title={actionModalProps.title}
-        proceedButtonLabeL={actionModalProps.proceedButtonLabeL}
-        cancelButtonLabel={actionModalProps.cancelButtonLabel}
-        buttonsLayout="column"
+    <SafeAreaView style={styles.container}>
+      <CustomImage
+        customStyle={{ borderRadius: "50%" }}
+        imageUrl={TrophyImage}
+        height={200}
+        width={200}
       />
-    </>
+      <Text style={styles.title}>Congratulations!</Text>
+      <Text style={styles.subtitle}>
+        You completed your {getOrdinalSuffix(workoutsCount)} workout!
+      </Text>
+      <WorkoutSummary workout={workout} />
+    </SafeAreaView>
   );
 }
 

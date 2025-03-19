@@ -10,38 +10,32 @@ import {
 } from "react-native";
 import { Pressable } from "react-native";
 import * as Haptics from "expo-haptics";
+import useActionModal from "@/store/useActionModal";
 
-type Props = {
-  isVisible: boolean;
-  closeModal: () => void;
-  title: string;
-  subtitle: string;
-  onCancel: () => void;
-  onProceed: () => void;
-  proceedButtonLabeL?: string;
-  proceedButtonBgColor?: string;
-  cancelButtonLabel?: string;
-  buttonsLayout?: "row" | "column";
-};
-
-export default function ActionModal({
-  isVisible,
-  closeModal,
-  title,
-  subtitle,
-  onCancel,
-  onProceed,
-  proceedButtonLabeL = "Delete",
-  proceedButtonBgColor = AppColors.red,
-  cancelButtonLabel = "Cancel",
-  buttonsLayout = "row",
-}: Props) {
+export default function ActionModal() {
+  const { props, closeModal, isVisible } = useActionModal();
+  const {
+    onCancel,
+    onProceed,
+    subtitle,
+    title,
+    buttonsLayout,
+    cancelButtonLabel,
+    proceedButtonBgColor,
+    proceedButtonLabeL,
+  } = props;
   const onProceedHandler = () => {
     onProceed();
+    closeModal();
     if (Platform.OS !== "web") {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     }
   };
+  const onCancelHandler = () => {
+    if (onCancel) onCancel();
+    closeModal();
+  };
+
   return (
     <Modal
       transparent={true}
@@ -59,7 +53,7 @@ export default function ActionModal({
         <View style={[styles.buttonsWrapper, { flexDirection: buttonsLayout }]}>
           <Pressable
             style={[styles.button, buttonsLayout === "row" && { flex: 1 }]}
-            onPress={onCancel}
+            onPress={onCancelHandler}
           >
             <Text style={styles.buttonText}>{cancelButtonLabel}</Text>
           </Pressable>
