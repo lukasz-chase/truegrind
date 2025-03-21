@@ -1,12 +1,19 @@
 import React, { useMemo } from "react";
-import { BottomSheetBackdropProps } from "@gorhom/bottom-sheet";
-import Animated, {
+import {
+  BottomSheetBackdrop,
+  BottomSheetBackdropProps,
+} from "@gorhom/bottom-sheet";
+import {
   Extrapolation,
   interpolate,
   useAnimatedStyle,
 } from "react-native-reanimated";
 
-const CustomBackdrop = ({ animatedIndex, style }: BottomSheetBackdropProps) => {
+const CustomBackdrop = ({
+  animatedIndex,
+  style,
+  animatedPosition,
+}: BottomSheetBackdropProps) => {
   // animated variables
   const containerAnimatedStyle = useAnimatedStyle(() => ({
     opacity: interpolate(
@@ -29,7 +36,13 @@ const CustomBackdrop = ({ animatedIndex, style }: BottomSheetBackdropProps) => {
     [style, containerAnimatedStyle]
   );
 
-  return <Animated.View style={containerStyle} />;
+  return (
+    <BottomSheetBackdrop
+      animatedPosition={animatedPosition}
+      animatedIndex={animatedIndex}
+      style={containerStyle}
+    />
+  );
 };
 
 export default CustomBackdrop;
