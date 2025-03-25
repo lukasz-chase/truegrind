@@ -66,6 +66,7 @@ const styles = StyleSheet.create({
   scrollPicker: {
     width: "100%",
     justifyContent: "center",
+    overflow: "hidden",
   },
 });
 
