@@ -28,8 +28,10 @@ const ExerciseOptionsModal = function ExerciseOptionsModal() {
     buttonRef,
     workoutExercise,
   } = useExerciseOptionsModal((state) => state);
-  const { openModal, closeModal: closeExercisesModal } =
-    useWorkoutExercisesModal();
+  const {
+    openModal: openWorkoutExercisesModal,
+    closeModal: closeExercisesModal,
+  } = useWorkoutExercisesModal();
   const {
     replaceWorkoutExercise,
     updateWorkoutExerciseField,
@@ -37,9 +39,7 @@ const ExerciseOptionsModal = function ExerciseOptionsModal() {
   } = useActiveWorkout();
   const { user } = userStore();
   const { openModal: openWarningModal } = useActionModal();
-  const [shouldShowWarningModal, setShouldShowWarningModal] = useState(false);
-  const [shouldShowExercisesModal, setShouldShowExercisesModal] =
-    useState(false);
+
   const [currentScreen, setCurrentScreen] = useState("main");
   const [currentTimer, setCurrentTimer] = useState<"timer" | "warmup_timer">(
     "timer"
@@ -78,19 +78,13 @@ const ExerciseOptionsModal = function ExerciseOptionsModal() {
   };
 
   const openExerciseModalHandler = () => {
-    openModal(replaceExerciseHandler, false, "Replace");
+    openWorkoutExercisesModal(replaceExerciseHandler, false, "Replace");
     closeModalHandler();
   };
 
   const replaceExerciseHandler = async (exercises: Exercise[]) => {
     await replaceWorkoutExercise(workoutExercise.id, exercises[0], user!.id);
     closeExercisesModal();
-    setShouldShowExercisesModal(false);
-  };
-
-  const openExercisesModal = () => {
-    setShouldShowExercisesModal(true);
-    closeModalHandler();
   };
 
   const noteHandler = () => {
@@ -114,7 +108,6 @@ const ExerciseOptionsModal = function ExerciseOptionsModal() {
     switchToAutoRestScreen,
     openWarningModalHandler,
     openExerciseModalHandler,
-    openExercisesModal,
     noteHandler,
     generateNoteOptionName,
     removeFromSuperset,

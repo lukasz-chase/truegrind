@@ -13,7 +13,6 @@ export const getOptions = ({
   switchToAutoRestScreen,
   openWarningModalHandler,
   openExerciseModalHandler,
-  openExercisesModal,
   noteHandler,
   generateNoteOptionName,
   removeFromSuperset,
@@ -23,7 +22,6 @@ export const getOptions = ({
   switchToAutoRestScreen: () => void;
   openWarningModalHandler: () => void;
   openExerciseModalHandler: () => void;
-  openExercisesModal: () => void;
   noteHandler: () => void;
   generateNoteOptionName: () => string;
   removeFromSuperset: () => void;
@@ -44,13 +42,13 @@ export const getOptions = ({
       />
     ),
     title: "Replace Exercise",
-    cb: openExercisesModal,
+    cb: openExerciseModalHandler,
     conditionToDisplay: true,
   },
   {
     Icon: <EvilIcons name="close" size={24} color={AppColors.red} />,
     title: "Remove From Superset",
-    cb: openExerciseModalHandler,
+    cb: removeFromSuperset,
     conditionToDisplay: !!superset,
   },
   {
