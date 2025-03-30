@@ -10,7 +10,7 @@ import useCustomKeyboard from "@/store/useCustomKeyboard";
 import { StyleSheet } from "react-native";
 import { KEYBOARD_HEIGHT } from "@/constants/keyboard";
 import { KeyboardViewEnum } from "@/types/customKeyboard";
-import useInfoModal from "@/store/useInfoModall";
+import useInfoModal from "@/store/useInfoModal";
 
 const CustomKeyboard = ({
   animatedIndex,
@@ -27,11 +27,12 @@ const CustomKeyboard = ({
     removeOne,
     addDot,
     selectedRPE,
-    selectRPE,
     setKeyboardView,
     partials,
     setPartials,
     activeField,
+    focusNextInput,
+    setRPE,
   } = useCustomKeyboard();
   const { openModal } = useInfoModal();
 
@@ -60,6 +61,7 @@ const CustomKeyboard = ({
             closeKeyboard,
             setKeyboardView,
             fieldName: fieldName!,
+            focusNextInput,
           }}
         />
       )}
@@ -67,7 +69,7 @@ const CustomKeyboard = ({
         <RPEKeyboard
           {...{
             selectedRPE,
-            selectRPE,
+            setRPE,
             setKeyboardView,
             openInfoModal: openModal,
           }}

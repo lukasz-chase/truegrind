@@ -8,14 +8,14 @@ import { AppColors } from "@/constants/colors";
 
 type Props = {
   selectedRPE: { label: string; value: number | null };
-  selectRPE: (rpe: { label: string; value: number }) => void;
+  setRPE: (rpe: { label: string; value: number }) => void;
   setKeyboardView: (value: KeyboardView) => void;
   openInfoModal: (title: string, subtitle: string) => void;
 };
 
 const RPEKeyboard = ({
   selectedRPE,
-  selectRPE,
+  setRPE,
   setKeyboardView,
   openInfoModal,
 }: Props) => {
@@ -47,7 +47,7 @@ const RPEKeyboard = ({
                   selectedRPE.value === rpe.value ? "white" : AppColors.black,
               },
             ]}
-            onPress={() => selectRPE(rpe)}
+            onPress={() => setRPE(rpe)}
           >
             <Text
               style={[

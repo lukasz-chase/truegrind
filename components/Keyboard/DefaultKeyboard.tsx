@@ -13,6 +13,7 @@ type Props = {
   closeKeyboard: () => void;
   setKeyboardView: (view: KeyboardView) => void;
   fieldName: string;
+  focusNextInput: () => void;
 };
 
 const DefaultKeyboard = ({
@@ -24,6 +25,7 @@ const DefaultKeyboard = ({
   closeKeyboard,
   setKeyboardView,
   fieldName,
+  focusNextInput,
 }: Props) => (
   <View style={styles.keyboard}>
     <View style={styles.keys}>
@@ -86,7 +88,7 @@ const DefaultKeyboard = ({
         </Pressable>
       </View>
 
-      <Pressable onPress={closeKeyboard} style={styles.button}>
+      <Pressable onPress={focusNextInput} style={styles.button}>
         <Text style={styles.buttonText}>Next</Text>
       </Pressable>
     </View>

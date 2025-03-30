@@ -1,5 +1,5 @@
 import { AppColors } from "@/constants/colors";
-import useInfoModal from "@/store/useInfoModall";
+import useInfoModal from "@/store/useInfoModal";
 import {
   View,
   Modal,

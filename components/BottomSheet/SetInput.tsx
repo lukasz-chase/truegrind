@@ -18,11 +18,13 @@ type SetInputProps = {
   value: number | null;
   completed: boolean;
   exerciseSetId: string;
-  updateSet: (newValue: any, name: keyof ExerciseSet) => void;
+  updateSet: (newValue: Partial<ExerciseSet>) => void;
   fieldName: "weight" | "reps";
-  updateStoreSetField: (newValues: Partial<ExerciseSet>) => void;
-  localStateRpeValue: number | null;
-  localStatePartialsValue: number | null;
+  rpeValue: number | null;
+  partialsValue: number | null;
+  hasCustomTimer?: boolean;
+  completeSet: () => void;
+  isNoDataInputError: boolean;
 };
 
 const SetInput = ({
@@ -31,14 +33,14 @@ const SetInput = ({
   exerciseSetId,
   updateSet,
   fieldName,
-  updateStoreSetField,
-  localStateRpeValue,
-  localStatePartialsValue,
+  rpeValue,
+  partialsValue,
+  hasCustomTimer,
+  completeSet,
+  isNoDataInputError,
 }: SetInputProps) => {
   const [wasThereValueOnPress, setWasThereValueOnPress] = useState(false);
   const [textWidth, setTextWidth] = useState(0);
-  const [rpe, setRpe] = useState<number | null>(localStateRpeValue);
-
   const caretOpacity = useSharedValue(0);
 
   const inputRef = useRef<View>(null);
@@ -47,7 +49,9 @@ const SetInput = ({
     openKeyboard,
     activeField: activeSetInput,
     setPartials,
-    setRPEInStore,
+    registerInput,
+    setRPE,
+    updateInputProps,
   } = useCustomKeyboard();
   const { bottomSheetScrollViewRef } = useBottomSheet();
 
@@ -55,21 +59,22 @@ const SetInput = ({
   const setInputId = `${exerciseSetId}-${fieldName}`;
   const isActive = activeSetInput === setInputId;
 
-  useEffect(() => {
-    setRpe(localStateRpeValue);
-  }, [localStateRpeValue]);
-
-  const setRPELocallyAndInStore = (value: number | null) => {
-    setRpe(value);
-    updateStoreSetField({ rpe: value });
-  };
   const setValueHandler = (value: string) => {
-    if (repsInput && !value) updateStoreSetField({ completed: false });
-    updateSet(value, fieldName);
+    updateSet({
+      [fieldName]: value,
+      ...(repsInput && !value ? { completed: false } : {}),
+    });
     setWasThereValueOnPress(false);
   };
 
-  const handleInputPress = () => {
+  useEffect(() => {
+    registerInput(setInputId, setValueHandler);
+  }, [setInputId, setValueHandler]);
+
+  useEffect(() => {
+    if (isActive) updateUI();
+  }, [isActive]);
+  const updateUI = () => {
     inputRef.current?.measureInWindow((pageX, pageY, width, height) => {
       setTimeout(() => {
         bottomSheetScrollViewRef?.current
@@ -85,16 +90,21 @@ const SetInput = ({
     caretOpacity.value = 0;
     caretOpacity.value = withRepeat(withTiming(1, { duration: 800 }), -1, true);
     setWasThereValueOnPress(!!value);
-    openKeyboard(
+  };
+  const handleInputPress = () => {
+    openKeyboard();
+    updateInputProps(
       setInputId,
       setValueHandler,
-      setRPELocallyAndInStore,
-      updateSet
+      updateSet,
+      completeSet,
+      completed,
+      hasCustomTimer
     );
-    if (localStatePartialsValue) setPartials(localStatePartialsValue);
-    if (rpe) {
-      const keyboardRPE = rpeValues.find((mapRpe) => rpe === mapRpe.value);
-      setRPEInStore(keyboardRPE!);
+    if (partialsValue) setPartials(partialsValue);
+    if (rpeValue) {
+      const keyboardRPE = rpeValues.find((mapRpe) => rpeValue === mapRpe.value);
+      setRPE(keyboardRPE!);
     }
   };
 
@@ -109,9 +119,13 @@ const SetInput = ({
       style={[
         styles.textInput,
         {
-          backgroundColor: completed ? AppColors.lightGreen : AppColors.gray,
+          backgroundColor: completed
+            ? AppColors.lightGreen
+            : isNoDataInputError
+            ? AppColors.red
+            : AppColors.gray,
           borderColor: isActive ? "black" : "transparent",
-          width: repsInput && (localStatePartialsValue || rpe) ? "90%" : "100%",
+          width: repsInput && (partialsValue || rpeValue) ? "90%" : "100%",
         },
       ]}
       ref={inputRef}
@@ -141,14 +155,14 @@ const SetInput = ({
           <Animated.View style={[styles.caret, caretStyle]} />
         )}
       </View>
-      {repsInput && rpe && (
+      {repsInput && rpeValue && (
         <View style={styles.rpeBadge}>
-          <Text>{rpe}</Text>
+          <Text>{rpeValue}</Text>
         </View>
       )}
-      {repsInput && localStatePartialsValue && (
+      {repsInput && partialsValue && (
         <View style={styles.partials}>
-          <Text>+{localStatePartialsValue}</Text>
+          <Text>+{partialsValue}</Text>
         </View>
       )}
     </Pressable>

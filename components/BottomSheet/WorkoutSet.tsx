@@ -1,9 +1,10 @@
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, Platform } from "react-native";
 import Animated, {
-  LinearTransition,
+  useAnimatedStyle,
   useSharedValue,
+  withSequence,
+  withTiming,
 } from "react-native-reanimated";
-import useActiveWorkout from "@/store/useActiveWorkout";
 import { ExerciseSet } from "@/types/exercisesSets";
 import CompleteSetButton from "./CompleteSetButton";
 import userStore from "@/store/userStore";
@@ -12,6 +13,11 @@ import SetInput from "./SetInput";
 import SetOrder from "./SetOrder";
 import SwipeToDelete from "@/components/SwipeToDelete";
 import { AppColors } from "@/constants/colors";
+import useTimerStore from "@/store/useTimer";
+import useWorkoutTimerModal from "@/store/useWorkoutTimerModal";
+import useCustomKeyboard from "@/store/useCustomKeyboard";
+import * as Haptics from "expo-haptics";
+import { useState } from "react";
 
 type Props = {
   exerciseSet: ExerciseSet;
@@ -37,28 +43,86 @@ const WorkoutSet = ({
   isEditTemplate = false,
 }: Props) => {
   const rowScale = useSharedValue(1);
+  const shakeAnimation = useSharedValue(0);
 
   const { user } = userStore();
+  const { startTimer, endTimer, isRunning } = useTimerStore();
+  const { openModal } = useWorkoutTimerModal();
+  const { closeKeyboard } = useCustomKeyboard();
 
-  const updateSet = (newValue: any, name: keyof ExerciseSet) => {
-    updateExerciseSetFields({ [name]: newValue });
-  };
+  const [isNoDataInputError, setIsNotDataInputError] = useState(false);
 
-  const bulkUpdateSet = (newValue: Partial<ExerciseSet>) => {
+  const updateExerciseSetHandler = (newValue: Partial<ExerciseSet>) => {
+    console.log(newValue);
     updateExerciseSet(exerciseId, exerciseSet.id, { ...newValue });
-  };
-
-  const updateExerciseSetFields = (newValues: Partial<ExerciseSet>) => {
-    updateExerciseSet(exerciseId, exerciseSet.id, newValues);
   };
 
   const handleDelete = () => {
     deleteExerciseSet(exerciseId, exerciseSet.id);
   };
+
+  const completeSet = () => {
+    closeKeyboard();
+    setIsNotDataInputError(false);
+    if (!exerciseSet.reps) {
+      if (Platform.OS !== "web") {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      }
+      shakeAnimation.value = withSequence(
+        withTiming(-10, { duration: 50 }),
+        withTiming(10, { duration: 50 }),
+        withTiming(-10, { duration: 50 }),
+        withTiming(10, { duration: 50 }),
+        withTiming(0, { duration: 50 })
+      );
+      setIsNotDataInputError(true);
+      return;
+    }
+    updateExerciseSetHandler({
+      completed: !exerciseSet.completed,
+      weight: exerciseSet.weight ? Number(exerciseSet.weight) : 0,
+    });
+    if (!exerciseSet.completed) {
+      if (Platform.OS !== "web") {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      }
+      rowScale.value = withTiming(1.1, { duration: 100 }, () => {
+        rowScale.value = withTiming(1, { duration: 100 });
+      });
+      if (exerciseSet.is_warmup) {
+        if (warmupTimer && warmupTimer > 0) {
+          startTimer(warmupTimer);
+          openModal();
+        } else if (!warmupTimer && isRunning) {
+          endTimer();
+        }
+      } else {
+        if (exerciseTimer && exerciseTimer > 0) {
+          startTimer(exerciseTimer);
+          openModal();
+        } else if (!exerciseTimer && isRunning) {
+          endTimer();
+        }
+      }
+    } else {
+      if (Platform.OS !== "web") {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+      }
+    }
+  };
+  const rowAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [
+      {
+        scale: rowScale.value,
+      },
+      { translateX: shakeAnimation.value },
+    ],
+  }));
   return (
     <SwipeToDelete onDelete={handleDelete}>
       <Animated.View
         style={[
+          rowAnimatedStyle,
           styles.row,
           {
             backgroundColor: exerciseSet.completed
@@ -82,7 +146,7 @@ const WorkoutSet = ({
             exerciseId={exerciseId}
             setOrder={exerciseSet.order}
             userId={user?.id!}
-            bulkUpdateSet={bulkUpdateSet}
+            bulkUpdateSet={updateExerciseSetHandler}
           />
         </View>
         <View style={[styles.cell, { flex: 1.25 }]}>
@@ -90,11 +154,13 @@ const WorkoutSet = ({
             value={exerciseSet.weight}
             completed={exerciseSet.completed}
             exerciseSetId={exerciseSet.id}
-            updateSet={updateSet}
+            updateSet={updateExerciseSetHandler}
             fieldName="weight"
-            updateStoreSetField={updateExerciseSetFields}
-            localStateRpeValue={exerciseSet.rpe}
-            localStatePartialsValue={exerciseSet.partials}
+            rpeValue={exerciseSet.rpe}
+            partialsValue={exerciseSet.partials}
+            hasCustomTimer={!!exerciseTimer || !!warmupTimer}
+            completeSet={completeSet}
+            isNoDataInputError={isNoDataInputError}
           />
         </View>
 
@@ -103,23 +169,20 @@ const WorkoutSet = ({
             value={exerciseSet.reps}
             completed={exerciseSet.completed}
             exerciseSetId={exerciseSet.id}
-            updateSet={updateSet}
+            updateSet={updateExerciseSetHandler}
             fieldName="reps"
-            updateStoreSetField={updateExerciseSetFields}
-            localStateRpeValue={exerciseSet.rpe}
-            localStatePartialsValue={exerciseSet.partials}
+            rpeValue={exerciseSet.rpe}
+            partialsValue={exerciseSet.partials}
+            hasCustomTimer={!!exerciseTimer || !!warmupTimer}
+            completeSet={completeSet}
+            isNoDataInputError={isNoDataInputError}
           />
         </View>
         <View style={[styles.cell, { flex: 1, alignItems: "center" }]}>
           <CompleteSetButton
-            updateStoreSetField={updateExerciseSetFields}
+            completeSet={completeSet}
             completed={exerciseSet.completed}
             reps={exerciseSet.reps}
-            rowScale={rowScale}
-            exerciseTimer={exerciseTimer}
-            weight={exerciseSet.weight}
-            isWarmup={exerciseSet.is_warmup}
-            warmupTimer={warmupTimer}
             disabled={isEditTemplate}
           />
         </View>

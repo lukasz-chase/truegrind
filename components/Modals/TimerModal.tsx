@@ -11,7 +11,7 @@ import userStore from "@/store/userStore";
 import CloseButton from "../CloseButton";
 import useWorkoutTimerModal from "@/store/useWorkoutTimerModal";
 import { updateUserProfile } from "@/lib/userService";
-import useInfoModal from "@/store/useInfoModall";
+import useInfoModal from "@/store/useInfoModal";
 import { timerInfo } from "@/constants/infoModal";
 
 const screenWidth = Dimensions.get("window").width;

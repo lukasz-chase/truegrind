@@ -15,12 +15,19 @@ interface KeyboardState {
   selectedRPE: { value: number | null; label: string };
   partials: number | null;
   keyboardView: KeyboardView;
+  inputOrder: string[];
+  inputHandlers: { [key: string]: (value: string) => void };
+  hasCustomTimer: boolean;
+  isSetCompleted: boolean;
   setKeyboardView: (view: KeyboardView) => void;
-  openKeyboard: (
+  openKeyboard: () => void;
+  updateInputProps: (
     inputId: string,
     setValueHandler: (value: string) => void,
-    setRPELocallyAndInStore: (value: number | null) => void,
-    updateSet: (newValue: any, name: keyof ExerciseSet) => void
+    updateSet: (newValue: Partial<ExerciseSet>) => void,
+    completeSet: () => void,
+    isSetCompleted: boolean,
+    hasCustomTimer?: boolean
   ) => void;
   closeKeyboard: () => void;
   addOne: () => void;
@@ -29,20 +36,25 @@ interface KeyboardState {
   setValueHandler: (value: string) => void;
   onDelete: () => void;
   addDot: () => void;
-  setRPELocallyAndInStore: (value: number | null) => void;
-  selectRPE: (rpe: { value: number; label: string }) => void;
+  setRPE: (rpe: { value: number; label: string }) => void;
   setPartials: (value: number | null) => void;
   updateSet: (newValue: any, name: keyof ExerciseSet) => void;
-  setRPEInStore: (rpe: { value: number; label: string }) => void;
+  registerInput: (id: string, setValueHandler: (value: string) => void) => void;
+  focusNextInput: () => void;
+  completeSet: () => void;
 }
 
-const useCustomKeyboard = create<KeyboardState>((set) => ({
+const useCustomKeyboard = create<KeyboardState>((set, get) => ({
   isVisible: false,
   activeField: null,
   updatedValue: "",
   selectedRPE: defaultRPE,
   keyboardView: KeyboardViewEnum.DEFAULT,
   partials: null,
+  inputOrder: [],
+  inputHandlers: {},
+  hasCustomTimer: false,
+  isSetCompleted: false,
   setRPELocallyAndInStore: () => {},
   setKeyboardView: (view) => set({ keyboardView: view }),
   setPartials: (value) => {
@@ -54,26 +66,44 @@ const useCustomKeyboard = create<KeyboardState>((set) => ({
       };
     });
   },
-  openKeyboard: (
-    inputId,
-    setValueHandler,
-    setRPELocallyAndInStore,
-    updateSet
-  ) =>
+  setRPE: (value) => {
+    set((state) => {
+      state.updateSet(value, "rpe");
+      return {
+        ...state,
+        selectedRPE: value,
+      };
+    });
+  },
+  openKeyboard: () =>
     set((state) => {
       return {
         ...state,
         isVisible: true,
-        setValueHandler,
-        activeField: inputId,
         updatedValue: "",
-        setRPELocallyAndInStore,
         keyboardView: "default",
-        updateSet,
         partials: null,
         selectedRPE: defaultRPE,
       };
     }),
+  updateInputProps: (
+    inputId,
+    setValueHandler,
+    updateSet,
+    completeSet,
+    isSetCompleted,
+    hasCustomTimer = false
+  ) => {
+    set((state) => ({
+      ...state,
+      setValueHandler,
+      activeField: inputId,
+      updateSet,
+      hasCustomTimer,
+      completeSet,
+      isSetCompleted,
+    }));
+  },
   closeKeyboard: () => set({ isVisible: false, activeField: null }),
   setValueHandler: () => {},
   onKeyPress: (value: string) => {
@@ -130,31 +160,47 @@ const useCustomKeyboard = create<KeyboardState>((set) => ({
       };
     });
   },
-  selectRPE: (rpe: { value: number; label: string }) => {
-    set((state) => {
-      if (rpe.value === state.selectedRPE.value) {
-        state.setRPELocallyAndInStore(defaultRPE.value);
-        return {
-          ...state,
-          selectedRPE: defaultRPE,
-        };
-      }
-      state.setRPELocallyAndInStore(rpe.value);
-      return {
-        ...state,
-        selectedRPE: rpe,
-      };
-    });
-  },
-  setRPEInStore: (rpe: { value: number; label: string }) => {
-    set((state) => {
-      return {
-        ...state,
-        selectedRPE: rpe,
-      };
-    });
-  },
   updateSet: () => {},
+  completeSet: () => {},
+  registerInput: (id, setValueHandler) => {
+    const { inputOrder, inputHandlers } = get();
+    if (!inputOrder.includes(id)) {
+      set({
+        inputOrder: [...inputOrder, id],
+        inputHandlers: { ...inputHandlers, [id]: setValueHandler },
+      });
+    }
+  },
+  focusNextInput: () => {
+    const {
+      activeField,
+      inputOrder,
+      inputHandlers,
+      hasCustomTimer,
+      closeKeyboard,
+      completeSet,
+      isSetCompleted,
+    } = get();
+    if (!activeField) return;
+    const isRepsInput = activeField.search("reps") !== -1;
+    if (isRepsInput && hasCustomTimer && !isSetCompleted) {
+      if (hasCustomTimer) {
+        completeSet();
+      }
+      closeKeyboard();
+      return;
+    }
+    const currentIndex = inputOrder.indexOf(activeField);
+    if (currentIndex !== -1 && currentIndex < inputOrder.length - 1) {
+      const nextField = inputOrder[currentIndex + 1];
+      const nextHandler = inputHandlers[nextField];
+      set({
+        activeField: nextField,
+        updatedValue: "",
+        setValueHandler: nextHandler,
+      });
+    }
+  },
 }));
 
 export default useCustomKeyboard;
