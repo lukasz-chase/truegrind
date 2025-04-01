@@ -79,6 +79,7 @@ const useActiveWorkout = create<ActiveWorkoutStore>()(
                 reps: null,
                 weight: null,
                 rpe: null,
+                bar_type: null,
               })),
             })
           );
@@ -231,6 +232,7 @@ const useActiveWorkout = create<ActiveWorkoutStore>()(
                       completed: false,
                       partials: null,
                       user_id: user.id,
+                      bar_type: null,
                     },
                   ],
                 };

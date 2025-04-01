@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { StyleSheet, Pressable, View, Text } from "react-native";
 import { AppColors } from "@/constants/colors";
-import { ExerciseSet } from "@/types/exercisesSets";
+import { BarTypeEnum, ExerciseSet } from "@/types/exercisesSets";
 import useCustomKeyboard from "@/store/useCustomKeyboard";
 import Animated, {
   useAnimatedStyle,
@@ -9,7 +9,7 @@ import Animated, {
   withRepeat,
   withTiming,
 } from "react-native-reanimated";
-import { KEYBOARD_HEIGHT, rpeValues } from "@/constants/keyboard";
+import { barTypes, KEYBOARD_HEIGHT, rpeValues } from "@/constants/keyboard";
 import useBottomSheet from "@/store/useBottomSheet";
 
 const CARET_WIDTH = 2;
@@ -25,6 +25,7 @@ type SetInputProps = {
   hasCustomTimer?: boolean;
   completeSet: () => void;
   isNoDataInputError: boolean;
+  barType: BarTypeEnum | null;
 };
 
 const SetInput = ({
@@ -38,6 +39,7 @@ const SetInput = ({
   hasCustomTimer,
   completeSet,
   isNoDataInputError,
+  barType,
 }: SetInputProps) => {
   const [wasThereValueOnPress, setWasThereValueOnPress] = useState(false);
   const [textWidth, setTextWidth] = useState(0);
@@ -52,6 +54,7 @@ const SetInput = ({
     registerInput,
     setRPE,
     updateInputProps,
+    setBarType,
   } = useCustomKeyboard();
   const { bottomSheetScrollViewRef } = useBottomSheet();
 
@@ -106,6 +109,7 @@ const SetInput = ({
       const keyboardRPE = rpeValues.find((mapRpe) => rpeValue === mapRpe.value);
       setRPE(keyboardRPE!);
     }
+    if (barType) setBarType(barType);
   };
 
   const caretStyle = useAnimatedStyle(() => {
@@ -114,6 +118,10 @@ const SetInput = ({
       opacity: caretOpacity.value,
     };
   });
+  const getBarType = () => {
+    const foundBarType = barTypes.find((bar) => bar.name === barType);
+    return foundBarType?.weight;
+  };
   return (
     <Pressable
       style={[
@@ -158,6 +166,11 @@ const SetInput = ({
       {repsInput && rpeValue && (
         <View style={styles.rpeBadge}>
           <Text>{rpeValue}</Text>
+        </View>
+      )}
+      {!repsInput && barType && (
+        <View style={[styles.rpeBadge, styles.barTypeBadge]}>
+          <Text style={{ color: "white" }}>+{getBarType()}</Text>
         </View>
       )}
       {repsInput && partialsValue && (
@@ -209,6 +222,10 @@ const styles = StyleSheet.create({
     backgroundColor: AppColors.blue,
     alignItems: "center",
     justifyContent: "center",
+  },
+  barTypeBadge: {
+    width: 25,
+    backgroundColor: AppColors.darkGray,
   },
   partials: {
     position: "absolute",

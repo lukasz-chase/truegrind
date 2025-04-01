@@ -66,7 +66,12 @@ const DefaultKeyboard = ({
       </Pressable>
 
       {fieldName === "weight" ? (
-        <Pressable style={styles.button} />
+        <Pressable
+          style={styles.button}
+          onPress={() => setKeyboardView(KeyboardViewEnum.BAR_TYPE)}
+        >
+          <Text style={styles.buttonText}>Bar Type</Text>
+        </Pressable>
       ) : (
         <Pressable
           style={styles.button}

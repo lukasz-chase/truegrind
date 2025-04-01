@@ -68,6 +68,7 @@ const useWorkoutTemplate = create<TemplateWorkoutStore>()((set, get) => ({
             reps: null,
             weight: null,
             rpe: null,
+            bar_type: null,
           })),
         })
       );
@@ -220,6 +221,7 @@ const useWorkoutTemplate = create<TemplateWorkoutStore>()((set, get) => ({
                   completed: false,
                   partials: null,
                   user_id: user.id,
+                  bar_type: null,
                 },
               ],
             };

@@ -4,6 +4,7 @@ import { Pressable, StyleSheet, Text } from "react-native";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { SetHistoryProps } from "@/types/exercisesSets";
 import { fetchSetsHistory } from "@/lib/exerciseSetsService";
+import { barTypes } from "@/constants/keyboard";
 
 type Props = {
   setOrder: number;
@@ -40,7 +41,12 @@ const SetHistory = ({ exerciseId, setOrder, userId, bulkUpdateSet }: Props) => {
   const renderPreviousSet = () => {
     if (!exerciseHistory)
       return <AntDesign name="minus" size={42} color={AppColors.gray} />;
-
+    const getBarType = () => {
+      const barType = barTypes.find(
+        (bar) => bar.name === exerciseHistory.bar_type
+      );
+      return ` +${barType?.weight}`;
+    };
     return (
       <Text
         style={[
@@ -51,7 +57,8 @@ const SetHistory = ({ exerciseId, setOrder, userId, bulkUpdateSet }: Props) => {
           },
         ]}
       >
-        {exerciseHistory.weight} x {exerciseHistory.reps}
+        {exerciseHistory.weight}
+        {exerciseHistory.bar_type && getBarType()} x {exerciseHistory.reps}
         {exerciseHistory.rpe && ` @${exerciseHistory.rpe} `}
         {exerciseHistory.partials && `+${exerciseHistory.partials}`}
         {exerciseHistory.is_dropset && "(D)"}

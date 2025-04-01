@@ -1,5 +1,6 @@
+import { barTypes } from "@/constants/keyboard";
 import { KeyboardView, KeyboardViewEnum } from "@/types/customKeyboard";
-import { ExerciseSet } from "@/types/exercisesSets";
+import { ExerciseSet, BarTypeEnum } from "@/types/exercisesSets";
 import { create } from "zustand";
 
 const defaultRPE = {
@@ -19,6 +20,7 @@ interface KeyboardState {
   inputHandlers: { [key: string]: (value: string) => void };
   hasCustomTimer: boolean;
   isSetCompleted: boolean;
+  selectedBarType: BarTypeEnum | null;
   setKeyboardView: (view: KeyboardView) => void;
   openKeyboard: () => void;
   updateInputProps: (
@@ -38,13 +40,15 @@ interface KeyboardState {
   addDot: () => void;
   setRPE: (rpe: { value: number; label: string }) => void;
   setPartials: (value: number | null) => void;
-  updateSet: (newValue: any, name: keyof ExerciseSet) => void;
+  updateSet: (newValue: Partial<ExerciseSet>) => void;
   registerInput: (id: string, setValueHandler: (value: string) => void) => void;
   focusNextInput: () => void;
   completeSet: () => void;
+  setBarType: (barType: BarTypeEnum | null) => void;
 }
 
 const useCustomKeyboard = create<KeyboardState>((set, get) => ({
+  currentValue: null,
   isVisible: false,
   activeField: null,
   updatedValue: "",
@@ -55,23 +59,24 @@ const useCustomKeyboard = create<KeyboardState>((set, get) => ({
   inputHandlers: {},
   hasCustomTimer: false,
   isSetCompleted: false,
+  selectedBarType: null,
   setRPELocallyAndInStore: () => {},
   setKeyboardView: (view) => set({ keyboardView: view }),
   setPartials: (value) => {
     set((state) => {
-      state.updateSet(value, "partials");
+      state.updateSet({ partials: value });
       return {
         ...state,
         partials: value,
       };
     });
   },
-  setRPE: (value) => {
+  setRPE: (rpe) => {
     set((state) => {
-      state.updateSet(value, "rpe");
+      state.updateSet({ rpe: rpe.value });
       return {
         ...state,
-        selectedRPE: value,
+        selectedRPE: rpe,
       };
     });
   },
@@ -84,6 +89,7 @@ const useCustomKeyboard = create<KeyboardState>((set, get) => ({
         keyboardView: "default",
         partials: null,
         selectedRPE: defaultRPE,
+        selectedBarType: null,
       };
     }),
   updateInputProps: (
@@ -200,6 +206,15 @@ const useCustomKeyboard = create<KeyboardState>((set, get) => ({
         setValueHandler: nextHandler,
       });
     }
+  },
+  setBarType: (barTypeName) => {
+    set((state) => {
+      state.updateSet({ bar_type: barTypeName });
+      return {
+        ...state,
+        selectedBarType: barTypeName,
+      };
+    });
   },
 }));
 

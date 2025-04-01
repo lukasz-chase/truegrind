@@ -3,6 +3,7 @@ import { ExerciseSet } from "@/types/exercisesSets";
 import { formatDate } from "@/lib/helpers";
 import { AppColors } from "@/constants/colors";
 import { WorkoutMetrics } from "@/types/workoutMetrics";
+import { barTypes } from "@/constants/keyboard";
 
 const HistoryScreen = ({
   loading,
@@ -26,6 +27,11 @@ const HistoryScreen = ({
       </View>
     );
   }
+  const getBarType = (barType: string | null) => {
+    if (!barType) return "";
+    const bar = barTypes.find((type) => type.name === barType);
+    return ` +${bar?.weight}kg`;
+  };
   const renderItem = ({ item }: { item: any }) => (
     <View style={styles.itemContainer}>
       <Text style={styles.title}>{item.workoutName}</Text>
@@ -54,7 +60,9 @@ const HistoryScreen = ({
                 <Text style={[styles.subTitle, { marginRight: 5 }]}>
                   {set.order}
                 </Text>
-                <Text style={styles.subTitle}>{set.weight}kg</Text>
+                <Text style={styles.subTitle}>
+                  {set.weight}kg{getBarType(set.bar_type)}
+                </Text>
                 <Text style={styles.subTitle}>x</Text>
                 <Text style={styles.subTitle}>{set.reps}</Text>
                 {set.rpe && <Text style={styles.subTitle}>@{set.rpe}</Text>}

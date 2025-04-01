@@ -11,6 +11,7 @@ import { StyleSheet } from "react-native";
 import { KEYBOARD_HEIGHT } from "@/constants/keyboard";
 import { KeyboardViewEnum } from "@/types/customKeyboard";
 import useInfoModal from "@/store/useInfoModal";
+import BarTypeKeyboard from "./BarTypeKeyboard";
 
 const CustomKeyboard = ({
   animatedIndex,
@@ -33,6 +34,8 @@ const CustomKeyboard = ({
     activeField,
     focusNextInput,
     setRPE,
+    selectedBarType,
+    setBarType,
   } = useCustomKeyboard();
   const { openModal } = useInfoModal();
 
@@ -82,6 +85,15 @@ const CustomKeyboard = ({
             setPartials,
             setKeyboardView,
             openInfoModal: openModal,
+          }}
+        />
+      )}
+      {keyboardView === KeyboardViewEnum.BAR_TYPE && (
+        <BarTypeKeyboard
+          {...{
+            selectedBarType,
+            setBarType,
+            setKeyboardView,
           }}
         />
       )}

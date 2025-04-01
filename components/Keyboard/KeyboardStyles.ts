@@ -85,4 +85,40 @@ export default StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+  barButtonsWrapper: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    flexWrap: "wrap",
+    gap: 10,
+  },
+  barButton: {
+    width: 100,
+    height: 80,
+    padding: 5,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: AppColors.darkGray,
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 1,
+  },
+  selectedBarButton: {
+    backgroundColor: AppColors.lightBlue,
+  },
+  barImage: {
+    width: "100%",
+    height: 35,
+  },
+  barName: {
+    fontSize: 10,
+    color: "white",
+    textAlign: "center",
+  },
+  selectedBarName: {
+    color: AppColors.black,
+  },
 });

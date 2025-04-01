@@ -7,6 +7,7 @@ import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { formatDate } from "@/lib/helpers";
 import { fetchHighestWeightSet } from "@/lib/exerciseSetsService";
+import { barTypes } from "@/constants/keyboard";
 
 const WorkoutSummary = ({ workout }: { workout: WorkoutHistory }) => {
   const [PRs, setPRs] = useState(0);
@@ -59,19 +60,24 @@ const WorkoutSummary = ({ workout }: { workout: WorkoutHistory }) => {
   };
   const bestExerciseSet = (workoutExercise: WorkoutExercisePopulated) => {
     const best = workoutExercise.exercise_sets.reduce(
-      (bestSet, set) => {
+      (
+        bestSet: { weight: number; reps: number; barType: string | null },
+        set
+      ) => {
         if (
           set.weight &&
           set.reps &&
           set.weight * set.reps > bestSet.weight * bestSet.reps
         ) {
-          return { weight: set.weight, reps: set.reps };
+          return { weight: set.weight, reps: set.reps, barType: set.bar_type };
         }
         return bestSet;
       },
-      { weight: 0, reps: 0 }
+      { weight: 0, reps: 0, barType: null }
     );
-
+    const barType = barTypes.find((bar) => bar.name === best.barType);
+    if (barType)
+      return `${best.weight}kg (+${barType.weight}kg) x ${best.reps}`;
     return `${best.weight}kg x ${best.reps}`;
   };
   return (

@@ -1,3 +1,5 @@
+import { BarTypeEnum } from "@/types/exercisesSets";
+
 export const keys = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"];
 export const rpeValues = [
   {
@@ -39,3 +41,35 @@ export const rpeValues = [
   },
 ];
 export const KEYBOARD_HEIGHT = 270;
+export const barTypes = [
+  {
+    name: BarTypeEnum.MEN_OLYMPIC_BAR,
+    weight: 20,
+    image: "womens_olympic_bar.png",
+  },
+  {
+    name: BarTypeEnum.WOMEN_OLYMPIC_BAR,
+    weight: 15,
+    image: "mens_olympic_bar.png",
+  },
+  {
+    name: BarTypeEnum.EZ_CURL_BAR,
+    weight: 10,
+    image: "ez_curl_bar.png",
+  },
+  {
+    name: BarTypeEnum.TRICEPS_BAR,
+    weight: 10,
+    image: "triceps_bar.png",
+  },
+  {
+    name: BarTypeEnum.TRAP_BAR,
+    weight: 25,
+    image: "trap_bar.png",
+  },
+  {
+    name: BarTypeEnum.SQUAT_SAFETY_BAR,
+    weight: 32,
+    image: "squat_safety_bar.png",
+  },
+];

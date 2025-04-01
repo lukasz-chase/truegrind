@@ -112,7 +112,7 @@ export const fetchSetsHistory = async (
 ) => {
   const { data, error } = await supabase
     .from("sets_history")
-    .select(`reps, weight, rpe, partials, is_warmup, is_dropset`)
+    .select(`reps, weight, rpe, partials, is_warmup, is_dropset, bar_type`)
     .eq("exercise_id", exerciseId)
     .eq("user_id", userId)
     .eq('"order"', setOrder)

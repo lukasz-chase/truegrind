@@ -53,7 +53,6 @@ const WorkoutSet = ({
   const [isNoDataInputError, setIsNotDataInputError] = useState(false);
 
   const updateExerciseSetHandler = (newValue: Partial<ExerciseSet>) => {
-    console.log(newValue);
     updateExerciseSet(exerciseId, exerciseSet.id, { ...newValue });
   };
 
@@ -161,6 +160,7 @@ const WorkoutSet = ({
             hasCustomTimer={!!exerciseTimer || !!warmupTimer}
             completeSet={completeSet}
             isNoDataInputError={isNoDataInputError}
+            barType={exerciseSet.bar_type}
           />
         </View>
 
@@ -176,6 +176,7 @@ const WorkoutSet = ({
             hasCustomTimer={!!exerciseTimer || !!warmupTimer}
             completeSet={completeSet}
             isNoDataInputError={isNoDataInputError}
+            barType={exerciseSet.bar_type}
           />
         </View>
         <View style={[styles.cell, { flex: 1, alignItems: "center" }]}>
