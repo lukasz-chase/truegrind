@@ -9,7 +9,13 @@ import { isPastToday } from "@/utils/calendar";
 import { useRouter } from "expo-router";
 
 type Props = {
-  date: { year: number; month: number; day: number; dateString: string };
+  date: {
+    year: number;
+    month: number;
+    day: number;
+    dateString: string;
+    timestamp: number;
+  };
   state: string;
   workoutCalendarData: WorkoutCalendarPopulated[];
   onDayPress: (date: any) => void;
@@ -49,7 +55,10 @@ export default function WorkoutDay({
   let icon = null;
 
   const onDayPressWrapper = (date: any) => {
-    if (isDisabled && dayData?.workout_history_id) {
+    if (
+      (isDisabled && dayData?.workout_history_id) ||
+      (isCompleted && isToday)
+    ) {
       router.push(`/(tabs)/workoutHistory/${dayData?.workout_history_id}`);
       return;
     } else if (isDisabled) {

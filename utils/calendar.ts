@@ -2,13 +2,12 @@ export const isPastToday = (date: {
   year: number;
   month: number;
   day: number;
+  timestamp: number;
 }) => {
   const today = new Date();
-  const isSameYear = date.year === today.getFullYear();
-  const isSameMonth = date.month === today.getMonth() + 1;
-
-  const isPastThisMonth =
-    isSameYear && isSameMonth && date.day < today.getDate();
-
-  return isPastThisMonth;
+  today.setHours(0, 0, 0, 0);
+  const dateToCheck = date.timestamp
+    ? new Date(date.timestamp)
+    : new Date(date.year, date.month - 1, date.day);
+  return dateToCheck < today;
 };

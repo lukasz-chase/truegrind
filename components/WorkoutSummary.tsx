@@ -52,7 +52,7 @@ const WorkoutSummary = ({ workout }: { workout: WorkoutHistory }) => {
     let totalWeight = 0;
     workout.workout_exercises?.forEach((workoutExercise) => {
       totalWeight += workoutExercise.exercise_sets.reduce(
-        (total, set) => total + (set.weight ?? 0),
+        (total, set) => total + (Number(set.weight) ?? 0),
         0
       );
     });
