@@ -156,7 +156,7 @@ export default function MetricsDetails() {
       <SafeAreaView style={styles.container}>
         <View style={styles.header}>
           <Pressable onPress={goBackHandler}>
-            <AntDesign name="left" size={24} color="black" />
+            <AntDesign name="left" size={24} color={AppColors.black} />
           </Pressable>
           <Text style={styles.title}>{measurement.displayName}</Text>
           <View style={{ width: 24 }} />
@@ -236,7 +236,7 @@ export default function MetricsDetails() {
 const styles = StyleSheet.create({
   container: {
     padding: 10,
-    backgroundColor: "white",
+    backgroundColor: AppColors.white,
     height: "100%",
   },
   header: {
@@ -261,7 +261,7 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     paddingHorizontal: 10,
     borderRadius: 8,
-    backgroundColor: "#EEE",
+    backgroundColor: AppColors.gray,
     marginRight: 5,
   },
   filterButtonActive: {
@@ -272,7 +272,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   filterButtonTextActive: {
-    color: "white",
+    color: AppColors.white,
     fontWeight: "bold",
   },
   // CHART
@@ -306,7 +306,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    backgroundColor: "white",
+    backgroundColor: AppColors.white,
   },
   date: {
     fontSize: 16,

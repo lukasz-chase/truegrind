@@ -49,7 +49,7 @@ export default function WorkoutDay({
   const isToday = state === "today";
 
   let backgroundColor = "transparent";
-  let textColor = "black";
+  let textColor = AppColors.black;
   let borderColor = "transparent";
   let textDecoration: "none" | "line-through" = "none";
   let icon = null;
@@ -70,12 +70,12 @@ export default function WorkoutDay({
   if (isDisabled) textDecoration = "line-through";
   if (isToday) {
     backgroundColor = AppColors.blue;
-    borderColor = "black";
-    textColor = "white";
+    borderColor = AppColors.black;
+    textColor = AppColors.white;
   }
   if (isScheduled) {
     backgroundColor = dayData?.color || backgroundColor;
-    textColor = "white";
+    textColor = AppColors.white;
   }
   if (isCompleted) {
     backgroundColor = dayData?.color || backgroundColor;
@@ -90,7 +90,7 @@ export default function WorkoutDay({
   }
   if (isMissed) {
     backgroundColor = AppColors.gray;
-    textColor = "white";
+    textColor = AppColors.white;
     icon = (
       <Entypo
         name="cross"

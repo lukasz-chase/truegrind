@@ -27,6 +27,7 @@ import {
 import ExerciseFormModal from "../ExerciseForm/ExerciseFormModal";
 import { calculateMetrics, getExerciseData } from "@/lib/exercisesService";
 import { MetricsData } from "@/types/workoutMetrics";
+import { AppColors } from "@/constants/colors";
 
 const BUTTON_WIDTH = 80;
 const screenWidth = Dimensions.get("window").width;
@@ -205,7 +206,7 @@ export default function ExerciseDetailsModal() {
 
 const styles = StyleSheet.create({
   modalOverlay: {
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    backgroundColor: AppColors.semiTransparent,
     position: "absolute",
     width: "100%",
     height: "100%",
@@ -218,7 +219,7 @@ const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 10,
     alignItems: "center",
-    backgroundColor: "white",
+    backgroundColor: AppColors.white,
     overflow: "hidden",
     margin: "auto",
     gap: 10,
@@ -237,11 +238,11 @@ const styles = StyleSheet.create({
     justifyContent: "space-evenly",
     height: 30,
     flexDirection: "row",
-    backgroundColor: "#3D3D42",
+    backgroundColor: AppColors.charcoalGray,
     borderRadius: 10,
   },
   buttonsBackground: {
-    backgroundColor: "#525257",
+    backgroundColor: AppColors.graphiteGray,
     position: "absolute",
     height: 30,
     width: BUTTON_WIDTH,
@@ -255,7 +256,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   headerButtonText: {
-    color: "white",
+    color: AppColors.white,
     fontSize: 16,
     fontWeight: "bold",
   },

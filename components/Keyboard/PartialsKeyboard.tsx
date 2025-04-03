@@ -45,7 +45,7 @@ const PartialsKeyboard = ({
             openInfoModal(partialsInfo.title, partialsInfo.description)
           }
         >
-          <AntDesign name="question" size={24} color="white" />
+          <AntDesign name="question" size={24} color={AppColors.white} />
         </Pressable>
         <Pressable
           style={[styles.button, { width: 100 }]}
@@ -58,9 +58,9 @@ const PartialsKeyboard = ({
       <View style={styles.header}>
         <Text style={styles.buttonText}>Enabled</Text>
         <Switch
-          trackColor={{ false: "#767577", true: AppColors.blue }}
-          thumbColor={"#f4f3f4"}
-          ios_backgroundColor="#3e3e3e"
+          trackColor={{ false: AppColors.charcoalGray, true: AppColors.blue }}
+          thumbColor={AppColors.white}
+          ios_backgroundColor={AppColors.graphiteGray}
           onValueChange={toggleSwitch}
           value={isEnabled}
         />
@@ -76,7 +76,7 @@ const PartialsKeyboard = ({
           }))}
           visibleItemCount={3}
           disabled={!isEnabled}
-          backgroundColor="white"
+          backgroundColor={AppColors.white}
         />
       </View>
     </View>

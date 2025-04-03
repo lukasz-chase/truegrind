@@ -51,7 +51,7 @@ const FormScreen = ({
         onChangeText={(text) => setExerciseProperty("instructions", text)}
         value={exerciseData.instructions}
         placeholder="Instructions"
-        large
+        size="lg"
       />
       <Pressable onPress={pickImageAsync} style={styles.imageContainer}>
         <CustomImage

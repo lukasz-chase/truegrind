@@ -155,7 +155,7 @@ export default function CalendarScreen() {
 const styles = StyleSheet.create({
   container: {
     height: "100%",
-    backgroundColor: "white",
+    backgroundColor: AppColors.white,
   },
   legendsWrapper: {
     width: "100%",

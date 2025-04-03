@@ -5,6 +5,7 @@ import WheelPicker, {
   PickerItem,
   ValueChangedEvent,
 } from "@quidone/react-native-wheel-picker";
+import { AppColors } from "@/constants/colors";
 
 type Props = {
   value: number;
@@ -19,8 +20,8 @@ type Props = {
 const MemoizedScrollPicker = memo(
   ({
     disabled = false,
-    backgroundColor = "white",
-    textColor = "white",
+    backgroundColor = AppColors.white,
+    textColor = AppColors.white,
     value,
     setValue,
     visibleItemCount,
@@ -47,7 +48,7 @@ const MemoizedScrollPicker = memo(
           onValueChanging={onValueChanging}
           visibleItemCount={visibleItemCount}
           itemTextStyle={{
-            color: disabled ? "gray" : textColor,
+            color: disabled ? AppColors.gray : textColor,
             fontSize: 16,
             fontWeight: "bold",
           }}

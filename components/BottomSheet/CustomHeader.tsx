@@ -197,7 +197,7 @@ const styles = StyleSheet.create({
     width: 80,
   },
   finishButtonText: {
-    color: "white",
+    color: AppColors.white,
     fontWeight: "bold",
     fontSize: 18,
     textAlign: "center",

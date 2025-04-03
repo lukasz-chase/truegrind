@@ -1,3 +1,4 @@
+import { AppColors } from "@/constants/colors";
 import { View, Text, StyleSheet } from "react-native";
 
 type Props = {
@@ -22,7 +23,7 @@ const styles = StyleSheet.create({
     height: 40,
   },
   legendItemText: {
-    color: "white",
+    color: AppColors.white,
     fontSize: 18,
     fontWeight: "bold",
   },

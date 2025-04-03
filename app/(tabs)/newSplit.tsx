@@ -50,7 +50,7 @@ export default function NewSplitScreen() {
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <Pressable onPress={goBackHandler}>
-          <AntDesign name="left" size={24} color="black" />
+          <AntDesign name="left" size={24} color={AppColors.black} />
         </Pressable>
         <Text style={styles.title}>New Split</Text>
         <View style={{ width: 24 }} />
@@ -69,7 +69,7 @@ export default function NewSplitScreen() {
         onChangeText={setDescription}
         value={description}
         placeholder="Description"
-        large
+        size="lg"
       />
       <Pressable
         style={[styles.actionButton, { opacity: !splitName ? 0.5 : 1 }]}
@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   actionButtonText: {
-    color: "white",
+    color: AppColors.white,
     fontSize: 20,
   },
 });

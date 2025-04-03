@@ -13,6 +13,7 @@ import Animated, {
   LinearTransition,
 } from "react-native-reanimated";
 import * as Haptics from "expo-haptics";
+import { AppColors } from "@/constants/colors";
 
 const INITIAL_BUTTON_WIDTH = 70;
 const BUTTON_MARGIN = 20;
@@ -149,13 +150,13 @@ const styles = StyleSheet.create({
     right: 0,
     top: 0,
     bottom: 0,
-    backgroundColor: "red",
+    backgroundColor: AppColors.red,
     justifyContent: "center",
     borderRadius: 8,
     paddingHorizontal: 10,
   },
   deleteButtonText: {
-    color: "white",
+    color: AppColors.white,
     fontWeight: "bold",
     fontSize: 16,
   },

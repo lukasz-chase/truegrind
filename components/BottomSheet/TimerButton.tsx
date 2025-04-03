@@ -70,7 +70,7 @@ const TimerButton = ({
               style={[
                 styles.timerButtonAbsoluteBackground,
                 animatedStyle,
-                { backgroundColor: "white", zIndex: 4 },
+                { backgroundColor: AppColors.white, zIndex: 4 },
               ]}
             />
             <View
@@ -94,7 +94,7 @@ const TimerButton = ({
         </View>
       ) : (
         <View style={styles.timerButton}>
-          <Ionicons name="timer-outline" size={20} color="black" />
+          <Ionicons name="timer-outline" size={20} color={AppColors.black} />
         </View>
       )}
     </Pressable>

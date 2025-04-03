@@ -25,7 +25,7 @@ export default StyleSheet.create({
   keyText: {
     fontSize: 24,
     fontWeight: "bold",
-    color: "white",
+    color: AppColors.white,
   },
   buttons: {
     flexDirection: "column",
@@ -46,7 +46,7 @@ export default StyleSheet.create({
   buttonText: {
     fontSize: 18,
     fontWeight: "bold",
-    color: "white",
+    color: AppColors.white,
     textAlign: "center",
   },
   rpeView: {
@@ -115,7 +115,7 @@ export default StyleSheet.create({
   },
   barName: {
     fontSize: 10,
-    color: "white",
+    color: AppColors.white,
     textAlign: "center",
   },
   selectedBarName: {

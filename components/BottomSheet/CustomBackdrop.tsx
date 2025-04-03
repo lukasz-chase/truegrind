@@ -8,6 +8,7 @@ import {
   interpolate,
   useAnimatedStyle,
 } from "react-native-reanimated";
+import { AppColors } from "@/constants/colors";
 
 const CustomBackdrop = ({
   animatedIndex,
@@ -29,7 +30,7 @@ const CustomBackdrop = ({
     () => [
       style,
       {
-        backgroundColor: "rgba(0, 0, 0, 0.5)",
+        backgroundColor: AppColors.semiTransparent,
       },
       containerAnimatedStyle,
     ],

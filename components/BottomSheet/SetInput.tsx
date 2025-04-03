@@ -132,7 +132,7 @@ const SetInput = ({
             : isNoDataInputError
             ? AppColors.red
             : AppColors.gray,
-          borderColor: isActive ? "black" : "transparent",
+          borderColor: isActive ? AppColors.black : "transparent",
           width: repsInput && (partialsValue || rpeValue) ? "90%" : "100%",
         },
       ]}
@@ -170,7 +170,7 @@ const SetInput = ({
       )}
       {!repsInput && barType && (
         <View style={[styles.rpeBadge, styles.barTypeBadge]}>
-          <Text style={{ color: "white" }}>+{getBarType()}</Text>
+          <Text style={{ color: AppColors.white }}>+{getBarType()}</Text>
         </View>
       )}
       {repsInput && partialsValue && (

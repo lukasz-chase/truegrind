@@ -65,7 +65,7 @@ export default function ActionModal() {
             ]}
             onPress={onProceedHandler}
           >
-            <Text style={[styles.buttonText, { color: "white" }]}>
+            <Text style={[styles.buttonText, { color: AppColors.white }]}>
               {proceedButtonLabeL}
             </Text>
           </Pressable>
@@ -77,7 +77,7 @@ export default function ActionModal() {
 
 const styles = StyleSheet.create({
   modalOverlay: {
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    backgroundColor: AppColors.semiTransparent,
     position: "absolute",
     width: "100%",
     height: "100%",
@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     borderRadius: 10,
     alignItems: "center",
-    backgroundColor: "white",
+    backgroundColor: AppColors.white,
     gap: 20,
     margin: "auto",
   },

@@ -23,7 +23,7 @@ const ExerciseRow = ({
       onPress={() => onPress(exercise)}
       style={[
         styles.exerciseItem,
-        { backgroundColor: isSelected ? AppColors.blue : "white" },
+        { backgroundColor: isSelected ? AppColors.blue : AppColors.white },
       ]}
     >
       {exercise.image ? (

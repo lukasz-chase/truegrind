@@ -62,7 +62,7 @@ export const getOptions = ({
           alignItems: "center",
         }}
       >
-        <Text style={{ color: "white" }}>
+        <Text style={{ color: AppColors.white }}>
           {!!exerciseTimer ? formatTime(exerciseTimer) : "Off"}
         </Text>
         <MaterialIcons

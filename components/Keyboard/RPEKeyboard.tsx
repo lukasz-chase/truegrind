@@ -26,7 +26,7 @@ const RPEKeyboard = ({
           style={styles.headerButton}
           onPress={() => openInfoModal(rpeInfo.title, rpeInfo.description)}
         >
-          <AntDesign name="question" size={24} color="white" />
+          <AntDesign name="question" size={24} color={AppColors.white} />
         </Pressable>
         <Pressable
           style={[styles.button, { width: 100 }]}
@@ -44,7 +44,9 @@ const RPEKeyboard = ({
               styles.rpeButton,
               {
                 backgroundColor:
-                  selectedRPE.value === rpe.value ? "white" : AppColors.black,
+                  selectedRPE.value === rpe.value
+                    ? AppColors.white
+                    : AppColors.black,
               },
             ]}
             onPress={() => setRPE(rpe)}
@@ -54,7 +56,9 @@ const RPEKeyboard = ({
                 styles.buttonText,
                 {
                   color:
-                    selectedRPE.value === rpe.value ? AppColors.black : "white",
+                    selectedRPE.value === rpe.value
+                      ? AppColors.black
+                      : AppColors.white,
                 },
               ]}
             >

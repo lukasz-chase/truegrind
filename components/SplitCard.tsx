@@ -46,14 +46,14 @@ const SplitCard = ({
       <View
         style={[
           styles.splitCard,
-          { backgroundColor: isActiveSplit ? AppColors.blue : "white" },
+          { backgroundColor: isActiveSplit ? AppColors.blue : AppColors.white },
         ]}
       >
         <Pressable onPress={chooseSplitHandler} style={{ gap: 5 }}>
           <Text
             style={[
               styles.splitTitle,
-              { color: isActiveSplit ? "white" : AppColors.black },
+              { color: isActiveSplit ? AppColors.white : AppColors.black },
             ]}
           >
             {split.name}

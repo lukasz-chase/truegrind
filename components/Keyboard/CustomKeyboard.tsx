@@ -12,6 +12,7 @@ import { KEYBOARD_HEIGHT } from "@/constants/keyboard";
 import { KeyboardViewEnum } from "@/types/customKeyboard";
 import useInfoModal from "@/store/useInfoModal";
 import BarTypeKeyboard from "./BarTypeKeyboard";
+import { AppColors } from "@/constants/colors";
 
 const CustomKeyboard = ({
   animatedIndex,
@@ -106,7 +107,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 0,
     width: "100%",
-    backgroundColor: "#1C1C1C",
+    backgroundColor: AppColors.jetBlack,
     paddingBottom: 20,
     height: KEYBOARD_HEIGHT,
   },

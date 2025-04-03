@@ -11,6 +11,7 @@ import {
 import { supabase } from "@/lib/supabase";
 import { AppColors } from "@/constants/colors";
 import { setProfileInUserStore } from "@/lib/userService";
+import CustomTextInput from "@/components/CustomTextInput";
 
 export default function Auth() {
   const [email, setEmail] = useState("");
@@ -53,29 +54,28 @@ export default function Auth() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Welcome Back</Text>
-      <Text style={styles.subtitle}>Sign in to continue</Text>
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.input}
+      <View>
+        <Text style={styles.title}>true</Text>
+        <Text style={styles.title}>grind</Text>
+      </View>
+      <View style={styles.inputsContainer}>
+        <CustomTextInput
           onChangeText={(text) => setEmail(text)}
           value={email}
+          size="md"
           placeholder="Email"
-          placeholderTextColor="#888"
           keyboardType="email-address"
-          autoCapitalize="none"
         />
-        <TextInput
-          style={styles.input}
+        <CustomTextInput
           onChangeText={(text) => setPassword(text)}
+          placeholder="Password"
+          size="md"
           value={password}
           secureTextEntry
-          placeholder="Password"
-          placeholderTextColor="#888"
         />
       </View>
       {loading ? (
-        <ActivityIndicator color="#fff" />
+        <ActivityIndicator color={AppColors.white} />
       ) : (
         <>
           <Pressable
@@ -93,7 +93,9 @@ export default function Auth() {
             disabled={loading}
             onPress={signUpWithEmail}
           >
-            <Text style={styles.buttonOutlineText}>Sign Up</Text>
+            <Text style={[styles.buttonText, { color: AppColors.blue }]}>
+              Sign Up
+            </Text>
           </Pressable>
         </>
       )}
@@ -107,32 +109,19 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     padding: 20,
-    backgroundColor: "#f7f7f7",
   },
   title: {
-    fontSize: 28,
-    fontWeight: "700",
-    color: "#333",
+    textAlign: "left",
+    fontSize: 60,
+    fontWeight: "bold",
+    color: AppColors.black,
     marginBottom: 10,
+    textTransform: "uppercase",
   },
-  subtitle: {
-    fontSize: 16,
-    color: "#666",
-    marginBottom: 20,
-  },
-  inputContainer: {
+  inputsContainer: {
     width: "100%",
     marginBottom: 20,
-  },
-  input: {
-    height: 50,
-    borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    marginBottom: 10,
-    backgroundColor: "#fff",
-    fontSize: 16,
+    gap: 10,
   },
   button: {
     width: "100%",
@@ -143,9 +132,10 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   buttonText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "600",
+    color: AppColors.white,
+    fontSize: 24,
+    textTransform: "uppercase",
+    fontWeight: "bold",
   },
   buttonDisabled: {
     backgroundColor: AppColors.blue,
@@ -157,11 +147,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: AppColors.blue,
     alignItems: "center",
-  },
-  buttonOutlineText: {
-    color: AppColors.blue,
-    fontSize: 16,
-    fontWeight: "600",
   },
   buttonOutlineDisabled: {
     borderColor: AppColors.blue,

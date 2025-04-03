@@ -42,13 +42,13 @@ const SetOrder = ({
     if (isCompleted) {
       return {
         backgroundColor: AppColors.lightGreen,
-        color: "black",
+        color: AppColors.black,
         text: order,
       };
     }
     return {
       backgroundColor: AppColors.gray,
-      color: "black",
+      color: AppColors.black,
       text: order,
     };
   };

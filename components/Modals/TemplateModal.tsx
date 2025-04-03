@@ -57,7 +57,7 @@ export default function TemplateModal({
 
 const styles = StyleSheet.create({
   modalOverlay: {
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    backgroundColor: AppColors.semiTransparent,
     position: "absolute",
     width: "100%",
     height: "100%",
@@ -70,7 +70,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     borderRadius: 10,
     alignItems: "center",
-    backgroundColor: "white",
+    backgroundColor: AppColors.white,
     gap: 20,
     margin: "auto",
   },
@@ -92,6 +92,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontWeight: "bold",
     fontSize: 18,
-    color: "black",
+    color: AppColors.black,
   },
 });

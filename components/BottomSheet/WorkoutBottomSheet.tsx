@@ -16,6 +16,7 @@ import useCustomKeyboard from "@/store/useCustomKeyboard";
 import DraggableList from "./DraggableExercisesList.tsx/DraggableList";
 import WorkoutExercise from "./WorkoutExercise";
 import WorkoutExerciseWrapper from "./WorkoutExerciseWrapper";
+import { AppColors } from "@/constants/colors";
 
 type Props = {
   animatedIndex: SharedValue<number>;
@@ -147,10 +148,10 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
   },
   sheetShadow: {
-    backgroundColor: "white",
+    backgroundColor: AppColors.white,
     borderWidth: 0,
     borderRadius: 24,
-    shadowColor: "#000000",
+    shadowColor: AppColors.black,
     shadowOffset: {
       width: 0,
       height: 0,

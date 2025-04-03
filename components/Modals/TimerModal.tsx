@@ -77,7 +77,7 @@ export default function TimerModal() {
           <CloseButton onPress={closeModalHandler} />
           <Text style={styles.title}>Rest Timer</Text>
           <Pressable style={styles.headerButton} onPress={openInfoModalHandler}>
-            <AntDesign name="question" size={24} color="black" />
+            <AntDesign name="question" size={24} color={AppColors.black} />
           </Pressable>
         </View>
 
@@ -127,8 +127,8 @@ export default function TimerModal() {
                   value={customDuration}
                   setValue={setCustomDuration}
                   visibleItemCount={9}
-                  textColor="black"
-                  backgroundColor="gray"
+                  textColor={AppColors.black}
+                  backgroundColor={AppColors.gray}
                   data={timeOptions}
                 />
               );

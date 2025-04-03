@@ -1,4 +1,5 @@
 import { chartConfig } from "@/constants/chart";
+import { AppColors } from "@/constants/colors";
 import { formatDateShort } from "@/lib/helpers";
 import { WorkoutMetrics } from "@/types/workoutMetrics";
 import { Text, StyleSheet, Dimensions, ScrollView, View } from "react-native";
@@ -142,7 +143,7 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     marginTop: 16,
     marginLeft: 16,
-    backgroundColor: "#e0e0e0",
+    backgroundColor: AppColors.skeleton,
   },
   skeletonChart: {
     width: "90%", // approximate width for chart skeleton
@@ -150,6 +151,6 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginVertical: 8,
     marginLeft: "5%",
-    backgroundColor: "#e0e0e0",
+    backgroundColor: AppColors.skeleton,
   },
 });

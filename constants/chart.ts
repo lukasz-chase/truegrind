@@ -1,9 +1,9 @@
 import { AppColors } from "./colors";
 
 export const chartConfig = {
-  backgroundColor: "#ffffff",
-  backgroundGradientFrom: "#ffffff",
-  backgroundGradientTo: "#ffffff",
+  backgroundColor: AppColors.white,
+  backgroundGradientFrom: AppColors.white,
+  backgroundGradientTo: AppColors.white,
   decimalPlaces: 0,
   color: (opacity = 1) => `rgba(0, 0, 255, ${opacity})`,
   labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,

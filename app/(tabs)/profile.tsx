@@ -58,12 +58,8 @@ export default function Profile() {
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.profileContainer}>
           <Text style={styles.profileText}>User Profile</Text>
-          <TouchableOpacity
-            ref={optionsButtonRef}
-            style={styles.optionsButton}
-            onPress={handleOptionsPress}
-          >
-            <FontAwesome name="cog" size={24} color="black" />
+          <TouchableOpacity ref={optionsButtonRef} onPress={handleOptionsPress}>
+            <FontAwesome name="cog" size={24} color={AppColors.black} />
           </TouchableOpacity>
         </View>
         <View style={styles.buttonsWrapper}>
@@ -117,11 +113,6 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
   },
-  optionsButton: {
-    padding: 8,
-    borderRadius: 8,
-    backgroundColor: "#f0f0f0",
-  },
   optionsText: {
     fontSize: 16,
     fontWeight: "bold",
@@ -143,6 +134,6 @@ const styles = StyleSheet.create({
   },
 
   buttonText: {
-    color: "white",
+    color: AppColors.white,
   },
 });

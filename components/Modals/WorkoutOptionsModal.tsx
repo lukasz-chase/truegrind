@@ -48,7 +48,7 @@ const WorkoutOptionsModal = function ExerciseOptionsModal() {
   };
   const options = [
     {
-      Icon: <AntDesign name="copy1" size={24} color="white" />,
+      Icon: <AntDesign name="copy1" size={24} color={AppColors.white} />,
       title: "Copy",
       cb: copyWorkoutHandler,
       conditionToDisplay: workout?.user_id !== user?.id,

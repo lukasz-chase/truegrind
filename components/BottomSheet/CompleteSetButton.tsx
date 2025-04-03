@@ -29,12 +29,12 @@ const CompleteSetButton = ({
       onPress={completeSet}
     >
       {disabled ? (
-        <Octicons name="dash" size={24} color="black" />
+        <Octicons name="dash" size={24} color={AppColors.black} />
       ) : (
         <AntDesign
           name="check"
           size={20}
-          color={completed ? "white" : "black"}
+          color={completed ? AppColors.white : AppColors.black}
         />
       )}
     </Pressable>

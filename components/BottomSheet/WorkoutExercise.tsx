@@ -102,8 +102,8 @@ const WorkoutExercise = ({
             onChangeText={noteChangeHandler}
             placeholder="Add a note"
             value={note.noteValue}
-            backgroundColor="#FCF2CC"
-            textColor="#8F7F3B"
+            backgroundColor={AppColors.yellow}
+            textColor={AppColors.graphiteGray}
           />
         </View>
       )}
@@ -187,7 +187,6 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     paddingHorizontal: 5,
     borderRadius: 8,
-    color: "#c1c1c1",
   },
   cell: {
     paddingVertical: 10,
@@ -206,7 +205,7 @@ const styles = StyleSheet.create({
   addButton: {
     padding: 8,
     borderRadius: 8,
-    backgroundColor: "#f0f0f0",
+    backgroundColor: AppColors.white,
     alignItems: "center",
   },
   addButtonText: {

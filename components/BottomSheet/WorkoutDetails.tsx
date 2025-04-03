@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
   },
   workoutNotes: {
     fontSize: 18,
-    color: "black",
+    color: AppColors.black,
   },
 });
 export default WorkoutDetails;

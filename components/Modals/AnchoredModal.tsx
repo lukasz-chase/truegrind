@@ -1,3 +1,4 @@
+import { AppColors } from "@/constants/colors";
 import { useEffect, useRef, useState } from "react";
 import {
   View,
@@ -25,7 +26,7 @@ export default function AnchoredModal({
   closeModal,
   anchorRef,
   anchorCorner,
-  backgroundColor = "white",
+  backgroundColor = AppColors.white,
   modalWidth = "90%",
   padding = 10,
   alignItems = "center",
@@ -115,7 +116,7 @@ export default function AnchoredModal({
 const styles = StyleSheet.create({
   modalOverlay: {
     flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    backgroundColor: AppColors.semiTransparent,
   },
   modalContent: {
     position: "absolute",

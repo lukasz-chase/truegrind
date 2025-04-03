@@ -11,6 +11,7 @@ import {
 import { Pressable } from "react-native";
 import CloseButton from "../CloseButton";
 import CustomImage from "../CustomImage";
+import CustomTextInput from "../CustomTextInput";
 const MeasurementsGuide = require("@/assets/images/measurementsGuide.png");
 
 type Props = {
@@ -67,13 +68,11 @@ export default function AddMetricsModal({
           </Pressable>
         </View>
         <Text style={styles.label}>{label}</Text>
-        <TextInput
-          style={styles.input}
+        <CustomTextInput
           onChangeText={handleChange}
+          placeholder="Enter your measurement"
           value={inputValue}
           keyboardType="numeric"
-          placeholder="Enter your measurement"
-          placeholderTextColor="#999"
         />
         <CustomImage imageUrl={MeasurementsGuide} height={350} width={300} />
       </View>
@@ -83,7 +82,7 @@ export default function AddMetricsModal({
 
 const styles = StyleSheet.create({
   modalOverlay: {
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    backgroundColor: AppColors.semiTransparent,
     position: "absolute",
     width: "100%",
     height: "100%",
@@ -96,7 +95,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     borderRadius: 10,
     alignItems: "center",
-    backgroundColor: "white",
+    backgroundColor: AppColors.white,
     gap: 20,
     margin: "auto",
   },
@@ -110,14 +109,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     width: "100%",
     marginBottom: 10,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: AppColors.darkGray,
-    borderRadius: 5,
-    padding: 10,
-    width: "100%",
-    fontSize: 16,
   },
   saveButtonText: {
     color: AppColors.blue,

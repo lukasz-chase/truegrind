@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
     marginHorizontal: -10,
   },
   filterOptionText: {
-    color: "white",
+    color: AppColors.white,
     fontWeight: "bold",
     fontSize: 16,
     textAlign: "left",

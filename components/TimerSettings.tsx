@@ -31,9 +31,9 @@ const TimerSettings = ({
       <View style={styles.header}>
         <Text style={styles.text}>Enabled</Text>
         <Switch
-          trackColor={{ false: "#767577", true: AppColors.blue }}
-          thumbColor={"#f4f3f4"}
-          ios_backgroundColor="#3e3e3e"
+          trackColor={{ false: AppColors.charcoalGray, true: AppColors.blue }}
+          thumbColor={AppColors.white}
+          ios_backgroundColor={AppColors.graphiteGray}
           onValueChange={toggleSwitch}
           value={isEnabled}
         />
@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   text: {
-    color: "white",
+    color: AppColors.white,
     fontSize: 18,
     fontWeight: "bold",
     textAlign: "center",

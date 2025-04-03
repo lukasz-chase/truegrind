@@ -3,6 +3,7 @@ import { Entypo, Feather, MaterialIcons, AntDesign } from "@expo/vector-icons";
 import { keys } from "@/constants/keyboard";
 import styles from "./KeyboardStyles";
 import { KeyboardView, KeyboardViewEnum } from "@/types/customKeyboard";
+import { AppColors } from "@/constants/colors";
 
 type Props = {
   onKeyPress: (key: string) => void;
@@ -51,18 +52,18 @@ const DefaultKeyboard = ({
           style={[styles.key, { justifyContent: "flex-end" }]}
           onPress={addDot}
         >
-          <Entypo name="dot-single" size={24} color="white" />
+          <Entypo name="dot-single" size={24} color={AppColors.white} />
         </TouchableOpacity>
       )}
 
       <TouchableOpacity style={styles.key} onPress={onDelete}>
-        <Feather name="delete" size={24} color="white" />
+        <Feather name="delete" size={24} color={AppColors.white} />
       </TouchableOpacity>
     </View>
 
     <View style={styles.buttons}>
       <Pressable onPress={closeKeyboard} style={styles.button}>
-        <MaterialIcons name="keyboard-hide" size={24} color="white" />
+        <MaterialIcons name="keyboard-hide" size={24} color={AppColors.white} />
       </Pressable>
 
       {fieldName === "weight" ? (
@@ -86,10 +87,10 @@ const DefaultKeyboard = ({
           style={[styles.button, { width: "50%" }]}
           onPress={removeOne}
         >
-          <AntDesign name="minus" size={24} color="white" />
+          <AntDesign name="minus" size={24} color={AppColors.white} />
         </Pressable>
         <Pressable style={[styles.button, { width: "50%" }]} onPress={addOne}>
-          <AntDesign name="plus" size={24} color="white" />
+          <AntDesign name="plus" size={24} color={AppColors.white} />
         </Pressable>
       </View>
 

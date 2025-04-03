@@ -222,7 +222,7 @@ export default function WorkoutTemplate() {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "white",
+    backgroundColor: AppColors.white,
     height: "100%",
   },
   header: {
@@ -248,7 +248,7 @@ const styles = StyleSheet.create({
   },
   saveButtonText: {
     fontSize: 18,
-    color: "white",
+    color: AppColors.white,
   },
   supersetIndicator: {
     width: 2,

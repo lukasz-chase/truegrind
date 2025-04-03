@@ -111,7 +111,7 @@ export default function WorkoutPreviewModal({
 const styles = StyleSheet.create({
   modalOverlay: {
     flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.5)", // semi-transparent background
+    backgroundColor: AppColors.semiTransparent, // semi-transparent background
     justifyContent: "center",
     alignItems: "center",
     padding: 20, // padding outside the modal
@@ -121,7 +121,7 @@ const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 10,
     alignItems: "center",
-    backgroundColor: "white",
+    backgroundColor: AppColors.white,
     minHeight: 150,
   },
   modalHeader: {
@@ -158,7 +158,7 @@ const styles = StyleSheet.create({
   },
   actionButtonText: {
     textAlign: "center",
-    color: "white",
+    color: AppColors.white,
     fontSize: 18,
     fontWeight: "bold",
   },

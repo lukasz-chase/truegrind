@@ -66,7 +66,7 @@ export default function workoutHistory() {
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <Pressable onPress={goBackHandler}>
-          <AntDesign name="left" size={24} color="black" />
+          <AntDesign name="left" size={24} color={AppColors.black} />
         </Pressable>
         <Text style={styles.title}>{workoutHistory?.name}</Text>
         <View style={{ width: 24 }} />
@@ -79,7 +79,7 @@ export default function workoutHistory() {
 const styles = StyleSheet.create({
   container: {
     padding: 10,
-    backgroundColor: "white",
+    backgroundColor: AppColors.white,
     height: "100%",
   },
   header: {

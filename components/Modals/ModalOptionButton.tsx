@@ -1,6 +1,7 @@
 import React from "react";
 import { Platform, Pressable, StyleSheet, Text } from "react-native";
 import * as Haptics from "expo-haptics";
+import { AppColors } from "@/constants/colors";
 
 type Props = {
   title: string;
@@ -21,7 +22,9 @@ const ModalOptionButton = ({ title, Icon, cb, rightSide, isActive }: Props) => {
     <Pressable
       style={[
         styles.pressableButton,
-        { backgroundColor: isActive ? "#2E3C49" : "transparent" },
+        {
+          backgroundColor: isActive ? AppColors.blue : "transparent",
+        },
       ]}
       onPress={handlePress}
     >
@@ -45,7 +48,7 @@ const styles = StyleSheet.create({
   pressableText: {
     fontSize: 16,
     fontWeight: "bold",
-    color: "white",
+    color: AppColors.white,
   },
 });
 

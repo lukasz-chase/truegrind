@@ -38,8 +38,8 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)", // Semi-transparent background
-    zIndex: 1000, // Ensure it's on top of other content
+    backgroundColor: AppColors.semiTransparent,
+    zIndex: 1000,
   },
 });
 

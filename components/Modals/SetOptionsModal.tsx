@@ -41,7 +41,7 @@ const SetOptionsModal = function ExerciseOptionsModal() {
   };
   const questionButton = (
     <Pressable style={styles.questionButton}>
-      <AntDesign name="question" size={24} color="white" />
+      <AntDesign name="question" size={24} color={AppColors.white} />
     </Pressable>
   );
 

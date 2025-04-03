@@ -6,7 +6,7 @@ type Props = {
   value: string;
   onChangeText: (text: string) => void;
   placeholder: string;
-  large?: boolean;
+  size?: "sm" | "md" | "lg";
   backgroundColor?: string;
   textColor?: string;
   keyboardType?: KeyboardTypeOptions;
@@ -16,30 +16,40 @@ const CustomTextInput = ({
   onChangeText,
   value,
   placeholder,
-  large = false,
   backgroundColor = AppColors.gray,
-  textColor = "black",
+  textColor = AppColors.black,
   keyboardType = "default",
   secureTextEntry = false,
+  size = "sm",
 }: Props) => {
   const [inputFocus, setInputFocus] = useState(false);
-
+  const isLarge = size === "lg";
+  const returnHeight = () => {
+    switch (size) {
+      case "sm":
+        return 40;
+      case "md":
+        return 60;
+      case "lg":
+        return 120;
+    }
+  };
   return (
     <TextInput
       placeholder={placeholder}
-      placeholderTextColor="#b3b1b1"
+      placeholderTextColor={AppColors.darkGray}
       value={value}
       onChangeText={onChangeText}
-      multiline={large}
-      numberOfLines={large ? 4 : 1}
+      multiline={isLarge}
+      numberOfLines={isLarge ? 4 : 1}
       keyboardType={keyboardType}
       secureTextEntry={secureTextEntry}
       style={[
         styles.input,
         {
-          borderColor: inputFocus ? "black" : "white",
-          height: large ? 120 : 40,
-          maxHeight: large ? 120 : 40,
+          borderColor: inputFocus ? AppColors.black : AppColors.white,
+          height: returnHeight(),
+          maxHeight: returnHeight(),
           backgroundColor,
           color: textColor,
         },

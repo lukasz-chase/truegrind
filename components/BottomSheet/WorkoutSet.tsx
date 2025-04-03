@@ -126,7 +126,7 @@ const WorkoutSet = ({
           {
             backgroundColor: exerciseSet.completed
               ? AppColors.lightGreen
-              : "white",
+              : AppColors.white,
           },
         ]}
       >

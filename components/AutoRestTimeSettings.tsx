@@ -144,7 +144,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   text: {
-    color: "white",
+    color: AppColors.white,
     fontSize: 18,
     fontWeight: "bold",
     textAlign: "center",
@@ -153,11 +153,11 @@ const styles = StyleSheet.create({
     justifyContent: "space-evenly",
     height: 30,
     flexDirection: "row",
-    backgroundColor: "#3D3D42",
+    backgroundColor: AppColors.charcoalGray,
     borderRadius: 10,
   },
   buttonsBackground: {
-    backgroundColor: "#525257",
+    backgroundColor: AppColors.graphiteGray,
     position: "absolute",
     height: 30,
     width: "50%",
@@ -171,7 +171,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   headerButtonText: {
-    color: "white",
+    color: AppColors.white,
     fontSize: 16,
     fontWeight: "bold",
   },

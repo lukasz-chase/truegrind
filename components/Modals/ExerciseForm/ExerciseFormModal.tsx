@@ -211,7 +211,7 @@ export default function ExerciseFormModal({
 
 const styles = StyleSheet.create({
   modalOverlay: {
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    backgroundColor: AppColors.semiTransparent,
     position: "absolute",
     width: "100%",
     height: "100%",
@@ -223,7 +223,7 @@ const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 10,
     alignItems: "center",
-    backgroundColor: "white",
+    backgroundColor: AppColors.white,
     overflow: "hidden",
     margin: "auto",
   },

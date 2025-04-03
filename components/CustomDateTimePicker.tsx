@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { View, Text, Pressable, Platform, StyleSheet } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import { AppColors } from "@/constants/colors";
 
 const CustomDateTimePicker = ({ label, value, onChange }: any) => {
   const [showPicker, setShowPicker] = useState(false);
@@ -23,7 +24,7 @@ const CustomDateTimePicker = ({ label, value, onChange }: any) => {
             style={{
               padding: 10,
               borderWidth: 1,
-              borderColor: "#ccc",
+              borderColor: AppColors.gray,
               borderRadius: 5,
             }}
           >
@@ -47,14 +48,6 @@ const CustomDateTimePicker = ({ label, value, onChange }: any) => {
           )}
         </>
       ) : (
-        // <DateTimePicker
-        //   value={value}
-        //   mode="time"
-        //   is24Hour={true}
-        //   minuteInterval={5}
-        //   display="spinner"
-        //   onChange={onDateChange}
-        // />
         <DateTimePicker
           value={value}
           mode="time"

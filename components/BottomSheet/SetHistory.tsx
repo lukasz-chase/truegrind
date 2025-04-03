@@ -52,7 +52,7 @@ const SetHistory = ({ exerciseId, setOrder, userId, bulkUpdateSet }: Props) => {
         style={[
           styles.previousSet,
           {
-            color: disabled ? AppColors.gray : "black",
+            color: disabled ? AppColors.gray : AppColors.black,
             fontSize: exerciseHistory.rpe || exerciseHistory.partials ? 14 : 16,
           },
         ]}

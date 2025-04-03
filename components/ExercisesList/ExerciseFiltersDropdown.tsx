@@ -35,7 +35,7 @@ const ExerciseFiltersDropdown = ({
         <Text
           style={[
             styles.dropdownButtonText,
-            { color: selectedValue ? "white" : "black" },
+            { color: selectedValue ? AppColors.white : AppColors.black },
           ]}
         >
           {selectedValue || buttonLabel}

@@ -98,7 +98,7 @@ const DraggableItem = ({
       transform: [{ translateY: y.value }],
       zIndex: isActive.value ? 10 : 1,
       elevation: isActive.value ? 5 : 0,
-      backgroundColor: isActive.value ? AppColors.lightBlue : "white",
+      backgroundColor: isActive.value ? AppColors.lightBlue : AppColors.white,
     };
   });
 
@@ -108,7 +108,7 @@ const DraggableItem = ({
         <Animated.View style={[styles.header, animatedStyle]}>
           <Text style={styles.headerTitle}>{item.exercises.name}</Text>
           <View style={styles.headerOptions}>
-            <FontAwesome5 name="grip-lines" size={24} color="black" />
+            <FontAwesome5 name="grip-lines" size={24} color={AppColors.black} />
           </View>
         </Animated.View>
       </GestureDetector>

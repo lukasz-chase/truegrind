@@ -57,10 +57,10 @@ export default function SplitsScreen() {
         onPress={() => router.push("/newSplit")}
         style={styles.newSplitButton}
       >
-        <Text style={[styles.title, { color: "white" }]}>
+        <Text style={[styles.title, { color: AppColors.white }]}>
           Create your own split
         </Text>
-        <AntDesign name="right" size={24} color="white" />
+        <AntDesign name="right" size={24} color={AppColors.white} />
       </Pressable>
       <Text style={styles.title}>Or choose one</Text>
       <FlatList
@@ -98,7 +98,7 @@ const styles = StyleSheet.create({
   },
   cardSkeleton: {
     width: "100%",
-    backgroundColor: "#E0E0E0",
+    backgroundColor: AppColors.skeleton,
     height: 60,
     borderRadius: 10,
   },
