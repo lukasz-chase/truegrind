@@ -205,7 +205,7 @@ const styles = StyleSheet.create({
   addButton: {
     padding: 8,
     borderRadius: 8,
-    backgroundColor: AppColors.white,
+    backgroundColor: AppColors.gray,
     alignItems: "center",
   },
   addButtonText: {

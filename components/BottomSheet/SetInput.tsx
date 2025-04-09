@@ -102,6 +102,7 @@ const SetInput = ({
       updateSet,
       completeSet,
       completed,
+      value,
       hasCustomTimer
     );
     if (partialsValue) setPartials(partialsValue);

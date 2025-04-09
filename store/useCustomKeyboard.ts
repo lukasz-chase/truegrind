@@ -21,6 +21,7 @@ interface KeyboardState {
   hasCustomTimer: boolean;
   isSetCompleted: boolean;
   selectedBarType: BarTypeEnum | null;
+  currentValue: number | null;
   setKeyboardView: (view: KeyboardView) => void;
   openKeyboard: () => void;
   updateInputProps: (
@@ -29,6 +30,7 @@ interface KeyboardState {
     updateSet: (newValue: Partial<ExerciseSet>) => void,
     completeSet: () => void,
     isSetCompleted: boolean,
+    currentValue: number | null,
     hasCustomTimer?: boolean
   ) => void;
   closeKeyboard: () => void;
@@ -98,6 +100,7 @@ const useCustomKeyboard = create<KeyboardState>((set, get) => ({
     updateSet,
     completeSet,
     isSetCompleted,
+    currentValue,
     hasCustomTimer = false
   ) => {
     set((state) => ({
@@ -107,6 +110,7 @@ const useCustomKeyboard = create<KeyboardState>((set, get) => ({
       updateSet,
       hasCustomTimer,
       completeSet,
+      currentValue,
       isSetCompleted,
     }));
   },
@@ -114,7 +118,7 @@ const useCustomKeyboard = create<KeyboardState>((set, get) => ({
   setValueHandler: () => {},
   onKeyPress: (value: string) => {
     set((state) => {
-      if (state.updatedValue.split("").length > 4) return state;
+      if (state.updatedValue.split("").length > 5) return state;
       const updatedValue = state.updatedValue
         ? `${state.updatedValue}${value}`
         : value;
@@ -123,6 +127,7 @@ const useCustomKeyboard = create<KeyboardState>((set, get) => ({
       return {
         ...state,
         updatedValue,
+        currentValue: Number(updatedValue),
       };
     });
   },
@@ -133,26 +138,31 @@ const useCustomKeyboard = create<KeyboardState>((set, get) => ({
       return {
         ...state,
         updatedValue,
+        currentValue: Number(updatedValue),
       };
     });
   },
   addOne: () => {
     set((state) => {
-      const updatedValue = `${Number(state.updatedValue) + 1}`;
+      const value = state.currentValue ? state.currentValue : 0;
+      const updatedValue = `${Number(value) + 1}`;
       state.setValueHandler(updatedValue);
       return {
         ...state,
         updatedValue,
+        currentValue: Number(updatedValue),
       };
     });
   },
   removeOne: () => {
     set((state) => {
-      const updatedValue = `${Number(state.updatedValue) - 1}`;
+      const value = state.currentValue ? state.currentValue : 0;
+      const updatedValue = `${Math.max(Number(value) - 1, 0)}`;
       state.setValueHandler(updatedValue);
       return {
         ...state,
         updatedValue,
+        currentValue: Number(updatedValue),
       };
     });
   },
