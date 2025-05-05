@@ -13,9 +13,13 @@ import AnchoredModal from "@/components/Modals/AnchoredModal";
 import ModalOptionButton from "@/components/Modals/ModalOptionButton";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
-import { useRouter } from "expo-router";
+import { Link, useRouter } from "expo-router";
 import { AppColors } from "@/constants/colors";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
+import * as Progress from "react-native-progress";
+import { profileButtons } from "@/constants/profile";
+import CustomImage from "@/components/CustomImage";
+
 export default function Profile() {
   const [isOptionsVisible, setIsOptionsVisible] = useState(false);
   const router = useRouter();
@@ -54,46 +58,68 @@ export default function Profile() {
     },
   ];
   return (
-    <>
-      <SafeAreaView style={styles.safeArea}>
-        <View style={styles.profileContainer}>
-          <Text style={styles.profileText}>User Profile</Text>
-          <TouchableOpacity ref={optionsButtonRef} onPress={handleOptionsPress}>
-            <FontAwesome name="cog" size={24} color={AppColors.black} />
-          </TouchableOpacity>
+    <SafeAreaView style={styles.safeArea}>
+      <Text style={styles.title}>TRUE GRIND</Text>
+      <FontAwesome
+        name="user-circle"
+        size={100}
+        color={AppColors.charcoalGray}
+      />
+      <Text style={[styles.title, styles.name]}>Jacob Smith</Text>
+      <View style={styles.infoContainer}>
+        <Text>Age</Text>
+        <Text>-</Text>
+        <Text>Height</Text>
+        <Text>-</Text>
+        <Text>Weight</Text>
+      </View>
+      <View style={styles.boxesContainer}>
+        <View style={styles.infoBox}>
+          <Text style={styles.infoBoxTitle}>Weight Goal</Text>
+          <Text style={styles.infoBoxValue}>70 kg</Text>
         </View>
-        <View style={styles.buttonsWrapper}>
-          <Pressable
-            style={styles.button}
-            onPress={() => routeNavigateHandler("/metrics")}
-          >
-            <Text style={styles.buttonText}>Metrics</Text>
-            <AntDesign name="right" size={24} color={AppColors.gray} />
-          </Pressable>
-          <Pressable
-            style={styles.button}
-            onPress={() => routeNavigateHandler("/progressPhotos")}
-          >
-            <Text style={styles.buttonText}>Progress Photos</Text>
-            <AntDesign name="right" size={24} color={AppColors.gray} />
-          </Pressable>
+        <View style={styles.infoBox}>
+          <Text style={styles.infoBoxTitle}>Workout Frequency</Text>
+          <Text style={styles.infoBoxValue}>3 per week</Text>
         </View>
-      </SafeAreaView>
-      <AnchoredModal
-        isVisible={isOptionsVisible}
-        closeModal={handleOptionsClose}
-        anchorRef={optionsButtonRef}
-        anchorCorner="RIGHT"
-        modalWidth={300}
-        backgroundColor={AppColors.darkBlue}
-      >
-        <View style={styles.wrapper}>
-          {options.map((option) => (
-            <ModalOptionButton key={option.title} {...option} />
-          ))}
+        <View style={styles.infoBox}>
+          <Text style={styles.infoBoxTitle}>Body Goal</Text>
+          <Text style={styles.infoBoxValue}>Muscle weight</Text>
         </View>
-      </AnchoredModal>
-    </>
+      </View>
+      <View style={styles.progressWrapper}>
+        <Text style={styles.infoBoxValue}>Progress</Text>
+        <View style={styles.progressInfo}>
+          <Text>75 kg</Text>
+          <Text>70 kg</Text>
+        </View>
+        <Progress.Bar
+          progress={0.3}
+          width={350}
+          color={AppColors.blue}
+          style={styles.progress}
+        />
+      </View>
+      <View style={styles.buttonsWrapper}>
+        {profileButtons.map((button, i) => (
+          <Link href={button.href} key={button.label}>
+            <View
+              style={[
+                styles.profileButton,
+                i > 0 && styles.profileButtonSeparator,
+              ]}
+            >
+              <Text>{button.label}</Text>
+              <AntDesign
+                name="right"
+                size={24}
+                color={AppColors.charcoalGray}
+              />
+            </View>
+          </Link>
+        ))}
+      </View>
+    </SafeAreaView>
   );
 }
 
@@ -101,39 +127,76 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     padding: 10,
+    alignItems: "center",
+    gap: 10,
   },
-  profileContainer: {
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: AppColors.black,
+    textAlign: "center",
+  },
+  name: {
+    fontSize: 32,
+  },
+  infoContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    width: "100%",
+    gap: 10,
+  },
+  boxesContainer: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     width: "100%",
-    padding: 16,
   },
-  profileText: {
-    fontSize: 24,
-    fontWeight: "bold",
-  },
-  optionsText: {
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  wrapper: {
-    width: "100%",
-  },
-  buttonsWrapper: {},
-  button: {
-    width: "100%",
-    height: 50,
-    backgroundColor: AppColors.blue,
+  infoBox: {
+    height: 100,
+    width: "30%",
+    borderColor: AppColors.charcoalGray,
+    borderWidth: 2,
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 10,
-    marginBottom: 10,
-    flexDirection: "row",
     gap: 10,
   },
-
-  buttonText: {
-    color: AppColors.white,
+  infoBoxTitle: {
+    textAlign: "center",
+    fontWeight: "bold",
+  },
+  infoBoxValue: {},
+  progressWrapper: {
+    width: "100%",
+    borderColor: AppColors.charcoalGray,
+    borderWidth: 2,
+    borderRadius: 10,
+    padding: 10,
+    gap: 10,
+  },
+  progressInfo: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  progress: {
+    width: "100%",
+  },
+  buttonsWrapper: {
+    borderRadius: 10,
+    borderColor: AppColors.charcoalGray,
+    borderWidth: 2,
+    width: "100%",
+  },
+  profileButton: {
+    width: "100%",
+    padding: 10,
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  profileButtonSeparator: {
+    borderTopWidth: 2,
+    borderTopColor: AppColors.charcoalGray,
   },
 });

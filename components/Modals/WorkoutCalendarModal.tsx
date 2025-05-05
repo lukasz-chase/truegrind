@@ -9,7 +9,6 @@ import {
   Platform,
   StyleSheet,
 } from "react-native";
-import DateTimePicker from "@react-native-community/datetimepicker";
 import * as Haptics from "expo-haptics";
 
 import CloseButton from "../CloseButton";

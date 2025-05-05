@@ -1,17 +1,15 @@
 import { Stack } from "expo-router";
 import { useEffect } from "react";
 import { supabase } from "@/lib/supabase";
-import { setStatusBarStyle, StatusBar } from "expo-status-bar";
-import { useRouter } from "expo-router";
 import userStore from "@/store/userStore";
+import useActiveWorkout from "@/store/useActiveWorkout";
+import useMeasurementsStore from "@/store/useMeasurementsStore";
+import { setProfileInUserStore } from "@/lib/userService";
 import { Alert, AppState, Platform } from "react-native";
 import * as Notifications from "expo-notifications";
 import * as SplashScreen from "expo-splash-screen";
-import { setProfileInUserStore } from "@/lib/userService";
-import useActiveWorkout from "@/store/useActiveWorkout";
-import useMeasurementsStore from "@/store/useMeasurementsStore";
+import { setStatusBarStyle, StatusBar } from "expo-status-bar";
 
-// Prevent the splash screen from hiding automatically
 SplashScreen.preventAutoHideAsync();
 
 Notifications.setNotificationHandler({
@@ -19,23 +17,20 @@ Notifications.setNotificationHandler({
     shouldShowAlert: true,
     shouldPlaySound: true,
     shouldSetBadge: true,
+    shouldShowBanner: true,
+    shouldShowList: true,
   }),
 });
 
 AppState.addEventListener("change", (state) => {
-  if (state === "active") {
-    supabase.auth.startAutoRefresh();
-  } else {
-    supabase.auth.stopAutoRefresh();
-  }
+  if (state === "active") supabase.auth.startAutoRefresh();
+  else supabase.auth.stopAutoRefresh();
 });
 
-export default function Root() {
-  const { session: currentSession } = userStore((state) => state);
+export default function RootLayout() {
+  const { session } = userStore((s) => s);
   const { resetActiveWorkout } = useActiveWorkout();
   const { resetMeasurements } = useMeasurementsStore();
-  const router = useRouter();
-
   const askNotificationPermission = async () => {
     const { status } = await Notifications.requestPermissionsAsync();
     if (status === "granted") {
@@ -50,50 +45,46 @@ export default function Root() {
   };
 
   useEffect(() => {
-    // Set the status bar style once the component is mounted
     setStatusBarStyle("dark");
 
-    // Fetch the initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       userStore.setState({ session });
-
-      // After fetching the session, hide the splash screen
       SplashScreen.hideAsync();
     });
 
-    // Set up a listener for authentication state changes
-    const authListener = supabase.auth.onAuthStateChange((_event, session) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
       userStore.setState({ session });
+
       if (!session) {
         resetActiveWorkout();
         resetMeasurements();
-        // Redirect to sign-in if session is null (logged out)
-        router.replace("/sign-in");
       } else {
         setProfileInUserStore(session.user.id);
-
-        // Redirect to tabs if session exists (logged in)
-        router.replace("/(tabs)");
       }
     });
 
-    // Clean up the listener on unmount
-    return () => {
-      authListener?.data.subscription.unsubscribe();
-    };
+    return () => subscription.unsubscribe();
   }, []);
+
   useEffect(() => {
-    if (Platform.OS === "web") return;
-    askNotificationPermission();
+    if (Platform.OS !== "web") {
+      askNotificationPermission();
+    }
   }, []);
+
   return (
     <>
       <Stack>
-        {currentSession ? (
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        ) : (
+        <Stack.Protected guard={!session}>
           <Stack.Screen name="sign-in" options={{ headerShown: false }} />
-        )}
+        </Stack.Protected>
+
+        <Stack.Protected guard={!!session}>
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        </Stack.Protected>
+
         <Stack.Screen name="+not-found" />
       </Stack>
       <StatusBar style="dark" />
