@@ -72,4 +72,12 @@ export const hiddenScreens = [
       tabBarStyle: { display: "none" as "none" }, // Explicitly cast "none"
     },
   },
+  {
+    name: "theme",
+    additionalOptions: {},
+  },
+  {
+    name: "privacy",
+    additionalOptions: {},
+  },
 ];

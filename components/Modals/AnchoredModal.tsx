@@ -1,11 +1,11 @@
 import { AppColors } from "@/constants/colors";
+import { SCREEN_WIDTH } from "@/constants/device";
 import { useEffect, useRef, useState } from "react";
 import {
   View,
   Modal,
   StyleSheet,
   TouchableWithoutFeedback,
-  Dimensions,
   DimensionValue,
 } from "react-native";
 
@@ -50,8 +50,6 @@ export default function AnchoredModal({
   }, [isVisible]);
 
   useEffect(() => {
-    const screenHeight = Dimensions.get("window").height;
-
     (anchorRef?.current as any)?.measureInWindow(
       (fx: number, fy: number, width: number, height: number) => {
         let left, top;
@@ -65,7 +63,7 @@ export default function AnchoredModal({
         }
 
         // Calculate vertical position
-        if (fy + height + modalHeight > screenHeight) {
+        if (fy + height + modalHeight > SCREEN_WIDTH) {
           // Anchor from bottom if modal exceeds screen height
           top = fy - modalHeight + height;
           isBottomAnchored = true;

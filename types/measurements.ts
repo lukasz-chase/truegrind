@@ -16,4 +16,25 @@ export enum MeasurementTimeRangeEnum {
   ONE_MONTH = "1m",
 }
 
+export enum BodyPartLabel {
+  NECK = "neck",
+  SHOULDERS = "shoulders",
+  CHEST = "chest",
+  LEFT_BICEPS = "left_biceps",
+  RIGHT_BICEPS = "right_biceps",
+  LEFT_FOREARM = "left_forearm",
+  RIGHT_FOREARM = "right_forearm",
+  WAIST = "waist",
+  STOMACH = "stomach",
+  HIPS = "hips",
+  LEFT_THIGH = "left_thigh",
+  RIGHT_THIGH = "right_thigh",
+  LEFT_CALF = "left_calf",
+  RIGHT_CALF = "right_calf",
+}
+export enum CorePartsLabel {
+  WEIGHT = "weight",
+  BODY_FAT = "body_fat",
+}
+
 export type MeasurementTimeRange = `${MeasurementTimeRangeEnum}`;

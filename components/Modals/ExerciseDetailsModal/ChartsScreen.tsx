@@ -1,11 +1,10 @@
 import { chartConfig } from "@/constants/chart";
 import { AppColors } from "@/constants/colors";
+import { SCREEN_WIDTH } from "@/constants/device";
 import { formatDateShort } from "@/lib/helpers";
 import { WorkoutMetrics } from "@/types/workoutMetrics";
-import { Text, StyleSheet, Dimensions, ScrollView, View } from "react-native";
+import { Text, StyleSheet, ScrollView, View } from "react-native";
 import { LineChart } from "react-native-chart-kit";
-
-const screenWidth = Dimensions.get("window").width;
 
 const ChartsScreen = ({
   data,
@@ -63,7 +62,7 @@ const ChartsScreen = ({
             },
           ],
         }}
-        width={screenWidth - 50}
+        width={SCREEN_WIDTH - 50}
         height={220}
         chartConfig={chartConfig}
         bezier
@@ -77,7 +76,7 @@ const ChartsScreen = ({
           labels,
           datasets: [{ data: totalVolumeData }],
         }}
-        width={screenWidth - 50}
+        width={SCREEN_WIDTH - 50}
         height={220}
         chartConfig={chartConfig}
         bezier
@@ -91,7 +90,7 @@ const ChartsScreen = ({
           labels,
           datasets: [{ data: heaviestWeightData }],
         }}
-        width={screenWidth - 65}
+        width={SCREEN_WIDTH - 65}
         height={220}
         chartConfig={chartConfig}
         bezier
@@ -105,7 +104,7 @@ const ChartsScreen = ({
           labels,
           datasets: [{ data: maxRepsData }],
         }}
-        width={screenWidth - 50}
+        width={SCREEN_WIDTH - 50}
         height={220}
         chartConfig={chartConfig}
         bezier

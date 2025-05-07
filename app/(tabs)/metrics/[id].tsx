@@ -9,15 +9,7 @@ import userStore from "@/store/userStore";
 import { Measurement, MeasurementTimeRange } from "@/types/measurements";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import {
-  Text,
-  StyleSheet,
-  View,
-  FlatList,
-  Pressable,
-  Dimensions,
-} from "react-native";
-import AntDesign from "@expo/vector-icons/AntDesign";
+import { Text, StyleSheet, View, FlatList, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AddMetricsModal from "@/components/Modals/AddMetricsModal";
 import { allMetrics, timePeriodButtons } from "@/constants/metrics";
@@ -25,8 +17,8 @@ import { LineChart } from "react-native-chart-kit";
 import { chartConfig } from "@/constants/chart";
 import useMeasurementsStore from "@/store/useMeasurementsStore";
 import SwipeToDelete from "@/components/SwipeToDelete";
-
-const screenWidth = Dimensions.get("window").width;
+import CustomHeader from "@/components/CustomHeader";
+import { SCREEN_WIDTH } from "@/constants/device";
 
 export default function MetricsDetails() {
   const [isMetricsModalVisible, setIsMetricsModalVisible] = useState(false);
@@ -154,13 +146,7 @@ export default function MetricsDetails() {
   return (
     <>
       <SafeAreaView style={styles.container}>
-        <View style={styles.header}>
-          <Pressable onPress={goBackHandler}>
-            <AntDesign name="left" size={24} color={AppColors.black} />
-          </Pressable>
-          <Text style={styles.title}>{measurement.displayName}</Text>
-          <View style={{ width: 24 }} />
-        </View>
+        <CustomHeader name={measurement.displayName} href="/metrics" />
         {filteredMeasurements.length > 0 && (
           <>
             <View style={styles.filterContainer}>
@@ -194,7 +180,7 @@ export default function MetricsDetails() {
                   },
                 ],
               }}
-              width={screenWidth - 50}
+              width={SCREEN_WIDTH - 50}
               height={220}
               chartConfig={chartConfig}
               bezier
@@ -238,17 +224,6 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: AppColors.white,
     height: "100%",
-  },
-  header: {
-    paddingVertical: 10,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: "bold",
-    textAlign: "center",
   },
   // FILTER BUTTONS
   filterContainer: {

@@ -41,6 +41,7 @@ export default function Auth() {
       password: password,
       options: {
         data: {
+          username: "User",
           custom_timers: [60, 120, 180, 240],
         },
       },

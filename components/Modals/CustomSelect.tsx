@@ -1,21 +1,24 @@
 import { AppColors } from "@/constants/colors";
 import React, { useRef, useState } from "react";
 import { Pressable, StyleSheet, Text } from "react-native";
-import ExerciseFiltersModal from "../Modals/ExerciseFiltersModal";
+import SelectOptionsModal from "./SelectOptionsModal";
+import { SCREEN_WIDTH } from "@/constants/device";
 
 type Props = {
   selectedValue: string;
-  setSelectedValue: React.Dispatch<React.SetStateAction<string>>;
+  setSelectedValue: React.Dispatch<React.SetStateAction<any>>;
   data: { label: string; value: string }[];
   buttonLabel: string;
   anchor: "LEFT" | "RIGHT";
+  size?: "sm" | "lg";
 };
-const ExerciseFiltersDropdown = ({
+const CustomSelect = ({
   data,
   selectedValue,
   setSelectedValue,
   buttonLabel,
   anchor,
+  size = "sm",
 }: Props) => {
   const buttonRef = useRef(null);
   const [modalVisible, setModalVisible] = useState(false);
@@ -27,6 +30,8 @@ const ExerciseFiltersDropdown = ({
           styles.dropdownButton,
           {
             backgroundColor: selectedValue ? AppColors.blue : AppColors.gray,
+            width: size === "sm" ? "48%" : "100%",
+            padding: size === "sm" ? 5 : 10,
           },
         ]}
         onPress={() => setModalVisible(true)}
@@ -41,7 +46,7 @@ const ExerciseFiltersDropdown = ({
           {selectedValue || buttonLabel}
         </Text>
       </Pressable>
-      <ExerciseFiltersModal
+      <SelectOptionsModal
         data={data}
         anchorCorner={anchor}
         anchorRef={buttonRef}
@@ -53,6 +58,7 @@ const ExerciseFiltersDropdown = ({
           setModalVisible(false);
         }}
         value={selectedValue}
+        width={SCREEN_WIDTH - 40}
       />
     </>
   );
@@ -60,9 +66,7 @@ const ExerciseFiltersDropdown = ({
 
 const styles = StyleSheet.create({
   dropdownButton: {
-    padding: 5,
     borderRadius: 8,
-    width: "48%",
     alignItems: "center",
   },
   dropdownButtonText: {
@@ -71,4 +75,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ExerciseFiltersDropdown;
+export default CustomSelect;

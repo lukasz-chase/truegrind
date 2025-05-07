@@ -123,3 +123,12 @@ export const getCalendarDateFormat = () => {
   const formattedDate = `${year}-${month}-${day}`;
   return formattedDate;
 };
+
+export const getStartOfWeek = (date: Date) => {
+  const day = date.getDay();
+  const delta = (day + 6) % 7;
+  const start = new Date(date);
+  start.setDate(date.getDate() - delta);
+  start.setHours(0, 0, 0, 0);
+  return start;
+};

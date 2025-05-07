@@ -74,6 +74,7 @@ export default function TabLayout() {
           <ExerciseDetailsModal />
         </SafeAreaView>
         <Tabs
+          initialRouteName="index"
           screenOptions={{
             tabBarActiveTintColor: AppColors.blue,
             tabBarStyle: {

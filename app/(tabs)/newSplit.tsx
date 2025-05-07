@@ -10,6 +10,7 @@ import { StyleSheet, View, Text, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import useSplitsStore from "@/store/useSplitsStore";
+import CustomHeader from "@/components/CustomHeader";
 
 export default function NewSplitScreen() {
   const [splitName, setSplitName] = useState("");
@@ -48,13 +49,7 @@ export default function NewSplitScreen() {
   if (!user) return null;
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <Pressable onPress={goBackHandler}>
-          <AntDesign name="left" size={24} color={AppColors.black} />
-        </Pressable>
-        <Text style={styles.title}>New Split</Text>
-        <View style={{ width: 24 }} />
-      </View>
+      <CustomHeader name="New Split" href="/splits" />
       <CustomTextInput
         onChangeText={setSplitName}
         value={splitName}
@@ -87,19 +82,6 @@ const styles = StyleSheet.create({
     padding: 10,
     flex: 1,
     gap: 10,
-  },
-  header: {
-    paddingVertical: 10,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  title: {
-    fontSize: 28,
-    textTransform: "uppercase",
-    color: AppColors.black,
-    paddingVertical: 20,
-    fontWeight: "bold",
   },
   actionButton: {
     padding: 10,

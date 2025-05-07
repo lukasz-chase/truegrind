@@ -11,9 +11,10 @@ type Props = {
   data: { label: string; value: string }[];
   onPress: (value: string) => void;
   value: string;
+  width?: number;
 };
 
-const ExerciseFiltersModal = ({
+const SelectOptionsModal = ({
   anchorCorner,
   anchorRef,
   closeModal,
@@ -21,6 +22,7 @@ const ExerciseFiltersModal = ({
   data,
   onPress,
   value,
+  width = 200,
 }: Props) => {
   return (
     <AnchoredModal
@@ -29,7 +31,7 @@ const ExerciseFiltersModal = ({
       closeModal={closeModal}
       isVisible={isVisible}
       backgroundColor={AppColors.darkBlue}
-      modalWidth={200}
+      modalWidth={width}
     >
       <View style={{ gap: 10, width: "100%", alignSelf: "flex-start" }}>
         {data.map((filterOption) => (
@@ -65,4 +67,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ExerciseFiltersModal;
+export default SelectOptionsModal;

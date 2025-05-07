@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import {
   StyleSheet,
@@ -19,19 +19,31 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import * as Progress from "react-native-progress";
 import { profileButtons } from "@/constants/profile";
 import CustomImage from "@/components/CustomImage";
+import { fetchUserMeasurementsSingle } from "@/lib/measurementsService";
+import { Measurement } from "@/types/measurements";
+import {
+  fetchUsersLastWorkout,
+  fetchWeeklyWorkoutCount,
+} from "@/lib/workoutServices";
+import { WorkoutHistory } from "@/types/workout";
+import { formatDateShort } from "@/lib/helpers";
 
+//TODO - show skeleton while loading
+//TODO - use the picker in time pickers aswell
+//TODO - make theme usable
+//TODO - add animations between pages
+//TODO - maybe profile should be lighten up in the bar when we go to the profile subpages
+//TODO - change the latest workout for an upcoming one
 export default function Profile() {
-  const [isOptionsVisible, setIsOptionsVisible] = useState(false);
-  const router = useRouter();
-  const optionsButtonRef = useRef(null);
-
-  const handleOptionsPress = () => {
-    setIsOptionsVisible(true);
-  };
-
-  const handleOptionsClose = () => {
-    setIsOptionsVisible(false);
-  };
+  const { user } = userStore();
+  const [goalMeasurement, setGoalMeasurement] = useState<Measurement | null>(
+    null
+  );
+  const [weight, setWeight] = useState<Measurement | null>(null);
+  const [recentWorkout, setRecentWorkout] = useState<WorkoutHistory | null>(
+    null
+  );
+  const [workoutFrequency, setWorkoutFrequency] = useState<number | null>(null);
 
   const signOut = async () => {
     try {
@@ -41,22 +53,48 @@ export default function Profile() {
       console.log(error);
     }
   };
-  const routeNavigateHandler = (routeName: any) => {
-    setIsOptionsVisible(false);
-    router.navigate(routeName);
+
+  const fetchData = async () => {
+    try {
+      if (!user?.id) return;
+
+      const [
+        goalDataPromise,
+        weightDataPromise,
+        recentWorkoutDataPromise,
+        workoutFrequencyDataPromise,
+      ] = [
+        user.current_goal?.name
+          ? fetchUserMeasurementsSingle(user.id, user.current_goal.name)
+          : Promise.resolve(null),
+        fetchUserMeasurementsSingle(user.id, "weight"),
+        fetchUsersLastWorkout(user.id),
+        fetchWeeklyWorkoutCount(user.id),
+      ];
+
+      const [goalData, weightData, recentWorkoutData, workoutFrequencyData] =
+        await Promise.all([
+          goalDataPromise,
+          weightDataPromise,
+          recentWorkoutDataPromise,
+          workoutFrequencyDataPromise,
+        ]);
+
+      if (goalData) setGoalMeasurement(goalData);
+      if (weightData) setWeight(weightData);
+      if (recentWorkoutData) setRecentWorkout(recentWorkoutData);
+      if (typeof workoutFrequencyData === "number") {
+        setWorkoutFrequency(workoutFrequencyData);
+      }
+    } catch (error) {
+      console.error("Error fetching measurements", error);
+    }
   };
-  const options = [
-    {
-      title: "Edit Profile",
-      Icon: <FontAwesome5 name="user-edit" size={24} color={AppColors.gray} />,
-      cb: () => routeNavigateHandler("/userForm"),
-    },
-    {
-      title: "Sign Out",
-      Icon: <AntDesign name="logout" size={24} color={AppColors.gray} />,
-      cb: signOut,
-    },
-  ];
+
+  useEffect(() => {
+    fetchData();
+  }, [user]);
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <Text style={styles.title}>TRUE GRIND</Text>
@@ -65,40 +103,86 @@ export default function Profile() {
         size={100}
         color={AppColors.charcoalGray}
       />
-      <Text style={[styles.title, styles.name]}>Jacob Smith</Text>
+      <Text style={[styles.title, styles.name]}>{user?.username}</Text>
       <View style={styles.infoContainer}>
-        <Text>Age</Text>
+        {user?.age ? <Text>{user?.age} years</Text> : <Text>Age</Text>}
         <Text>-</Text>
-        <Text>Height</Text>
+        {user?.height ? <Text>{user?.height} cm</Text> : <Text>Height</Text>}
         <Text>-</Text>
-        <Text>Weight</Text>
+        {weight ? (
+          <Text>
+            {weight.value} {weight.unit}
+          </Text>
+        ) : (
+          <Text>Weight</Text>
+        )}
       </View>
       <View style={styles.boxesContainer}>
         <View style={styles.infoBox}>
-          <Text style={styles.infoBoxTitle}>Weight Goal</Text>
-          <Text style={styles.infoBoxValue}>70 kg</Text>
+          {user?.current_goal ? (
+            <>
+              <Text style={styles.infoBoxTitle}>Current Goal</Text>
+              <Text style={styles.infoBoxTitle}>
+                {user?.current_goal?.name}
+              </Text>
+              <Text style={styles.infoBoxValue}>
+                {user?.current_goal?.value}
+                {user?.current_goal?.unit}
+              </Text>
+            </>
+          ) : (
+            <Text style={styles.infoBoxTitle}>No goal set</Text>
+          )}
         </View>
         <View style={styles.infoBox}>
-          <Text style={styles.infoBoxTitle}>Workout Frequency</Text>
-          <Text style={styles.infoBoxValue}>3 per week</Text>
+          {workoutFrequency ? (
+            <>
+              <Text style={styles.infoBoxTitle}>Workout Frequency</Text>
+              <Text style={styles.infoBoxValue}>
+                {workoutFrequency} per week
+              </Text>
+            </>
+          ) : (
+            <Text style={styles.infoBoxTitle}>No workouts this week</Text>
+          )}
         </View>
         <View style={styles.infoBox}>
-          <Text style={styles.infoBoxTitle}>Body Goal</Text>
-          <Text style={styles.infoBoxValue}>Muscle weight</Text>
+          {recentWorkout ? (
+            <>
+              <Text style={styles.infoBoxValue}>
+                {formatDateShort(recentWorkout.created_at!)}
+              </Text>
+              <Text style={styles.infoBoxTitle}>{recentWorkout.name}</Text>
+              <Text style={styles.infoBoxValue}>
+                {recentWorkout.workout_time}
+              </Text>
+            </>
+          ) : (
+            <Text style={styles.infoBoxTitle}>No recent workout</Text>
+          )}
         </View>
       </View>
       <View style={styles.progressWrapper}>
-        <Text style={styles.infoBoxValue}>Progress</Text>
-        <View style={styles.progressInfo}>
-          <Text>75 kg</Text>
-          <Text>70 kg</Text>
-        </View>
-        <Progress.Bar
-          progress={0.3}
-          width={350}
-          color={AppColors.blue}
-          style={styles.progress}
-        />
+        {goalMeasurement && user?.current_goal?.value ? (
+          <>
+            <Text style={styles.infoBoxValue}>Goal progress</Text>
+            <View style={styles.progressInfo}>
+              <Text>{goalMeasurement?.value}</Text>
+              <Text>{user?.current_goal?.value}</Text>
+            </View>
+            <Progress.Bar
+              progress={Math.min(
+                goalMeasurement?.value / user?.current_goal?.value,
+                1
+              )}
+              width={350}
+              color={AppColors.blue}
+              style={styles.progress}
+            />
+          </>
+        ) : (
+          <Text>No goal set</Text>
+        )}
       </View>
       <View style={styles.buttonsWrapper}>
         {profileButtons.map((button, i) => (
@@ -118,6 +202,13 @@ export default function Profile() {
             </View>
           </Link>
         ))}
+        <Pressable
+          onPress={signOut}
+          style={[styles.profileButton, styles.profileButtonSeparator]}
+        >
+          <Text>Sign Out</Text>
+          <AntDesign name="logout" size={24} color={AppColors.red} />
+        </Pressable>
       </View>
     </SafeAreaView>
   );
@@ -166,7 +257,9 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontWeight: "bold",
   },
-  infoBoxValue: {},
+  infoBoxValue: {
+    textAlign: "center",
+  },
   progressWrapper: {
     width: "100%",
     borderColor: AppColors.charcoalGray,
@@ -193,6 +286,7 @@ const styles = StyleSheet.create({
     width: "100%",
     padding: 10,
     flexDirection: "row",
+    alignItems: "center",
     justifyContent: "space-between",
   },
   profileButtonSeparator: {

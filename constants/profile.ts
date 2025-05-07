@@ -1,15 +1,15 @@
 export const profileButtons = [
   {
     label: "Edit Profile",
-    href: "/edit-profile",
+    href: "/userForm",
   },
   {
-    label: "Notification Settings",
-    href: "/edit-profile",
+    label: "Theme",
+    href: "/theme",
   },
   {
     label: "Privacy / Delete Account",
-    href: "/edit-profile",
+    href: "/privacy",
   },
   {
     label: "Export Data",

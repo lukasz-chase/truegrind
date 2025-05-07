@@ -6,14 +6,13 @@ import { AppColors } from "@/constants/colors";
 import { equipmentFilters, muscleFilters } from "@/constants/exerciseFilters";
 import CustomTextInput from "../CustomTextInput";
 import exercisesStore from "@/store/exercisesStore";
-import LoadingAnimation from "../LoadingAnimation";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import {
   getExercises,
   getRecentExercises,
   groupExercisesByAlphabet,
 } from "@/lib/exercisesService";
-import ExerciseFiltersDropdown from "./ExerciseFiltersDropdown";
+import CustomSelect from "../Modals/CustomSelect";
 import userStore from "@/store/userStore";
 
 type Props = {
@@ -118,14 +117,14 @@ const Exercises = ({ onPress, selectedExercises }: Props) => {
           placeholder="Search"
         />
         <View style={styles.pickerContainer}>
-          <ExerciseFiltersDropdown
+          <CustomSelect
             buttonLabel="Any Body Part"
             data={muscleFilters}
             selectedValue={selectedMuscle}
             setSelectedValue={setSelectedMuscle}
             anchor="LEFT"
           />
-          <ExerciseFiltersDropdown
+          <CustomSelect
             buttonLabel="Any Equipment"
             data={equipmentFilters}
             selectedValue={selectedEquipment}

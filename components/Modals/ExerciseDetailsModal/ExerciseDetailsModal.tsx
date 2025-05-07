@@ -5,7 +5,6 @@ import {
   TouchableWithoutFeedback,
   Pressable,
   Text,
-  Dimensions,
 } from "react-native";
 import { useEffect, useState } from "react";
 import useExerciseDetailsModal from "@/store/useExerciseDetailsModal";
@@ -28,9 +27,9 @@ import ExerciseFormModal from "../ExerciseForm/ExerciseFormModal";
 import { calculateMetrics, getExerciseData } from "@/lib/exercisesService";
 import { MetricsData } from "@/types/workoutMetrics";
 import { AppColors } from "@/constants/colors";
+import { SCREEN_WIDTH } from "@/constants/device";
 
 const BUTTON_WIDTH = 80;
-const screenWidth = Dimensions.get("window").width;
 
 const screenButtons = [
   {
@@ -214,7 +213,7 @@ const styles = StyleSheet.create({
     left: 0,
   },
   modalContent: {
-    width: screenWidth - 40,
+    width: SCREEN_WIDTH - 40,
     height: "60%",
     padding: 20,
     borderRadius: 10,

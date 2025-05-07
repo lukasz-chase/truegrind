@@ -1,5 +1,5 @@
 import { Workout } from "@/types/workout";
-import { areObjectsDifferent } from "./helpers";
+import { areObjectsDifferent, getStartOfWeek } from "./helpers";
 import { supabase } from "./supabase";
 
 export const createWorkoutHistory = async (
@@ -126,4 +126,34 @@ export const fetchWorkout = async (id: string, userId: string) => {
   } else {
     return null;
   }
+};
+
+export const fetchUsersLastWorkout = async (userId: string) => {
+  const { data, error } = await supabase
+    .from("workout_history")
+    .select("*")
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .single();
+  if (error) console.log(error);
+  if (data) {
+    return data;
+  }
+};
+
+export const fetchWeeklyWorkoutCount = async (userId: string) => {
+  const startOfWeek = getStartOfWeek(new Date()).toISOString();
+
+  const { count, error } = await supabase
+    .from("workout_history")
+    .select("id", { head: true, count: "exact" })
+    .eq("user_id", userId)
+    .gte("created_at", startOfWeek);
+
+  if (error) {
+    console.error("Error fetching weekly workout count", error);
+    return 0;
+  }
+  return count || 0;
 };
