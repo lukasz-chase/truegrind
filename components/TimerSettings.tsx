@@ -1,8 +1,8 @@
 import { AppColors } from "@/constants/colors";
-import { formatTime } from "@/lib/helpers";
 import { useEffect, useState } from "react";
 import { StyleSheet, Switch, Text, View } from "react-native";
 import MemoizedScrollPicker from "./MemoizedScrollPicker";
+import { formatTime } from "@/utils/calendar";
 
 const timeOptions = Array.from({ length: 121 }, (_, i) => ({
   value: i * 5,

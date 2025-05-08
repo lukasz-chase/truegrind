@@ -1,7 +1,7 @@
 import CustomTextInput from "@/components/CustomTextInput";
 import CustomImage from "@/components/CustomImage";
 import { AppColors } from "@/constants/colors";
-import { pickAndCompressImage } from "@/lib/images";
+import { pickAndCompressImage } from "@/utils/images";
 import {
   exerciseFormData,
   exerciseFormScreensEnum,

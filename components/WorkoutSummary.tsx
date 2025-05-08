@@ -5,9 +5,9 @@ import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import AntDesign from "@expo/vector-icons/AntDesign";
-import { formatDate } from "@/lib/helpers";
 import { fetchHighestWeightSet } from "@/lib/exerciseSetsService";
 import { barTypes } from "@/constants/keyboard";
+import { formatDate } from "@/utils/calendar";
 
 const WorkoutSummary = ({ workout }: { workout: WorkoutHistory }) => {
   const [PRs, setPRs] = useState(0);

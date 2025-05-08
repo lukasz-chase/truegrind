@@ -1,6 +1,7 @@
 import { Workout } from "@/types/workout";
-import { areObjectsDifferent, getStartOfWeek } from "./helpers";
 import { supabase } from "./supabase";
+import { areObjectsDifferent } from "@/utils/helpers";
+import { getStartOfWeek } from "@/utils/calendar";
 
 export const createWorkoutHistory = async (
   workout: Workout,

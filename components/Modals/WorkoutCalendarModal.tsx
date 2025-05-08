@@ -18,7 +18,6 @@ import {
   WorkoutCalendarPopulated,
   WorkoutCalendarStatusEnum,
 } from "@/types/workoutCalendar";
-import { generateNewColor } from "@/lib/helpers";
 import {
   addWorkoutToLocalCalendar,
   removeWorkoutFromLocalCalendar,
@@ -29,6 +28,7 @@ import {
 } from "@/lib/workoutCalendarService";
 import useWorkoutCalendar from "@/hooks/useworkoutCalendar";
 import CustomDateTimePicker from "../CustomDateTimePicker";
+import { generateNewColor } from "@/utils/colors";
 
 type Props = {
   isVisible: boolean;

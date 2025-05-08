@@ -1,9 +1,9 @@
 import { FlatList, StyleSheet, Text, View } from "react-native";
 import { ExerciseSet } from "@/types/exercisesSets";
-import { formatDate } from "@/lib/helpers";
 import { AppColors } from "@/constants/colors";
 import { WorkoutMetrics } from "@/types/workoutMetrics";
 import { barTypes } from "@/constants/keyboard";
+import { formatDate } from "@/utils/calendar";
 
 const HistoryScreen = ({
   loading,

@@ -1,5 +1,4 @@
 import { AppColors } from "@/constants/colors";
-import { formatDate, formatDateShort } from "@/lib/helpers";
 import {
   createMeasurement,
   deleteMeasurement,
@@ -19,6 +18,7 @@ import useMeasurementsStore from "@/store/useMeasurementsStore";
 import SwipeToDelete from "@/components/SwipeToDelete";
 import CustomHeader from "@/components/CustomHeader";
 import { SCREEN_WIDTH } from "@/constants/device";
+import { formatDate, formatDateShort } from "@/utils/calendar";
 
 export default function MetricsDetails() {
   const [isMetricsModalVisible, setIsMetricsModalVisible] = useState(false);

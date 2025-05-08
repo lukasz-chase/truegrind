@@ -1,5 +1,4 @@
 import { AppColors } from "@/constants/colors";
-import { formatTime } from "@/lib/helpers";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useEffect } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
@@ -10,6 +9,7 @@ import Animated, {
 } from "react-native-reanimated";
 import MaskedView from "@react-native-masked-view/masked-view";
 import useCustomKeyboard from "@/store/useCustomKeyboard";
+import { formatTime } from "@/utils/calendar";
 
 type Props = {
   openModal: () => void;

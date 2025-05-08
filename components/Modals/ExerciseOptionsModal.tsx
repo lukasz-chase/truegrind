@@ -8,7 +8,7 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 import AutoRestTimeSettings from "../AutoRestTimeSettings";
-import { getOptions } from "@/lib/workoutOptions";
+import exerciseOptions from "@/components/exerciseOptions";
 import useWorkoutExercisesModal from "@/store/useWorkoutExercisesModal";
 import { Exercise } from "@/types/exercises";
 import useActiveWorkout from "@/store/useActiveWorkout";
@@ -103,7 +103,7 @@ const ExerciseOptionsModal = function ExerciseOptionsModal() {
   const removeFromSuperset = () => {
     updateWorkoutExerciseField(workoutExercise.id, { superset: null });
   };
-  const options = getOptions({
+  const options = exerciseOptions({
     exerciseTimer: workoutExercise.timer,
     switchToAutoRestScreen,
     openWarningModalHandler,

@@ -1,4 +1,4 @@
-import { getCalendarDateFormat } from "./helpers";
+import { getCalendarDateFormat } from "@/utils/calendar";
 import { supabase } from "./supabase";
 import {
   WorkoutCalendar,
@@ -117,4 +117,24 @@ export const deleteWorkoutCalendar = async (
     console.error("Error removing workout from calendar", error);
     return;
   }
+};
+
+export const fetchUserUpcomingWorkout = async (userId: string) => {
+  const todayStr = new Date().toISOString().split("T")[0];
+
+  const { data, error } = await supabase
+    .from("workout_calendar")
+    .select("*")
+    .eq("user_id", userId)
+    .gte("scheduled_date", todayStr)
+    .order("scheduled_date", { ascending: true })
+    .limit(1)
+    .single();
+
+  if (error) {
+    console.error("Error fetching upcoming workout:", error);
+    return null;
+  }
+
+  return data;
 };

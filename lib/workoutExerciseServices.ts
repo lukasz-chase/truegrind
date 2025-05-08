@@ -1,7 +1,7 @@
 import { Workout } from "@/types/workout";
 import { WorkoutExercise } from "@/types/workoutExercise";
-import { areObjectsDifferent } from "./helpers";
 import { supabase } from "./supabase";
+import { areObjectsDifferent } from "@/utils/helpers";
 
 export const updateWorkoutExercises = async (
   activeWorkout: Workout,

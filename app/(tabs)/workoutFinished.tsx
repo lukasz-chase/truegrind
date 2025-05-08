@@ -2,11 +2,7 @@ import { Platform, StyleSheet, Text } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import CustomImage from "@/components/CustomImage";
 import { useCallback, useState } from "react";
-import {
-  generateNewColor,
-  getCalendarDateFormat,
-  getOrdinalSuffix,
-} from "@/lib/helpers";
+
 import useActiveWorkout from "@/store/useActiveWorkout";
 import WorkoutSummary from "@/components/WorkoutSummary";
 import { useFocusEffect } from "expo-router";
@@ -36,6 +32,8 @@ import { WorkoutCalendarStatusEnum } from "@/types/workoutCalendar";
 import { saveTemplate, updateTemplate } from "@/constants/actionModal";
 import useActionModal from "@/store/useActionModal";
 import userStore from "@/store/userStore";
+import { generateNewColor } from "@/utils/colors";
+import { getCalendarDateFormat, getOrdinalSuffix } from "@/utils/calendar";
 
 const TrophyImage = require("@/assets/images/trophy.webp");
 

@@ -1,8 +1,8 @@
 import { chartConfig } from "@/constants/chart";
 import { AppColors } from "@/constants/colors";
 import { SCREEN_WIDTH } from "@/constants/device";
-import { formatDateShort } from "@/lib/helpers";
 import { WorkoutMetrics } from "@/types/workoutMetrics";
+import { formatDateShort } from "@/utils/calendar";
 import { Text, StyleSheet, ScrollView, View } from "react-native";
 import { LineChart } from "react-native-chart-kit";
 

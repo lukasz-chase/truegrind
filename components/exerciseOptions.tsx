@@ -5,10 +5,10 @@ import {
   MaterialIcons,
 } from "@expo/vector-icons";
 import { AppColors } from "@/constants/colors";
-import { formatTime } from "@/lib/helpers";
 import { Text, View } from "react-native";
+import { formatTime } from "@/utils/calendar";
 
-export const getOptions = ({
+export default ({
   exerciseTimer,
   switchToAutoRestScreen,
   openWarningModalHandler,

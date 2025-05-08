@@ -1,24 +1,14 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
-import {
-  StyleSheet,
-  View,
-  Text,
-  TouchableOpacity,
-  Pressable,
-} from "react-native";
+import { StyleSheet, View, Text, Pressable } from "react-native";
 import userStore from "@/store/userStore";
 import { SafeAreaView } from "react-native-safe-area-context";
-import AnchoredModal from "@/components/Modals/AnchoredModal";
-import ModalOptionButton from "@/components/Modals/ModalOptionButton";
 import AntDesign from "@expo/vector-icons/AntDesign";
-import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
-import { Link, useRouter } from "expo-router";
+import { Link } from "expo-router";
 import { AppColors } from "@/constants/colors";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import * as Progress from "react-native-progress";
 import { profileButtons } from "@/constants/profile";
-import CustomImage from "@/components/CustomImage";
 import { fetchUserMeasurementsSingle } from "@/lib/measurementsService";
 import { Measurement } from "@/types/measurements";
 import {
@@ -26,9 +16,8 @@ import {
   fetchWeeklyWorkoutCount,
 } from "@/lib/workoutServices";
 import { WorkoutHistory } from "@/types/workout";
-import { formatDateShort } from "@/lib/helpers";
+import { formatDateShort } from "@/utils/calendar";
 
-//TODO - show skeleton while loading
 //TODO - use the picker in time pickers aswell
 //TODO - make theme usable
 //TODO - add animations between pages
@@ -44,6 +33,7 @@ export default function Profile() {
     null
   );
   const [workoutFrequency, setWorkoutFrequency] = useState<number | null>(null);
+  const [loading, setLoading] = useState(true);
 
   const signOut = async () => {
     try {
@@ -56,6 +46,7 @@ export default function Profile() {
 
   const fetchData = async () => {
     try {
+      setLoading(true);
       if (!user?.id) return;
 
       const [
@@ -88,12 +79,113 @@ export default function Profile() {
       }
     } catch (error) {
       console.error("Error fetching measurements", error);
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
     fetchData();
   }, [user]);
+
+  if (loading) {
+    return (
+      <SafeAreaView style={styles.safeArea}>
+        <View
+          style={[
+            styles.skeletonItem,
+            { width: 150, height: 30, borderRadius: 4 },
+          ]}
+        />
+        <View
+          style={[
+            styles.skeletonItem,
+            { width: 100, height: 100, borderRadius: 50 },
+          ]}
+        />
+        <View
+          style={[
+            styles.skeletonItem,
+            { width: 200, height: 30, borderRadius: 4 },
+          ]}
+        />
+        <View
+          style={[
+            styles.infoContainer,
+            { width: "100%", justifyContent: "space-around" },
+          ]}
+        >
+          <View
+            style={[
+              styles.skeletonItem,
+              { width: 60, height: 20, borderRadius: 4 },
+            ]}
+          />
+          <View
+            style={[
+              styles.skeletonItem,
+              { width: 60, height: 20, borderRadius: 4 },
+            ]}
+          />
+          <View
+            style={[
+              styles.skeletonItem,
+              { width: 60, height: 20, borderRadius: 4 },
+            ]}
+          />
+        </View>
+        <View style={[styles.boxesContainer, { width: "100%" }]}>
+          {Array.from({ length: 3 }).map((_, idx) => (
+            <View
+              key={idx}
+              style={[
+                styles.infoBox,
+                { alignItems: "center", justifyContent: "center" },
+              ]}
+            >
+              <View
+                style={[
+                  styles.skeletonItem,
+                  { width: "80%", height: 15, borderRadius: 4 },
+                ]}
+              />
+              <View
+                style={[
+                  styles.skeletonItem,
+                  { width: "60%", height: 15, borderRadius: 4 },
+                ]}
+              />
+              <View
+                style={[
+                  styles.skeletonItem,
+                  { width: "40%", height: 15, borderRadius: 4 },
+                ]}
+              />
+            </View>
+          ))}
+        </View>
+        <View
+          style={[
+            styles.progressWrapper,
+            { width: "100%", height: 100, justifyContent: "center" },
+          ]}
+        >
+          <View
+            style={[
+              styles.skeletonItem,
+              { width: "90%", height: 20, borderRadius: 4 },
+            ]}
+          />
+          <View
+            style={[
+              styles.skeletonItem,
+              { width: "90%", height: 10, marginTop: 10, borderRadius: 4 },
+            ]}
+          />
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -292,5 +384,9 @@ const styles = StyleSheet.create({
   profileButtonSeparator: {
     borderTopWidth: 2,
     borderTopColor: AppColors.charcoalGray,
+  },
+  // Skeleton styles
+  skeletonItem: {
+    backgroundColor: AppColors.gray,
   },
 });

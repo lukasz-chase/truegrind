@@ -15,9 +15,9 @@ import { useState } from "react";
 import ExerciseFormModal from "./ExerciseForm/ExerciseFormModal";
 import { Exercise } from "@/types/exercises";
 import useActiveWorkout from "@/store/useActiveWorkout";
-import { generateNewColor } from "@/lib/helpers";
 import { WorkoutExercise } from "@/types/workoutExercise";
 import * as Haptics from "expo-haptics";
+import { generateNewColor } from "@/utils/colors";
 
 export default function WorkoutExercisesModal() {
   const {

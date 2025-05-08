@@ -6,7 +6,6 @@ import { AppColors } from "@/constants/colors";
 import useTimerStore from "@/store/useTimer";
 import { useState } from "react";
 import MemoizedScrollPicker from "../MemoizedScrollPicker";
-import { formatTime } from "@/lib/helpers";
 import userStore from "@/store/userStore";
 import CloseButton from "../CloseButton";
 import useWorkoutTimerModal from "@/store/useWorkoutTimerModal";
@@ -14,6 +13,7 @@ import { updateUserProfile } from "@/lib/userService";
 import useInfoModal from "@/store/useInfoModal";
 import { timerInfo } from "@/constants/infoModal";
 import { SCREEN_WIDTH } from "@/constants/device";
+import { formatTime } from "@/utils/calendar";
 
 export default function TimerModal() {
   const [customTimerView, setCustomTimerView] = useState(false);

@@ -1,4 +1,4 @@
-import { formatTime } from "@/lib/helpers";
+import { formatTime } from "@/utils/calendar";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
