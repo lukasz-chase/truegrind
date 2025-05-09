@@ -18,10 +18,10 @@
   "dependencies": {
     "@expo/vector-icons": "^14.1.0",
     "@gorhom/bottom-sheet": "^5.1.4",
-    "@quidone/react-native-wheel-picker": "^1.4.0",
     "@react-native-async-storage/async-storage": "2.1.2",
     "@react-native-community/datetimepicker": "8.3.0",
     "@react-native-masked-view/masked-view": "^0.3.2",
+    "@react-native-picker/picker": "2.11.0",
     "@react-navigation/bottom-tabs": "^7.3.10",
     "@react-navigation/native": "^7.1.6",
     "@supabase/supabase-js": "^2.49.4",
@@ -61,8 +61,7 @@
     "react-native-uuid": "^2.0.3",
     "react-native-web": "^0.20.0",
     "react-native-webview": "13.13.5",
-    "zustand": "^5.0.4",
-    "@react-native-picker/picker": "2.11.0"
+    "zustand": "^5.0.4"
   },
   "devDependencies": {
     "@babel/core": "^7.27.1",

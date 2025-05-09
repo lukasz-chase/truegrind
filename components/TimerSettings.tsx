@@ -42,8 +42,9 @@ const TimerSettings = ({
         value={timerValue!}
         setValue={setTimer}
         visibleItemCount={5}
-        disabled={!isEnabled}
+        enabled={isEnabled}
         data={timeOptions}
+        textColor={AppColors.white}
       />
     </>
   );

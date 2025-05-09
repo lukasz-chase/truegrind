@@ -1,5 +1,5 @@
 import { AppColors } from "@/constants/colors";
-import { SCREEN_WIDTH } from "@/constants/device";
+import { SCREEN_HEIGHT } from "@/constants/device";
 import { useEffect, useRef, useState } from "react";
 import {
   View,
@@ -63,7 +63,7 @@ export default function AnchoredModal({
         }
 
         // Calculate vertical position
-        if (fy + height + modalHeight > SCREEN_WIDTH) {
+        if (fy + height + modalHeight > SCREEN_HEIGHT) {
           // Anchor from bottom if modal exceeds screen height
           top = fy - modalHeight + height;
           isBottomAnchored = true;

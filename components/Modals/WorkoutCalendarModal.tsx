@@ -84,7 +84,6 @@ export default function WorkoutCalendarModal({
       closeModal();
       return;
     }
-
     const calendarData = {
       name: workout.name,
       startDateTime: startTime,
@@ -107,6 +106,8 @@ export default function WorkoutCalendarModal({
 
     const populatedData = await upsertWorkoutCalendar(newWorkoutCalendar);
     if (populatedData) {
+      console.log(populatedData);
+
       setWorkoutCalendarData([...workoutCalendarData, populatedData]);
       if (Platform.OS !== "web") {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);

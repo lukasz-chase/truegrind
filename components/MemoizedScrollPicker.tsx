@@ -1,63 +1,53 @@
-import React, { memo } from "react";
+import { memo } from "react";
 import { Platform, StyleSheet, View } from "react-native";
-import * as Haptics from "expo-haptics";
-import WheelPicker, {
-  PickerItem,
-  ValueChangedEvent,
-} from "@quidone/react-native-wheel-picker";
 import { AppColors } from "@/constants/colors";
+import { Picker } from "@react-native-picker/picker";
 
 type Props = {
-  value: number;
+  value: number | string;
   setValue: any;
   visibleItemCount: number;
   textColor?: string;
-  backgroundColor?: string;
-  disabled?: boolean;
+  enabled?: boolean;
   data: { value: number; label: string }[];
 };
 
 const MemoizedScrollPicker = memo(
   ({
-    disabled = false,
-    backgroundColor = AppColors.white,
-    textColor = AppColors.white,
+    enabled = true,
+    textColor = AppColors.black,
     value,
     setValue,
     visibleItemCount,
     data,
   }: Props) => {
-    const onValueChanged = ({
-      item: { value: val },
-    }: ValueChangedEvent<PickerItem<number>>) => {
-      setValue(val);
-      if (Platform.OS !== "web")
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    };
-    const onValueChanging = () => {
-      if (Platform.OS !== "web") Haptics.selectionAsync();
-    };
-
     return (
-      <View style={[styles.scrollPicker, { height: 40 * visibleItemCount }]}>
-        <WheelPicker
-          readOnly={disabled}
-          data={data}
-          value={value}
-          onValueChanged={onValueChanged}
-          onValueChanging={onValueChanging}
-          visibleItemCount={visibleItemCount}
-          itemTextStyle={{
-            color: disabled ? AppColors.gray : textColor,
-            fontSize: 16,
-            fontWeight: "bold",
-          }}
-          overlayItemStyle={{
-            height: 40,
-            backgroundColor: disabled ? "transparent" : backgroundColor,
-          }}
-          itemHeight={40}
-        />
+      <View
+        style={[
+          styles.scrollPicker,
+          Platform.OS === "android" && styles.androidPicker,
+          !enabled && styles.disabled,
+        ]}
+        pointerEvents={enabled ? "auto" : "none"}
+      >
+        <Picker
+          enabled={enabled}
+          selectedValue={value}
+          onValueChange={setValue}
+          style={styles.picker}
+          mode="dropdown"
+          itemStyle={{ height: 40 * visibleItemCount }}
+          numberOfLines={1}
+        >
+          {data.map((dataItem) => (
+            <Picker.Item
+              color={textColor}
+              label={dataItem.label}
+              value={dataItem.value}
+              key={dataItem.value}
+            />
+          ))}
+        </Picker>
       </View>
     );
   }
@@ -68,6 +58,16 @@ const styles = StyleSheet.create({
     width: "100%",
     justifyContent: "center",
     overflow: "hidden",
+    zIndex: 10,
+  },
+  androidPicker: {
+    elevation: 2,
+  },
+  picker: {
+    width: "100%",
+  },
+  disabled: {
+    opacity: 0.5,
   },
 });
 

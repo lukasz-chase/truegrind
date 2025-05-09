@@ -4,19 +4,12 @@ import CustomTextInput from "@/components/CustomTextInput";
 import { bodyPartsToMeasure, corePartsToMeasure } from "@/constants/metrics";
 import { updateUserProfile } from "@/lib/userService";
 import userStore from "@/store/userStore";
-import {
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-  ScrollView,
-  Platform,
-} from "react-native";
+import { Pressable, StyleSheet, Text, View, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Picker } from "@react-native-picker/picker";
 import { AppColors } from "@/constants/colors";
 import { CurrentGoal } from "@/types/user";
 import { BodyPartLabel } from "@/types/measurements";
+import MemoizedScrollPicker from "@/components/MemoizedScrollPicker";
 
 interface ProfileFormData {
   username: string;
@@ -127,34 +120,14 @@ export default function UserForm() {
 
         <View style={styles.field}>
           <Text style={styles.label}>Measurement to Track</Text>
-          <View
-            style={[
-              styles.pickerContainer,
-              Platform.OS === "android" && styles.androidPicker,
-            ]}
-          >
-            <Picker
-              selectedValue={formData.current_goal.name}
-              onValueChange={(itemValue) => handleGoalChange("name", itemValue)}
-              style={styles.picker}
-              mode="dropdown"
-              itemStyle={styles.pickerItem}
-              numberOfLines={1}
-            >
-              <Picker.Item
-                label="Select measurement..."
-                value=""
-                key="placeholder"
-              />
-              {measurements.map((measurement) => (
-                <Picker.Item
-                  label={measurement.label}
-                  value={measurement.value}
-                  key={measurement.value}
-                />
-              ))}
-            </Picker>
-          </View>
+          <MemoizedScrollPicker
+            data={measurements as any}
+            value={formData.current_goal.name}
+            setValue={(itemValue: string) =>
+              handleGoalChange("name", itemValue)
+            }
+            visibleItemCount={3}
+          />
 
           <Text style={styles.label}>Goal Value</Text>
           <CustomTextInput
@@ -184,20 +157,6 @@ const styles = StyleSheet.create({
   container: { padding: 20, gap: 16 },
   field: { width: "100%" },
   label: { fontSize: 16, marginBottom: 8, color: AppColors.black },
-  pickerContainer: {
-    zIndex: 10,
-    color: AppColors.black,
-  },
-  pickerItem: {
-    height: 150,
-    color: AppColors.black,
-  },
-  androidPicker: {
-    elevation: 2,
-  },
-  picker: {
-    width: "100%",
-  },
   button: {
     marginTop: 24,
     backgroundColor: AppColors.blue,

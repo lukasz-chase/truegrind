@@ -11,27 +11,24 @@ import * as Progress from "react-native-progress";
 import { profileButtons } from "@/constants/profile";
 import { fetchUserMeasurementsSingle } from "@/lib/measurementsService";
 import { Measurement } from "@/types/measurements";
-import {
-  fetchUsersLastWorkout,
-  fetchWeeklyWorkoutCount,
-} from "@/lib/workoutServices";
-import { WorkoutHistory } from "@/types/workout";
-import { formatDateShort } from "@/utils/calendar";
+import { fetchWeeklyWorkoutCount } from "@/lib/workoutServices";
+import { fetchUserUpcomingWorkout } from "@/lib/workoutCalendarService";
+import { WorkoutCalendarPopulated } from "@/types/workoutCalendar";
+import { showHoursFromDate } from "@/utils/calendar";
 
-//TODO - use the picker in time pickers aswell
 //TODO - make theme usable
 //TODO - add animations between pages
 //TODO - maybe profile should be lighten up in the bar when we go to the profile subpages
 //TODO - change the latest workout for an upcoming one
+
 export default function Profile() {
   const { user } = userStore();
   const [goalMeasurement, setGoalMeasurement] = useState<Measurement | null>(
     null
   );
   const [weight, setWeight] = useState<Measurement | null>(null);
-  const [recentWorkout, setRecentWorkout] = useState<WorkoutHistory | null>(
-    null
-  );
+  const [upcomingWorkout, setUpcomingWorkout] =
+    useState<WorkoutCalendarPopulated | null>(null);
   const [workoutFrequency, setWorkoutFrequency] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -52,28 +49,28 @@ export default function Profile() {
       const [
         goalDataPromise,
         weightDataPromise,
-        recentWorkoutDataPromise,
+        upcomingWorkoutDataPromise,
         workoutFrequencyDataPromise,
       ] = [
         user.current_goal?.name
           ? fetchUserMeasurementsSingle(user.id, user.current_goal.name)
           : Promise.resolve(null),
         fetchUserMeasurementsSingle(user.id, "weight"),
-        fetchUsersLastWorkout(user.id),
+        fetchUserUpcomingWorkout(user.id),
         fetchWeeklyWorkoutCount(user.id),
       ];
 
-      const [goalData, weightData, recentWorkoutData, workoutFrequencyData] =
+      const [goalData, weightData, upcomingWorkoutData, workoutFrequencyData] =
         await Promise.all([
           goalDataPromise,
           weightDataPromise,
-          recentWorkoutDataPromise,
+          upcomingWorkoutDataPromise,
           workoutFrequencyDataPromise,
         ]);
 
       if (goalData) setGoalMeasurement(goalData);
       if (weightData) setWeight(weightData);
-      if (recentWorkoutData) setRecentWorkout(recentWorkoutData);
+      if (upcomingWorkoutData) setUpcomingWorkout(upcomingWorkoutData);
       if (typeof workoutFrequencyData === "number") {
         setWorkoutFrequency(workoutFrequencyData);
       }
@@ -87,7 +84,6 @@ export default function Profile() {
   useEffect(() => {
     fetchData();
   }, [user]);
-
   if (loading) {
     return (
       <SafeAreaView style={styles.safeArea}>
@@ -239,18 +235,21 @@ export default function Profile() {
           )}
         </View>
         <View style={styles.infoBox}>
-          {recentWorkout ? (
+          {upcomingWorkout ? (
             <>
-              <Text style={styles.infoBoxValue}>
-                {formatDateShort(recentWorkout.created_at!)}
+              <Text style={styles.infoBoxTitle}>
+                {upcomingWorkout.workouts.name}
               </Text>
-              <Text style={styles.infoBoxTitle}>{recentWorkout.name}</Text>
               <Text style={styles.infoBoxValue}>
-                {recentWorkout.workout_time}
+                {upcomingWorkout.scheduled_date}
+              </Text>
+              <Text style={styles.infoBoxValue}>
+                {showHoursFromDate(upcomingWorkout.start_time)} -{" "}
+                {showHoursFromDate(upcomingWorkout.end_time)}
               </Text>
             </>
           ) : (
-            <Text style={styles.infoBoxTitle}>No recent workout</Text>
+            <Text style={styles.infoBoxTitle}>No upcoming workout</Text>
           )}
         </View>
       </View>

@@ -79,3 +79,10 @@ export const getOrdinalSuffix = (number: number) => {
 
   return `${number}${suffix}`;
 };
+
+export const showHoursFromDate = (dateToShow: Date) => {
+  const date = new Date(dateToShow);
+  const localHour = date.getHours().toString().padStart(2, "0");
+  const localMinutes = date.getMinutes().toString().padStart(2, "0");
+  return `${localHour}:${localMinutes}`;
+};

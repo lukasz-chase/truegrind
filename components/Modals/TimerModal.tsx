@@ -127,7 +127,6 @@ export default function TimerModal() {
                   setValue={setCustomDuration}
                   visibleItemCount={9}
                   textColor={AppColors.black}
-                  backgroundColor={AppColors.gray}
                   data={timeOptions}
                 />
               );

@@ -20,7 +20,7 @@ export const upsertWorkoutCalendar = async (
     const { data, error } = await supabase
       .from("workout_calendar")
       .upsert(workoutCalendarData)
-      .select("*, workout_history(name)")
+      .select("*, workout_history(name), workouts(name)")
       .returns<WorkoutCalendarPopulated>()
       .limit(1)
       .single();
@@ -124,15 +124,16 @@ export const fetchUserUpcomingWorkout = async (userId: string) => {
 
   const { data, error } = await supabase
     .from("workout_calendar")
-    .select("*")
+    .select("*, workouts(name)")
     .eq("user_id", userId)
     .gte("scheduled_date", todayStr)
     .order("scheduled_date", { ascending: true })
     .limit(1)
-    .single();
+    .single<WorkoutCalendarPopulated>();
 
   if (error) {
-    console.error("Error fetching upcoming workout:", error);
+    if (error.code !== "PGRST116")
+      console.error("Error fetching upcoming workout:", error);
     return null;
   }
 

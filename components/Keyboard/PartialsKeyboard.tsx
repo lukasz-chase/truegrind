@@ -75,8 +75,8 @@ const PartialsKeyboard = ({
             label: `${i + 1}`,
           }))}
           visibleItemCount={3}
-          disabled={!isEnabled}
-          backgroundColor={AppColors.white}
+          enabled={isEnabled}
+          textColor={AppColors.white}
         />
       </View>
     </View>

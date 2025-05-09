@@ -74,7 +74,6 @@ const AutoRestTimeSettings = ({
       duration: 200,
     });
   };
-
   const timerUpdateHandler = (timerValue: number | null) => {
     updateTimer(currentTimer, timerValue);
     if (currentTimer === "timer") setExerciseTimer(timerValue);

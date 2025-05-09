@@ -129,20 +129,6 @@ export const fetchWorkout = async (id: string, userId: string) => {
   }
 };
 
-export const fetchUsersLastWorkout = async (userId: string) => {
-  const { data, error } = await supabase
-    .from("workout_history")
-    .select("*")
-    .eq("user_id", userId)
-    .order("created_at", { ascending: false })
-    .limit(1)
-    .single();
-  if (error) console.log(error);
-  if (data) {
-    return data;
-  }
-};
-
 export const fetchWeeklyWorkoutCount = async (userId: string) => {
   const startOfWeek = getStartOfWeek(new Date()).toISOString();
 

@@ -24,12 +24,12 @@ const useExerciseOptionsModal = create<ModalState>((set) => ({
   setExerciseTimer: (exerciseTimer: number | null) =>
     set((state) => ({
       ...state,
-      exercise: { ...state.workoutExercise, timer: exerciseTimer },
+      workoutExercise: { ...state.workoutExercise!, timer: exerciseTimer },
     })),
   setWarmupTimer: (warmupTimer: number | null) =>
     set((state) => ({
       ...state,
-      exercise: { ...state.workoutExercise, warmup_timer: warmupTimer },
+      workoutExercise: { ...state.workoutExercise!, warmup_timer: warmupTimer },
     })),
 }));
 
