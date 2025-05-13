@@ -55,14 +55,6 @@ export const hiddenScreens = [
     additionalOptions: {},
   },
   {
-    name: "userForm",
-    additionalOptions: {},
-  },
-  {
-    name: "metrics/[id]",
-    additionalOptions: {},
-  },
-  {
     name: "workoutHistory/[id]",
     additionalOptions: {},
   },
@@ -71,13 +63,5 @@ export const hiddenScreens = [
     additionalOptions: {
       tabBarStyle: { display: "none" as "none" }, // Explicitly cast "none"
     },
-  },
-  {
-    name: "theme",
-    additionalOptions: {},
-  },
-  {
-    name: "privacy",
-    additionalOptions: {},
   },
 ];

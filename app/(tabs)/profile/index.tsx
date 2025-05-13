@@ -17,9 +17,6 @@ import { WorkoutCalendarPopulated } from "@/types/workoutCalendar";
 import { showHoursFromDate } from "@/utils/calendar";
 
 //TODO - make theme usable
-//TODO - add animations between pages
-//TODO - maybe profile should be lighten up in the bar when we go to the profile subpages
-//TODO - change the latest workout for an upcoming one
 
 export default function Profile() {
   const { user } = userStore();

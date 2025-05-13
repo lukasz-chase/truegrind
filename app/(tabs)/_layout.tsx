@@ -86,14 +86,14 @@ export default function TabLayout() {
             <CustomTabBar {...props} animatedIndex={animatedIndex} />
           )}
         >
-          {hiddenScreens.map((screen) => (
+          {hiddenScreens.map(({ name, additionalOptions }) => (
             <Tabs.Screen
-              name={screen.name}
-              key={screen.name}
+              name={name}
+              key={name}
               options={{
                 href: null,
                 headerShown: false,
-                ...screen.additionalOptions,
+                ...additionalOptions,
               }}
             />
           ))}
