@@ -8,6 +8,7 @@ import { WorkoutHistory } from "@/types/workout";
 import WorkoutSummary from "@/components/WorkoutSummary";
 import { fetchWorkoutHistory } from "@/lib/workoutServices";
 import { AppColors } from "@/constants/colors";
+import WorkoutHistorySkeleton from "@/components/Skeletons/WorkoutHistorySkeleton";
 
 export default function workoutHistory() {
   const [workoutHistory, setWorkoutHistory] = useState<WorkoutHistory | null>(
@@ -41,17 +42,7 @@ export default function workoutHistory() {
     router.push("/(tabs)/calendar");
   };
 
-  if (loading)
-    return (
-      <SafeAreaView style={styles.container}>
-        <View style={styles.header}>
-          <View style={[styles.skeleton, { width: 40 }]} />
-          <View style={[styles.skeleton, { width: 150 }]} />
-          <View style={{ width: 40 }} />
-        </View>
-        <View style={[styles.skeleton, { height: 300, width: "100%" }]} />
-      </SafeAreaView>
-    );
+  if (loading) return <WorkoutHistorySkeleton parentStyles={styles} />;
   if (!workoutHistory)
     return (
       <View>
@@ -92,9 +83,5 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
     textAlign: "center",
-  },
-  skeleton: {
-    height: 30,
-    backgroundColor: AppColors.gray,
   },
 });

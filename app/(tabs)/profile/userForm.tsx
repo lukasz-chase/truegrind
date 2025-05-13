@@ -10,6 +10,10 @@ import { AppColors } from "@/constants/colors";
 import { CurrentGoal } from "@/types/user";
 import { BodyPartLabel } from "@/types/measurements";
 import MemoizedScrollPicker from "@/components/MemoizedScrollPicker";
+import { pickAndCompressImage } from "@/utils/images";
+import CustomImage from "@/components/CustomImage";
+
+const PlaceholderImage = require("@/assets/images/ImagePlaceholder.png");
 
 interface ProfileFormData {
   username: string;
@@ -31,6 +35,11 @@ export default function UserForm() {
       unit: "cm",
     },
   });
+  const [profilePicture, setProfilePicture] = useState({
+    url: user?.profile_picture || PlaceholderImage,
+    extension: "png",
+    imageWasChanged: false,
+  });
   const [loading, setLoading] = useState(false);
 
   const handleChange = <K extends keyof Omit<ProfileFormData, "goal">>(
@@ -50,6 +59,16 @@ export default function UserForm() {
     }));
   };
 
+  const pickImageAsync = async () => {
+    const pickedImage = await pickAndCompressImage();
+    if (!pickedImage) return;
+    setProfilePicture({
+      url: pickedImage.url,
+      extension: pickedImage.extension,
+      imageWasChanged: true,
+    });
+  };
+
   const updateProfile = async () => {
     setLoading(true);
     if (!user) {
@@ -64,7 +83,7 @@ export default function UserForm() {
         );
         handleGoalChange("unit", goalUnit ? goalUnit.unit : "cm");
       }
-      await updateUserProfile(user.id, formData);
+      await updateUserProfile(user.id, formData, profilePicture);
     } catch (error) {
       console.error("Failed to update profile:", error);
     } finally {
@@ -90,6 +109,21 @@ export default function UserForm() {
         <CustomHeader name="Edit Profile" href="/profile" />
 
         <View style={styles.field}>
+          <Text style={styles.label}>Profile Picture</Text>
+          <Pressable onPress={pickImageAsync}>
+            <CustomImage
+              imageUrl={
+                profilePicture.imageWasChanged
+                  ? `data:image/${profilePicture.extension};base64,${profilePicture.url}`
+                  : profilePicture.url
+              }
+              height={200}
+              width={200}
+            />
+          </Pressable>
+        </View>
+
+        <View style={styles.field}>
           <Text style={styles.label}>Username</Text>
           <CustomTextInput
             placeholder="Username"
@@ -97,7 +131,6 @@ export default function UserForm() {
             onChangeText={(text) => handleChange("username", text)}
           />
         </View>
-
         <View style={styles.field}>
           <Text style={styles.label}>Age</Text>
           <CustomTextInput

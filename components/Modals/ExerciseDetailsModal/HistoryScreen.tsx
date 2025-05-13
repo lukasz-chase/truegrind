@@ -4,6 +4,7 @@ import { AppColors } from "@/constants/colors";
 import { WorkoutMetrics } from "@/types/workoutMetrics";
 import { barTypes } from "@/constants/keyboard";
 import { formatDate } from "@/utils/calendar";
+import HistorySkeleton from "@/components/Skeletons/HistorySkeleton";
 
 const HistoryScreen = ({
   loading,
@@ -12,14 +13,7 @@ const HistoryScreen = ({
   loading: boolean;
   history: WorkoutMetrics[];
 }) => {
-  if (loading)
-    return (
-      <View style={{ gap: 10 }}>
-        <Skeleton />
-        <Skeleton />
-        <Skeleton />
-      </View>
-    );
+  if (loading) return <HistorySkeleton />;
   if (!history || history.length === 0) {
     return (
       <View style={{ gap: 10 }}>
@@ -123,40 +117,4 @@ const styles = StyleSheet.create({
   },
 });
 
-const Skeleton = () => (
-  <View style={skeletonStyles.itemContainer}>
-    <View style={[skeletonStyles.skeletonBox, { width: "30%" }]} />
-    <View style={[skeletonStyles.skeletonBox, { width: "50%" }]} />
-    <View style={skeletonStyles.row}>
-      <View style={[skeletonStyles.skeletonBox, { width: "40%" }]} />
-      <View style={[skeletonStyles.skeletonBox, { width: "20%" }]} />
-    </View>
-    <View style={skeletonStyles.row}>
-      <View style={[skeletonStyles.skeletonBox, { width: "50%" }]} />
-      <View style={[skeletonStyles.skeletonBox, { width: "20%" }]} />
-    </View>
-  </View>
-);
-const skeletonStyles = StyleSheet.create({
-  itemContainer: {
-    padding: 10,
-    borderWidth: 1,
-    borderRadius: 10,
-    borderColor: AppColors.darkGray,
-    width: "100%",
-    gap: 10,
-    overflow: "hidden",
-  },
-  skeletonBox: {
-    height: 15,
-    backgroundColor: AppColors.gray,
-    borderRadius: 5,
-  },
-  row: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    gap: 10,
-  },
-});
 export default HistoryScreen;

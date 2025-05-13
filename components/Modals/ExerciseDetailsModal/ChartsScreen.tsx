@@ -1,9 +1,9 @@
+import ChartsSkeleton from "@/components/Skeletons/ChartsSkeleton";
 import { chartConfig } from "@/constants/chart";
-import { AppColors } from "@/constants/colors";
 import { SCREEN_WIDTH } from "@/constants/device";
 import { WorkoutMetrics } from "@/types/workoutMetrics";
 import { formatDateShort } from "@/utils/calendar";
-import { Text, StyleSheet, ScrollView, View } from "react-native";
+import { Text, StyleSheet, ScrollView } from "react-native";
 import { LineChart } from "react-native-chart-kit";
 
 const ChartsScreen = ({
@@ -14,14 +14,7 @@ const ChartsScreen = ({
   loading: boolean;
 }) => {
   if (loading) {
-    return (
-      <ScrollView style={styles.container}>
-        <View style={styles.skeletonTitle} />
-        <View style={styles.skeletonChart} />
-        <View style={styles.skeletonTitle} />
-        <View style={styles.skeletonChart} />
-      </ScrollView>
-    );
+    return <ChartsSkeleton parentStyles={styles} />;
   }
   if (!data || data.length === 0) {
     return (
@@ -135,21 +128,5 @@ const styles = StyleSheet.create({
     marginVertical: 8,
     borderRadius: 8,
     alignSelf: "flex-end",
-  },
-  skeletonTitle: {
-    width: "40%", // approximate width for a title
-    height: 20,
-    borderRadius: 4,
-    marginTop: 16,
-    marginLeft: 16,
-    backgroundColor: AppColors.skeleton,
-  },
-  skeletonChart: {
-    width: "90%", // approximate width for chart skeleton
-    height: 220,
-    borderRadius: 8,
-    marginVertical: 8,
-    marginLeft: "5%",
-    backgroundColor: AppColors.skeleton,
   },
 });

@@ -65,3 +65,21 @@ export const hiddenScreens = [
     },
   },
 ];
+export const profileTabs = [
+  {
+    name: "index",
+    animation: "slide_from_left",
+  },
+  {
+    name: "privacy",
+    animation: "slide_from_right",
+  },
+  {
+    name: "theme",
+    animation: "slide_from_right",
+  },
+  {
+    name: "userForm",
+    animation: "slide_from_right",
+  },
+];

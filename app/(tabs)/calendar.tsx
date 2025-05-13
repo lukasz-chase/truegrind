@@ -15,6 +15,7 @@ import WorkoutDay from "@/components/WorkoutDay";
 import LegendItem from "@/components/LegendItem";
 import { AppColors } from "@/constants/colors";
 import { SafeAreaView } from "react-native-safe-area-context";
+import CalendarSkeleton from "@/components/Skeletons/CalendarSkeleton";
 
 export default function CalendarScreen() {
   const [isWorkoutCalendarModalVisible, setIsWorkoutCalendarModalVisible] =
@@ -98,11 +99,7 @@ export default function CalendarScreen() {
     <SafeAreaView style={styles.container}>
       <View style={{ flexGrow: 0 }}>
         {loading ? (
-          <View style={[styles.legendsContainer, styles.legendsWrapper]}>
-            <View style={styles.legendSkeleton} />
-            <View style={styles.legendSkeleton} />
-            <View style={styles.legendSkeleton} />
-          </View>
+          <CalendarSkeleton parentStyles={styles} />
         ) : (
           <ScrollView
             style={styles.legendsWrapper}
@@ -169,11 +166,5 @@ const styles = StyleSheet.create({
   },
   calendar: {
     marginVertical: "auto",
-  },
-  legendSkeleton: {
-    height: 40,
-    width: 50,
-    backgroundColor: AppColors.gray,
-    borderRadius: 10,
   },
 });

@@ -27,6 +27,7 @@ import useAppStore from "@/store/useAppStore";
 import * as Haptics from "expo-haptics";
 import useSplitsStore from "@/store/useSplitsStore";
 import { initialWorkoutState } from "@/constants/initialState";
+import SplitTemplateSkeleton from "@/components/Skeletons/SplitTemplateSkeleton";
 
 export default function WorkoutTemplate() {
   const [loading, setLoading] = useState(false);
@@ -124,24 +125,7 @@ export default function WorkoutTemplate() {
   };
 
   if (loading) {
-    return (
-      <SafeAreaView style={styles.container}>
-        <View style={styles.header}>
-          <View style={[styles.skeleton, { width: 50 }]} />
-          <View style={[styles.skeleton, { width: 150 }]} />
-          <View style={[styles.skeleton, { width: 50 }]} />
-        </View>
-        <View style={{ flexDirection: "column", gap: 10, padding: 10 }}>
-          <View style={[styles.skeleton, { width: 150 }]} />
-          <View style={[styles.skeleton, { width: 50 }]} />
-          <View style={[styles.skeleton, { width: 200 }]} />
-          <View style={[styles.skeleton, { width: "100%" }]} />
-          <View style={[styles.skeleton, { width: "100%" }]} />
-          <View style={[styles.skeleton, { width: "100%" }]} />
-          <View style={[styles.skeleton, { width: "100%" }]} />
-        </View>
-      </SafeAreaView>
-    );
+    return <SplitTemplateSkeleton parentStyles={styles} />;
   }
   return (
     <SafeAreaView style={styles.container}>
@@ -268,9 +252,5 @@ const styles = StyleSheet.create({
   footerText: {
     textAlign: "center",
     fontWeight: "bold",
-  },
-  skeleton: {
-    height: 40,
-    backgroundColor: AppColors.gray,
   },
 });

@@ -15,6 +15,8 @@ import { fetchWeeklyWorkoutCount } from "@/lib/workoutServices";
 import { fetchUserUpcomingWorkout } from "@/lib/workoutCalendarService";
 import { WorkoutCalendarPopulated } from "@/types/workoutCalendar";
 import { showHoursFromDate } from "@/utils/calendar";
+import CustomImage from "@/components/CustomImage";
+import ProfileSkeleton from "@/components/Skeletons/ProfileSkeleton";
 
 //TODO - make theme usable
 
@@ -81,113 +83,29 @@ export default function Profile() {
   useEffect(() => {
     fetchData();
   }, [user]);
+
   if (loading) {
-    return (
-      <SafeAreaView style={styles.safeArea}>
-        <View
-          style={[
-            styles.skeletonItem,
-            { width: 150, height: 30, borderRadius: 4 },
-          ]}
-        />
-        <View
-          style={[
-            styles.skeletonItem,
-            { width: 100, height: 100, borderRadius: 50 },
-          ]}
-        />
-        <View
-          style={[
-            styles.skeletonItem,
-            { width: 200, height: 30, borderRadius: 4 },
-          ]}
-        />
-        <View
-          style={[
-            styles.infoContainer,
-            { width: "100%", justifyContent: "space-around" },
-          ]}
-        >
-          <View
-            style={[
-              styles.skeletonItem,
-              { width: 60, height: 20, borderRadius: 4 },
-            ]}
-          />
-          <View
-            style={[
-              styles.skeletonItem,
-              { width: 60, height: 20, borderRadius: 4 },
-            ]}
-          />
-          <View
-            style={[
-              styles.skeletonItem,
-              { width: 60, height: 20, borderRadius: 4 },
-            ]}
-          />
-        </View>
-        <View style={[styles.boxesContainer, { width: "100%" }]}>
-          {Array.from({ length: 3 }).map((_, idx) => (
-            <View
-              key={idx}
-              style={[
-                styles.infoBox,
-                { alignItems: "center", justifyContent: "center" },
-              ]}
-            >
-              <View
-                style={[
-                  styles.skeletonItem,
-                  { width: "80%", height: 15, borderRadius: 4 },
-                ]}
-              />
-              <View
-                style={[
-                  styles.skeletonItem,
-                  { width: "60%", height: 15, borderRadius: 4 },
-                ]}
-              />
-              <View
-                style={[
-                  styles.skeletonItem,
-                  { width: "40%", height: 15, borderRadius: 4 },
-                ]}
-              />
-            </View>
-          ))}
-        </View>
-        <View
-          style={[
-            styles.progressWrapper,
-            { width: "100%", height: 100, justifyContent: "center" },
-          ]}
-        >
-          <View
-            style={[
-              styles.skeletonItem,
-              { width: "90%", height: 20, borderRadius: 4 },
-            ]}
-          />
-          <View
-            style={[
-              styles.skeletonItem,
-              { width: "90%", height: 10, marginTop: 10, borderRadius: 4 },
-            ]}
-          />
-        </View>
-      </SafeAreaView>
-    );
+    return <ProfileSkeleton parentStyles={styles} />;
   }
 
   return (
     <SafeAreaView style={styles.safeArea}>
       <Text style={styles.title}>TRUE GRIND</Text>
-      <FontAwesome
-        name="user-circle"
-        size={100}
-        color={AppColors.charcoalGray}
-      />
+      {user?.profile_picture ? (
+        <View style={styles.imageCircle}>
+          <CustomImage
+            imageUrl={user.profile_picture}
+            height={100}
+            width={100}
+          />
+        </View>
+      ) : (
+        <FontAwesome
+          name="user-circle"
+          size={100}
+          color={AppColors.charcoalGray}
+        />
+      )}
       <Text style={[styles.title, styles.name]}>{user?.username}</Text>
       <View style={styles.infoContainer}>
         {user?.age ? <Text>{user?.age} years</Text> : <Text>Age</Text>}
@@ -309,6 +227,16 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 10,
   },
+  imageCircle: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    overflow: "hidden",
+    borderColor: AppColors.charcoalGray,
+    borderWidth: 2,
+    alignItems: "center",
+    justifyContent: "center",
+  },
   title: {
     fontSize: 24,
     fontWeight: "bold",
@@ -380,9 +308,5 @@ const styles = StyleSheet.create({
   profileButtonSeparator: {
     borderTopWidth: 2,
     borderTopColor: AppColors.charcoalGray,
-  },
-  // Skeleton styles
-  skeletonItem: {
-    backgroundColor: AppColors.gray,
   },
 });

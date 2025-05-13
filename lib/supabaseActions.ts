@@ -39,3 +39,16 @@ export const uploadImageToBucket = async (
     return undefined;
   }
 };
+export const deleteImageFromBucket = async (
+  filePath: string,
+  bucketName: string
+) => {
+  try {
+    const { error } = await supabase.storage
+      .from(bucketName)
+      .remove([filePath]);
+    if (error) console.log(error);
+  } catch (error) {
+    console.log(error);
+  }
+};

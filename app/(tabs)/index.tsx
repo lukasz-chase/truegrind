@@ -14,6 +14,7 @@ import { useRouter } from "expo-router";
 import { Workout } from "@/types/workout";
 import { fetchExampleWorkouts } from "@/lib/workoutServices";
 import useSplitsStore from "@/store/useSplitsStore";
+import MainScreenSkeleton from "@/components/Skeletons/MainScreenSkeleton";
 
 export default function WorkoutScreen() {
   const [exampleWorkouts, setExampleWorkouts] = useState<Workout[] | null>(
@@ -85,31 +86,7 @@ export default function WorkoutScreen() {
     router.push(`/template/${templateId}`);
   };
   if (loading || dataLoading || !split) {
-    return (
-      <SafeAreaView style={styles.safeArea}>
-        <View style={styles.container}>
-          {/* Title Placeholder */}
-          <View style={styles.skeletonTitle} />
-          {/* Buttons */}
-          <View style={styles.skeletonButton} />
-          <View style={styles.skeletonButton} />
-
-          {/* Template Header Placeholder */}
-          <View style={styles.templateHeader}>
-            <View style={styles.skeletonSubtitle} />
-            <View style={styles.skeletonTemplateBtn} />
-          </View>
-          {/* Skeleton cards for workouts */}
-          <View style={styles.workouts}>
-            <View style={styles.skeletonCard} />
-            <View style={styles.skeletonCard} />
-            <View style={styles.skeletonCard} />
-            <View style={styles.skeletonCard} />
-            <View style={styles.skeletonCard} />
-          </View>
-        </View>
-      </SafeAreaView>
-    );
+    return <MainScreenSkeleton parentStyles={styles} />;
   }
 
   return (
@@ -231,39 +208,5 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     justifyContent: "space-between",
     gap: 10,
-  },
-
-  // Skeleton styles
-  skeletonTitle: {
-    height: 30,
-    width: "50%",
-    backgroundColor: AppColors.skeleton,
-    borderRadius: 5,
-    marginVertical: 10,
-  },
-  skeletonButton: {
-    height: 40,
-    backgroundColor: AppColors.skeleton,
-    borderRadius: 5,
-    marginVertical: 10,
-  },
-  skeletonSubtitle: {
-    width: "30%",
-    height: 24,
-    backgroundColor: AppColors.skeleton,
-    borderRadius: 5,
-  },
-  skeletonTemplateBtn: {
-    width: 100,
-    height: 30,
-    backgroundColor: AppColors.skeleton,
-    borderRadius: 5,
-  },
-  skeletonCard: {
-    width: "47%",
-    height: 100,
-    backgroundColor: AppColors.skeleton,
-    borderRadius: 10,
-    marginBottom: 10,
   },
 });

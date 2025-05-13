@@ -9,6 +9,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { useRouter } from "expo-router";
 import useSplitsStore from "@/store/useSplitsStore";
+import ProfileSkeleton from "@/components/Skeletons/ProfileSkeleton";
 
 export default function SplitsScreen() {
   const [loading, setLoading] = useState(false);
@@ -38,18 +39,7 @@ export default function SplitsScreen() {
     }
   }, [user]);
 
-  if (loading)
-    return (
-      <SafeAreaView style={styles.container}>
-        <Text style={styles.title}>Choose your split</Text>
-        <View style={{ gap: 10 }}>
-          <View style={styles.cardSkeleton} />
-          <View style={styles.cardSkeleton} />
-          <View style={styles.cardSkeleton} />
-          <View style={styles.cardSkeleton} />
-        </View>
-      </SafeAreaView>
-    );
+  if (loading) return <ProfileSkeleton parentStyles={styles} />;
   if (!user) return null;
   return (
     <SafeAreaView style={styles.container}>
@@ -95,12 +85,6 @@ const styles = StyleSheet.create({
   },
   listContainer: {
     gap: 10,
-  },
-  cardSkeleton: {
-    width: "100%",
-    backgroundColor: AppColors.skeleton,
-    height: 60,
-    borderRadius: 10,
   },
   newSplitButton: {
     width: "100%",

@@ -1,6 +1,7 @@
 import { UserProfile } from "@/types/user";
 import { supabase } from "./supabase";
 import userStore from "@/store/userStore";
+import { deleteImageFromBucket, uploadImageToBucket } from "./supabaseActions";
 
 export const setProfileInUserStore = async (userId: string) => {
   try {
@@ -24,8 +25,25 @@ export const setProfileInUserStore = async (userId: string) => {
 
 export const updateUserProfile = async (
   userId: string,
-  propertiesToUpdate: Partial<UserProfile>
+  propertiesToUpdate: Partial<UserProfile>,
+  profilePicture?: {
+    url: string | null;
+    extension: string;
+    imageWasChanged: boolean;
+  }
 ) => {
+  if (profilePicture?.imageWasChanged && profilePicture.url) {
+    const imagePath = `${userId}/profilePicture.${profilePicture.extension}`;
+    await deleteImageFromBucket(imagePath, "users");
+    const imageUrl = await uploadImageToBucket(
+      profilePicture.url,
+      imagePath,
+      "users"
+    );
+    if (imageUrl) {
+      propertiesToUpdate = { ...propertiesToUpdate, profile_picture: imageUrl };
+    }
+  }
   const { data, error } = await supabase
     .from("profiles")
     .update(propertiesToUpdate)
