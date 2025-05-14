@@ -1,6 +1,12 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
-import { StyleSheet, View, Text, Pressable } from "react-native";
+import {
+  StyleSheet,
+  View,
+  Text,
+  Pressable,
+  ActivityIndicator,
+} from "react-native";
 import userStore from "@/store/userStore";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AntDesign from "@expo/vector-icons/AntDesign";
@@ -8,7 +14,7 @@ import { Link } from "expo-router";
 import { AppColors } from "@/constants/colors";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import * as Progress from "react-native-progress";
-import { profileButtons } from "@/constants/profile";
+import { profileLinks } from "@/constants/profile";
 import { fetchUserMeasurementsSingle } from "@/lib/measurementsService";
 import { Measurement } from "@/types/measurements";
 import { fetchWeeklyWorkoutCount } from "@/lib/workoutServices";
@@ -17,8 +23,10 @@ import { WorkoutCalendarPopulated } from "@/types/workoutCalendar";
 import { showHoursFromDate } from "@/utils/calendar";
 import CustomImage from "@/components/CustomImage";
 import ProfileSkeleton from "@/components/Skeletons/ProfileSkeleton";
+import { exportData } from "@/lib/supabaseActions";
 
 //TODO - make theme usable
+//TODO - export data
 
 export default function Profile() {
   const { user } = userStore();
@@ -29,7 +37,8 @@ export default function Profile() {
   const [upcomingWorkout, setUpcomingWorkout] =
     useState<WorkoutCalendarPopulated | null>(null);
   const [workoutFrequency, setWorkoutFrequency] = useState<number | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [fetchLoading, setFetchLoading] = useState(false);
+  const [exportLoading, setExportLoading] = useState(false);
 
   const signOut = async () => {
     try {
@@ -42,7 +51,7 @@ export default function Profile() {
 
   const fetchData = async () => {
     try {
-      setLoading(true);
+      setFetchLoading(true);
       if (!user?.id) return;
 
       const [
@@ -76,15 +85,22 @@ export default function Profile() {
     } catch (error) {
       console.error("Error fetching measurements", error);
     } finally {
-      setLoading(false);
+      setFetchLoading(false);
     }
+  };
+  const exportDataHandler = async () => {
+    setExportLoading(true);
+    if (user) {
+      await exportData(user.id);
+    }
+    setExportLoading(false);
   };
 
   useEffect(() => {
     fetchData();
   }, [user]);
 
-  if (loading) {
+  if (fetchLoading) {
     return <ProfileSkeleton parentStyles={styles} />;
   }
 
@@ -191,8 +207,8 @@ export default function Profile() {
         )}
       </View>
       <View style={styles.buttonsWrapper}>
-        {profileButtons.map((button, i) => (
-          <Link href={button.href} key={button.label}>
+        {profileLinks.map((button, i) => (
+          <Link href={button.href as any} key={button.label}>
             <View
               style={[
                 styles.profileButton,
@@ -208,6 +224,16 @@ export default function Profile() {
             </View>
           </Link>
         ))}
+        <Pressable
+          disabled={exportLoading}
+          onPress={exportDataHandler}
+          style={[styles.profileButton, styles.profileButtonSeparator]}
+        >
+          <Text>Export Data</Text>
+          {exportLoading && <ActivityIndicator size="small" />}
+
+          <AntDesign name="export" size={24} color={AppColors.black} />
+        </Pressable>
         <Pressable
           onPress={signOut}
           style={[styles.profileButton, styles.profileButtonSeparator]}

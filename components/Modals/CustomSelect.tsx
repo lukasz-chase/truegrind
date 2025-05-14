@@ -58,7 +58,7 @@ const CustomSelect = ({
           setModalVisible(false);
         }}
         value={selectedValue}
-        width={SCREEN_WIDTH - 40}
+        width={size === "sm" ? SCREEN_WIDTH * 0.48 : SCREEN_WIDTH * 0.9}
       />
     </>
   );

@@ -1,4 +1,4 @@
-export const profileButtons = [
+export const profileLinks = [
   {
     label: "Edit Profile",
     href: "/profile/userForm",
@@ -10,9 +10,5 @@ export const profileButtons = [
   {
     label: "Privacy / Delete Account",
     href: "/profile/privacy",
-  },
-  {
-    label: "Export Data",
-    href: "/profile/edit-profile",
   },
 ];
