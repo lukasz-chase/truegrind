@@ -1,18 +1,18 @@
-import { AppColors } from "./colors";
+import { ThemeColors } from "@/types/user";
 
-export const chartConfig = {
-  backgroundColor: AppColors.white,
-  backgroundGradientFrom: AppColors.white,
-  backgroundGradientTo: AppColors.white,
+export const chartConfig = (theme: ThemeColors) => ({
+  backgroundColor: theme.background,
+  backgroundGradientFrom: theme.background,
+  backgroundGradientTo: theme.background,
   decimalPlaces: 0,
-  color: (opacity = 1) => `rgba(0, 0, 255, ${opacity})`,
-  labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+  color: (opacity = 1) => theme.blue,
+  labelColor: (opacity = 1) => theme.textColor,
   style: {
     borderRadius: 8,
   },
   propsForDots: {
     r: "4",
     strokeWidth: "2",
-    stroke: AppColors.darkBlue,
+    stroke: theme.darkBlue,
   },
-};
+});

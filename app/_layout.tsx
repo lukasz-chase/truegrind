@@ -9,6 +9,7 @@ import { Alert, AppState, Platform } from "react-native";
 import * as Notifications from "expo-notifications";
 import * as SplashScreen from "expo-splash-screen";
 import { setStatusBarStyle, StatusBar } from "expo-status-bar";
+import useThemeStore from "@/store/useThemeStore";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -31,6 +32,7 @@ export default function RootLayout() {
   const { session } = userStore((s) => s);
   const { resetActiveWorkout } = useActiveWorkout();
   const { resetMeasurements } = useMeasurementsStore();
+  const { mode } = useThemeStore();
   const askNotificationPermission = async () => {
     const { status } = await Notifications.requestPermissionsAsync();
     if (status === "granted") {
@@ -45,7 +47,7 @@ export default function RootLayout() {
   };
 
   useEffect(() => {
-    setStatusBarStyle("dark");
+    setStatusBarStyle(mode);
 
     supabase.auth.getSession().then(({ data: { session } }) => {
       userStore.setState({ session });
@@ -87,7 +89,7 @@ export default function RootLayout() {
 
         <Stack.Screen name="+not-found" />
       </Stack>
-      <StatusBar style="dark" />
+      <StatusBar style={mode} />
     </>
   );
 }

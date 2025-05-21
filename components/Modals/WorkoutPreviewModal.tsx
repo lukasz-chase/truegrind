@@ -1,4 +1,3 @@
-import React from "react";
 import {
   View,
   Text,
@@ -10,12 +9,15 @@ import {
 } from "react-native";
 import ExerciseRow from "../ExerciseRow";
 import { Workout } from "@/types/workout";
-import { AppColors } from "@/constants/colors";
 import CloseButton from "../CloseButton";
 import userStore from "@/store/userStore";
 import { copyWorkout } from "@/lib/workoutServices";
 import useAppStore from "@/store/useAppStore";
 import { useRouter } from "expo-router";
+import useThemeStore from "@/store/useThemeStore";
+import { useMemo } from "react";
+import { ThemeColors } from "@/types/user";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type Props = {
   visible: boolean;
@@ -32,9 +34,9 @@ export default function WorkoutPreviewModal({
 }: Props) {
   const { user } = userStore();
   const { refetchData } = useAppStore();
-
+  const { theme } = useThemeStore((state) => state);
+  const styles = useMemo(() => makeStyles(theme), [theme]);
   const router = useRouter();
-
   const copyWorkoutHandler = async () => {
     await copyWorkout(workout, user!.id);
     refetchData();
@@ -108,68 +110,65 @@ export default function WorkoutPreviewModal({
   );
 }
 
-const styles = StyleSheet.create({
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: AppColors.semiTransparent, // semi-transparent background
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 20, // padding outside the modal
-  },
-  modalContent: {
-    width: "100%", // Adjust width as needed
-    padding: 20,
-    borderRadius: 10,
-    alignItems: "center",
-    backgroundColor: AppColors.white,
-    minHeight: 150,
-  },
-  modalHeader: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    width: "100%",
-    alignItems: "center",
-    marginBottom: 10,
-  },
-  exercisesList: {
-    width: "100%",
-  },
-  modalCloseButton: {
-    backgroundColor: AppColors.gray,
-    padding: 4,
-    borderRadius: 8,
-  },
-  modalHeaderTitle: {
-    fontWeight: "bold",
-    fontSize: 18,
-    width: 180,
-    textAlign: "center",
-  },
-  modalEditButton: {
-    color: AppColors.blue,
-    fontSize: 20,
-  },
-  actionButton: {
-    width: "100%",
-    backgroundColor: AppColors.blue,
-    padding: 10,
-    borderRadius: 8,
-  },
-  actionButtonText: {
-    textAlign: "center",
-    color: AppColors.white,
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  workoutWrapper: {
-    flexDirection: "row",
-    gap: 6,
-    paddingLeft: 6,
-    paddingBottom: 6,
-  },
-  supersetIndicator: {
-    width: 2,
-    height: "100%",
-  },
-});
+const makeStyles = (theme: ThemeColors) =>
+  StyleSheet.create({
+    modalOverlay: {
+      flex: 1,
+      backgroundColor: theme.semiTransparent, // semi-transparent background
+      justifyContent: "center",
+      alignItems: "center",
+      padding: 20, // padding outside the modal
+    },
+    modalContent: {
+      width: "100%", // Adjust width as needed
+      padding: 20,
+      borderRadius: 10,
+      alignItems: "center",
+      backgroundColor: theme.background,
+      minHeight: 150,
+    },
+    modalHeader: {
+      display: "flex",
+      flexDirection: "row",
+      justifyContent: "space-between",
+      width: "100%",
+      alignItems: "center",
+      marginBottom: 10,
+    },
+    exercisesList: {
+      width: "100%",
+    },
+    modalHeaderTitle: {
+      color: theme.textColor,
+      fontWeight: "bold",
+      fontSize: 18,
+      width: 180,
+      textAlign: "center",
+    },
+    modalEditButton: {
+      color: theme.blue,
+      fontSize: 20,
+    },
+    actionButton: {
+      width: "100%",
+      backgroundColor: theme.blue,
+      padding: 10,
+      borderRadius: 8,
+    },
+    actionButtonText: {
+      textAlign: "center",
+      color: theme.white,
+      fontSize: 18,
+      fontWeight: "bold",
+    },
+    workoutWrapper: {
+      flexDirection: "row",
+      gap: 6,
+      paddingLeft: 6,
+      paddingBottom: 6,
+    },
+    supersetIndicator: {
+      width: 2,
+      height: "100%",
+    },
+  });

@@ -7,15 +7,16 @@ import userStore from "@/store/userStore";
 import useSplitsStore from "@/store/useSplitsStore";
 import { WorkoutCalendarPopulated } from "@/types/workoutCalendar";
 import { useRouter } from "expo-router";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { StyleSheet, ScrollView, View } from "react-native";
 import { Calendar } from "react-native-calendars";
 import useAppStore from "@/store/useAppStore";
 import WorkoutDay from "@/components/WorkoutDay";
 import LegendItem from "@/components/LegendItem";
-import { AppColors } from "@/constants/colors";
 import { SafeAreaView } from "react-native-safe-area-context";
 import CalendarSkeleton from "@/components/Skeletons/CalendarSkeleton";
+import useThemeStore from "@/store/useThemeStore";
+import { ThemeColors } from "@/types/user";
 
 export default function CalendarScreen() {
   const [isWorkoutCalendarModalVisible, setIsWorkoutCalendarModalVisible] =
@@ -30,6 +31,8 @@ export default function CalendarScreen() {
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth() + 1);
   const [loading, setLoading] = useState(true);
 
+  const { theme } = useThemeStore((state) => state);
+  const styles = useMemo(() => makeStyles(theme), [theme]);
   const { activeSplit } = useSplitsStore();
   const { user } = userStore();
   const { refetchNumber, refetchData } = useAppStore();
@@ -85,7 +88,7 @@ export default function CalendarScreen() {
       return workout.workout_id === workoutId;
     });
 
-    return workoutCalendar?.color ?? AppColors.darkGray;
+    return workoutCalendar?.color ?? theme.darkGray;
   };
 
   const getUniqueCalendarData = () => {
@@ -120,6 +123,7 @@ export default function CalendarScreen() {
       </View>
 
       <Calendar
+        key={theme.background}
         firstDay={1}
         onMonthChange={({ month }: any) => {
           setCurrentMonth(month);
@@ -136,6 +140,10 @@ export default function CalendarScreen() {
           );
         }}
         style={styles.calendar}
+        theme={{
+          calendarBackground: theme.background,
+          monthTextColor: theme.textColor,
+        }}
       />
       <WorkoutCalendarModal
         closeModal={() => setIsWorkoutCalendarModalVisible(false)}
@@ -148,23 +156,24 @@ export default function CalendarScreen() {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    height: "100%",
-    backgroundColor: AppColors.white,
-  },
-  legendsWrapper: {
-    width: "100%",
-    padding: 10,
-    maxHeight: 150,
-  },
-  legendsContainer: {
-    gap: 10,
-    flexDirection: "row",
-    flexWrap: "wrap",
-  },
-  calendar: {
-    marginVertical: "auto",
-  },
-});
+const makeStyles = (theme: ThemeColors) =>
+  StyleSheet.create({
+    container: {
+      height: "100%",
+      backgroundColor: theme.background,
+    },
+    legendsWrapper: {
+      width: "100%",
+      padding: 10,
+      maxHeight: 150,
+    },
+    legendsContainer: {
+      gap: 10,
+      flexDirection: "row",
+      flexWrap: "wrap",
+    },
+    calendar: {
+      marginVertical: "auto",
+      backgroundColor: theme.background,
+    },
+  });

@@ -1,6 +1,7 @@
-import { AppColors } from "@/constants/colors";
 import useSetOptionsModal from "@/store/useSetOptionsModal";
-import { useRef } from "react";
+import useThemeStore from "@/store/useThemeStore";
+import { AppThemeEnum, ThemeColors } from "@/types/user";
+import { useMemo, useRef } from "react";
 import { Pressable, StyleSheet, Text } from "react-native";
 
 type Props = {
@@ -21,34 +22,36 @@ const SetOrder = ({
   exerciseSetId,
 }: Props) => {
   const { openModal } = useSetOptionsModal();
+  const { theme, mode } = useThemeStore((state) => state);
 
+  const styles = useMemo(() => makeStyles(theme), [theme]);
   const buttonRef = useRef(null);
 
   const getData = () => {
     if (isWarmup) {
       return {
-        backgroundColor: AppColors.lightOrange,
-        color: AppColors.orange,
+        backgroundColor: theme.lightOrange,
+        color: theme.orange,
         text: "W",
       };
     }
     if (isDropset) {
       return {
-        backgroundColor: AppColors.lightPurple,
-        color: AppColors.purple,
+        backgroundColor: theme.lightPurple,
+        color: theme.purple,
         text: "D",
       };
     }
     if (isCompleted) {
       return {
-        backgroundColor: AppColors.lightGreen,
-        color: AppColors.black,
+        backgroundColor: theme.lightGreen,
+        color: theme.textColor,
         text: order,
       };
     }
     return {
-      backgroundColor: AppColors.gray,
-      color: AppColors.black,
+      backgroundColor: mode === AppThemeEnum.DARK ? theme.black : theme.gray,
+      color: theme.textColor,
       text: order,
     };
   };
@@ -69,19 +72,20 @@ const SetOrder = ({
     </Pressable>
   );
 };
-const styles = StyleSheet.create({
-  rowButton: {
-    backgroundColor: AppColors.gray,
-    borderRadius: 10,
-    alignItems: "center",
-    justifyContent: "center",
-    height: 25,
-    width: 35,
-  },
-  rowButtonText: {
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-});
+const makeStyles = (theme: ThemeColors) =>
+  StyleSheet.create({
+    rowButton: {
+      backgroundColor: theme.gray,
+      borderRadius: 10,
+      alignItems: "center",
+      justifyContent: "center",
+      height: 25,
+      width: 35,
+    },
+    rowButtonText: {
+      fontSize: 16,
+      fontWeight: "bold",
+    },
+  });
 
 export default SetOrder;

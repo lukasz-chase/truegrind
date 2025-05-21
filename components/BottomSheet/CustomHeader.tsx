@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import Animated, {
   Extrapolation,
   interpolate,
@@ -7,7 +7,6 @@ import Animated, {
 } from "react-native-reanimated";
 import { Pressable, StyleSheet, Text } from "react-native";
 import { useBottomSheet } from "@gorhom/bottom-sheet";
-import { AppColors } from "@/constants/colors";
 import useWorkoutTimer from "@/store/useWorkoutTimer";
 import useActiveWorkout from "@/store/useActiveWorkout";
 import useTimerStore from "@/store/useTimer";
@@ -16,6 +15,8 @@ import TimerButton from "./TimerButton";
 import useCustomKeyboard from "@/store/useCustomKeyboard";
 import { useRouter } from "expo-router";
 import useActionModal from "@/store/useActionModal";
+import useThemeStore from "@/store/useThemeStore";
+import { ThemeColors } from "@/types/user";
 
 type Props = {
   sheetIndex: number;
@@ -36,7 +37,9 @@ const CustomHeader = ({ sheetIndex, close, scrolledY }: Props) => {
   const { openModal, setButtonRef } = useWorkoutTimerModal();
   const { closeKeyboard } = useCustomKeyboard();
   const { openModal: openActionModal } = useActionModal();
+  const { theme } = useThemeStore((state) => state);
 
+  const styles = useMemo(() => makeStyles(theme), [theme]);
   const router = useRouter();
 
   const scrolledValue = useSharedValue(scrolledY);
@@ -65,7 +68,7 @@ const CustomHeader = ({ sheetIndex, close, scrolledY }: Props) => {
         title: "Finish Workout?",
         subtitle: `All invalid or empty sets will be removed.`,
         onProceed: removeNotCompletedSets,
-        proceedButtonBgColor: AppColors.green,
+        proceedButtonBgColor: theme.green,
         proceedButtonLabeL: "Finish",
       });
     } else {
@@ -162,46 +165,49 @@ const CustomHeader = ({ sheetIndex, close, scrolledY }: Props) => {
   );
 };
 
-const styles = StyleSheet.create({
-  headerContainer: {
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "center",
-    height: 60,
-    marginTop: -5,
-    paddingHorizontal: 20,
-  },
-  titleContainer: {
-    alignItems: "center",
-    gap: 4,
-  },
-  headerTitle: {
-    fontWeight: "bold",
-    fontSize: 16,
-    textOverflow: "ellipsis",
-  },
-  headerTitleTime: {
-    fontSize: 18,
-  },
-  buttonContainer: {
-    height: 40,
-    display: "flex",
-    justifyContent: "center",
-    flex: 1,
-  },
-  finishButton: {
-    height: "100%",
-    backgroundColor: AppColors.green,
-    padding: 10,
-    borderRadius: 10,
-    width: 80,
-  },
-  finishButtonText: {
-    color: AppColors.white,
-    fontWeight: "bold",
-    fontSize: 18,
-    textAlign: "center",
-  },
-});
+const makeStyles = (theme: ThemeColors) =>
+  StyleSheet.create({
+    headerContainer: {
+      display: "flex",
+      flexDirection: "row",
+      alignItems: "center",
+      height: 60,
+      marginTop: -5,
+      paddingHorizontal: 20,
+    },
+    titleContainer: {
+      alignItems: "center",
+      gap: 4,
+    },
+    headerTitle: {
+      fontWeight: "bold",
+      fontSize: 16,
+      textOverflow: "ellipsis",
+      color: theme.textColor,
+    },
+    headerTitleTime: {
+      color: theme.textColor,
+      fontSize: 18,
+    },
+    buttonContainer: {
+      height: 40,
+      display: "flex",
+      justifyContent: "center",
+      flex: 1,
+    },
+    finishButton: {
+      height: "100%",
+      backgroundColor: theme.green,
+      padding: 10,
+      borderRadius: 10,
+      width: 80,
+    },
+    finishButtonText: {
+      color: theme.white,
+      fontWeight: "bold",
+      fontSize: 18,
+      textAlign: "center",
+    },
+  });
 
 export default CustomHeader;

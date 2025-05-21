@@ -1,10 +1,9 @@
 import { Pressable, Text, TouchableOpacity, View } from "react-native";
 import { StyleSheet } from "react-native";
 import SimpleLineIcons from "@expo/vector-icons/SimpleLineIcons";
-import { AppColors } from "@/constants/colors";
 import WorkoutSet from "./WorkoutSet";
 import Animated, { LinearTransition, runOnJS } from "react-native-reanimated";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   WorkoutExercise as WorkoutExerciseType,
   WorkoutExercisePopulated,
@@ -16,6 +15,8 @@ import CustomTextInput from "../CustomTextInput";
 import { exerciseHeader } from "@/constants/exerciseHeader";
 import useExerciseDetailsModal from "@/store/useExerciseDetailsModal";
 import { ExerciseSet } from "@/types/exercisesSets";
+import useThemeStore from "@/store/useThemeStore";
+import { AppTheme, AppThemeEnum, ThemeColors } from "@/types/user";
 
 type Props = {
   workoutExercise: WorkoutExercisePopulated;
@@ -48,6 +49,9 @@ const WorkoutExercise = ({
   const [note, setNote] = useState(
     workoutExercise?.note ?? { noteValue: "", showNote: false }
   );
+  const { theme, mode } = useThemeStore((state) => state);
+
+  const styles = useMemo(() => makeStyles(theme, mode), [theme, mode]);
   useEffect(() => {
     if (workoutExercise.note) {
       setNote(workoutExercise.note);
@@ -92,7 +96,7 @@ const WorkoutExercise = ({
             ref={buttonRef}
             onPress={onButtonPress}
           >
-            <SimpleLineIcons name="options" size={24} color={AppColors.blue} />
+            <SimpleLineIcons name="options" size={24} color={theme.blue} />
           </Pressable>
         </View>
       </GestureDetector>
@@ -102,8 +106,8 @@ const WorkoutExercise = ({
             onChangeText={noteChangeHandler}
             placeholder="Add a note"
             value={note.noteValue}
-            backgroundColor={AppColors.yellow}
-            textColor={AppColors.graphiteGray}
+            backgroundColor={theme.yellow}
+            textColor={theme.textColor}
           />
         </View>
       )}
@@ -152,69 +156,72 @@ const WorkoutExercise = ({
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingHorizontal: 10,
-  },
-  headerTitleButton: {
-    flex: 1,
-  },
-  headerTitle: {
-    color: AppColors.blue,
-    fontSize: 20,
-    width: "100%",
-  },
-  headerOptions: {
-    backgroundColor: AppColors.lightBlue,
-    paddingHorizontal: 5,
-    borderRadius: 10,
-  },
-  table: {
-    marginTop: 10,
-  },
-  row: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-  },
-  headerRow: {
-    paddingVertical: 5,
-    paddingHorizontal: 5,
-    borderRadius: 8,
-  },
-  cell: {
-    paddingVertical: 10,
-    paddingHorizontal: 5,
-    textAlign: "center",
-    justifyContent: "center",
-  },
-  headerCell: {
-    fontWeight: "bold",
-    fontSize: 16,
-  },
-  addButtonContainer: {
-    paddingHorizontal: 12,
-    marginVertical: 12,
-  },
-  addButton: {
-    padding: 8,
-    borderRadius: 8,
-    backgroundColor: AppColors.gray,
-    alignItems: "center",
-  },
-  addButtonText: {
-    fontWeight: "500",
-    fontSize: 18,
-  },
-  textWrapper: {
-    padding: 5,
-  },
-});
+const makeStyles = (theme: ThemeColors, mode: AppTheme) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+    },
+    header: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      paddingHorizontal: 10,
+    },
+    headerTitleButton: {
+      flex: 1,
+    },
+    headerTitle: {
+      color: theme.blue,
+      fontSize: 20,
+      width: "100%",
+    },
+    headerOptions: {
+      backgroundColor: theme.lightBlue,
+      paddingHorizontal: 5,
+      borderRadius: 10,
+    },
+    table: {
+      marginTop: 10,
+    },
+    row: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 10,
+    },
+    headerRow: {
+      paddingVertical: 5,
+      paddingHorizontal: 5,
+      borderRadius: 8,
+    },
+    cell: {
+      paddingVertical: 10,
+      paddingHorizontal: 5,
+      textAlign: "center",
+      justifyContent: "center",
+    },
+    headerCell: {
+      fontWeight: "bold",
+      fontSize: 16,
+      color: theme.textColor,
+    },
+    addButtonContainer: {
+      paddingHorizontal: 12,
+      marginVertical: 12,
+    },
+    addButton: {
+      padding: 8,
+      borderRadius: 8,
+      backgroundColor: mode === AppThemeEnum.DARK ? theme.black : theme.gray,
+      alignItems: "center",
+    },
+    addButtonText: {
+      fontWeight: "bold",
+      fontSize: 18,
+      color: theme.textColor,
+    },
+    textWrapper: {
+      padding: 5,
+    },
+  });
 
 export default WorkoutExercise;

@@ -6,7 +6,6 @@ import CustomTabBar from "@/components/CustomTabBar";
 import WorkoutBottomSheet from "@/components/BottomSheet/WorkoutBottomSheet";
 import { useSharedValue } from "react-native-reanimated";
 import useBottomSheet from "@/store/useBottomSheet";
-import { AppColors } from "@/constants/colors";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import ExerciseOptionsModal from "@/components/Modals/ExerciseOptionsModal";
 import WorkoutExercisesModal from "@/components/Modals/WorkoutExercisesModal";
@@ -21,6 +20,7 @@ import { fetchUserSplitWithWorkouts } from "@/lib/splitsServices";
 import useAppStore from "@/store/useAppStore";
 import InfoModal from "@/components/Modals/InfoModal";
 import ActionModal from "@/components/Modals/ActionModal";
+import useThemeStore from "@/store/useThemeStore";
 
 export default function TabLayout() {
   const animatedIndex = useSharedValue(0);
@@ -28,6 +28,7 @@ export default function TabLayout() {
   const { setActiveSplit, loading, setLoading } = useSplitsStore();
   const { user } = userStore();
   const { refetchNumber } = useAppStore();
+  const { theme } = useThemeStore((state) => state);
 
   const router = useRouter();
 
@@ -76,9 +77,9 @@ export default function TabLayout() {
         <Tabs
           initialRouteName="index"
           screenOptions={{
-            tabBarActiveTintColor: AppColors.blue,
+            tabBarActiveTintColor: theme.blue,
             tabBarStyle: {
-              backgroundColor: AppColors.black,
+              backgroundColor: theme.tabBackground,
               height: 70,
             },
           }}

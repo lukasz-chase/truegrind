@@ -1,8 +1,9 @@
-import { AppColors } from "@/constants/colors";
 import { ITEM_HEIGHT } from "@/constants/drag";
+import useThemeStore from "@/store/useThemeStore";
+import { ThemeColors } from "@/types/user";
 import { WorkoutExercisePopulated } from "@/types/workoutExercise";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { GestureDetector, Gesture } from "react-native-gesture-handler";
 import Animated, {
@@ -37,6 +38,9 @@ const DraggableItem = ({
   onReorder,
   dragItemId,
 }: Props) => {
+  const { theme } = useThemeStore((state) => state);
+
+  const styles = useMemo(() => makeStyles(theme), [theme]);
   const isPressedItem = dragItemId === item.id;
   const y = useSharedValue(index * ITEM_HEIGHT);
   const isActive = useSharedValue(isPressedItem);
@@ -98,7 +102,7 @@ const DraggableItem = ({
       transform: [{ translateY: y.value }],
       zIndex: isActive.value ? 10 : 1,
       elevation: isActive.value ? 5 : 0,
-      backgroundColor: isActive.value ? AppColors.lightBlue : AppColors.white,
+      backgroundColor: isActive.value ? theme.lightBlue : theme.white,
     };
   });
 
@@ -108,29 +112,30 @@ const DraggableItem = ({
         <Animated.View style={[styles.header, animatedStyle]}>
           <Text style={styles.headerTitle}>{item.exercises.name}</Text>
           <View style={styles.headerOptions}>
-            <FontAwesome5 name="grip-lines" size={24} color={AppColors.black} />
+            <FontAwesome5 name="grip-lines" size={24} color={theme.black} />
           </View>
         </Animated.View>
       </GestureDetector>
     </>
   );
 };
-const styles = StyleSheet.create({
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    width: "100%",
-    alignItems: "center",
-    paddingHorizontal: 20,
-  },
-  headerTitle: {
-    color: AppColors.blue,
-    fontSize: 20,
-  },
-  headerOptions: {
-    backgroundColor: AppColors.lightBlue,
-    paddingHorizontal: 5,
-    borderRadius: 10,
-  },
-});
+const makeStyles = (theme: ThemeColors) =>
+  StyleSheet.create({
+    header: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      width: "100%",
+      alignItems: "center",
+      paddingHorizontal: 20,
+    },
+    headerTitle: {
+      color: theme.blue,
+      fontSize: 20,
+    },
+    headerOptions: {
+      backgroundColor: theme.lightBlue,
+      paddingHorizontal: 5,
+      borderRadius: 10,
+    },
+  });
 export default DraggableItem;

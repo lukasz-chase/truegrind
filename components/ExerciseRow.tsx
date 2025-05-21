@@ -1,9 +1,10 @@
-import React from "react";
+import { useMemo } from "react";
 import { StyleSheet, View, Text } from "react-native";
 import { Exercise } from "@/types/exercises";
-import { AppColors } from "@/constants/colors";
 import { Pressable } from "react-native";
 import CustomImage from "./CustomImage";
+import useThemeStore from "@/store/useThemeStore";
+import { ThemeColors } from "@/types/user";
 
 type Props = {
   exercise: Exercise;
@@ -18,12 +19,15 @@ const ExerciseRow = ({
   onPress,
   isSelected,
 }: Props) => {
+  const { theme } = useThemeStore((state) => state);
+
+  const styles = useMemo(() => makeStyles(theme), [theme]);
   return (
     <Pressable
       onPress={() => onPress(exercise)}
       style={[
         styles.exerciseItem,
-        { backgroundColor: isSelected ? AppColors.blue : AppColors.white },
+        { backgroundColor: isSelected ? theme.blue : theme.background },
       ]}
     >
       {exercise.image ? (
@@ -52,38 +56,42 @@ const ExerciseRow = ({
 
 export default ExerciseRow;
 
-const styles = StyleSheet.create({
-  exerciseItem: {
-    borderRadius: 8,
-    color: AppColors.black,
-    flexDirection: "row",
-    width: "100%",
-    paddingVertical: 5,
-    borderBottomColor: AppColors.gray,
-    borderBottomWidth: 1,
-  },
-  exerciseDetails: {
-    marginLeft: 12,
-    flex: 1,
-    justifyContent: "space-between",
-    paddingHorizontal: 5,
-  },
-  CustomImage: {
-    width: 50,
-    height: 50,
-    borderRadius: 8,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  CustomImageText: {
-    fontSize: 32,
-  },
-  exerciseName: {
-    fontWeight: "bold",
-    fontSize: 16,
-    maxWidth: "100%", // Ensures it doesn't overflow its container
-  },
-  exerciseDetail: {
-    fontSize: 14,
-  },
-});
+const makeStyles = (theme: ThemeColors) =>
+  StyleSheet.create({
+    exerciseItem: {
+      borderRadius: 8,
+
+      flexDirection: "row",
+      width: "100%",
+      paddingVertical: 5,
+      borderBottomColor: theme.gray,
+      borderBottomWidth: 1,
+    },
+    exerciseDetails: {
+      marginLeft: 12,
+      flex: 1,
+      justifyContent: "space-between",
+      paddingHorizontal: 5,
+    },
+    CustomImage: {
+      width: 50,
+      height: 50,
+      borderRadius: 8,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    CustomImageText: {
+      fontSize: 32,
+      color: theme.textColor,
+    },
+    exerciseName: {
+      fontWeight: "bold",
+      color: theme.textColor,
+      fontSize: 18,
+      maxWidth: "100%", // Ensures it doesn't overflow its container
+    },
+    exerciseDetail: {
+      color: theme.textColor,
+      fontSize: 16,
+    },
+  });

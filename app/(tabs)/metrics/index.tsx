@@ -3,7 +3,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { bodyPartsToMeasure, corePartsToMeasure } from "@/constants/metrics";
 import { ScrollView } from "react-native-gesture-handler";
 import AddMetricsModal from "@/components/Modals/AddMetricsModal";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   createMeasurement,
   fetchAllUserMeasurements,
@@ -12,6 +12,8 @@ import userStore from "@/store/userStore";
 import MeasurementList from "@/components/MeasurementList";
 import * as Haptics from "expo-haptics";
 import useMeasurementsStore from "@/store/useMeasurementsStore";
+import { ThemeColors } from "@/types/user";
+import useThemeStore from "@/store/useThemeStore";
 
 export default function MetricsScreen() {
   const [isMetricsModalVisible, setIsMetricsModalVisible] = useState(false);
@@ -27,6 +29,9 @@ export default function MetricsScreen() {
   } = useMeasurementsStore();
 
   const { user } = userStore();
+  const { theme } = useThemeStore((state) => state);
+
+  const styles = useMemo(() => makeStyles(theme), [theme]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -100,14 +105,17 @@ export default function MetricsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    padding: 10,
-  },
-  title: {
-    fontWeight: "bold",
-    fontSize: 20,
-    marginVertical: 10,
-    marginHorizontal: "auto",
-  },
-});
+const makeStyles = (theme: ThemeColors) =>
+  StyleSheet.create({
+    container: {
+      padding: 10,
+      backgroundColor: theme.background,
+    },
+    title: {
+      fontWeight: "bold",
+      fontSize: 20,
+      marginVertical: 10,
+      marginHorizontal: "auto",
+      color: theme.textColor,
+    },
+  });

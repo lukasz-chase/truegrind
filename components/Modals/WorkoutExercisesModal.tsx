@@ -9,15 +9,16 @@ import {
 } from "react-native";
 import useWorkoutExercisesModal from "@/store/useWorkoutExercisesModal";
 import Exercises from "../ExercisesList/Exercises";
-import { AppColors } from "@/constants/colors";
 import CloseButton from "../CloseButton";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import ExerciseFormModal from "./ExerciseForm/ExerciseFormModal";
 import { Exercise } from "@/types/exercises";
 import useActiveWorkout from "@/store/useActiveWorkout";
 import { WorkoutExercise } from "@/types/workoutExercise";
 import * as Haptics from "expo-haptics";
 import { generateNewColor } from "@/utils/colors";
+import useThemeStore from "@/store/useThemeStore";
+import { ThemeColors } from "@/types/user";
 
 export default function WorkoutExercisesModal() {
   const {
@@ -32,7 +33,9 @@ export default function WorkoutExercisesModal() {
   const [isNewExerciseModalVisible, setIsNewExerciseModalVisible] =
     useState(false);
   const [chosenExercises, setChosenExercises] = useState<Exercise[]>([]);
+  const { theme } = useThemeStore((state) => state);
 
+  const styles = useMemo(() => makeStyles(theme), [theme]);
   const closeModalHandler = () => {
     setChosenExercises([]);
     closeModal();
@@ -96,7 +99,7 @@ export default function WorkoutExercisesModal() {
             <View style={styles.headerSection}>
               <CloseButton onPress={closeModalHandler} />
               <Pressable onPress={openNewExerciseModalHandler}>
-                <Text style={[styles.headerText, { color: AppColors.blue }]}>
+                <Text style={[styles.headerText, { color: theme.blue }]}>
                   New
                 </Text>
               </Pressable>
@@ -111,9 +114,7 @@ export default function WorkoutExercisesModal() {
                     styles.headerText,
                     {
                       color:
-                        chosenExercises.length > 1
-                          ? AppColors.blue
-                          : AppColors.gray,
+                        chosenExercises.length > 1 ? theme.blue : theme.gray,
                       fontWeight: "bold",
                     },
                   ]}
@@ -130,9 +131,7 @@ export default function WorkoutExercisesModal() {
                     styles.headerText,
                     {
                       color:
-                        chosenExercises.length > 0
-                          ? AppColors.blue
-                          : AppColors.gray,
+                        chosenExercises.length > 0 ? theme.blue : theme.gray,
                       fontWeight: "bold",
                     },
                   ]}
@@ -158,38 +157,39 @@ export default function WorkoutExercisesModal() {
   );
 }
 
-const styles = StyleSheet.create({
-  modalOverlay: {
-    backgroundColor: AppColors.semiTransparent, // semi-transparent background
-    position: "absolute",
-    width: "100%",
-    height: "100%",
-    top: 0,
-    left: 0,
-  },
-  modalContent: {
-    width: "90%", // Adjust width as needed
-    height: "80%",
-    padding: 20,
-    borderRadius: 10,
-    alignItems: "center",
-    backgroundColor: AppColors.white,
-    overflow: "hidden",
-    margin: "auto",
-  },
-  header: {
-    justifyContent: "space-between",
-    alignItems: "center",
-    flexDirection: "row",
-    width: "100%",
-    marginBottom: 10,
-  },
-  headerSection: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-  },
-  headerText: {
-    fontSize: 18,
-  },
-});
+const makeStyles = (theme: ThemeColors) =>
+  StyleSheet.create({
+    modalOverlay: {
+      backgroundColor: theme.semiTransparent, // semi-transparent background
+      position: "absolute",
+      width: "100%",
+      height: "100%",
+      top: 0,
+      left: 0,
+    },
+    modalContent: {
+      width: "90%", // Adjust width as needed
+      height: "80%",
+      padding: 20,
+      borderRadius: 10,
+      alignItems: "center",
+      backgroundColor: theme.background,
+      overflow: "hidden",
+      margin: "auto",
+    },
+    header: {
+      justifyContent: "space-between",
+      alignItems: "center",
+      flexDirection: "row",
+      width: "100%",
+      marginBottom: 10,
+    },
+    headerSection: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 10,
+    },
+    headerText: {
+      fontSize: 18,
+    },
+  });

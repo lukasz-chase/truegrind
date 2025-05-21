@@ -6,7 +6,7 @@ import {
   Pressable,
   Text,
 } from "react-native";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import useExerciseDetailsModal from "@/store/useExerciseDetailsModal";
 import CloseButton from "@/components/CloseButton";
 import userStore from "@/store/userStore";
@@ -26,8 +26,10 @@ import {
 import ExerciseFormModal from "../ExerciseForm/ExerciseFormModal";
 import { calculateMetrics, getExerciseData } from "@/lib/exercisesService";
 import { MetricsData } from "@/types/workoutMetrics";
-import { AppColors } from "@/constants/colors";
+
 import { SCREEN_WIDTH } from "@/constants/device";
+import useThemeStore from "@/store/useThemeStore";
+import { ThemeColors } from "@/types/user";
 
 const BUTTON_WIDTH = 80;
 
@@ -66,7 +68,9 @@ export default function ExerciseDetailsModal() {
   const { isVisible, closeModal, exercise, screen, setScreen } =
     useExerciseDetailsModal();
   const { user } = userStore();
+  const { theme } = useThemeStore((state) => state);
 
+  const styles = useMemo(() => makeStyles(theme), [theme]);
   const buttonBackgroundLeftPosition = useSharedValue(0);
 
   useEffect(() => {
@@ -203,60 +207,62 @@ export default function ExerciseDetailsModal() {
   );
 }
 
-const styles = StyleSheet.create({
-  modalOverlay: {
-    backgroundColor: AppColors.semiTransparent,
-    position: "absolute",
-    width: "100%",
-    height: "100%",
-    top: 0,
-    left: 0,
-  },
-  modalContent: {
-    width: SCREEN_WIDTH - 40,
-    height: "60%",
-    padding: 20,
-    borderRadius: 10,
-    alignItems: "center",
-    backgroundColor: AppColors.white,
-    overflow: "hidden",
-    margin: "auto",
-    gap: 10,
-  },
-  header: {
-    width: "100%",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  title: {
-    fontWeight: "bold",
-    fontSize: 18,
-  },
-  buttonsWrapper: {
-    justifyContent: "space-evenly",
-    height: 30,
-    flexDirection: "row",
-    backgroundColor: AppColors.charcoalGray,
-    borderRadius: 10,
-  },
-  buttonsBackground: {
-    backgroundColor: AppColors.graphiteGray,
-    position: "absolute",
-    height: 30,
-    width: BUTTON_WIDTH,
-    left: 0,
-    borderRadius: 10,
-  },
-  headerButton: {
-    height: 30,
-    width: BUTTON_WIDTH,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  headerButtonText: {
-    color: AppColors.white,
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-});
+const makeStyles = (theme: ThemeColors) =>
+  StyleSheet.create({
+    modalOverlay: {
+      backgroundColor: theme.semiTransparent,
+      position: "absolute",
+      width: "100%",
+      height: "100%",
+      top: 0,
+      left: 0,
+    },
+    modalContent: {
+      width: SCREEN_WIDTH - 40,
+      height: "60%",
+      padding: 20,
+      borderRadius: 10,
+      alignItems: "center",
+      backgroundColor: theme.background,
+      overflow: "hidden",
+      margin: "auto",
+      gap: 10,
+    },
+    header: {
+      width: "100%",
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+    },
+    title: {
+      fontWeight: "bold",
+      fontSize: 18,
+      color: theme.textColor,
+    },
+    buttonsWrapper: {
+      justifyContent: "space-evenly",
+      height: 30,
+      flexDirection: "row",
+      backgroundColor: theme.charcoalGray,
+      borderRadius: 10,
+    },
+    buttonsBackground: {
+      backgroundColor: theme.graphiteGray,
+      position: "absolute",
+      height: 30,
+      width: BUTTON_WIDTH,
+      left: 0,
+      borderRadius: 10,
+    },
+    headerButton: {
+      height: 30,
+      width: BUTTON_WIDTH,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    headerButtonText: {
+      color: theme.white,
+      fontSize: 16,
+      fontWeight: "bold",
+    },
+  });

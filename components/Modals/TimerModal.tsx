@@ -2,9 +2,8 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import AnchoredModal from "./AnchoredModal";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { AnimatedCircularProgress } from "react-native-circular-progress";
-import { AppColors } from "@/constants/colors";
 import useTimerStore from "@/store/useTimer";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import MemoizedScrollPicker from "../MemoizedScrollPicker";
 import userStore from "@/store/userStore";
 import CloseButton from "../CloseButton";
@@ -14,6 +13,8 @@ import useInfoModal from "@/store/useInfoModal";
 import { timerInfo } from "@/constants/infoModal";
 import { SCREEN_WIDTH } from "@/constants/device";
 import { formatTime } from "@/utils/calendar";
+import useThemeStore from "@/store/useThemeStore";
+import { AppTheme, AppThemeEnum, ThemeColors } from "@/types/user";
 
 export default function TimerModal() {
   const [customTimerView, setCustomTimerView] = useState(false);
@@ -35,7 +36,9 @@ export default function TimerModal() {
   } = useTimerStore();
   const { closeModal, isVisible, buttonRef } = useWorkoutTimerModal();
   const { openModal: openInfoModal } = useInfoModal();
+  const { theme, mode } = useThemeStore((state) => state);
 
+  const styles = useMemo(() => makeStyles(theme, mode), [theme, mode]);
   const closeModalHandler = () => {
     closeModal();
     setCustomTimerView(false);
@@ -70,13 +73,14 @@ export default function TimerModal() {
       anchorRef={buttonRef}
       anchorCorner="LEFT"
       modalWidth={SCREEN_WIDTH * 0.9}
+      backgroundColor={theme.background}
     >
       <View style={styles.container}>
         <View style={styles.modalHeader}>
           <CloseButton onPress={closeModalHandler} />
           <Text style={styles.title}>Rest Timer</Text>
           <Pressable style={styles.headerButton} onPress={openInfoModalHandler}>
-            <AntDesign name="question" size={24} color={AppColors.black} />
+            <AntDesign name="question" size={24} color={theme.textColor} />
           </Pressable>
         </View>
 
@@ -99,8 +103,8 @@ export default function TimerModal() {
           duration={timerDuration}
           rotation={0}
           backgroundWidth={5}
-          tintColor={AppColors.blue}
-          backgroundColor={AppColors.gray}
+          tintColor={theme.blue}
+          backgroundColor={theme.gray}
           onAnimationComplete={() => {
             if (timeRemaining === 0 && isRunning) {
               handleTimerComplete();
@@ -126,7 +130,7 @@ export default function TimerModal() {
                   value={customDuration}
                   setValue={setCustomDuration}
                   visibleItemCount={9}
-                  textColor={AppColors.black}
+                  textColor={theme.textColor}
                   data={timeOptions}
                 />
               );
@@ -182,82 +186,90 @@ export default function TimerModal() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    gap: 20,
-    alignItems: "center",
-    width: "100%",
-  },
-  modalHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    width: "100%",
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  headerButton: {
-    backgroundColor: AppColors.gray,
-    paddingHorizontal: 5,
-    borderRadius: 10,
-    height: 30,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  textInfoWrapper: {
-    width: "100%",
-  },
-  textInfo: {
-    textAlign: "center",
-    fontSize: 18,
-  },
-  timeOptionsContainer: {
-    gap: 20,
-    alignItems: "center",
-  },
-  timeOption: {
-    fontSize: 24,
-    fontWeight: "bold",
-  },
-  timerText: {
-    fontSize: 36,
-    fontWeight: "bold",
-    textAlign: "center",
-  },
-  timerDuration: {
-    fontSize: 24,
-    textAlign: "center",
-  },
-  timerButtonManagementContainer: {
-    width: "100%",
-    flexDirection: "row",
-    justifyContent: "space-evenly",
-    alignItems: "center",
-    gap: 20,
-  },
-  timerButtonManagement: {
-    flex: 1,
-    backgroundColor: AppColors.gray,
-    paddingVertical: 5,
-    borderRadius: 5,
-  },
-  timerButtonManagementText: {
-    fontSize: 18,
-    fontWeight: "bold",
-    textAlign: "center",
-  },
-  customTimerButton: {
-    backgroundColor: AppColors.gray,
-    paddingVertical: 5,
-    width: "100%",
-    marginBottom: 20,
-    borderRadius: 5,
-  },
-  customTimerButtonText: {
-    fontSize: 18,
-    fontWeight: "bold",
-    textAlign: "center",
-  },
-});
+const makeStyles = (theme: ThemeColors, mode: AppTheme) =>
+  StyleSheet.create({
+    container: {
+      gap: 20,
+      alignItems: "center",
+      width: "100%",
+    },
+    modalHeader: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      width: "100%",
+    },
+    title: {
+      fontSize: 18,
+      fontWeight: "bold",
+      color: theme.textColor,
+    },
+    headerButton: {
+      backgroundColor: mode === AppThemeEnum.DARK ? theme.black : theme.gray,
+      paddingHorizontal: 5,
+      borderRadius: 10,
+      height: 30,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    textInfoWrapper: {
+      width: "100%",
+    },
+    textInfo: {
+      textAlign: "center",
+      fontSize: 18,
+      color: theme.textColor,
+    },
+    timeOptionsContainer: {
+      gap: 20,
+      alignItems: "center",
+    },
+    timeOption: {
+      fontSize: 24,
+      fontWeight: "bold",
+      color: theme.textColor,
+    },
+    timerText: {
+      fontSize: 36,
+      fontWeight: "bold",
+      textAlign: "center",
+      color: theme.textColor,
+    },
+    timerDuration: {
+      fontSize: 24,
+      textAlign: "center",
+      color: theme.textColor,
+    },
+    timerButtonManagementContainer: {
+      width: "100%",
+      flexDirection: "row",
+      justifyContent: "space-evenly",
+      alignItems: "center",
+      gap: 20,
+    },
+    timerButtonManagement: {
+      flex: 1,
+      backgroundColor: mode === AppThemeEnum.DARK ? theme.black : theme.gray,
+      paddingVertical: 5,
+      borderRadius: 5,
+    },
+    timerButtonManagementText: {
+      fontSize: 18,
+      fontWeight: "bold",
+      textAlign: "center",
+      color: theme.textColor,
+    },
+    customTimerButton: {
+      backgroundColor: mode === AppThemeEnum.DARK ? theme.black : theme.gray,
+      paddingVertical: 5,
+      width: "100%",
+      marginBottom: 20,
+      borderRadius: 5,
+    },
+    customTimerButtonText: {
+      fontSize: 18,
+      fontWeight: "bold",
+      textAlign: "center",
+      color: theme.textColor,
+    },
+  });

@@ -1,6 +1,5 @@
 import { StyleSheet, View } from "react-native";
-import { AppColors } from "@/constants/colors";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import AnchoredModal from "./AnchoredModal";
 import Animated, {
   useSharedValue,
@@ -16,10 +15,17 @@ import useExerciseOptionsModal from "@/store/useExerciseOptionsModal";
 import ModalOptionButton from "./ModalOptionButton";
 import userStore from "@/store/userStore";
 import useActionModal from "@/store/useActionModal";
+import useThemeStore from "@/store/useThemeStore";
+import { ThemeColors } from "@/types/user";
 
 const MODAL_WIDTH = 275;
 
 const ExerciseOptionsModal = function ExerciseOptionsModal() {
+  const [currentScreen, setCurrentScreen] = useState("main");
+  const [currentTimer, setCurrentTimer] = useState<"timer" | "warmup_timer">(
+    "timer"
+  );
+
   const {
     isVisible,
     closeModal,
@@ -39,11 +45,10 @@ const ExerciseOptionsModal = function ExerciseOptionsModal() {
   } = useActiveWorkout();
   const { user } = userStore();
   const { openModal: openWarningModal } = useActionModal();
+  const { theme } = useThemeStore((state) => state);
 
-  const [currentScreen, setCurrentScreen] = useState("main");
-  const [currentTimer, setCurrentTimer] = useState<"timer" | "warmup_timer">(
-    "timer"
-  );
+  const styles = useMemo(() => makeStyles(theme), [theme]);
+
   const translateX = useSharedValue(0);
 
   const animatedStyle = useAnimatedStyle(() => ({
@@ -112,6 +117,7 @@ const ExerciseOptionsModal = function ExerciseOptionsModal() {
     generateNoteOptionName,
     removeFromSuperset,
     superset: workoutExercise.superset,
+    theme,
   });
   const switchToMainScreen = () => {
     translateX.value = 0;
@@ -134,7 +140,7 @@ const ExerciseOptionsModal = function ExerciseOptionsModal() {
       closeModal={closeModalHandler}
       anchorRef={buttonRef!}
       anchorCorner="RIGHT"
-      backgroundColor={AppColors.darkBlue}
+      backgroundColor={theme.darkBlue}
       modalWidth={MODAL_WIDTH}
       alignItems="flex-start"
       padding={0}
@@ -174,14 +180,15 @@ const ExerciseOptionsModal = function ExerciseOptionsModal() {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: "row",
-  },
-  screen: {
-    width: MODAL_WIDTH,
-    padding: 5,
-  },
-});
+const makeStyles = (theme: ThemeColors) =>
+  StyleSheet.create({
+    container: {
+      flexDirection: "row",
+    },
+    screen: {
+      width: MODAL_WIDTH,
+      padding: 5,
+    },
+  });
 
 export default ExerciseOptionsModal;

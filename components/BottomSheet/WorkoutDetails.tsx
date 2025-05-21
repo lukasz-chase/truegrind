@@ -1,6 +1,8 @@
-import { AppColors } from "@/constants/colors";
+import useThemeStore from "@/store/useThemeStore";
 import useWorkoutTimer from "@/store/useWorkoutTimer";
+import { AppThemeEnum, ThemeColors } from "@/types/user";
 import { Workout } from "@/types/workout";
+import { useMemo } from "react";
 import { StyleSheet, Text, TextInput, View } from "react-native";
 
 type Props = {
@@ -15,7 +17,9 @@ const WorkoutDetails = ({
   isEditTemplate = false,
 }: Props) => {
   const { formattedTime } = useWorkoutTimer();
+  const { theme, mode } = useThemeStore((state) => state);
 
+  const styles = useMemo(() => makeStyles(theme), [theme]);
   const updateActiveWorkout = (newValue: string, name: keyof Workout) => {
     updateWorkoutField(name, newValue);
   };
@@ -23,7 +27,9 @@ const WorkoutDetails = ({
     <View style={styles.workoutDetails}>
       <TextInput
         placeholder={"Workout Name"}
-        placeholderTextColor={AppColors.gray}
+        placeholderTextColor={
+          mode === AppThemeEnum.DARK ? theme.lightBlue : theme.gray
+        }
         onChange={(e) => updateActiveWorkout(e.nativeEvent.text, "name")}
         maxLength={60}
         value={workout.name}
@@ -36,7 +42,9 @@ const WorkoutDetails = ({
       )}
       <TextInput
         placeholder={"Notes"}
-        placeholderTextColor={AppColors.gray}
+        placeholderTextColor={
+          mode === AppThemeEnum.DARK ? theme.lightBlue : theme.gray
+        }
         onChange={(e) => updateActiveWorkout(e.nativeEvent.text, "notes")}
         maxLength={60}
         value={workout?.notes}
@@ -45,20 +53,23 @@ const WorkoutDetails = ({
     </View>
   );
 };
-const styles = StyleSheet.create({
-  workoutDetails: {
-    padding: 20,
-  },
-  workoutName: {
-    fontSize: 24,
-    fontWeight: "bold",
-  },
-  workoutTime: {
-    fontSize: 18,
-  },
-  workoutNotes: {
-    fontSize: 18,
-    color: AppColors.black,
-  },
-});
+const makeStyles = (theme: ThemeColors) =>
+  StyleSheet.create({
+    workoutDetails: {
+      padding: 20,
+    },
+    workoutName: {
+      fontSize: 24,
+      fontWeight: "bold",
+      color: theme.textColor,
+    },
+    workoutTime: {
+      fontSize: 18,
+      color: theme.textColor,
+    },
+    workoutNotes: {
+      fontSize: 18,
+      color: theme.textColor,
+    },
+  });
 export default WorkoutDetails;

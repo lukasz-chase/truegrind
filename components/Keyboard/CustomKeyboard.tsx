@@ -12,7 +12,9 @@ import { KEYBOARD_HEIGHT } from "@/constants/keyboard";
 import { KeyboardViewEnum } from "@/types/customKeyboard";
 import useInfoModal from "@/store/useInfoModal";
 import BarTypeKeyboard from "./BarTypeKeyboard";
-import { AppColors } from "@/constants/colors";
+import useThemeStore from "@/store/useThemeStore";
+import { useMemo } from "react";
+import { ThemeColors } from "@/types/user";
 
 const CustomKeyboard = ({
   animatedIndex,
@@ -39,7 +41,9 @@ const CustomKeyboard = ({
     setBarType,
   } = useCustomKeyboard();
   const { openModal } = useInfoModal();
+  const { theme } = useThemeStore((state) => state);
 
+  const styles = useMemo(() => makeStyles(theme), [theme]);
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [
       { translateY: interpolate(animatedIndex.value, [0, 1], [250, 0]) },
@@ -102,14 +106,15 @@ const CustomKeyboard = ({
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    position: "absolute",
-    bottom: 0,
-    width: "100%",
-    backgroundColor: AppColors.jetBlack,
-    paddingBottom: 20,
-    height: KEYBOARD_HEIGHT,
-  },
-});
+const makeStyles = (theme: ThemeColors) =>
+  StyleSheet.create({
+    container: {
+      position: "absolute",
+      bottom: 0,
+      width: "100%",
+      backgroundColor: theme.jetBlack,
+      paddingBottom: 20,
+      height: KEYBOARD_HEIGHT,
+    },
+  });
 export default CustomKeyboard;

@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { View, Text, StyleSheet, Platform } from "react-native";
+import React, { useMemo, useState } from "react";
+import { Text, StyleSheet, Platform } from "react-native";
 import {
   GestureHandlerRootView,
   Gesture,
@@ -10,10 +10,10 @@ import Animated, {
   useAnimatedStyle,
   withTiming,
   runOnJS,
-  LinearTransition,
 } from "react-native-reanimated";
 import * as Haptics from "expo-haptics";
-import { AppColors } from "@/constants/colors";
+import useThemeStore from "@/store/useThemeStore";
+import { ThemeColors } from "@/types/user";
 
 const INITIAL_BUTTON_WIDTH = 70;
 const BUTTON_MARGIN = 20;
@@ -39,7 +39,9 @@ export default function SwipeToDelete({
 }: SwipeToDeleteProps) {
   const translateX = useSharedValue(0);
   const buttonWidth = useSharedValue(INITIAL_BUTTON_WIDTH);
+  const { theme } = useThemeStore((state) => state);
 
+  const styles = useMemo(() => makeStyles(theme), [theme]);
   const [rowWidth, setRowWidth] = useState(0);
   const [hapticTriggered, setHapticTriggered] = useState(false);
   const [movedPastThreshold, setMovedPastThreshold] = useState(false);
@@ -144,20 +146,21 @@ export default function SwipeToDelete({
   );
 }
 
-const styles = StyleSheet.create({
-  deleteButtonContainer: {
-    position: "absolute",
-    right: 0,
-    top: 0,
-    bottom: 0,
-    backgroundColor: AppColors.red,
-    justifyContent: "center",
-    borderRadius: 8,
-    paddingHorizontal: 10,
-  },
-  deleteButtonText: {
-    color: AppColors.white,
-    fontWeight: "bold",
-    fontSize: 16,
-  },
-});
+const makeStyles = (theme: ThemeColors) =>
+  StyleSheet.create({
+    deleteButtonContainer: {
+      position: "absolute",
+      right: 0,
+      top: 0,
+      bottom: 0,
+      backgroundColor: theme.red,
+      justifyContent: "center",
+      borderRadius: 8,
+      paddingHorizontal: 10,
+    },
+    deleteButtonText: {
+      color: theme.white,
+      fontWeight: "bold",
+      fontSize: 16,
+    },
+  });

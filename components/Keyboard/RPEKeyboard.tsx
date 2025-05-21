@@ -1,10 +1,11 @@
 import { View, Text, Pressable } from "react-native";
 import { rpeValues } from "@/constants/keyboard";
-import styles from "./KeyboardStyles";
 import { AntDesign } from "@expo/vector-icons";
 import { KeyboardView, KeyboardViewEnum } from "@/types/customKeyboard";
 import { rpeInfo } from "@/constants/infoModal";
-import { AppColors } from "@/constants/colors";
+import useThemeStore from "@/store/useThemeStore";
+import { useMemo } from "react";
+import KeyboardStyles from "./KeyboardStyles";
 
 type Props = {
   selectedRPE: { label: string; value: number | null };
@@ -19,6 +20,9 @@ const RPEKeyboard = ({
   setKeyboardView,
   openInfoModal,
 }: Props) => {
+  const { theme } = useThemeStore((state) => state);
+
+  const styles = useMemo(() => KeyboardStyles(theme), [theme]);
   return (
     <View style={styles.rpeView}>
       <View style={styles.header}>
@@ -26,7 +30,7 @@ const RPEKeyboard = ({
           style={styles.headerButton}
           onPress={() => openInfoModal(rpeInfo.title, rpeInfo.description)}
         >
-          <AntDesign name="question" size={24} color={AppColors.white} />
+          <AntDesign name="question" size={24} color={theme.white} />
         </Pressable>
         <Pressable
           style={[styles.button, { width: 100 }]}
@@ -44,9 +48,7 @@ const RPEKeyboard = ({
               styles.rpeButton,
               {
                 backgroundColor:
-                  selectedRPE.value === rpe.value
-                    ? AppColors.white
-                    : AppColors.black,
+                  selectedRPE.value === rpe.value ? theme.white : theme.black,
               },
             ]}
             onPress={() => setRPE(rpe)}
@@ -56,9 +58,7 @@ const RPEKeyboard = ({
                 styles.buttonText,
                 {
                   color:
-                    selectedRPE.value === rpe.value
-                      ? AppColors.black
-                      : AppColors.white,
+                    selectedRPE.value === rpe.value ? theme.black : theme.white,
                 },
               ]}
             >

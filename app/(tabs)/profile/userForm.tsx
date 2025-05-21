@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import CustomHeader from "@/components/CustomHeader";
 import CustomTextInput from "@/components/CustomTextInput";
 import { bodyPartsToMeasure, corePartsToMeasure } from "@/constants/metrics";
@@ -6,12 +6,12 @@ import { updateUserProfile } from "@/lib/userService";
 import userStore from "@/store/userStore";
 import { Pressable, StyleSheet, Text, View, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { AppColors } from "@/constants/colors";
-import { CurrentGoal } from "@/types/user";
+import { CurrentGoal, ThemeColors } from "@/types/user";
 import { BodyPartLabel } from "@/types/measurements";
 import MemoizedScrollPicker from "@/components/MemoizedScrollPicker";
 import { pickAndCompressImage } from "@/utils/images";
 import CustomImage from "@/components/CustomImage";
+import useThemeStore from "@/store/useThemeStore";
 
 const PlaceholderImage = require("@/assets/images/ImagePlaceholder.png");
 
@@ -41,7 +41,9 @@ export default function UserForm() {
     imageWasChanged: false,
   });
   const [loading, setLoading] = useState(false);
+  const { theme } = useThemeStore((state) => state);
 
+  const styles = useMemo(() => makeStyles(theme), [theme]);
   const handleChange = <K extends keyof Omit<ProfileFormData, "goal">>(
     field: K,
     value: string | number
@@ -184,19 +186,19 @@ export default function UserForm() {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  safeArea: { flex: 1 },
-  container: { padding: 20, gap: 16 },
-  field: { width: "100%" },
-  label: { fontSize: 16, marginBottom: 8, color: AppColors.black },
-  button: {
-    marginTop: 24,
-    backgroundColor: AppColors.blue,
-    paddingVertical: 14,
-    borderRadius: 8,
-    alignItems: "center",
-  },
-  buttonDisabled: { opacity: 0.6 },
-  buttonText: { color: AppColors.white, fontSize: 16, fontWeight: "600" },
-});
+const makeStyles = (theme: ThemeColors) =>
+  StyleSheet.create({
+    safeArea: { flex: 1, backgroundColor: theme.background },
+    container: { padding: 20, gap: 16 },
+    field: { width: "100%" },
+    label: { fontSize: 16, marginBottom: 8, color: theme.textColor },
+    button: {
+      marginTop: 24,
+      backgroundColor: theme.blue,
+      paddingVertical: 14,
+      borderRadius: 8,
+      alignItems: "center",
+    },
+    buttonDisabled: { opacity: 0.6 },
+    buttonText: { color: theme.white, fontSize: 16, fontWeight: "600" },
+  });

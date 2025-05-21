@@ -7,7 +7,7 @@ import {
   Text,
   Alert,
 } from "react-native";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import LoadingAnimation from "../../LoadingAnimation";
 import userStore from "@/store/userStore";
 import {
@@ -23,10 +23,11 @@ import Animated, {
 import FormScreen from "./FormScreen";
 import OptionScreen from "./OptionScreen";
 import CloseButton from "@/components/CloseButton";
-import { AppColors } from "@/constants/colors";
 import { Exercise } from "@/types/exercises";
 import { deleteExercise, upsertExercise } from "@/lib/exercisesService";
 import useActionModal from "@/store/useActionModal";
+import useThemeStore from "@/store/useThemeStore";
+import { ThemeColors } from "@/types/user";
 
 type Props = {
   closeModal: (exercise: Exercise | undefined) => void;
@@ -59,7 +60,9 @@ export default function ExerciseFormModal({
 
   const { user } = userStore();
   const { openModal: openActionModal } = useActionModal();
+  const { theme } = useThemeStore((state) => state);
 
+  const styles = useMemo(() => makeStyles(theme), [theme]);
   useEffect(() => {
     setExerciseData({
       name: exercise?.name ?? "",
@@ -175,7 +178,7 @@ export default function ExerciseFormModal({
                   style={[
                     styles.title,
                     {
-                      color: dataIsFilled ? AppColors.blue : AppColors.gray,
+                      color: dataIsFilled ? theme.blue : theme.gray,
                     },
                   ]}
                 >
@@ -201,7 +204,7 @@ export default function ExerciseFormModal({
         </Animated.View>
         {exercise && (
           <Pressable disabled={!exercise} onPress={openActionModalHandler}>
-            <Text style={[styles.title, { color: AppColors.red }]}>Delete</Text>
+            <Text style={[styles.title, { color: theme.red }]}>Delete</Text>
           </Pressable>
         )}
       </View>
@@ -209,40 +212,42 @@ export default function ExerciseFormModal({
   );
 }
 
-const styles = StyleSheet.create({
-  modalOverlay: {
-    backgroundColor: AppColors.semiTransparent,
-    position: "absolute",
-    width: "100%",
-    height: "100%",
-    top: 0,
-    left: 0,
-  },
-  modalContent: {
-    width: MODAL_WIDTH,
-    padding: 20,
-    borderRadius: 10,
-    alignItems: "center",
-    backgroundColor: AppColors.white,
-    overflow: "hidden",
-    margin: "auto",
-  },
-  header: {
-    justifyContent: "space-between",
-    alignItems: "center",
-    flexDirection: "row",
-    width: "100%",
-    marginBottom: 10,
-  },
-  title: {
-    fontWeight: "bold",
-    fontSize: 18,
-  },
-  container: {
-    flexDirection: "row",
-  },
-  screen: {
-    width: "100%",
-    padding: 10,
-  },
-});
+const makeStyles = (theme: ThemeColors) =>
+  StyleSheet.create({
+    modalOverlay: {
+      backgroundColor: theme.semiTransparent,
+      position: "absolute",
+      width: "100%",
+      height: "100%",
+      top: 0,
+      left: 0,
+    },
+    modalContent: {
+      width: MODAL_WIDTH,
+      padding: 20,
+      borderRadius: 10,
+      alignItems: "center",
+      backgroundColor: theme.background,
+      overflow: "hidden",
+      margin: "auto",
+    },
+    header: {
+      justifyContent: "space-between",
+      alignItems: "center",
+      flexDirection: "row",
+      width: "100%",
+      marginBottom: 10,
+    },
+    title: {
+      fontWeight: "bold",
+      fontSize: 18,
+      color: theme.textColor,
+    },
+    container: {
+      flexDirection: "row",
+    },
+    screen: {
+      width: "100%",
+      padding: 10,
+    },
+  });

@@ -1,6 +1,5 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import { AppColors } from "@/constants/colors";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, {
   runOnJS,
@@ -10,6 +9,9 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 import TimerSettings from "./TimerSettings";
+import { ThemeColors } from "@/types/user";
+import useThemeStore from "@/store/useThemeStore";
+import { useMemo } from "react";
 
 type Props = {
   screenWidth: number;
@@ -42,7 +44,9 @@ const AutoRestTimeSettings = ({
   updateTimer,
 }: Props) => {
   const buttonBackgroundLeftPosition = useSharedValue(0);
+  const { theme } = useThemeStore((state) => state);
 
+  const styles = useMemo(() => makeStyles(theme), [theme]);
   const SWIPE_THRESHOLD = screenWidth / 2;
 
   const panGesture = Gesture.Pan()
@@ -91,7 +95,7 @@ const AutoRestTimeSettings = ({
             <MaterialIcons
               name="keyboard-arrow-left"
               size={24}
-              color={AppColors.blue}
+              color={theme.blue}
             />
           </Pressable>
           <Text style={styles.text}>Auto Rest Timer</Text>
@@ -131,48 +135,49 @@ const AutoRestTimeSettings = ({
     </GestureDetector>
   );
 };
-const styles = StyleSheet.create({
-  container: {
-    width: "100%",
-    gap: 10,
-    padding: 10,
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  text: {
-    color: AppColors.white,
-    fontSize: 18,
-    fontWeight: "bold",
-    textAlign: "center",
-  },
-  buttonsWrapper: {
-    justifyContent: "space-evenly",
-    height: 30,
-    flexDirection: "row",
-    backgroundColor: AppColors.charcoalGray,
-    borderRadius: 10,
-  },
-  buttonsBackground: {
-    backgroundColor: AppColors.graphiteGray,
-    position: "absolute",
-    height: 30,
-    width: "50%",
-    left: 0,
-    borderRadius: 10,
-  },
-  headerButton: {
-    height: 30,
-    width: "50%",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  headerButtonText: {
-    color: AppColors.white,
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-});
+const makeStyles = (theme: ThemeColors) =>
+  StyleSheet.create({
+    container: {
+      width: "100%",
+      gap: 10,
+      padding: 10,
+    },
+    header: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+    },
+    text: {
+      color: theme.white,
+      fontSize: 18,
+      fontWeight: "bold",
+      textAlign: "center",
+    },
+    buttonsWrapper: {
+      justifyContent: "space-evenly",
+      height: 30,
+      flexDirection: "row",
+      backgroundColor: theme.charcoalGray,
+      borderRadius: 10,
+    },
+    buttonsBackground: {
+      backgroundColor: theme.graphiteGray,
+      position: "absolute",
+      height: 30,
+      width: "50%",
+      left: 0,
+      borderRadius: 10,
+    },
+    headerButton: {
+      height: 30,
+      width: "50%",
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    headerButtonText: {
+      color: theme.white,
+      fontSize: 16,
+      fontWeight: "bold",
+    },
+  });
 export default AutoRestTimeSettings;

@@ -1,8 +1,11 @@
 import ChartsSkeleton from "@/components/Skeletons/ChartsSkeleton";
 import { chartConfig } from "@/constants/chart";
 import { SCREEN_WIDTH } from "@/constants/device";
+import useThemeStore from "@/store/useThemeStore";
+import { ThemeColors } from "@/types/user";
 import { WorkoutMetrics } from "@/types/workoutMetrics";
 import { formatDateShort } from "@/utils/calendar";
+import { useMemo } from "react";
 import { Text, StyleSheet, ScrollView } from "react-native";
 import { LineChart } from "react-native-chart-kit";
 
@@ -13,6 +16,9 @@ const ChartsScreen = ({
   data: WorkoutMetrics[];
   loading: boolean;
 }) => {
+  const { theme } = useThemeStore((state) => state);
+
+  const styles = useMemo(() => makeStyles(theme), [theme]);
   if (loading) {
     return <ChartsSkeleton parentStyles={styles} />;
   }
@@ -57,7 +63,7 @@ const ChartsScreen = ({
         }}
         width={SCREEN_WIDTH - 50}
         height={220}
-        chartConfig={chartConfig}
+        chartConfig={chartConfig(theme)}
         bezier
         style={styles.chart}
         fromZero
@@ -71,7 +77,7 @@ const ChartsScreen = ({
         }}
         width={SCREEN_WIDTH - 50}
         height={220}
-        chartConfig={chartConfig}
+        chartConfig={chartConfig(theme)}
         bezier
         style={styles.chart}
         fromZero
@@ -85,7 +91,7 @@ const ChartsScreen = ({
         }}
         width={SCREEN_WIDTH - 65}
         height={220}
-        chartConfig={chartConfig}
+        chartConfig={chartConfig(theme)}
         bezier
         style={styles.chart}
         yAxisSuffix="kg"
@@ -99,7 +105,7 @@ const ChartsScreen = ({
         }}
         width={SCREEN_WIDTH - 50}
         height={220}
-        chartConfig={chartConfig}
+        chartConfig={chartConfig(theme)}
         bezier
         style={styles.chart}
         fromZero
@@ -110,23 +116,25 @@ const ChartsScreen = ({
 
 export default ChartsScreen;
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    width: "100%",
-  },
-  chartContainer: {
-    width: "100%",
-  },
-  chartTitle: {
-    fontSize: 16,
-    fontWeight: "bold",
-    marginVertical: 8,
-  },
-  chart: {
-    flex: 1,
-    marginVertical: 8,
-    borderRadius: 8,
-    alignSelf: "flex-end",
-  },
-});
+const makeStyles = (theme: ThemeColors) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      width: "100%",
+    },
+    chartContainer: {
+      width: "100%",
+    },
+    chartTitle: {
+      fontSize: 16,
+      fontWeight: "bold",
+      marginVertical: 8,
+      color: theme.textColor,
+    },
+    chart: {
+      flex: 1,
+      marginVertical: 8,
+      borderRadius: 8,
+      alignSelf: "flex-end",
+    },
+  });

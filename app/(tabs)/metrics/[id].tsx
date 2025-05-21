@@ -1,4 +1,3 @@
-import { AppColors } from "@/constants/colors";
 import {
   createMeasurement,
   deleteMeasurement,
@@ -7,7 +6,7 @@ import {
 import userStore from "@/store/userStore";
 import { Measurement, MeasurementTimeRange } from "@/types/measurements";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Text, StyleSheet, View, FlatList, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AddMetricsModal from "@/components/Modals/AddMetricsModal";
@@ -19,6 +18,8 @@ import SwipeToDelete from "@/components/SwipeToDelete";
 import CustomHeader from "@/components/CustomHeader";
 import { SCREEN_WIDTH } from "@/constants/device";
 import { formatDate, formatDateShort } from "@/utils/calendar";
+import { AppTheme, AppThemeEnum, ThemeColors } from "@/types/user";
+import useThemeStore from "@/store/useThemeStore";
 
 export default function MetricsDetails() {
   const [isMetricsModalVisible, setIsMetricsModalVisible] = useState(false);
@@ -33,9 +34,10 @@ export default function MetricsDetails() {
     addMeasurement,
     removeMeasurement,
   } = useMeasurementsStore();
-  const measurement = allMetrics.find((m) => m.label === id);
+  const { theme, mode } = useThemeStore((state) => state);
 
-  const router = useRouter();
+  const styles = useMemo(() => makeStyles(theme, mode), [theme, mode]);
+  const measurement = allMetrics.find((m) => m.label === id);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -83,15 +85,11 @@ export default function MetricsDetails() {
 
     if (rounded > 0) {
       return (
-        <Text style={[styles.value, { color: AppColors.green }]}>
-          +{rounded}
-        </Text>
+        <Text style={[styles.value, { color: theme.green }]}>+{rounded}</Text>
       );
     } else if (rounded < 0) {
       return (
-        <Text style={[styles.value, { color: AppColors.orange }]}>
-          {rounded}
-        </Text>
+        <Text style={[styles.value, { color: theme.orange }]}>{rounded}</Text>
       );
     } else {
       return <Text style={styles.value}>0</Text>;
@@ -104,10 +102,6 @@ export default function MetricsDetails() {
   ) => {
     await deleteMeasurement(measurementId);
     removeMeasurement(measurementId, measurementLabeL);
-  };
-
-  const goBackHandler = () => {
-    router.push("/metrics");
   };
 
   const filteredMeasurements = getFilteredMeasurements(selectedRange);
@@ -147,48 +141,45 @@ export default function MetricsDetails() {
     <>
       <SafeAreaView style={styles.container}>
         <CustomHeader name={measurement.displayName} href="/metrics" />
+        <View style={styles.filterContainer}>
+          {timePeriodButtons.map((btn) => (
+            <Pressable
+              key={btn.value}
+              style={[
+                styles.filterButton,
+                selectedRange === btn.value && styles.filterButtonActive,
+              ]}
+              onPress={() => setSelectedRange(btn.value)}
+            >
+              <Text
+                style={[
+                  styles.filterButtonText,
+                  selectedRange === btn.value && styles.filterButtonTextActive,
+                ]}
+              >
+                {btn.label}
+              </Text>
+            </Pressable>
+          ))}
+        </View>
         {filteredMeasurements.length > 0 && (
-          <>
-            <View style={styles.filterContainer}>
-              {timePeriodButtons.map((btn) => (
-                <Pressable
-                  key={btn.value}
-                  style={[
-                    styles.filterButton,
-                    selectedRange === btn.value && styles.filterButtonActive,
-                  ]}
-                  onPress={() => setSelectedRange(btn.value)}
-                >
-                  <Text
-                    style={[
-                      styles.filterButtonText,
-                      selectedRange === btn.value &&
-                        styles.filterButtonTextActive,
-                    ]}
-                  >
-                    {btn.label}
-                  </Text>
-                </Pressable>
-              ))}
-            </View>
-            <LineChart
-              data={{
-                labels,
-                datasets: [
-                  {
-                    data,
-                  },
-                ],
-              }}
-              width={SCREEN_WIDTH - 50}
-              height={220}
-              chartConfig={chartConfig}
-              bezier
-              style={styles.chart}
-              fromZero
-              yAxisSuffix={measurement.unit}
-            />
-          </>
+          <LineChart
+            data={{
+              labels,
+              datasets: [
+                {
+                  data,
+                },
+              ],
+            }}
+            width={SCREEN_WIDTH - 50}
+            height={220}
+            chartConfig={chartConfig(theme)}
+            bezier
+            style={styles.chart}
+            fromZero
+            yAxisSuffix={measurement.unit}
+          />
         )}
 
         <Pressable
@@ -218,76 +209,78 @@ export default function MetricsDetails() {
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    padding: 10,
-    backgroundColor: AppColors.white,
-    height: "100%",
-  },
-  // FILTER BUTTONS
-  filterContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    marginVertical: 10,
-    gap: 10,
-  },
-  filterButton: {
-    paddingVertical: 6,
-    paddingHorizontal: 10,
-    borderRadius: 8,
-    backgroundColor: AppColors.gray,
-    marginRight: 5,
-  },
-  filterButtonActive: {
-    backgroundColor: AppColors.blue,
-  },
-  filterButtonText: {
-    color: AppColors.black,
-    fontWeight: "bold",
-  },
-  filterButtonTextActive: {
-    color: AppColors.white,
-    fontWeight: "bold",
-  },
-  // CHART
-  chart: {
-    marginVertical: 8,
-    borderRadius: 8,
-  },
-  addButton: {
-    width: "100%",
-    padding: 10,
-    backgroundColor: AppColors.lightBlue,
-    borderRadius: 10,
-    marginVertical: 10,
-  },
-  addButtonText: {
-    color: AppColors.blue,
-    textAlign: "center",
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  historyText: {
-    fontSize: 16,
-    color: AppColors.darkGray,
-    marginVertical: 10,
-  },
-  listContainer: {
-    gap: 10,
-  },
-  row: {
-    height: 24,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    backgroundColor: AppColors.white,
-  },
-  date: {
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  value: {
-    fontSize: 16,
-  },
-});
+const makeStyles = (theme: ThemeColors, mode: AppTheme) =>
+  StyleSheet.create({
+    container: {
+      padding: 10,
+      backgroundColor: theme.background,
+      height: "100%",
+    },
+    // FILTER BUTTONS
+    filterContainer: {
+      flexDirection: "row",
+      flexWrap: "wrap",
+      marginVertical: 10,
+      gap: 10,
+    },
+    filterButton: {
+      paddingVertical: 6,
+      paddingHorizontal: 10,
+      borderRadius: 8,
+      backgroundColor: mode === AppThemeEnum.DARK ? theme.black : theme.gray,
+      marginRight: 5,
+    },
+    filterButtonActive: {
+      backgroundColor: theme.blue,
+    },
+    filterButtonText: {
+      color: theme.textColor,
+      fontWeight: "bold",
+    },
+    filterButtonTextActive: {
+      color: theme.white,
+      fontWeight: "bold",
+    },
+    // CHART
+    chart: {
+      marginVertical: 8,
+      borderRadius: 8,
+    },
+    addButton: {
+      width: "100%",
+      padding: 10,
+      backgroundColor: theme.lightBlue,
+      borderRadius: 10,
+      marginVertical: 10,
+    },
+    addButtonText: {
+      color: theme.blue,
+      textAlign: "center",
+      fontSize: 18,
+      fontWeight: "bold",
+    },
+    historyText: {
+      fontSize: 16,
+      color: theme.textColor,
+      marginVertical: 10,
+    },
+    listContainer: {
+      gap: 10,
+    },
+    row: {
+      height: 24,
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      backgroundColor: theme.background,
+    },
+    date: {
+      fontSize: 16,
+      fontWeight: "bold",
+      color: theme.textColor,
+    },
+    value: {
+      fontSize: 16,
+      color: theme.textColor,
+    },
+  });

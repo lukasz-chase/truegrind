@@ -1,10 +1,9 @@
 import WorkoutCard from "@/components/WorkoutCard";
-import { AppColors } from "@/constants/colors";
 import useAppStore from "@/store/useAppStore";
 import useActiveWorkout from "@/store/useActiveWorkout";
 import useBottomSheet from "@/store/useBottomSheet";
 import userStore from "@/store/userStore";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { StyleSheet, View, Text, Platform, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as Haptics from "expo-haptics";
@@ -15,6 +14,8 @@ import { Workout } from "@/types/workout";
 import { fetchExampleWorkouts } from "@/lib/workoutServices";
 import useSplitsStore from "@/store/useSplitsStore";
 import MainScreenSkeleton from "@/components/Skeletons/MainScreenSkeleton";
+import { ThemeColors } from "@/types/user";
+import useThemeStore from "@/store/useThemeStore";
 
 export default function WorkoutScreen() {
   const [exampleWorkouts, setExampleWorkouts] = useState<Workout[] | null>(
@@ -33,7 +34,9 @@ export default function WorkoutScreen() {
   const { user } = userStore();
   const { refetchNumber } = useAppStore();
   const { activeSplit: split, loading } = useSplitsStore();
+  const { theme } = useThemeStore((state) => state);
 
+  const styles = useMemo(() => makeStyles(theme), [theme]);
   const router = useRouter();
 
   useEffect(() => {
@@ -99,7 +102,7 @@ export default function WorkoutScreen() {
               style={[
                 styles.actionButtonText,
                 {
-                  color: AppColors.blue,
+                  color: theme.blue,
                 },
               ]}
             >
@@ -143,70 +146,72 @@ export default function WorkoutScreen() {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-  },
-  container: {
-    paddingHorizontal: 20,
-  },
-  title: {
-    fontSize: 32,
-    color: AppColors.black,
-    paddingVertical: 20,
-    fontWeight: "bold",
-  },
-  actionButton: {
-    borderRadius: 10,
-    backgroundColor: AppColors.blue,
-    padding: 10,
-  },
-  splitButton: {
-    borderRadius: 10,
-    backgroundColor: AppColors.white,
-    padding: 10,
-    borderWidth: 1,
-    borderColor: AppColors.blue,
-    marginVertical: 10,
-  },
-  actionButtonText: {
-    color: AppColors.white,
-    textAlign: "center",
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  templateHeader: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    paddingVertical: 20,
-    alignItems: "center",
-  },
-  templatesText: {
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  templatesTitle: {
-    fontSize: 24,
-    color: AppColors.black,
-    fontWeight: "bold",
-  },
-  templatesButton: {
-    padding: 4,
-    borderRadius: 10,
-    backgroundColor: AppColors.lightBlue,
-  },
-  templatesButtonText: {
-    textAlign: "center",
-    fontSize: 18,
-    color: AppColors.blue,
-  },
-  workouts: {
-    marginTop: 20,
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "space-between",
-    gap: 10,
-  },
-});
+const makeStyles = (theme: ThemeColors) =>
+  StyleSheet.create({
+    safeArea: {
+      flex: 1,
+      backgroundColor: theme.background,
+    },
+    container: {
+      paddingHorizontal: 20,
+    },
+    title: {
+      fontSize: 32,
+      color: theme.textColor,
+      paddingVertical: 20,
+      fontWeight: "bold",
+    },
+    actionButton: {
+      borderRadius: 10,
+      backgroundColor: "#35A7FF",
+      padding: 10,
+    },
+    splitButton: {
+      borderRadius: 10,
+      backgroundColor: theme.white,
+      padding: 10,
+      borderWidth: 1,
+      borderColor: theme.blue,
+      marginVertical: 10,
+    },
+    actionButtonText: {
+      color: theme.white,
+      textAlign: "center",
+      fontSize: 18,
+      fontWeight: "bold",
+    },
+    templateHeader: {
+      display: "flex",
+      flexDirection: "row",
+      justifyContent: "space-between",
+      paddingVertical: 20,
+      alignItems: "center",
+    },
+    templatesText: {
+      fontSize: 16,
+      fontWeight: "bold",
+      color: theme.textColor,
+    },
+    templatesTitle: {
+      fontSize: 24,
+      color: theme.textColor,
+      fontWeight: "bold",
+    },
+    templatesButton: {
+      padding: 4,
+      borderRadius: 10,
+      backgroundColor: theme.lightBlue,
+    },
+    templatesButtonText: {
+      textAlign: "center",
+      fontSize: 18,
+      color: theme.blue,
+    },
+    workouts: {
+      marginTop: 20,
+      flexDirection: "row",
+      flexWrap: "wrap",
+      justifyContent: "space-between",
+      gap: 10,
+    },
+  });

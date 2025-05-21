@@ -1,5 +1,4 @@
-import { AppColors } from "@/constants/colors";
-import React from "react";
+import React, { useMemo } from "react";
 import {
   View,
   Modal,
@@ -11,9 +10,14 @@ import {
 import { Pressable } from "react-native";
 import * as Haptics from "expo-haptics";
 import useActionModal from "@/store/useActionModal";
+import useThemeStore from "@/store/useThemeStore";
+import { AppTheme, AppThemeEnum, ThemeColors } from "@/types/user";
 
 export default function ActionModal() {
   const { props, closeModal, isVisible } = useActionModal();
+  const { theme, mode } = useThemeStore((state) => state);
+
+  const styles = useMemo(() => makeStyles(theme, mode), [theme, mode]);
   const {
     onCancel,
     onProceed,
@@ -65,7 +69,7 @@ export default function ActionModal() {
             ]}
             onPress={onProceedHandler}
           >
-            <Text style={[styles.buttonText, { color: AppColors.white }]}>
+            <Text style={[styles.buttonText, { color: theme.white }]}>
               {proceedButtonLabeL}
             </Text>
           </Pressable>
@@ -75,45 +79,49 @@ export default function ActionModal() {
   );
 }
 
-const styles = StyleSheet.create({
-  modalOverlay: {
-    backgroundColor: AppColors.semiTransparent,
-    position: "absolute",
-    width: "100%",
-    height: "100%",
-    top: 0,
-    left: 0,
-  },
-  modalContent: {
-    width: "90%",
-    paddingVertical: 30,
-    paddingHorizontal: 20,
-    borderRadius: 10,
-    alignItems: "center",
-    backgroundColor: AppColors.white,
-    gap: 20,
-    margin: "auto",
-  },
-  title: {
-    fontWeight: "bold",
-    fontSize: 18,
-  },
-  subtitle: {
-    textAlign: "center",
-    fontSize: 16,
-  },
-  buttonsWrapper: {
-    gap: 15,
-    width: "100%",
-  },
-  button: {
-    padding: 10,
-    borderRadius: 10,
-    backgroundColor: AppColors.gray,
-  },
-  buttonText: {
-    textAlign: "center",
-    fontWeight: "bold",
-    fontSize: 18,
-  },
-});
+const makeStyles = (theme: ThemeColors, mode: AppTheme) =>
+  StyleSheet.create({
+    modalOverlay: {
+      backgroundColor: theme.semiTransparent,
+      position: "absolute",
+      width: "100%",
+      height: "100%",
+      top: 0,
+      left: 0,
+    },
+    modalContent: {
+      width: "90%",
+      paddingVertical: 30,
+      paddingHorizontal: 20,
+      borderRadius: 10,
+      alignItems: "center",
+      backgroundColor: theme.background,
+      gap: 20,
+      margin: "auto",
+    },
+    title: {
+      fontWeight: "bold",
+      fontSize: 18,
+      color: theme.textColor,
+    },
+    subtitle: {
+      textAlign: "center",
+      fontSize: 16,
+      color: theme.textColor,
+    },
+    buttonsWrapper: {
+      gap: 15,
+      width: "100%",
+    },
+    button: {
+      padding: 10,
+      borderRadius: 10,
+      backgroundColor: mode === AppThemeEnum.DARK ? theme.black : theme.gray,
+    },
+    buttonText: {
+      textAlign: "center",
+      fontWeight: "bold",
+      fontSize: 18,
+      color: theme.textColor,
+    },
+  });

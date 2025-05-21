@@ -1,4 +1,3 @@
-import { AppColors } from "@/constants/colors";
 import * as Calendar from "expo-calendar";
 import { Alert, Platform } from "react-native";
 
@@ -77,7 +76,7 @@ export async function getWorkoutCalendarId(): Promise<string | undefined> {
   try {
     const newCalendarID = await Calendar.createCalendarAsync({
       title: "Workouts",
-      color: AppColors.blue,
+      color: "#FF0000",
       entityType: Calendar.EntityTypes.EVENT,
       sourceId: defaultCalendarSource.id,
       source: defaultCalendarSource,

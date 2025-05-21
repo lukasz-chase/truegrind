@@ -1,5 +1,6 @@
-import { AppColors } from "@/constants/colors";
-import { useState } from "react";
+import useThemeStore from "@/store/useThemeStore";
+import { ThemeColors } from "@/types/user";
+import { useMemo, useState } from "react";
 import { KeyboardTypeOptions, StyleSheet, TextInput } from "react-native";
 
 type Props = {
@@ -7,8 +8,8 @@ type Props = {
   onChangeText: (text: string) => void;
   placeholder: string;
   size?: "sm" | "md" | "lg";
-  backgroundColor?: string;
-  textColor?: string;
+  backgroundColor?: string | null;
+  textColor?: string | null;
   keyboardType?: KeyboardTypeOptions;
   secureTextEntry?: boolean;
 };
@@ -16,12 +17,15 @@ const CustomTextInput = ({
   onChangeText,
   value,
   placeholder,
-  backgroundColor = AppColors.gray,
-  textColor = AppColors.black,
+  backgroundColor = null,
+  textColor = null,
   keyboardType = "default",
   secureTextEntry = false,
   size = "sm",
 }: Props) => {
+  const { theme } = useThemeStore((state) => state);
+
+  const styles = useMemo(() => makeStyles(theme), [theme]);
   const [inputFocus, setInputFocus] = useState(false);
   const isLarge = size === "lg";
   const returnHeight = () => {
@@ -37,7 +41,7 @@ const CustomTextInput = ({
   return (
     <TextInput
       placeholder={placeholder}
-      placeholderTextColor={AppColors.darkGray}
+      placeholderTextColor={theme.textColor}
       value={value}
       onChangeText={onChangeText}
       multiline={isLarge}
@@ -47,11 +51,11 @@ const CustomTextInput = ({
       style={[
         styles.input,
         {
-          borderColor: inputFocus ? AppColors.black : AppColors.white,
+          borderColor: inputFocus ? theme.black : theme.white,
           height: returnHeight(),
           maxHeight: returnHeight(),
-          backgroundColor,
-          color: textColor,
+          backgroundColor: backgroundColor ?? theme.gray,
+          color: textColor ?? theme.textColor,
         },
       ]}
       underlineColorAndroid="transparent"
@@ -62,11 +66,12 @@ const CustomTextInput = ({
 };
 
 export default CustomTextInput;
-const styles = StyleSheet.create({
-  input: {
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    borderWidth: 1,
-    width: "100%",
-  },
-});
+const makeStyles = (theme: ThemeColors) =>
+  StyleSheet.create({
+    input: {
+      borderRadius: 8,
+      paddingHorizontal: 10,
+      borderWidth: 1,
+      width: "100%",
+    },
+  });

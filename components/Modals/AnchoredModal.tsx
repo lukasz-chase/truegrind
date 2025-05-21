@@ -1,6 +1,7 @@
-import { AppColors } from "@/constants/colors";
 import { SCREEN_HEIGHT } from "@/constants/device";
-import { useEffect, useRef, useState } from "react";
+import useThemeStore from "@/store/useThemeStore";
+import { ThemeColors } from "@/types/user";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   View,
   Modal,
@@ -14,7 +15,7 @@ type Props = {
   closeModal: () => void;
   anchorRef: React.MutableRefObject<null>;
   anchorCorner: "RIGHT" | "LEFT";
-  backgroundColor?: string;
+  backgroundColor?: string | null;
   modalWidth?: DimensionValue;
   padding?: number;
   alignItems?: "flex-start" | "flex-end" | "center";
@@ -26,7 +27,7 @@ export default function AnchoredModal({
   closeModal,
   anchorRef,
   anchorCorner,
-  backgroundColor = AppColors.white,
+  backgroundColor = null,
   modalWidth = "90%",
   padding = 10,
   alignItems = "center",
@@ -37,9 +38,11 @@ export default function AnchoredModal({
     left: 0,
     isBottomAnchored: false,
   });
-  const modalRef = useRef<View>(null);
   const [modalHeight, setModalHeight] = useState(0);
+  const modalRef = useRef<View>(null);
+  const { theme } = useThemeStore((state) => state);
 
+  const styles = useMemo(() => makeStyles(theme), [theme]);
   useEffect(() => {
     // Measure the modal height after it's rendered
     if (isVisible) {
@@ -98,7 +101,7 @@ export default function AnchoredModal({
           {
             top: modalPosition.top,
             left: modalPosition.left,
-            backgroundColor,
+            backgroundColor: backgroundColor ?? theme.white,
             width: modalWidth,
             alignItems,
             padding,
@@ -111,16 +114,17 @@ export default function AnchoredModal({
   );
 }
 
-const styles = StyleSheet.create({
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: AppColors.semiTransparent,
-  },
-  modalContent: {
-    position: "absolute",
-    borderRadius: 10,
-    overflow: "hidden",
-    zIndex: 2, // This doesn't work well on Android
-    elevation: 10, // Add this for Android
-  },
-});
+const makeStyles = (theme: ThemeColors) =>
+  StyleSheet.create({
+    modalOverlay: {
+      flex: 1,
+      backgroundColor: theme.semiTransparent,
+    },
+    modalContent: {
+      position: "absolute",
+      borderRadius: 10,
+      overflow: "hidden",
+      zIndex: 2, // This doesn't work well on Android
+      elevation: 10, // Add this for Android
+    },
+  });

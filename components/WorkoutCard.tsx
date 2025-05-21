@@ -1,7 +1,6 @@
-import { AppColors } from "@/constants/colors";
 import useActiveWorkout from "@/store/useActiveWorkout";
 import { Workout } from "@/types/workout";
-import React, { useRef, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import {
   Platform,
   Pressable,
@@ -15,6 +14,8 @@ import { SimpleLineIcons } from "@expo/vector-icons";
 import useWorkoutOptionsModal from "@/store/useWorkoutOptionsModal";
 import WorkoutPreviewModal from "./Modals/WorkoutPreviewModal";
 import useBottomSheet from "@/store/useBottomSheet";
+import useThemeStore from "@/store/useThemeStore";
+import { ThemeColors } from "@/types/user";
 
 type Props = {
   workout: Workout;
@@ -30,7 +31,9 @@ const WorkoutCard = ({ workout }: Props) => {
   const { setIsSheetVisible } = useBottomSheet();
 
   const buttonRef = useRef(null);
+  const { theme } = useThemeStore((state) => state);
 
+  const styles = useMemo(() => makeStyles(theme), [theme]);
   const startWorkout = () => {
     setIsNewWorkout(false);
     setIsWorkoutPreviewModalVisible(false);
@@ -61,7 +64,7 @@ const WorkoutCard = ({ workout }: Props) => {
             style={{ flex: 0.5 }}
             onPress={() => openOptionsModal({ workout, buttonRef })}
           >
-            <SimpleLineIcons name="options" size={24} color={AppColors.blue} />
+            <SimpleLineIcons name="options" size={24} color={theme.blue} />
           </Pressable>
         </View>
         {workout.workout_exercises
@@ -91,28 +94,31 @@ const WorkoutCard = ({ workout }: Props) => {
     </>
   );
 };
-const styles = StyleSheet.create({
-  workoutCard: {
-    minHeight: 150,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: AppColors.black,
-    padding: 10,
-    width: "48%",
-  },
-  workoutCardTitle: {
-    fontSize: 18,
-    paddingBottom: 5,
-    fontWeight: "bold",
-  },
-  workoutCardExercises: {
-    textOverflow: "ellipsis",
-  },
-  header: {
-    width: "100%",
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-});
+const makeStyles = (theme: ThemeColors) =>
+  StyleSheet.create({
+    workoutCard: {
+      minHeight: 150,
+      borderRadius: 10,
+      borderWidth: 1,
+      borderColor: theme.textColor,
+      padding: 10,
+      width: "48%",
+    },
+    workoutCardTitle: {
+      fontSize: 18,
+      paddingBottom: 5,
+      fontWeight: "bold",
+      color: theme.textColor,
+    },
+    workoutCardExercises: {
+      textOverflow: "ellipsis",
+      color: theme.textColor,
+    },
+    header: {
+      width: "100%",
+      flexDirection: "row",
+      justifyContent: "space-between",
+    },
+  });
 
 export default WorkoutCard;

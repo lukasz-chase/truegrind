@@ -1,16 +1,20 @@
-import { AppColors } from "@/constants/colors";
 import { WorkoutHistory } from "@/types/workout";
 import { WorkoutExercisePopulated } from "@/types/workoutExercise";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { fetchHighestWeightSet } from "@/lib/exerciseSetsService";
 import { barTypes } from "@/constants/keyboard";
 import { formatDate } from "@/utils/calendar";
+import useThemeStore from "@/store/useThemeStore";
+import { ThemeColors } from "@/types/user";
 
 const WorkoutSummary = ({ workout }: { workout: WorkoutHistory }) => {
   const [PRs, setPRs] = useState(0);
+  const { theme } = useThemeStore((state) => state);
+
+  const styles = useMemo(() => makeStyles(theme), [theme]);
   useEffect(() => {
     searchPRs();
   }, [workout]);
@@ -88,19 +92,19 @@ const WorkoutSummary = ({ workout }: { workout: WorkoutHistory }) => {
       <Text style={styles.columnText}>{formatDate(new Date())}</Text>
       <View style={styles.header}>
         <View style={styles.headerItem}>
-          <AntDesign name="clockcircle" size={24} color={AppColors.black} />
+          <AntDesign name="clockcircle" size={24} color={theme.textColor} />
           <Text style={styles.columnText}>{workout.workout_time}</Text>
         </View>
         <View style={styles.headerItem}>
           <FontAwesome6
             name="weight-hanging"
             size={24}
-            color={AppColors.black}
+            color={theme.textColor}
           />
           <Text style={styles.columnText}>{weightLifted()}</Text>
         </View>
         <View style={styles.headerItem}>
-          <FontAwesome6 name="trophy" size={24} color={AppColors.black} />
+          <FontAwesome6 name="trophy" size={24} color={theme.textColor} />
           <Text style={styles.columnText}>{PRs} PRs</Text>
         </View>
       </View>
@@ -128,38 +132,41 @@ const WorkoutSummary = ({ workout }: { workout: WorkoutHistory }) => {
     </View>
   );
 };
-const styles = StyleSheet.create({
-  wrapper: {
-    borderWidth: 1,
-    borderColor: AppColors.gray,
-    width: "100%",
-    gap: 10,
-    padding: 10,
-  },
-  modalCloseButton: {
-    backgroundColor: AppColors.gray,
-    padding: 4,
-    borderRadius: 8,
-  },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-evenly",
-    alignItems: "center",
-  },
-  headerItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 5,
-  },
-  table: {
-    gap: 5,
-  },
-  columnRow: {
-    flexDirection: "row",
-    width: "100%",
-  },
-  columnText: {
-    fontSize: 16,
-  },
-});
+const makeStyles = (theme: ThemeColors) =>
+  StyleSheet.create({
+    wrapper: {
+      borderWidth: 1,
+      borderColor: theme.gray,
+      width: "100%",
+      gap: 10,
+      padding: 10,
+    },
+    modalCloseButton: {
+      backgroundColor: theme.gray,
+      padding: 4,
+      borderRadius: 8,
+    },
+    header: {
+      flexDirection: "row",
+      justifyContent: "space-evenly",
+      alignItems: "center",
+    },
+    headerItem: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 5,
+    },
+    table: {
+      gap: 5,
+      color: theme.textColor,
+    },
+    columnRow: {
+      flexDirection: "row",
+      width: "100%",
+    },
+    columnText: {
+      fontSize: 16,
+      color: theme.textColor,
+    },
+  });
 export default WorkoutSummary;

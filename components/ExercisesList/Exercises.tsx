@@ -1,8 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Exercise } from "@/types/exercises";
 import { StyleSheet, View, Pressable, Text, SectionList } from "react-native";
 import ExerciseRow from "@/components/ExerciseRow";
-import { AppColors } from "@/constants/colors";
 import { equipmentFilters, muscleFilters } from "@/constants/exerciseFilters";
 import CustomTextInput from "../CustomTextInput";
 import exercisesStore from "@/store/exercisesStore";
@@ -15,6 +14,8 @@ import {
 import CustomSelect from "../Modals/CustomSelect";
 import userStore from "@/store/userStore";
 import ExercisesSkeleton from "../Skeletons/ExercisesSkeleton";
+import useThemeStore from "@/store/useThemeStore";
+import { ThemeColors } from "@/types/user";
 
 type Props = {
   onPress: (exercise: Exercise) => void;
@@ -40,7 +41,9 @@ const Exercises = ({ onPress, selectedExercises }: Props) => {
     "Recently Used": true,
     "Frequently Used": true,
   });
+  const { theme } = useThemeStore((state) => state);
 
+  const styles = useMemo(() => makeStyles(theme), [theme]);
   useEffect(() => {
     if (exercises.length === 0) fetchExercises();
   }, [exercises]);
@@ -140,13 +143,9 @@ const Exercises = ({ onPress, selectedExercises }: Props) => {
               }}
             >
               {collapsedSections[section.title] ? (
-                <AntDesign
-                  name="caretright"
-                  size={20}
-                  color={AppColors.black}
-                />
+                <AntDesign name="caretright" size={20} color={theme.black} />
               ) : (
-                <AntDesign name="caretdown" size={20} color={AppColors.black} />
+                <AntDesign name="caretdown" size={20} color={theme.black} />
               )}
               <Text style={styles.sectionHeaderText}>{section.title}</Text>
             </Pressable>
@@ -157,33 +156,35 @@ const Exercises = ({ onPress, selectedExercises }: Props) => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    width: "100%",
-    overflow: "hidden",
-    height: "100%",
-  },
-  pickerContainer: {
-    marginVertical: 10,
-    zIndex: 20,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  sectionHeader: {
-    paddingVertical: 4,
-    paddingHorizontal: 10,
-    borderBottomWidth: 1,
-    borderColor: AppColors.gray,
-    backgroundColor: AppColors.lightBlue,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-  },
-  sectionHeaderText: {
-    fontWeight: "bold",
-    fontSize: 16,
-  },
-});
+const makeStyles = (theme: ThemeColors) =>
+  StyleSheet.create({
+    container: {
+      width: "100%",
+      overflow: "hidden",
+      height: "100%",
+    },
+    pickerContainer: {
+      marginVertical: 10,
+      zIndex: 20,
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+    },
+    sectionHeader: {
+      paddingVertical: 4,
+      paddingHorizontal: 10,
+      borderBottomWidth: 1,
+      borderColor: theme.gray,
+      backgroundColor: theme.background,
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 10,
+    },
+    sectionHeaderText: {
+      fontWeight: "bold",
+      fontSize: 16,
+      color: theme.textColor,
+    },
+  });
 
 export default Exercises;

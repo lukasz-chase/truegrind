@@ -1,10 +1,12 @@
 import { FlatList, StyleSheet, Text, View } from "react-native";
 import { ExerciseSet } from "@/types/exercisesSets";
-import { AppColors } from "@/constants/colors";
 import { WorkoutMetrics } from "@/types/workoutMetrics";
 import { barTypes } from "@/constants/keyboard";
 import { formatDate } from "@/utils/calendar";
 import HistorySkeleton from "@/components/Skeletons/HistorySkeleton";
+import useThemeStore from "@/store/useThemeStore";
+import { useMemo } from "react";
+import { ThemeColors } from "@/types/user";
 
 const HistoryScreen = ({
   loading,
@@ -13,6 +15,9 @@ const HistoryScreen = ({
   loading: boolean;
   history: WorkoutMetrics[];
 }) => {
+  const { theme } = useThemeStore((state) => state);
+
+  const styles = useMemo(() => makeStyles(theme), [theme]);
   if (loading) return <HistorySkeleton />;
   if (!history || history.length === 0) {
     return (
@@ -42,12 +47,12 @@ const HistoryScreen = ({
             <View key={set.id} style={styles.row}>
               <View style={{ flexDirection: "row", gap: 5 }}>
                 {set.is_warmup && (
-                  <Text style={[styles.subTitle, { color: AppColors.orange }]}>
+                  <Text style={[styles.subTitle, { color: theme.orange }]}>
                     W
                   </Text>
                 )}
                 {set.is_dropset && (
-                  <Text style={[styles.subTitle, { color: AppColors.purple }]}>
+                  <Text style={[styles.subTitle, { color: theme.purple }]}>
                     D
                   </Text>
                 )}
@@ -87,34 +92,36 @@ const HistoryScreen = ({
   );
 };
 
-const styles = StyleSheet.create({
-  wrapper: {
-    width: "100%",
-  },
-  container: {
-    gap: 10,
-  },
-  itemContainer: {
-    padding: 10,
-    borderWidth: 1,
-    borderRadius: 10,
-    borderColor: AppColors.gray,
-    width: "100%",
-    gap: 10,
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  subTitle: {
-    fontSize: 18,
-    color: AppColors.darkGray,
-  },
-  row: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-});
+const makeStyles = (theme: ThemeColors) =>
+  StyleSheet.create({
+    wrapper: {
+      width: "100%",
+    },
+    container: {
+      gap: 10,
+    },
+    itemContainer: {
+      padding: 10,
+      borderWidth: 1,
+      borderRadius: 10,
+      borderColor: theme.gray,
+      width: "100%",
+      gap: 10,
+    },
+    title: {
+      fontSize: 18,
+      fontWeight: "bold",
+      color: theme.textColor,
+    },
+    subTitle: {
+      fontSize: 18,
+      color: theme.textColor,
+    },
+    row: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+    },
+  });
 
 export default HistoryScreen;

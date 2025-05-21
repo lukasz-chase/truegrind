@@ -1,6 +1,5 @@
 import CustomTextInput from "@/components/CustomTextInput";
 import CustomImage from "@/components/CustomImage";
-import { AppColors } from "@/constants/colors";
 import { pickAndCompressImage } from "@/utils/images";
 import {
   exerciseFormData,
@@ -9,6 +8,9 @@ import {
 } from "@/types/exerciseForm";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Pressable, StyleSheet, Text, View } from "react-native";
+import useThemeStore from "@/store/useThemeStore";
+import { useMemo } from "react";
+import { ThemeColors } from "@/types/user";
 const PlaceholderImage = require("@/assets/images/ImagePlaceholder.png");
 
 type Props = {
@@ -24,6 +26,9 @@ const FormScreen = ({
   exerciseData,
   MODAL_WIDTH,
 }: Props) => {
+  const { theme } = useThemeStore((state) => state);
+
+  const styles = useMemo(() => makeStyles(theme), [theme]);
   const setExerciseProperty = (
     propertyName: keyof exerciseFormData,
     value: string
@@ -78,7 +83,7 @@ const FormScreen = ({
           <MaterialIcons
             name="keyboard-arrow-right"
             size={24}
-            color={AppColors.blue}
+            color={theme.blue}
           />
         </View>
       </Pressable>
@@ -96,7 +101,7 @@ const FormScreen = ({
           <MaterialIcons
             name="keyboard-arrow-right"
             size={24}
-            color={AppColors.blue}
+            color={theme.blue}
           />
         </View>
       </Pressable>
@@ -104,38 +109,40 @@ const FormScreen = ({
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: "row",
-  },
-  imageContainer: {
-    marginHorizontal: "auto",
-    marginVertical: 10,
-  },
-  link: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingVertical: 10,
-  },
-  linkRightSide: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 5,
-  },
-  linkText: {
-    fontSize: 18,
-  },
-  listWrapper: {
-    height: 200,
-  },
-  listItem: {
-    paddingVertical: 10,
-  },
-  listItemText: {
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-});
+const makeStyles = (theme: ThemeColors) =>
+  StyleSheet.create({
+    container: {
+      flexDirection: "row",
+    },
+    imageContainer: {
+      marginHorizontal: "auto",
+      marginVertical: 10,
+    },
+    link: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      paddingVertical: 10,
+    },
+    linkRightSide: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 5,
+    },
+    linkText: {
+      fontSize: 18,
+      color: theme.textColor,
+    },
+    listWrapper: {
+      height: 200,
+    },
+    listItem: {
+      paddingVertical: 10,
+    },
+    listItemText: {
+      fontSize: 18,
+      fontWeight: "bold",
+    },
+  });
 
 export default FormScreen;

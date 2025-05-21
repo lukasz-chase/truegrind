@@ -1,12 +1,13 @@
-import { AppColors } from "@/constants/colors";
 import { equipmentFilters, muscleFilters } from "@/constants/exerciseFilters";
+import useThemeStore from "@/store/useThemeStore";
 import {
   exerciseFormData,
   exerciseFormScreensEnum,
   exerciseFormScreenType,
 } from "@/types/exerciseForm";
+import { ThemeColors } from "@/types/user";
 import { MaterialIcons } from "@expo/vector-icons";
-import React from "react";
+import React, { useMemo } from "react";
 import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 
 type Props = {
@@ -24,6 +25,9 @@ const OptionScreen = ({
   muscle,
   equipment,
 }: Props) => {
+  const { theme } = useThemeStore((state) => state);
+
+  const styles = useMemo(() => makeStyles(theme), [theme]);
   const handlePress = (value: string) => {
     if (currentScreen === exerciseFormScreensEnum.Equipment) {
       setExerciseData((prev) => ({ ...prev, equipment: value }));
@@ -41,7 +45,7 @@ const OptionScreen = ({
           <MaterialIcons
             name="keyboard-arrow-left"
             size={24}
-            color={AppColors.blue}
+            color={theme.blue}
           />
         </Pressable>
         <Text style={styles.title}>
@@ -72,8 +76,8 @@ const OptionScreen = ({
                 {
                   color:
                     item.value === muscle || item.value === equipment
-                      ? AppColors.blue
-                      : AppColors.black,
+                      ? theme.blue
+                      : theme.textColor,
                 },
               ]}
             >
@@ -86,57 +90,37 @@ const OptionScreen = ({
   );
 };
 
-const styles = StyleSheet.create({
-  header: {
-    justifyContent: "space-between",
-    alignItems: "center",
-    flexDirection: "row",
-    width: "100%",
-    marginBottom: 10,
-  },
-  title: {
-    fontWeight: "bold",
-    fontSize: 18,
-  },
-  container: {
-    flexDirection: "row",
-  },
-  imageContainer: {
-    marginHorizontal: "auto",
-    marginVertical: 10,
-  },
-  image: {
-    width: 200,
-    aspectRatio: 1,
-  },
-  screen: {
-    width: "100%",
-    padding: 10,
-  },
-  link: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingVertical: 10,
-  },
-  linkRightSide: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 5,
-  },
-  linkText: {
-    fontSize: 18,
-  },
-  listWrapper: {
-    height: 200,
-  },
-  listItem: {
-    paddingVertical: 10,
-  },
-  listItemText: {
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-});
+const makeStyles = (theme: ThemeColors) =>
+  StyleSheet.create({
+    header: {
+      justifyContent: "space-between",
+      alignItems: "center",
+      flexDirection: "row",
+      width: "100%",
+      marginBottom: 10,
+    },
+    title: {
+      fontWeight: "bold",
+      fontSize: 18,
+      color: theme.textColor,
+    },
+    container: {
+      flexDirection: "row",
+    },
+    screen: {
+      width: "100%",
+      padding: 10,
+    },
+    listWrapper: {
+      height: 200,
+    },
+    listItem: {
+      paddingVertical: 10,
+    },
+    listItemText: {
+      fontSize: 18,
+      fontWeight: "bold",
+    },
+  });
 
 export default OptionScreen;

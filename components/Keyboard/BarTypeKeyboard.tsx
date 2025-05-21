@@ -1,9 +1,11 @@
 import { View, Text, Pressable } from "react-native";
 import { barTypes } from "@/constants/keyboard";
-import styles from "./KeyboardStyles";
 import { KeyboardView, KeyboardViewEnum } from "@/types/customKeyboard";
 import { Image } from "expo-image";
 import { BarTypeEnum } from "@/types/exercisesSets";
+import { useMemo } from "react";
+import KeyboardStyles from "./KeyboardStyles";
+import useThemeStore from "@/store/useThemeStore";
 
 type Props = {
   selectedBarType: BarTypeEnum | null;
@@ -16,6 +18,8 @@ const BarTypeKeyboard = ({
   setBarType,
   setKeyboardView,
 }: Props) => {
+  const { theme } = useThemeStore((state) => state);
+  const styles = useMemo(() => KeyboardStyles(theme), [theme]);
   const images = {
     "womens_olympic_bar.png": require("@/assets/images/womens_olympic_bar.png"),
     "mens_olympic_bar.png": require("@/assets/images/mens_olympic_bar.png"),

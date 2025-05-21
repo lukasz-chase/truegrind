@@ -1,11 +1,10 @@
 import userStore from "@/store/userStore";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Text, StyleSheet, View, Pressable, Platform } from "react-native";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { fetchWorkout, updateWorkout } from "@/lib/workoutServices";
-import { AppColors } from "@/constants/colors";
 import WorkoutExerciseWrapper from "@/components/BottomSheet/WorkoutExerciseWrapper";
 import WorkoutExercise from "@/components/BottomSheet/WorkoutExercise";
 import { ScrollView } from "react-native-gesture-handler";
@@ -28,6 +27,8 @@ import * as Haptics from "expo-haptics";
 import useSplitsStore from "@/store/useSplitsStore";
 import { initialWorkoutState } from "@/constants/initialState";
 import SplitTemplateSkeleton from "@/components/Skeletons/SplitTemplateSkeleton";
+import useThemeStore from "@/store/useThemeStore";
+import { AppTheme, AppThemeEnum, ThemeColors } from "@/types/user";
 
 export default function WorkoutTemplate() {
   const [loading, setLoading] = useState(false);
@@ -35,7 +36,9 @@ export default function WorkoutTemplate() {
 
   const { id } = useLocalSearchParams();
   const { user } = userStore();
+  const { theme, mode } = useThemeStore((state) => state);
 
+  const styles = useMemo(() => makeStyles(theme, mode), [theme, mode]);
   const router = useRouter();
 
   const animateIndex = useSharedValue(1);
@@ -131,7 +134,7 @@ export default function WorkoutTemplate() {
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <Pressable style={styles.goBackButton} onPress={goBackHandler}>
-          <AntDesign name="left" size={24} color={AppColors.black} />
+          <AntDesign name="left" size={24} color={theme.textColor} />
         </Pressable>
         <Text style={styles.title}>
           {isNewWorkout ? "New Template" : "Edit Template"}
@@ -203,54 +206,55 @@ export default function WorkoutTemplate() {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: AppColors.white,
-    height: "100%",
-  },
-  header: {
-    padding: 10,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  goBackButton: {
-    backgroundColor: AppColors.gray,
-    padding: 5,
-    borderRadius: 10,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: "bold",
-    textAlign: "center",
-  },
-  saveButton: {
-    backgroundColor: AppColors.blue,
-    padding: 10,
-    borderRadius: 10,
-  },
-  saveButtonText: {
-    fontSize: 18,
-    color: AppColors.white,
-  },
-  supersetIndicator: {
-    width: 2,
-    height: "100%",
-  },
-  footerButton: {
-    padding: 12,
-    margin: 12,
-    borderRadius: 12,
-  },
-  addExerciseButton: {
-    backgroundColor: AppColors.lightBlue,
-  },
-  addExerciseButtonText: {
-    color: AppColors.blue,
-  },
-  footerText: {
-    textAlign: "center",
-    fontWeight: "bold",
-  },
-});
+const makeStyles = (theme: ThemeColors, mode: AppTheme) =>
+  StyleSheet.create({
+    container: {
+      backgroundColor: theme.background,
+      height: "100%",
+    },
+    header: {
+      padding: 10,
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+    },
+    goBackButton: {
+      backgroundColor: mode === AppThemeEnum.DARK ? theme.black : theme.gray,
+      padding: 5,
+      borderRadius: 10,
+    },
+    title: {
+      fontSize: 20,
+      fontWeight: "bold",
+      textAlign: "center",
+      color: theme.textColor,
+    },
+    saveButton: {
+      backgroundColor: theme.blue,
+      padding: 10,
+      borderRadius: 10,
+    },
+    saveButtonText: {
+      fontSize: 18,
+      color: theme.white,
+    },
+    supersetIndicator: {
+      width: 2,
+      height: "100%",
+    },
+    footerButton: {
+      padding: 12,
+      margin: 12,
+      borderRadius: 12,
+    },
+    addExerciseButton: {
+      backgroundColor: theme.lightBlue,
+    },
+    addExerciseButtonText: {
+      color: theme.blue,
+    },
+    footerText: {
+      textAlign: "center",
+      fontWeight: "bold",
+    },
+  });

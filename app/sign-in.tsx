@@ -1,22 +1,25 @@
-import React, { useState } from "react";
+import { useMemo, useState } from "react";
 import {
   Alert,
   Pressable,
   StyleSheet,
   Text,
-  TextInput,
   View,
   ActivityIndicator,
 } from "react-native";
 import { supabase } from "@/lib/supabase";
-import { AppColors } from "@/constants/colors";
 import { setProfileInUserStore } from "@/lib/userService";
 import CustomTextInput from "@/components/CustomTextInput";
+import { ThemeColors } from "@/types/user";
+import useThemeStore from "@/store/useThemeStore";
 
 export default function Auth() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const { theme } = useThemeStore((state) => state);
+  const styles = useMemo(() => makeStyles(theme), [theme]);
 
   async function signInWithEmail() {
     setLoading(true);
@@ -76,7 +79,7 @@ export default function Auth() {
         />
       </View>
       {loading ? (
-        <ActivityIndicator color={AppColors.white} />
+        <ActivityIndicator color={theme.white} />
       ) : (
         <>
           <Pressable
@@ -94,7 +97,7 @@ export default function Auth() {
             disabled={loading}
             onPress={signUpWithEmail}
           >
-            <Text style={[styles.buttonText, { color: AppColors.blue }]}>
+            <Text style={[styles.buttonText, { color: theme.blue }]}>
               Sign Up
             </Text>
           </Pressable>
@@ -103,54 +106,55 @@ export default function Auth() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 20,
-  },
-  title: {
-    textAlign: "left",
-    fontSize: 60,
-    fontWeight: "bold",
-    color: AppColors.black,
-    marginBottom: 10,
-    textTransform: "uppercase",
-  },
-  inputsContainer: {
-    width: "100%",
-    marginBottom: 20,
-    gap: 10,
-  },
-  button: {
-    width: "100%",
-    backgroundColor: AppColors.blue,
-    paddingVertical: 14,
-    borderRadius: 8,
-    alignItems: "center",
-    marginBottom: 10,
-  },
-  buttonText: {
-    color: AppColors.white,
-    fontSize: 24,
-    textTransform: "uppercase",
-    fontWeight: "bold",
-  },
-  buttonDisabled: {
-    backgroundColor: AppColors.blue,
-  },
-  buttonOutline: {
-    width: "100%",
-    paddingVertical: 14,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: AppColors.blue,
-    alignItems: "center",
-  },
-  buttonOutlineDisabled: {
-    borderColor: AppColors.blue,
-    color: AppColors.blue,
-  },
-});
+const makeStyles = (theme: ThemeColors) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+      padding: 20,
+      backgroundColor: theme.background,
+    },
+    title: {
+      textAlign: "left",
+      fontSize: 60,
+      fontWeight: "bold",
+      color: theme.textColor,
+      marginBottom: 10,
+      textTransform: "uppercase",
+    },
+    inputsContainer: {
+      width: "100%",
+      marginBottom: 20,
+      gap: 10,
+    },
+    button: {
+      width: "100%",
+      backgroundColor: theme.blue,
+      paddingVertical: 14,
+      borderRadius: 8,
+      alignItems: "center",
+      marginBottom: 10,
+    },
+    buttonText: {
+      color: theme.white,
+      fontSize: 24,
+      textTransform: "uppercase",
+      fontWeight: "bold",
+    },
+    buttonDisabled: {
+      backgroundColor: theme.blue,
+    },
+    buttonOutline: {
+      width: "100%",
+      paddingVertical: 14,
+      borderRadius: 8,
+      borderWidth: 1,
+      borderColor: theme.blue,
+      alignItems: "center",
+    },
+    buttonOutlineDisabled: {
+      borderColor: theme.blue,
+      color: theme.blue,
+    },
+  });

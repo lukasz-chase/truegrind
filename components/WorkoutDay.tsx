@@ -4,9 +4,11 @@ import {
   WorkoutCalendarPopulated,
   WorkoutCalendarStatusEnum,
 } from "@/types/workoutCalendar";
-import { AppColors } from "@/constants/colors";
 import { isPastToday } from "@/utils/calendar";
 import { useRouter } from "expo-router";
+import useThemeStore from "@/store/useThemeStore";
+import { useMemo } from "react";
+import { ThemeColors } from "@/types/user";
 
 type Props = {
   date: {
@@ -31,6 +33,9 @@ export default function WorkoutDay({
   onDayPress,
   loading,
 }: Props) {
+  const { theme } = useThemeStore((state) => state);
+
+  const styles = useMemo(() => makeStyles(theme), [theme]);
   if (loading) {
     return (
       <View style={[styles.date, { borderColor: "transparent" }]}>
@@ -48,8 +53,8 @@ export default function WorkoutDay({
   const isDisabled = isPastToday(date);
   const isToday = state === "today";
 
-  let backgroundColor = "transparent";
-  let textColor = AppColors.black;
+  let backgroundColor = theme.background;
+  let textColor = theme.textColor;
   let borderColor = "transparent";
   let textDecoration: "none" | "line-through" = "none";
   let icon = null;
@@ -69,13 +74,13 @@ export default function WorkoutDay({
 
   if (isDisabled) textDecoration = "line-through";
   if (isToday) {
-    backgroundColor = AppColors.blue;
-    borderColor = AppColors.black;
-    textColor = AppColors.white;
+    backgroundColor = theme.blue;
+    borderColor = theme.black;
+    textColor = theme.white;
   }
   if (isScheduled) {
     backgroundColor = dayData?.color || backgroundColor;
-    textColor = AppColors.white;
+    textColor = theme.white;
   }
   if (isCompleted) {
     backgroundColor = dayData?.color || backgroundColor;
@@ -83,19 +88,19 @@ export default function WorkoutDay({
       <Entypo
         name="check"
         size={CALENDAR_ICON_SIZE}
-        color={AppColors.green}
+        color={theme.green}
         style={styles.dayIcon}
       />
     );
   }
   if (isMissed) {
-    backgroundColor = AppColors.gray;
-    textColor = AppColors.white;
+    backgroundColor = theme.gray;
+    textColor = theme.white;
     icon = (
       <Entypo
         name="cross"
         size={CALENDAR_ICON_SIZE}
-        color={AppColors.red}
+        color={theme.red}
         style={styles.dayIcon}
       />
     );
@@ -119,28 +124,29 @@ export default function WorkoutDay({
   );
 }
 
-const styles = StyleSheet.create({
-  date: {
-    padding: 5,
-    borderRadius: 5,
-    borderWidth: 2,
-    width: 50,
-    height: 50,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  dateText: {
-    textAlign: "center",
-    fontSize: 20,
-  },
-  iconContainer: {
-    position: "absolute",
-    right: -CALENDAR_ICON_SIZE / 2,
-    top: -CALENDAR_ICON_SIZE / 2,
-  },
-  dayIcon: {
-    textShadowColor: AppColors.black,
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 1,
-  },
-});
+const makeStyles = (theme: ThemeColors) =>
+  StyleSheet.create({
+    date: {
+      padding: 5,
+      borderRadius: 5,
+      borderWidth: 2,
+      width: 50,
+      height: 50,
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    dateText: {
+      textAlign: "center",
+      fontSize: 20,
+    },
+    iconContainer: {
+      position: "absolute",
+      right: -CALENDAR_ICON_SIZE / 2,
+      top: -CALENDAR_ICON_SIZE / 2,
+    },
+    dayIcon: {
+      textShadowColor: theme.black,
+      textShadowOffset: { width: 1, height: 1 },
+      textShadowRadius: 1,
+    },
+  });

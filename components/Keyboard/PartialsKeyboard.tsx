@@ -1,11 +1,11 @@
 import { View, Text, Pressable, Switch } from "react-native";
-import { AppColors } from "@/constants/colors";
-import styles from "./KeyboardStyles";
 import { AntDesign } from "@expo/vector-icons";
 import { KeyboardView, KeyboardViewEnum } from "@/types/customKeyboard";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import MemoizedScrollPicker from "../MemoizedScrollPicker";
 import { partialsInfo } from "@/constants/infoModal";
+import useThemeStore from "@/store/useThemeStore";
+import KeyboardStyles from "./KeyboardStyles";
 
 type Props = {
   partials: number | null;
@@ -21,6 +21,9 @@ const PartialsKeyboard = ({
   openInfoModal,
 }: Props) => {
   const [isEnabled, setIsEnabled] = useState(!!partials);
+  const { theme } = useThemeStore((state) => state);
+
+  const styles = useMemo(() => KeyboardStyles(theme), [theme]);
   useEffect(() => {
     setIsEnabled(!!partials);
   }, [partials]);
@@ -45,7 +48,7 @@ const PartialsKeyboard = ({
             openInfoModal(partialsInfo.title, partialsInfo.description)
           }
         >
-          <AntDesign name="question" size={24} color={AppColors.white} />
+          <AntDesign name="question" size={24} color={theme.white} />
         </Pressable>
         <Pressable
           style={[styles.button, { width: 100 }]}
@@ -58,9 +61,9 @@ const PartialsKeyboard = ({
       <View style={styles.header}>
         <Text style={styles.buttonText}>Enabled</Text>
         <Switch
-          trackColor={{ false: AppColors.charcoalGray, true: AppColors.blue }}
-          thumbColor={AppColors.white}
-          ios_backgroundColor={AppColors.graphiteGray}
+          trackColor={{ false: theme.charcoalGray, true: theme.blue }}
+          thumbColor={theme.white}
+          ios_backgroundColor={theme.graphiteGray}
           onValueChange={toggleSwitch}
           value={isEnabled}
         />
@@ -76,7 +79,7 @@ const PartialsKeyboard = ({
           }))}
           visibleItemCount={3}
           enabled={isEnabled}
-          textColor={AppColors.white}
+          textColor={theme.white}
         />
       </View>
     </View>

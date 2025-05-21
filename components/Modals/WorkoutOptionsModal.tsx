@@ -1,5 +1,4 @@
 import { StyleSheet, View } from "react-native";
-import { AppColors } from "@/constants/colors";
 import AnchoredModal from "./AnchoredModal";
 import ModalOptionButton from "./ModalOptionButton";
 import { EvilIcons } from "@expo/vector-icons";
@@ -8,15 +7,17 @@ import useAppStore from "@/store/useAppStore";
 import { copyWorkout, deleteWorkout } from "@/lib/workoutServices";
 import userStore from "@/store/userStore";
 import AntDesign from "@expo/vector-icons/AntDesign";
-import { useState } from "react";
+import { useMemo } from "react";
 import { useRouter } from "expo-router";
 import useActionModal from "@/store/useActionModal";
+import useThemeStore from "@/store/useThemeStore";
+import { ThemeColors } from "@/types/user";
 
 const MODAL_WIDTH = 170;
 
 const WorkoutOptionsModal = function ExerciseOptionsModal() {
-  const [shouldOpenActionModal, setShouldOpenActionModal] = useState(false);
-
+  const { theme } = useThemeStore((state) => state);
+  const styles = useMemo(() => makeStyles(theme), [theme]);
   const { isVisible, closeModal, workoutProps } = useWorkoutOptionsModal();
   const { buttonRef, workout } = workoutProps;
   const { refetchData } = useAppStore();
@@ -27,7 +28,6 @@ const WorkoutOptionsModal = function ExerciseOptionsModal() {
     await deleteWorkout(workout!.id);
     refetchData();
     closeModal();
-    setShouldOpenActionModal(false);
   };
   const copyWorkoutHandler = async () => {
     await copyWorkout(workout!, user!.id);
@@ -48,19 +48,19 @@ const WorkoutOptionsModal = function ExerciseOptionsModal() {
   };
   const options = [
     {
-      Icon: <AntDesign name="copy1" size={24} color={AppColors.white} />,
+      Icon: <AntDesign name="copy1" size={24} color={theme.white} />,
       title: "Copy",
       cb: copyWorkoutHandler,
       conditionToDisplay: workout?.user_id !== user?.id,
     },
     {
-      Icon: <EvilIcons name="pencil" size={24} color={AppColors.blue} />,
+      Icon: <EvilIcons name="pencil" size={24} color={theme.blue} />,
       title: "Edit template",
       cb: editTemplateHandler,
       conditionToDisplay: workout?.user_id === user?.id,
     },
     {
-      Icon: <EvilIcons name="close" size={24} color={AppColors.red} />,
+      Icon: <EvilIcons name="close" size={24} color={theme.red} />,
       title: "Delete",
       cb: openActionModalHandler,
       conditionToDisplay: workout?.user_id === user?.id,
@@ -73,7 +73,7 @@ const WorkoutOptionsModal = function ExerciseOptionsModal() {
       closeModal={closeModal}
       anchorRef={buttonRef}
       anchorCorner="RIGHT"
-      backgroundColor={AppColors.darkBlue}
+      backgroundColor={theme.darkBlue}
       modalWidth={MODAL_WIDTH}
     >
       <View style={styles.wrapper}>
@@ -87,13 +87,14 @@ const WorkoutOptionsModal = function ExerciseOptionsModal() {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: "row",
-  },
-  wrapper: {
-    width: "100%",
-  },
-});
+const makeStyles = (theme: ThemeColors) =>
+  StyleSheet.create({
+    container: {
+      flexDirection: "row",
+    },
+    wrapper: {
+      width: "100%",
+    },
+  });
 
 export default WorkoutOptionsModal;

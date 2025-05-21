@@ -1,5 +1,4 @@
 import { StyleSheet, Text, View } from "react-native";
-import { AppColors } from "@/constants/colors";
 import AnchoredModal from "./AnchoredModal";
 import ModalOptionButton from "./ModalOptionButton";
 import { AntDesign } from "@expo/vector-icons";
@@ -7,6 +6,9 @@ import useActiveWorkout from "@/store/useActiveWorkout";
 import useSetOptionsModal from "@/store/useSetOptionsModal";
 import { ExerciseSet } from "@/types/exercisesSets";
 import { Pressable } from "react-native";
+import useThemeStore from "@/store/useThemeStore";
+import { useMemo } from "react";
+import { ThemeColors } from "@/types/user";
 
 const MODAL_WIDTH = 275;
 
@@ -14,7 +16,9 @@ const SetOptionsModal = function ExerciseOptionsModal() {
   const { isVisible, closeModal, setProps } = useSetOptionsModal();
   const { buttonRef, exerciseId, exerciseSetId } = setProps;
   const { updateExerciseSet, activeWorkout } = useActiveWorkout();
+  const { theme } = useThemeStore((state) => state);
 
+  const styles = useMemo(() => makeStyles(theme), [theme]);
   const currentSet = activeWorkout.workout_exercises
     ?.find((workout) => workout.exercises.id === exerciseId)
     ?.exercise_sets.find((set) => set.id === exerciseSetId);
@@ -41,16 +45,14 @@ const SetOptionsModal = function ExerciseOptionsModal() {
   };
   const questionButton = (
     <Pressable style={styles.questionButton}>
-      <AntDesign name="question" size={24} color={AppColors.white} />
+      <AntDesign name="question" size={24} color={theme.white} />
     </Pressable>
   );
 
   const options = [
     {
       Icon: (
-        <Text style={[styles.optionLetter, { color: AppColors.orange }]}>
-          W
-        </Text>
+        <Text style={[styles.optionLetter, { color: theme.orange }]}>W</Text>
       ),
       title: "Warm Up",
       cb: () => updateSetHandler("is_warmup"),
@@ -59,9 +61,7 @@ const SetOptionsModal = function ExerciseOptionsModal() {
     },
     {
       Icon: (
-        <Text style={[styles.optionLetter, { color: AppColors.purple }]}>
-          D
-        </Text>
+        <Text style={[styles.optionLetter, { color: theme.purple }]}>D</Text>
       ),
       title: "Drop Set",
       cb: () => updateSetHandler("is_dropset"),
@@ -76,7 +76,7 @@ const SetOptionsModal = function ExerciseOptionsModal() {
       closeModal={closeModal}
       anchorRef={buttonRef}
       anchorCorner="LEFT"
-      backgroundColor={AppColors.darkBlue}
+      backgroundColor={theme.darkBlue}
       modalWidth={MODAL_WIDTH}
     >
       <View style={styles.wrapper}>
@@ -88,23 +88,24 @@ const SetOptionsModal = function ExerciseOptionsModal() {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: "row",
-  },
-  wrapper: {
-    width: "100%",
-  },
-  questionButton: {
-    marginLeft: "auto",
-    backgroundColor: AppColors.darkBlue,
-    padding: 2,
-    borderRadius: 10,
-  },
-  optionLetter: {
-    fontWeight: "bold",
-    fontSize: 18,
-  },
-});
+const makeStyles = (theme: ThemeColors) =>
+  StyleSheet.create({
+    container: {
+      flexDirection: "row",
+    },
+    wrapper: {
+      width: "100%",
+    },
+    questionButton: {
+      marginLeft: "auto",
+      backgroundColor: theme.darkBlue,
+      padding: 2,
+      borderRadius: 10,
+    },
+    optionLetter: {
+      fontWeight: "bold",
+      fontSize: 18,
+    },
+  });
 
 export default SetOptionsModal;

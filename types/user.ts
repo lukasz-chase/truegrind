@@ -1,3 +1,4 @@
+import { LightTheme } from "@/constants/colors";
 import { BodyPartLabel } from "./measurements";
 
 export type CurrentGoal = {
@@ -11,6 +12,9 @@ export enum AppThemeEnum {
   DARK = "dark",
 }
 
+export type ThemeColors = typeof LightTheme;
+export type AppTheme = `${AppThemeEnum}`;
+
 export type UserProfile = {
   username: string;
   id: string;
@@ -20,5 +24,4 @@ export type UserProfile = {
   profile_picture: string | null;
   age: number | null;
   height: number | null;
-  theme: AppThemeEnum;
 };

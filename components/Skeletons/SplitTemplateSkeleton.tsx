@@ -1,12 +1,17 @@
+import useThemeStore from "@/store/useThemeStore";
+import { ThemeColors } from "@/types/user";
+import { useMemo } from "react";
 import { StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { AppColors } from "@/constants/colors";
 
 export interface Props {
   parentStyles: any;
 }
 
 export default ({ parentStyles }: Props) => {
+  const { theme } = useThemeStore((state) => state);
+
+  const styles = useMemo(() => makeStyles(theme), [theme]);
   return (
     <SafeAreaView style={parentStyles.container}>
       <View style={parentStyles.header}>
@@ -27,9 +32,10 @@ export default ({ parentStyles }: Props) => {
   );
 };
 
-const styles = StyleSheet.create({
-  skeleton: {
-    height: 40,
-    backgroundColor: AppColors.gray,
-  },
-});
+const makeStyles = (theme: ThemeColors) =>
+  StyleSheet.create({
+    skeleton: {
+      height: 40,
+      backgroundColor: theme.gray,
+    },
+  });

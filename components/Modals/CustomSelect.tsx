@@ -1,8 +1,9 @@
-import { AppColors } from "@/constants/colors";
-import React, { useRef, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import { Pressable, StyleSheet, Text } from "react-native";
 import SelectOptionsModal from "./SelectOptionsModal";
 import { SCREEN_WIDTH } from "@/constants/device";
+import useThemeStore from "@/store/useThemeStore";
+import { ThemeColors } from "@/types/user";
 
 type Props = {
   selectedValue: string;
@@ -22,14 +23,16 @@ const CustomSelect = ({
 }: Props) => {
   const buttonRef = useRef(null);
   const [modalVisible, setModalVisible] = useState(false);
+  const { theme } = useThemeStore((state) => state);
 
+  const styles = useMemo(() => makeStyles(theme), [theme]);
   return (
     <>
       <Pressable
         style={[
           styles.dropdownButton,
           {
-            backgroundColor: selectedValue ? AppColors.blue : AppColors.gray,
+            backgroundColor: selectedValue ? theme.blue : theme.gray,
             width: size === "sm" ? "48%" : "100%",
             padding: size === "sm" ? 5 : 10,
           },
@@ -40,7 +43,7 @@ const CustomSelect = ({
         <Text
           style={[
             styles.dropdownButtonText,
-            { color: selectedValue ? AppColors.white : AppColors.black },
+            { color: selectedValue ? theme.white : theme.textColor },
           ]}
         >
           {selectedValue || buttonLabel}
@@ -64,15 +67,16 @@ const CustomSelect = ({
   );
 };
 
-const styles = StyleSheet.create({
-  dropdownButton: {
-    borderRadius: 8,
-    alignItems: "center",
-  },
-  dropdownButtonText: {
-    fontWeight: "bold",
-    fontSize: 16,
-  },
-});
+const makeStyles = (theme: ThemeColors) =>
+  StyleSheet.create({
+    dropdownButton: {
+      borderRadius: 8,
+      alignItems: "center",
+    },
+    dropdownButtonText: {
+      fontWeight: "bold",
+      fontSize: 16,
+    },
+  });
 
 export default CustomSelect;

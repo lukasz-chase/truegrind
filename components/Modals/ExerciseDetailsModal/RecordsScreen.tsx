@@ -1,9 +1,11 @@
-import { AppColors } from "@/constants/colors";
+import useThemeStore from "@/store/useThemeStore";
+import { AppThemeEnum, ThemeColors } from "@/types/user";
 import {
   OneRMRecord,
   VolumeRecord,
   WeightRecord,
 } from "@/types/workoutMetrics";
+import { useMemo } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 
@@ -41,6 +43,9 @@ const RecordsScreen = ({
     },
   ];
 
+  const { theme } = useThemeStore((state) => state);
+
+  const styles = useMemo(() => makeStyles(theme), [theme]);
   return (
     <ScrollView contentContainerStyle={styles.container} style={styles.wrapper}>
       <Text style={styles.title}>Personal Records</Text>
@@ -64,7 +69,7 @@ const RecordsScreen = ({
                     {isMaxVolume &&
                       ` (${volumeRecord?.weight}kg x ${volumeRecord?.reps})`}
                   </Text>
-                  <Text style={[styles.rowText, { color: AppColors.black }]}>
+                  <Text style={styles.rowText}>
                     {new Date(date!).toLocaleDateString()}
                   </Text>
                 </View>
@@ -77,43 +82,46 @@ const RecordsScreen = ({
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    gap: 10,
-  },
-  wrapper: {
-    width: "100%",
-  },
-  title: {
-    fontWeight: "bold",
-    fontSize: 16,
-    textTransform: "uppercase",
-  },
-  section: {
-    gap: 5,
-  },
-  sectionTitle: {
-    fontSize: 16,
-    color: AppColors.blue,
-  },
-  row: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-  rowText: {
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  skeletonRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-  skeletonBox: {
-    backgroundColor: AppColors.gray,
-    height: 20,
-    width: "40%",
-    borderRadius: 4,
-  },
-});
+const makeStyles = (theme: ThemeColors) =>
+  StyleSheet.create({
+    container: {
+      gap: 10,
+    },
+    wrapper: {
+      width: "100%",
+    },
+    title: {
+      fontWeight: "bold",
+      fontSize: 16,
+      textTransform: "uppercase",
+      color: theme.textColor,
+    },
+    section: {
+      gap: 5,
+    },
+    sectionTitle: {
+      fontSize: 16,
+      color: theme.blue,
+    },
+    row: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+    },
+    rowText: {
+      fontSize: 16,
+      fontWeight: "bold",
+      color: theme.textColor,
+    },
+    skeletonRow: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+    },
+    skeletonBox: {
+      backgroundColor: theme.gray,
+      height: 20,
+      width: "40%",
+      borderRadius: 4,
+    },
+  });
 
 export default RecordsScreen;

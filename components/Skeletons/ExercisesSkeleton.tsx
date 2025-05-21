@@ -1,11 +1,16 @@
+import useThemeStore from "@/store/useThemeStore";
+import { ThemeColors } from "@/types/user";
+import { useMemo } from "react";
 import { StyleSheet, View } from "react-native";
-import { AppColors } from "@/constants/colors";
 
 export interface Props {
   parentStyles: any;
 }
 
 export default ({ parentStyles }: Props) => {
+  const { theme } = useThemeStore((state) => state);
+
+  const styles = useMemo(() => makeStyles(theme), [theme]);
   return (
     <View style={parentStyles.container}>
       <View style={[styles.skeletonItem, { height: 40 }]} />
@@ -26,10 +31,11 @@ export default ({ parentStyles }: Props) => {
   );
 };
 
-const styles = StyleSheet.create({
-  skeletonItem: {
-    height: 60,
-    width: "100%",
-    backgroundColor: AppColors.gray,
-  },
-});
+const makeStyles = (theme: ThemeColors) =>
+  StyleSheet.create({
+    skeletonItem: {
+      height: 60,
+      width: "100%",
+      backgroundColor: theme.gray,
+    },
+  });

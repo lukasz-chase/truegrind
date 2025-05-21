@@ -1,6 +1,5 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { StyleSheet, Pressable, View, Text } from "react-native";
-import { AppColors } from "@/constants/colors";
 import { BarTypeEnum, ExerciseSet } from "@/types/exercisesSets";
 import useCustomKeyboard from "@/store/useCustomKeyboard";
 import Animated, {
@@ -11,6 +10,8 @@ import Animated, {
 } from "react-native-reanimated";
 import { barTypes, KEYBOARD_HEIGHT, rpeValues } from "@/constants/keyboard";
 import useBottomSheet from "@/store/useBottomSheet";
+import useThemeStore from "@/store/useThemeStore";
+import { AppThemeEnum, ThemeColors } from "@/types/user";
 
 const CARET_WIDTH = 2;
 
@@ -45,6 +46,9 @@ const SetInput = ({
   const [textWidth, setTextWidth] = useState(0);
   const caretOpacity = useSharedValue(0);
 
+  const { theme, mode } = useThemeStore((state) => state);
+
+  const styles = useMemo(() => makeStyles(theme), [theme]);
   const inputRef = useRef<View>(null);
 
   const {
@@ -129,11 +133,13 @@ const SetInput = ({
         styles.textInput,
         {
           backgroundColor: completed
-            ? AppColors.lightGreen
+            ? theme.lightGreen
             : isNoDataInputError
-            ? AppColors.red
-            : AppColors.gray,
-          borderColor: isActive ? AppColors.black : "transparent",
+            ? theme.red
+            : mode === AppThemeEnum.DARK
+            ? theme.black
+            : theme.gray,
+          borderColor: isActive ? theme.black : "transparent",
           width: repsInput && (partialsValue || rpeValue) ? "90%" : "100%",
         },
       ]}
@@ -146,7 +152,7 @@ const SetInput = ({
           {
             backgroundColor:
               activeSetInput === setInputId && wasThereValueOnPress
-                ? AppColors.blue
+                ? theme.blue
                 : "transparent",
           },
         ]}
@@ -171,69 +177,71 @@ const SetInput = ({
       )}
       {!repsInput && barType && (
         <View style={[styles.rpeBadge, styles.barTypeBadge]}>
-          <Text style={{ color: AppColors.white }}>+{getBarType()}</Text>
+          <Text style={{ color: theme.white }}>+{getBarType()}</Text>
         </View>
       )}
       {repsInput && partialsValue && (
         <View style={styles.partials}>
-          <Text>+{partialsValue}</Text>
+          <Text style={{ color: theme.textColor }}>+{partialsValue}</Text>
         </View>
       )}
     </Pressable>
   );
 };
 
-const styles = StyleSheet.create({
-  textInput: {
-    fontSize: 16,
-    height: 30,
-    borderRadius: 10,
-    alignItems: "center",
-    justifyContent: "center",
-    borderWidth: 2,
-  },
-  inputContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    position: "relative",
-    width: "auto",
-  },
-  text: {
-    flexDirection: "row",
-    fontSize: 16,
-    textAlign: "center",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  caret: {
-    position: "absolute",
-    width: CARET_WIDTH,
-    height: 25,
-    backgroundColor: AppColors.blue,
-  },
-  rpeBadge: {
-    position: "absolute",
-    right: 0,
-    top: 0,
-    transform: [{ translateX: 10 }, { translateY: -10 }],
-    height: 20,
-    width: 20,
-    borderRadius: 5,
-    backgroundColor: AppColors.blue,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  barTypeBadge: {
-    width: 25,
-    backgroundColor: AppColors.darkGray,
-  },
-  partials: {
-    position: "absolute",
-    right: -23,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-});
+const makeStyles = (theme: ThemeColors) =>
+  StyleSheet.create({
+    textInput: {
+      fontSize: 16,
+      height: 30,
+      borderRadius: 10,
+      alignItems: "center",
+      justifyContent: "center",
+      borderWidth: 2,
+    },
+    inputContainer: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
+      position: "relative",
+      width: "auto",
+    },
+    text: {
+      flexDirection: "row",
+      fontSize: 16,
+      textAlign: "center",
+      justifyContent: "center",
+      alignItems: "center",
+      color: theme.textColor,
+    },
+    caret: {
+      position: "absolute",
+      width: CARET_WIDTH,
+      height: 25,
+      backgroundColor: theme.blue,
+    },
+    rpeBadge: {
+      position: "absolute",
+      right: 0,
+      top: 0,
+      transform: [{ translateX: 10 }, { translateY: -10 }],
+      height: 20,
+      width: 20,
+      borderRadius: 5,
+      backgroundColor: theme.blue,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    barTypeBadge: {
+      width: 25,
+      backgroundColor: theme.darkGray,
+    },
+    partials: {
+      position: "absolute",
+      right: -23,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+  });
 
 export default SetInput;

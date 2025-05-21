@@ -1,4 +1,4 @@
-import { AppColors } from "./colors";
+import { LightTheme } from "./colors";
 
 export const updateTemplate = {
   title: "Update Template",
@@ -19,7 +19,7 @@ export const defaultActionModalState = {
   title: "",
   subtitle: "",
   proceedButtonLabeL: "Delete",
-  proceedButtonBgColor: AppColors.red,
+  proceedButtonBgColor: LightTheme.red,
   cancelButtonLabel: "Cancel",
   buttonsLayout: "row" as const,
   onCancel: () => {},

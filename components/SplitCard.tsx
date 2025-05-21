@@ -1,9 +1,11 @@
 import SwipeToDelete from "@/components/SwipeToDelete"; // <-- The new component
-import { AppColors } from "@/constants/colors";
 import { deleteSplit } from "@/lib/splitsServices";
 import { updateUserProfile } from "@/lib/userService";
+import useThemeStore from "@/store/useThemeStore";
 import { Split } from "@/types/split";
+import { ThemeColors } from "@/types/user";
 import { useRouter } from "expo-router";
+import { useMemo } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
 type Props = {
@@ -22,7 +24,9 @@ const SplitCard = ({
   removeLocalSplit,
 }: Props) => {
   const router = useRouter();
+  const { theme } = useThemeStore((state) => state);
 
+  const styles = useMemo(() => makeStyles(theme), [theme]);
   const chooseSplitHandler = () => {
     if (!isActiveSplit) router.push("/");
     updateUserProfile(userId, { active_split_id: split.id });
@@ -46,14 +50,14 @@ const SplitCard = ({
       <View
         style={[
           styles.splitCard,
-          { backgroundColor: isActiveSplit ? AppColors.blue : AppColors.white },
+          { backgroundColor: isActiveSplit ? theme.blue : theme.background },
         ]}
       >
         <Pressable onPress={chooseSplitHandler} style={{ gap: 5 }}>
           <Text
             style={[
               styles.splitTitle,
-              { color: isActiveSplit ? AppColors.white : AppColors.black },
+              { color: isActiveSplit ? theme.white : theme.textColor },
             ]}
           >
             {split.name}
@@ -70,25 +74,27 @@ const SplitCard = ({
   );
 };
 
-const styles = StyleSheet.create({
-  splitCard: {
-    width: "100%",
-    borderWidth: 1,
-    borderColor: AppColors.blue,
-    padding: 20,
-    borderRadius: 10,
-  },
-  splitTitle: {
-    fontWeight: "bold",
-    fontSize: 24,
-  },
-  frequency: {
-    fontSize: 16,
-    color: AppColors.darkGray,
-  },
-  description: {
-    fontSize: 16,
-  },
-});
+const makeStyles = (theme: ThemeColors) =>
+  StyleSheet.create({
+    splitCard: {
+      width: "100%",
+      borderWidth: 1,
+      borderColor: theme.blue,
+      padding: 20,
+      borderRadius: 10,
+    },
+    splitTitle: {
+      fontWeight: "bold",
+      fontSize: 24,
+    },
+    frequency: {
+      fontSize: 16,
+      color: theme.textColor,
+    },
+    description: {
+      fontSize: 16,
+      color: theme.textColor,
+    },
+  });
 
 export default SplitCard;

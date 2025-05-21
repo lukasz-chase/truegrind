@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useMemo } from "react";
 import AnchoredModal from "./AnchoredModal";
-import { AppColors } from "@/constants/colors";
 import { Pressable, StyleSheet, Text, View } from "react-native";
+import useThemeStore from "@/store/useThemeStore";
+import { ThemeColors } from "@/types/user";
 
 type Props = {
   anchorCorner: "RIGHT" | "LEFT";
@@ -24,13 +25,16 @@ const SelectOptionsModal = ({
   value,
   width = 200,
 }: Props) => {
+  const { theme } = useThemeStore((state) => state);
+
+  const styles = useMemo(() => makeStyles(theme), [theme]);
   return (
     <AnchoredModal
       anchorCorner={anchorCorner}
       anchorRef={anchorRef}
       closeModal={closeModal}
       isVisible={isVisible}
-      backgroundColor={AppColors.darkBlue}
+      backgroundColor={theme.darkBlue}
       modalWidth={width}
     >
       <View style={{ gap: 10, width: "100%", alignSelf: "flex-start" }}>
@@ -42,7 +46,7 @@ const SelectOptionsModal = ({
               styles.filterOption,
               {
                 backgroundColor:
-                  value === filterOption.value ? AppColors.blue : "transparent",
+                  value === filterOption.value ? theme.blue : "transparent",
               },
             ]}
           >
@@ -54,17 +58,18 @@ const SelectOptionsModal = ({
   );
 };
 
-const styles = StyleSheet.create({
-  filterOption: {
-    padding: 10,
-    marginHorizontal: -10,
-  },
-  filterOptionText: {
-    color: AppColors.white,
-    fontWeight: "bold",
-    fontSize: 16,
-    textAlign: "left",
-  },
-});
+const makeStyles = (theme: ThemeColors) =>
+  StyleSheet.create({
+    filterOption: {
+      padding: 10,
+      marginHorizontal: -10,
+    },
+    filterOptionText: {
+      color: theme.white,
+      fontWeight: "bold",
+      fontSize: 16,
+      textAlign: "left",
+    },
+  });
 
 export default SelectOptionsModal;

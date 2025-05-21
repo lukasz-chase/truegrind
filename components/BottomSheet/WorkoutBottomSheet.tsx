@@ -16,7 +16,9 @@ import useCustomKeyboard from "@/store/useCustomKeyboard";
 import DraggableList from "./DraggableExercisesList.tsx/DraggableList";
 import WorkoutExercise from "./WorkoutExercise";
 import WorkoutExerciseWrapper from "./WorkoutExerciseWrapper";
-import { AppColors } from "@/constants/colors";
+import useThemeStore from "@/store/useThemeStore";
+import { ThemeColors } from "@/types/user";
+import CustomHandle from "./CustomHandle";
 
 type Props = {
   animatedIndex: SharedValue<number>;
@@ -41,6 +43,9 @@ const WorkoutBottomSheet = ({ animatedIndex }: Props) => {
 
   const sheetRef = useRef<BottomSheet>(null);
   const scrollViewRef = useRef<BottomSheetScrollViewMethods>(null);
+  const { theme } = useThemeStore((state) => state);
+
+  const styles = useMemo(() => makeStyles(theme), [theme]);
 
   useEffect(() => {
     setBottomSheetScrollViewRef(scrollViewRef);
@@ -78,12 +83,12 @@ const WorkoutBottomSheet = ({ animatedIndex }: Props) => {
         enableDynamicSizing={false}
         animateOnMount={true}
         index={1}
-        handleStyle={styles.handle}
         backdropComponent={CustomBackdrop}
         animatedIndex={animatedIndex}
         enableOverDrag={false}
         onChange={handleSheetChanges}
         style={styles.sheetShadow}
+        handleComponent={() => <CustomHandle theme={theme} />}
       >
         <Pressable style={styles.container} onPress={closeKeyboard}>
           <CustomHeader
@@ -142,35 +147,32 @@ const WorkoutBottomSheet = ({ animatedIndex }: Props) => {
   );
 };
 
-const styles = StyleSheet.create({
-  overlay: {
-    ...StyleSheet.absoluteFillObject,
-    justifyContent: "flex-end",
-  },
-  sheetShadow: {
-    backgroundColor: AppColors.white,
-    borderWidth: 0,
-    borderRadius: 24,
-    shadowColor: AppColors.black,
-    shadowOffset: {
-      width: 0,
-      height: 0,
+const makeStyles = (theme: ThemeColors) =>
+  StyleSheet.create({
+    overlay: {
+      ...StyleSheet.absoluteFillObject,
+      justifyContent: "flex-end",
     },
-    shadowOpacity: 0.5,
-    shadowRadius: 24,
-    elevation: 10,
-  },
-  container: {
-    flex: 1,
-  },
-  handle: {
-    paddingTop: 5,
-    paddingBottom: 0,
-  },
-  supersetIndicator: {
-    width: 2,
-    height: "100%",
-  },
-});
+    sheetShadow: {
+      borderWidth: 0,
+      borderRadius: 24,
+      shadowColor: theme.black,
+      shadowOffset: {
+        width: 0,
+        height: 0,
+      },
+      shadowOpacity: 0.5,
+      shadowRadius: 24,
+      elevation: 10,
+    },
+    container: {
+      backgroundColor: theme.background,
+      flex: 1,
+    },
+    supersetIndicator: {
+      width: 2,
+      height: "100%",
+    },
+  });
 
 export default WorkoutBottomSheet;

@@ -1,13 +1,14 @@
-import { memo } from "react";
+import { memo, useMemo } from "react";
 import { Platform, StyleSheet, View } from "react-native";
-import { AppColors } from "@/constants/colors";
 import { Picker } from "@react-native-picker/picker";
+import useThemeStore from "@/store/useThemeStore";
+import { ThemeColors } from "@/types/user";
 
 type Props = {
   value: number | string;
   setValue: any;
   visibleItemCount: number;
-  textColor?: string;
+  textColor?: string | null;
   enabled?: boolean;
   data: { value: number; label: string }[];
 };
@@ -15,12 +16,15 @@ type Props = {
 const MemoizedScrollPicker = memo(
   ({
     enabled = true,
-    textColor = AppColors.black,
+    textColor = null,
     value,
     setValue,
     visibleItemCount,
     data,
   }: Props) => {
+    const { theme } = useThemeStore((state) => state);
+
+    const styles = useMemo(() => makeStyles(theme), [theme]);
     return (
       <View
         style={[
@@ -41,7 +45,7 @@ const MemoizedScrollPicker = memo(
         >
           {data.map((dataItem) => (
             <Picker.Item
-              color={textColor}
+              color={textColor ?? theme.textColor}
               label={dataItem.label}
               value={dataItem.value}
               key={dataItem.value}
@@ -53,22 +57,23 @@ const MemoizedScrollPicker = memo(
   }
 );
 
-const styles = StyleSheet.create({
-  scrollPicker: {
-    width: "100%",
-    justifyContent: "center",
-    overflow: "hidden",
-    zIndex: 10,
-  },
-  androidPicker: {
-    elevation: 2,
-  },
-  picker: {
-    width: "100%",
-  },
-  disabled: {
-    opacity: 0.5,
-  },
-});
+const makeStyles = (theme: ThemeColors) =>
+  StyleSheet.create({
+    scrollPicker: {
+      width: "100%",
+      justifyContent: "center",
+      overflow: "hidden",
+      zIndex: 10,
+    },
+    androidPicker: {
+      elevation: 2,
+    },
+    picker: {
+      width: "100%",
+    },
+    disabled: {
+      opacity: 0.5,
+    },
+  });
 
 export default MemoizedScrollPicker;

@@ -1,5 +1,7 @@
+import useThemeStore from "@/store/useThemeStore";
+import { ThemeColors } from "@/types/user";
+import { useMemo } from "react";
 import { StyleSheet, View } from "react-native";
-import { AppColors } from "@/constants/colors";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export interface Props {
@@ -7,6 +9,9 @@ export interface Props {
 }
 
 export default ({ parentStyles }: Props) => {
+  const { theme } = useThemeStore((state) => state);
+
+  const styles = useMemo(() => makeStyles(theme), [theme]);
   return (
     <SafeAreaView style={parentStyles.safeArea}>
       <View style={parentStyles.container}>
@@ -34,37 +39,38 @@ export default ({ parentStyles }: Props) => {
   );
 };
 
-const styles = StyleSheet.create({
-  skeletonTitle: {
-    height: 30,
-    width: "50%",
-    backgroundColor: AppColors.skeleton,
-    borderRadius: 5,
-    marginVertical: 10,
-  },
-  skeletonButton: {
-    height: 40,
-    backgroundColor: AppColors.skeleton,
-    borderRadius: 5,
-    marginVertical: 10,
-  },
-  skeletonSubtitle: {
-    width: "30%",
-    height: 24,
-    backgroundColor: AppColors.skeleton,
-    borderRadius: 5,
-  },
-  skeletonTemplateBtn: {
-    width: 100,
-    height: 30,
-    backgroundColor: AppColors.skeleton,
-    borderRadius: 5,
-  },
-  skeletonCard: {
-    width: "47%",
-    height: 100,
-    backgroundColor: AppColors.skeleton,
-    borderRadius: 10,
-    marginBottom: 10,
-  },
-});
+const makeStyles = (theme: ThemeColors) =>
+  StyleSheet.create({
+    skeletonTitle: {
+      height: 30,
+      width: "50%",
+      backgroundColor: theme.skeleton,
+      borderRadius: 5,
+      marginVertical: 10,
+    },
+    skeletonButton: {
+      height: 40,
+      backgroundColor: theme.skeleton,
+      borderRadius: 5,
+      marginVertical: 10,
+    },
+    skeletonSubtitle: {
+      width: "30%",
+      height: 24,
+      backgroundColor: theme.skeleton,
+      borderRadius: 5,
+    },
+    skeletonTemplateBtn: {
+      width: 100,
+      height: 30,
+      backgroundColor: theme.skeleton,
+      borderRadius: 5,
+    },
+    skeletonCard: {
+      width: "47%",
+      height: 100,
+      backgroundColor: theme.skeleton,
+      borderRadius: 10,
+      marginBottom: 10,
+    },
+  });

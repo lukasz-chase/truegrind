@@ -1,10 +1,11 @@
-import { AppColors } from "@/constants/colors";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Pressable, StyleSheet, Text } from "react-native";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { SetHistoryProps } from "@/types/exercisesSets";
 import { fetchSetsHistory } from "@/lib/exerciseSetsService";
 import { barTypes } from "@/constants/keyboard";
+import useThemeStore from "@/store/useThemeStore";
+import { AppTheme, AppThemeEnum, ThemeColors } from "@/types/user";
 
 type Props = {
   setOrder: number;
@@ -17,6 +18,9 @@ const SetHistory = ({ exerciseId, setOrder, userId, bulkUpdateSet }: Props) => {
   const [disabled, setDisabled] = useState(false);
   const [exerciseHistory, setExerciseHistory] =
     useState<SetHistoryProps | null>(null);
+  const { theme } = useThemeStore((state) => state);
+
+  const styles = useMemo(() => makeStyles(theme), [theme]);
   const fetchLastSet = async () => {
     const { data, error } = await fetchSetsHistory(
       exerciseId,
@@ -40,7 +44,7 @@ const SetHistory = ({ exerciseId, setOrder, userId, bulkUpdateSet }: Props) => {
   }, []);
   const renderPreviousSet = () => {
     if (!exerciseHistory)
-      return <AntDesign name="minus" size={42} color={AppColors.gray} />;
+      return <AntDesign name="minus" size={42} color={theme.gray} />;
     const getBarType = () => {
       const barType = barTypes.find(
         (bar) => bar.name === exerciseHistory.bar_type
@@ -52,7 +56,7 @@ const SetHistory = ({ exerciseId, setOrder, userId, bulkUpdateSet }: Props) => {
         style={[
           styles.previousSet,
           {
-            color: disabled ? AppColors.gray : AppColors.black,
+            color: disabled ? theme.gray : theme.textColor,
             fontSize: exerciseHistory.rpe || exerciseHistory.partials ? 14 : 16,
           },
         ]}
@@ -75,23 +79,23 @@ const SetHistory = ({ exerciseId, setOrder, userId, bulkUpdateSet }: Props) => {
     <Pressable
       disabled={disabled}
       onPress={handlePress}
-      style={styles.previusButton}
+      style={styles.previousButton}
     >
       {renderPreviousSet()}
     </Pressable>
   );
 };
-const styles = StyleSheet.create({
-  previusButton: {
-    alignItems: "center",
-    textAlign: "center",
-    justifyContent: "center",
-  },
-  previousSet: {
-    color: AppColors.gray,
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-});
+const makeStyles = (theme: ThemeColors) =>
+  StyleSheet.create({
+    previousButton: {
+      alignItems: "center",
+      textAlign: "center",
+      justifyContent: "center",
+    },
+    previousSet: {
+      fontSize: 18,
+      fontWeight: "bold",
+    },
+  });
 
 export default SetHistory;

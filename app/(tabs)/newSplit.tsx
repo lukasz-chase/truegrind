@@ -1,16 +1,16 @@
 import CustomTextInput from "@/components/CustomTextInput";
-import { AppColors } from "@/constants/colors";
 import { createSplit } from "@/lib/splitsServices";
 import { updateUserProfile } from "@/lib/userService";
 import useAppStore from "@/store/useAppStore";
 import userStore from "@/store/userStore";
 import { useRouter } from "expo-router";
-import { useState } from "react";
-import { StyleSheet, View, Text, Pressable } from "react-native";
+import { useMemo, useState } from "react";
+import { StyleSheet, Text, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import AntDesign from "@expo/vector-icons/AntDesign";
 import useSplitsStore from "@/store/useSplitsStore";
 import CustomHeader from "@/components/CustomHeader";
+import useThemeStore from "@/store/useThemeStore";
+import { ThemeColors } from "@/types/user";
 
 export default function NewSplitScreen() {
   const [splitName, setSplitName] = useState("");
@@ -20,12 +20,10 @@ export default function NewSplitScreen() {
   const { user } = userStore();
   const { refetchData } = useAppStore();
   const { addSplit } = useSplitsStore();
+  const { theme } = useThemeStore((state) => state);
 
+  const styles = useMemo(() => makeStyles(theme), [theme]);
   const router = useRouter();
-
-  const goBackHandler = () => {
-    router.push("/splits");
-  };
 
   const createSplitHandler = async () => {
     if (!splitName) return;
@@ -77,21 +75,23 @@ export default function NewSplitScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    padding: 10,
-    flex: 1,
-    gap: 10,
-  },
-  actionButton: {
-    padding: 10,
-    backgroundColor: AppColors.blue,
-    alignItems: "center",
-    borderRadius: 10,
-    marginTop: 10,
-  },
-  actionButtonText: {
-    color: AppColors.white,
-    fontSize: 20,
-  },
-});
+const makeStyles = (theme: ThemeColors) =>
+  StyleSheet.create({
+    container: {
+      padding: 10,
+      flex: 1,
+      gap: 10,
+      backgroundColor: theme.background,
+    },
+    actionButton: {
+      padding: 10,
+      backgroundColor: theme.blue,
+      alignItems: "center",
+      borderRadius: 10,
+      marginTop: 10,
+    },
+    actionButtonText: {
+      color: theme.white,
+      fontSize: 20,
+    },
+  });

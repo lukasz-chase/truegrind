@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import {
   View,
   Modal,
@@ -13,7 +13,6 @@ import * as Haptics from "expo-haptics";
 
 import CloseButton from "../CloseButton";
 import { Workout } from "@/types/workout";
-import { AppColors } from "@/constants/colors";
 import {
   WorkoutCalendarPopulated,
   WorkoutCalendarStatusEnum,
@@ -29,6 +28,8 @@ import {
 import useWorkoutCalendar from "@/hooks/useworkoutCalendar";
 import CustomDateTimePicker from "../CustomDateTimePicker";
 import { generateNewColor } from "@/utils/colors";
+import useThemeStore from "@/store/useThemeStore";
+import { AppThemeEnum, ThemeColors } from "@/types/user";
 
 type Props = {
   isVisible: boolean;
@@ -51,7 +52,9 @@ export default function WorkoutCalendarModal({
 }: Props) {
   const { startTime, endTime, setStartTime, setEndTime, initializeTimes } =
     useWorkoutCalendar(pressedDate, workoutCalendarData);
+  const { theme, mode } = useThemeStore((state) => state);
 
+  const styles = useMemo(() => makeStyles(theme, mode), [theme, mode]);
   useEffect(() => {
     initializeTimes();
   }, [pressedDate.dateString]);
@@ -161,8 +164,10 @@ export default function WorkoutCalendarModal({
                 {
                   backgroundColor:
                     item.id === pressedDate.activeWorkoutId
-                      ? AppColors.blue
-                      : AppColors.gray,
+                      ? theme.blue
+                      : mode === AppThemeEnum.DARK
+                      ? theme.black
+                      : theme.gray,
                 },
               ]}
               onPress={() => assignWorkoutToDay(item)}
@@ -176,57 +181,61 @@ export default function WorkoutCalendarModal({
   );
 }
 
-const styles = StyleSheet.create({
-  modalOverlay: {
-    backgroundColor: AppColors.semiTransparent,
-    position: "absolute",
-    width: "100%",
-    height: "100%",
-  },
-  modalContent: {
-    width: "90%",
-    paddingVertical: 30,
-    paddingHorizontal: 20,
-    borderRadius: 10,
-    alignItems: "center",
-    backgroundColor: AppColors.white,
-    margin: "auto",
-    maxHeight: 600,
-  },
-  title: {
-    fontWeight: "bold",
-    fontSize: 18,
-  },
-  subtitle: {
-    textAlign: "center",
-    fontSize: 18,
-  },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    width: "100%",
-    marginBottom: 10,
-  },
-  list: {
-    width: "100%",
-  },
-  listContainer: {
-    gap: 10,
-  },
-  workoutButton: {
-    paddingVertical: 15,
-    borderRadius: 5,
-    alignItems: "center",
-  },
-  workoutButtonText: {
-    fontSize: 18,
-  },
-  timePickerContainer: {
-    flexDirection: "row",
-    justifyContent: "space-evenly",
-    alignItems: "flex-start",
-    marginVertical: 10,
-    width: "100%",
-  },
-});
+const makeStyles = (theme: ThemeColors) =>
+  StyleSheet.create({
+    modalOverlay: {
+      backgroundColor: theme.semiTransparent,
+      position: "absolute",
+      width: "100%",
+      height: "100%",
+    },
+    modalContent: {
+      width: "90%",
+      paddingVertical: 30,
+      paddingHorizontal: 20,
+      borderRadius: 10,
+      alignItems: "center",
+      backgroundColor: theme.background,
+      margin: "auto",
+      maxHeight: 600,
+    },
+    title: {
+      fontWeight: "bold",
+      fontSize: 18,
+      color: theme.textColor,
+    },
+    subtitle: {
+      textAlign: "center",
+      fontSize: 18,
+      color: theme.textColor,
+    },
+    header: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      width: "100%",
+      marginBottom: 10,
+    },
+    list: {
+      width: "100%",
+    },
+    listContainer: {
+      gap: 10,
+    },
+    workoutButton: {
+      paddingVertical: 15,
+      borderRadius: 5,
+      alignItems: "center",
+    },
+    workoutButtonText: {
+      fontSize: 18,
+      color: theme.textColor,
+    },
+    timePickerContainer: {
+      flexDirection: "row",
+      justifyContent: "space-evenly",
+      alignItems: "flex-start",
+      marginVertical: 10,
+      width: "100%",
+    },
+  });

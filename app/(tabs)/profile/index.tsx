@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import {
   StyleSheet,
@@ -11,7 +11,6 @@ import userStore from "@/store/userStore";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { Link } from "expo-router";
-import { AppColors } from "@/constants/colors";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import * as Progress from "react-native-progress";
 import { profileLinks } from "@/constants/profile";
@@ -24,9 +23,8 @@ import { showHoursFromDate } from "@/utils/calendar";
 import CustomImage from "@/components/CustomImage";
 import ProfileSkeleton from "@/components/Skeletons/ProfileSkeleton";
 import { exportData } from "@/lib/supabaseActions";
-
-//TODO - make theme usable
-//TODO - export data
+import useThemeStore from "@/store/useThemeStore";
+import { ThemeColors } from "@/types/user";
 
 export default function Profile() {
   const { user } = userStore();
@@ -39,6 +37,10 @@ export default function Profile() {
   const [workoutFrequency, setWorkoutFrequency] = useState<number | null>(null);
   const [fetchLoading, setFetchLoading] = useState(false);
   const [exportLoading, setExportLoading] = useState(false);
+
+  const { theme } = useThemeStore((state) => state);
+
+  const styles = useMemo(() => makeStyles(theme), [theme]);
 
   const signOut = async () => {
     try {
@@ -116,24 +118,28 @@ export default function Profile() {
           />
         </View>
       ) : (
-        <FontAwesome
-          name="user-circle"
-          size={100}
-          color={AppColors.charcoalGray}
-        />
+        <FontAwesome name="user-circle" size={100} color={theme.textColor} />
       )}
       <Text style={[styles.title, styles.name]}>{user?.username}</Text>
       <View style={styles.infoContainer}>
-        {user?.age ? <Text>{user?.age} years</Text> : <Text>Age</Text>}
-        <Text>-</Text>
-        {user?.height ? <Text>{user?.height} cm</Text> : <Text>Height</Text>}
-        <Text>-</Text>
+        {user?.age ? (
+          <Text style={styles.userInfo}>{user?.age} years</Text>
+        ) : (
+          <Text style={styles.userInfo}>Age</Text>
+        )}
+        <Text style={styles.userInfo}>-</Text>
+        {user?.height ? (
+          <Text style={styles.userInfo}>{user?.height} cm</Text>
+        ) : (
+          <Text style={styles.userInfo}>Height</Text>
+        )}
+        <Text style={styles.userInfo}>-</Text>
         {weight ? (
-          <Text>
+          <Text style={styles.userInfo}>
             {weight.value} {weight.unit}
           </Text>
         ) : (
-          <Text>Weight</Text>
+          <Text style={styles.userInfo}>Weight</Text>
         )}
       </View>
       <View style={styles.boxesContainer}>
@@ -189,8 +195,8 @@ export default function Profile() {
           <>
             <Text style={styles.infoBoxValue}>Goal progress</Text>
             <View style={styles.progressInfo}>
-              <Text>{goalMeasurement?.value}</Text>
-              <Text>{user?.current_goal?.value}</Text>
+              <Text style={styles.userInfo}>{goalMeasurement?.value}</Text>
+              <Text style={styles.userInfo}>{user?.current_goal?.value}</Text>
             </View>
             <Progress.Bar
               progress={Math.min(
@@ -198,12 +204,12 @@ export default function Profile() {
                 1
               )}
               width={350}
-              color={AppColors.blue}
+              color={theme.blue}
               style={styles.progress}
             />
           </>
         ) : (
-          <Text>No goal set</Text>
+          <Text style={styles.userInfo}>No goal set</Text>
         )}
       </View>
       <View style={styles.buttonsWrapper}>
@@ -215,12 +221,8 @@ export default function Profile() {
                 i > 0 && styles.profileButtonSeparator,
               ]}
             >
-              <Text>{button.label}</Text>
-              <AntDesign
-                name="right"
-                size={24}
-                color={AppColors.charcoalGray}
-              />
+              <Text style={styles.userInfo}>{button.label}</Text>
+              <AntDesign name="right" size={24} color={theme.textColor} />
             </View>
           </Link>
         ))}
@@ -229,110 +231,117 @@ export default function Profile() {
           onPress={exportDataHandler}
           style={[styles.profileButton, styles.profileButtonSeparator]}
         >
-          <Text>Export Data</Text>
+          <Text style={styles.userInfo}>Export Data</Text>
           {exportLoading && <ActivityIndicator size="small" />}
 
-          <AntDesign name="export" size={24} color={AppColors.black} />
+          <AntDesign name="export" size={24} color={theme.textColor} />
         </Pressable>
         <Pressable
           onPress={signOut}
           style={[styles.profileButton, styles.profileButtonSeparator]}
         >
-          <Text>Sign Out</Text>
-          <AntDesign name="logout" size={24} color={AppColors.red} />
+          <Text style={styles.userInfo}>Sign Out</Text>
+          <AntDesign name="logout" size={24} color={theme.red} />
         </Pressable>
       </View>
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    padding: 10,
-    alignItems: "center",
-    gap: 10,
-  },
-  imageCircle: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    overflow: "hidden",
-    borderColor: AppColors.charcoalGray,
-    borderWidth: 2,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: AppColors.black,
-    textAlign: "center",
-  },
-  name: {
-    fontSize: 32,
-  },
-  infoContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    width: "100%",
-    gap: 10,
-  },
-  boxesContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    width: "100%",
-  },
-  infoBox: {
-    height: 100,
-    width: "30%",
-    borderColor: AppColors.charcoalGray,
-    borderWidth: 2,
-    alignItems: "center",
-    justifyContent: "center",
-    borderRadius: 10,
-    gap: 10,
-  },
-  infoBoxTitle: {
-    textAlign: "center",
-    fontWeight: "bold",
-  },
-  infoBoxValue: {
-    textAlign: "center",
-  },
-  progressWrapper: {
-    width: "100%",
-    borderColor: AppColors.charcoalGray,
-    borderWidth: 2,
-    borderRadius: 10,
-    padding: 10,
-    gap: 10,
-  },
-  progressInfo: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  progress: {
-    width: "100%",
-  },
-  buttonsWrapper: {
-    borderRadius: 10,
-    borderColor: AppColors.charcoalGray,
-    borderWidth: 2,
-    width: "100%",
-  },
-  profileButton: {
-    width: "100%",
-    padding: 10,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  profileButtonSeparator: {
-    borderTopWidth: 2,
-    borderTopColor: AppColors.charcoalGray,
-  },
-});
+const makeStyles = (theme: ThemeColors) =>
+  StyleSheet.create({
+    safeArea: {
+      flex: 1,
+      padding: 10,
+      alignItems: "center",
+      gap: 10,
+      backgroundColor: theme.background,
+    },
+    imageCircle: {
+      width: 100,
+      height: 100,
+      borderRadius: 50,
+      overflow: "hidden",
+      borderColor: theme.textColor,
+      borderWidth: 2,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    title: {
+      fontSize: 24,
+      fontWeight: "bold",
+      color: theme.textColor,
+      textAlign: "center",
+    },
+    name: {
+      fontSize: 32,
+    },
+    infoContainer: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
+      width: "100%",
+      gap: 10,
+      color: theme.textColor,
+    },
+    userInfo: {
+      color: theme.textColor,
+    },
+    boxesContainer: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      width: "100%",
+    },
+    infoBox: {
+      height: 100,
+      width: "30%",
+      borderColor: theme.textColor,
+      borderWidth: 2,
+      alignItems: "center",
+      justifyContent: "center",
+      borderRadius: 10,
+      gap: 10,
+    },
+    infoBoxTitle: {
+      textAlign: "center",
+      fontWeight: "bold",
+      color: theme.textColor,
+    },
+    infoBoxValue: {
+      textAlign: "center",
+      color: theme.textColor,
+    },
+    progressWrapper: {
+      width: "100%",
+      borderColor: theme.textColor,
+      borderWidth: 2,
+      borderRadius: 10,
+      padding: 10,
+      gap: 10,
+    },
+    progressInfo: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+    },
+    progress: {
+      width: "100%",
+    },
+    buttonsWrapper: {
+      borderRadius: 10,
+      borderColor: theme.textColor,
+      borderWidth: 2,
+      width: "100%",
+    },
+    profileButton: {
+      width: "100%",
+      padding: 10,
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+    },
+    profileButtonSeparator: {
+      borderTopWidth: 2,
+      borderTopColor: theme.textColor,
+    },
+  });

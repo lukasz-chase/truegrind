@@ -1,6 +1,5 @@
-import { AppColors } from "@/constants/colors";
 import { Ionicons } from "@expo/vector-icons";
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import Animated, {
   useAnimatedStyle,
@@ -10,6 +9,8 @@ import Animated, {
 import MaskedView from "@react-native-masked-view/masked-view";
 import useCustomKeyboard from "@/store/useCustomKeyboard";
 import { formatTime } from "@/utils/calendar";
+import useThemeStore from "@/store/useThemeStore";
+import { ThemeColors } from "@/types/user";
 
 type Props = {
   openModal: () => void;
@@ -28,6 +29,9 @@ const TimerButton = ({
 }: Props) => {
   const animatedWidth = useSharedValue(TIMER_BUTTON_WIDTH);
   const { closeKeyboard } = useCustomKeyboard();
+  const { theme } = useThemeStore((state) => state);
+
+  const styles = useMemo(() => makeStyles(theme), [theme]);
   useEffect(() => {
     if (isRunning) {
       animatedWidth.value = withTiming(
@@ -59,7 +63,11 @@ const TimerButton = ({
             style={[styles.timerButtonAbsolute]}
             maskElement={
               <View style={[styles.maskContent]}>
-                <Ionicons name="timer-outline" size={20} />
+                <Ionicons
+                  name="timer-outline"
+                  size={20}
+                  color={theme.textColor}
+                />
                 <Text style={[styles.textStyles]}>
                   {formatTime(timeRemaining)}
                 </Text>
@@ -70,13 +78,13 @@ const TimerButton = ({
               style={[
                 styles.timerButtonAbsoluteBackground,
                 animatedStyle,
-                { backgroundColor: AppColors.white, zIndex: 4 },
+                { backgroundColor: theme.white, zIndex: 4 },
               ]}
             />
             <View
               style={[
                 styles.timerButtonAbsoluteBackground,
-                { backgroundColor: AppColors.black },
+                { backgroundColor: theme.black },
               ]}
             />
           </MaskedView>
@@ -94,64 +102,66 @@ const TimerButton = ({
         </View>
       ) : (
         <View style={styles.timerButton}>
-          <Ionicons name="timer-outline" size={20} color={AppColors.black} />
+          <Ionicons name="timer-outline" size={20} color={theme.textColor} />
         </View>
       )}
     </Pressable>
   );
 };
 
-const styles = StyleSheet.create({
-  timerButton: {
-    backgroundColor: AppColors.gray,
-    padding: 10,
-    width: 52,
-    borderRadius: 10,
-    height: 40,
-    alignItems: "center",
-  },
-  timerButtonContainer: {
-    position: "relative",
-    height: 40,
-    width: TIMER_BUTTON_WIDTH,
-  },
-  timerButtonAbsoluteBackground: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    height: "100%",
-    width: TIMER_BUTTON_WIDTH,
-    borderRadius: 10,
-  },
-  timerButtonAbsolute: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    height: "100%",
-    width: TIMER_BUTTON_WIDTH,
-    backgroundColor: "transparent",
-    zIndex: 3,
-  },
-  blueLayer: {
-    backgroundColor: AppColors.blue,
-    zIndex: 2,
-  },
-  grayLayer: {
-    backgroundColor: AppColors.gray,
-  },
-  maskContent: {
-    flexDirection: "row",
-    gap: 5,
-    backgroundColor: "transparent",
-    height: "100%",
-    width: TIMER_BUTTON_WIDTH,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  textStyles: {
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-});
+const makeStyles = (theme: ThemeColors) =>
+  StyleSheet.create({
+    timerButton: {
+      backgroundColor: theme.black,
+      padding: 10,
+      width: 52,
+      borderRadius: 10,
+      height: 40,
+      alignItems: "center",
+    },
+    timerButtonContainer: {
+      position: "relative",
+      height: 40,
+      width: TIMER_BUTTON_WIDTH,
+    },
+    timerButtonAbsoluteBackground: {
+      position: "absolute",
+      top: 0,
+      left: 0,
+      height: "100%",
+      width: TIMER_BUTTON_WIDTH,
+      borderRadius: 10,
+    },
+    timerButtonAbsolute: {
+      position: "absolute",
+      top: 0,
+      left: 0,
+      height: "100%",
+      width: TIMER_BUTTON_WIDTH,
+      backgroundColor: "transparent",
+      zIndex: 3,
+    },
+    blueLayer: {
+      backgroundColor: theme.blue,
+      zIndex: 2,
+    },
+    grayLayer: {
+      backgroundColor: theme.gray,
+    },
+    maskContent: {
+      flexDirection: "row",
+      gap: 5,
+      backgroundColor: "transparent",
+      height: "100%",
+      width: TIMER_BUTTON_WIDTH,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    textStyles: {
+      color: theme.textColor,
+      fontSize: 18,
+      fontWeight: "bold",
+    },
+  });
 
 export default TimerButton;

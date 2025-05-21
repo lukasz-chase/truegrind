@@ -8,13 +8,15 @@ import {
   interpolate,
   useAnimatedStyle,
 } from "react-native-reanimated";
-import { AppColors } from "@/constants/colors";
+import useThemeStore from "@/store/useThemeStore";
 
 const CustomBackdrop = ({
   animatedIndex,
   style,
   animatedPosition,
 }: BottomSheetBackdropProps) => {
+  const { theme } = useThemeStore((state) => state);
+
   // animated variables
   const containerAnimatedStyle = useAnimatedStyle(() => ({
     opacity: interpolate(
@@ -30,7 +32,7 @@ const CustomBackdrop = ({
     () => [
       style,
       {
-        backgroundColor: AppColors.semiTransparent,
+        backgroundColor: theme.semiTransparent,
       },
       containerAnimatedStyle,
     ],

@@ -12,12 +12,13 @@ import SetHistory from "./SetHistory";
 import SetInput from "./SetInput";
 import SetOrder from "./SetOrder";
 import SwipeToDelete from "@/components/SwipeToDelete";
-import { AppColors } from "@/constants/colors";
 import useTimerStore from "@/store/useTimer";
 import useWorkoutTimerModal from "@/store/useWorkoutTimerModal";
 import useCustomKeyboard from "@/store/useCustomKeyboard";
 import * as Haptics from "expo-haptics";
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import useThemeStore from "@/store/useThemeStore";
+import { ThemeColors } from "@/types/user";
 
 type Props = {
   exerciseSet: ExerciseSet;
@@ -49,7 +50,9 @@ const WorkoutSet = ({
   const { startTimer, endTimer, isRunning } = useTimerStore();
   const { openModal } = useWorkoutTimerModal();
   const { closeKeyboard } = useCustomKeyboard();
+  const { theme } = useThemeStore((state) => state);
 
+  const styles = useMemo(() => makeStyles(theme), [theme]);
   const [isNoDataInputError, setIsNotDataInputError] = useState(false);
 
   const updateExerciseSetHandler = (newValue: Partial<ExerciseSet>) => {
@@ -125,8 +128,8 @@ const WorkoutSet = ({
           styles.row,
           {
             backgroundColor: exerciseSet.completed
-              ? AppColors.lightGreen
-              : AppColors.white,
+              ? theme.lightGreen
+              : theme.background,
           },
         ]}
       >
@@ -192,20 +195,22 @@ const WorkoutSet = ({
   );
 };
 
-const styles = StyleSheet.create({
-  row: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-    borderRadius: 8,
-    overflow: "hidden",
-    paddingHorizontal: 10,
-  },
-  cell: {
-    paddingVertical: 10,
-    textAlign: "center",
-    justifyContent: "center",
-  },
-});
+const makeStyles = (theme: ThemeColors) =>
+  StyleSheet.create({
+    row: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 10,
+      borderRadius: 8,
+      overflow: "hidden",
+      paddingHorizontal: 10,
+      backgroundColor: theme.background,
+    },
+    cell: {
+      paddingVertical: 10,
+      textAlign: "center",
+      justifyContent: "center",
+    },
+  });
 
 export default WorkoutSet;

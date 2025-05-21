@@ -1,5 +1,6 @@
-import { AppColors } from "@/constants/colors";
-import React from "react";
+import useThemeStore from "@/store/useThemeStore";
+import { ThemeColors } from "@/types/user";
+import React, { useMemo } from "react";
 import {
   View,
   Modal,
@@ -20,6 +21,9 @@ export default function TemplateModal({
   closeModal,
   onPress,
 }: Props) {
+  const { theme } = useThemeStore((state) => state);
+
+  const styles = useMemo(() => makeStyles(theme), [theme]);
   const closeModalHandler = () => {
     closeModal();
     onPress(false);
@@ -42,7 +46,7 @@ export default function TemplateModal({
           update it?
         </Text>
         <Pressable
-          style={[styles.buttonWrapper, { backgroundColor: AppColors.blue }]}
+          style={[styles.buttonWrapper, { backgroundColor: theme.blue }]}
           onPress={() => onPress(true)}
         >
           <Text style={styles.buttonText}>Update Template</Text>
@@ -55,43 +59,44 @@ export default function TemplateModal({
   );
 }
 
-const styles = StyleSheet.create({
-  modalOverlay: {
-    backgroundColor: AppColors.semiTransparent,
-    position: "absolute",
-    width: "100%",
-    height: "100%",
-    top: 0,
-    left: 0,
-  },
-  modalContent: {
-    width: "90%",
-    paddingVertical: 30,
-    paddingHorizontal: 20,
-    borderRadius: 10,
-    alignItems: "center",
-    backgroundColor: AppColors.white,
-    gap: 20,
-    margin: "auto",
-  },
-  title: {
-    fontWeight: "bold",
-    fontSize: 18,
-  },
-  subtitle: {
-    textAlign: "center",
-    fontSize: 16,
-  },
-  buttonWrapper: {
-    paddingVertical: 20,
-    borderRadius: 10,
-    backgroundColor: AppColors.gray,
-    width: "100%",
-  },
-  buttonText: {
-    textAlign: "center",
-    fontWeight: "bold",
-    fontSize: 18,
-    color: AppColors.black,
-  },
-});
+const makeStyles = (theme: ThemeColors) =>
+  StyleSheet.create({
+    modalOverlay: {
+      backgroundColor: theme.semiTransparent,
+      position: "absolute",
+      width: "100%",
+      height: "100%",
+      top: 0,
+      left: 0,
+    },
+    modalContent: {
+      width: "90%",
+      paddingVertical: 30,
+      paddingHorizontal: 20,
+      borderRadius: 10,
+      alignItems: "center",
+      backgroundColor: theme.white,
+      gap: 20,
+      margin: "auto",
+    },
+    title: {
+      fontWeight: "bold",
+      fontSize: 18,
+    },
+    subtitle: {
+      textAlign: "center",
+      fontSize: 16,
+    },
+    buttonWrapper: {
+      paddingVertical: 20,
+      borderRadius: 10,
+      backgroundColor: theme.gray,
+      width: "100%",
+    },
+    buttonText: {
+      textAlign: "center",
+      fontWeight: "bold",
+      fontSize: 18,
+      color: theme.black,
+    },
+  });

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import {
   StyleSheet,
   Text,
@@ -8,9 +8,10 @@ import {
   GestureResponderEvent,
 } from "react-native";
 import AntDesign from "@expo/vector-icons/AntDesign";
-import { AppColors } from "@/constants/colors";
 import * as Haptics from "expo-haptics";
-import { Link, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
+import useThemeStore from "@/store/useThemeStore";
+import { AppTheme, AppThemeEnum, ThemeColors } from "@/types/user";
 
 type ItemType = {
   label: string;
@@ -36,6 +37,9 @@ export default function MeasurementList({
   measurements,
   onPressPlus,
 }: MeasurementListProps) {
+  const { theme, mode } = useThemeStore((state) => state);
+
+  const styles = useMemo(() => makeStyles(theme, mode), [theme, mode]);
   const router = useRouter();
   const handleRouteChange = (label: string) => {
     router.push(`/metrics/${label}`, {});
@@ -71,7 +75,7 @@ export default function MeasurementList({
                 style={styles.addButton}
                 onPress={(e) => pressHandler(e, item)}
               >
-                <AntDesign name="plus" size={24} color={AppColors.blue} />
+                <AntDesign name="plus" size={24} color={theme.blue} />
               </Pressable>
             </View>
           </Pressable>
@@ -80,35 +84,36 @@ export default function MeasurementList({
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  sectionTitle: {
-    fontSize: 18,
-    marginVertical: 10,
-    color: AppColors.darkGray,
-  },
-  list: {
-    gap: 5,
-  },
-  row: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-    justifyContent: "space-between",
-  },
-  partLabel: {
-    fontWeight: "bold",
-    fontSize: 18,
-  },
-  valueText: {
-    color: AppColors.darkGray,
-  },
-  addButton: {
-    backgroundColor: AppColors.lightBlue,
-    width: 40,
-    height: 40,
-    borderRadius: 50,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-});
+const makeStyles = (theme: ThemeColors, mode: AppTheme) =>
+  StyleSheet.create({
+    sectionTitle: {
+      fontSize: 18,
+      marginVertical: 10,
+      color: mode === AppThemeEnum.DARK ? theme.lightBlue : theme.darkGray,
+    },
+    list: {
+      gap: 5,
+    },
+    row: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 10,
+      justifyContent: "space-between",
+    },
+    partLabel: {
+      fontWeight: "bold",
+      fontSize: 18,
+      color: theme.textColor,
+    },
+    valueText: {
+      color: theme.textColor,
+    },
+    addButton: {
+      backgroundColor: theme.lightBlue,
+      width: 40,
+      height: 40,
+      borderRadius: 50,
+      justifyContent: "center",
+      alignItems: "center",
+    },
+  });

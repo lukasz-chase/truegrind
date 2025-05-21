@@ -1,7 +1,7 @@
 import { Platform, StyleSheet, Text } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import CustomImage from "@/components/CustomImage";
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 
 import useActiveWorkout from "@/store/useActiveWorkout";
 import WorkoutSummary from "@/components/WorkoutSummary";
@@ -34,6 +34,8 @@ import useActionModal from "@/store/useActionModal";
 import userStore from "@/store/userStore";
 import { generateNewColor } from "@/utils/colors";
 import { getCalendarDateFormat, getOrdinalSuffix } from "@/utils/calendar";
+import { ThemeColors } from "@/types/user";
+import useThemeStore from "@/store/useThemeStore";
 
 const TrophyImage = require("@/assets/images/trophy.webp");
 
@@ -53,7 +55,9 @@ export default function WorkoutFinishedScreen() {
   const { resetTimer, formattedTime } = useWorkoutTimer();
   const { openModal } = useActionModal();
   const { user } = userStore();
+  const { theme } = useThemeStore((state) => state);
 
+  const styles = useMemo(() => makeStyles(theme), [theme]);
   const [workout, setWorkout] = useState({
     ...activeWorkout,
     workout_time: formattedTime,
@@ -222,20 +226,24 @@ export default function WorkoutFinishedScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    height: "100%",
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 20,
-  },
-  title: {
-    fontWeight: "bold",
-    fontSize: 32,
-    marginVertical: 10,
-  },
-  subtitle: {
-    fontSize: 22,
-    marginVertical: 10,
-  },
-});
+const makeStyles = (theme: ThemeColors) =>
+  StyleSheet.create({
+    container: {
+      height: "100%",
+      justifyContent: "center",
+      alignItems: "center",
+      padding: 20,
+      backgroundColor: theme.background,
+    },
+    title: {
+      fontWeight: "bold",
+      fontSize: 32,
+      marginVertical: 10,
+      color: theme.textColor,
+    },
+    subtitle: {
+      fontSize: 22,
+      marginVertical: 10,
+      color: theme.textColor,
+    },
+  });

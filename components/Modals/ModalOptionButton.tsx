@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { Platform, Pressable, StyleSheet, Text } from "react-native";
 import * as Haptics from "expo-haptics";
-import { AppColors } from "@/constants/colors";
+import useThemeStore from "@/store/useThemeStore";
+import { ThemeColors } from "@/types/user";
 
 type Props = {
   title: string;
@@ -12,6 +13,9 @@ type Props = {
 };
 
 const ModalOptionButton = ({ title, Icon, cb, rightSide, isActive }: Props) => {
+  const { theme } = useThemeStore((state) => state);
+
+  const styles = useMemo(() => makeStyles(theme), [theme]);
   const handlePress = () => {
     if (Platform.OS !== "web") {
       Haptics.selectionAsync();
@@ -23,7 +27,7 @@ const ModalOptionButton = ({ title, Icon, cb, rightSide, isActive }: Props) => {
       style={[
         styles.pressableButton,
         {
-          backgroundColor: isActive ? AppColors.blue : "transparent",
+          backgroundColor: isActive ? theme.blue : "transparent",
         },
       ]}
       onPress={handlePress}
@@ -34,22 +38,23 @@ const ModalOptionButton = ({ title, Icon, cb, rightSide, isActive }: Props) => {
     </Pressable>
   );
 };
-const styles = StyleSheet.create({
-  pressableButton: {
-    width: "100%",
-    paddingVertical: 12,
-    paddingHorizontal: 10,
-    borderRadius: 6,
-    marginVertical: 6,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-  },
-  pressableText: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: AppColors.white,
-  },
-});
+const makeStyles = (theme: ThemeColors) =>
+  StyleSheet.create({
+    pressableButton: {
+      width: "100%",
+      paddingVertical: 12,
+      paddingHorizontal: 10,
+      borderRadius: 6,
+      marginVertical: 6,
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 10,
+    },
+    pressableText: {
+      fontSize: 16,
+      fontWeight: "bold",
+      color: theme.white,
+    },
+  });
 
 export default ModalOptionButton;
