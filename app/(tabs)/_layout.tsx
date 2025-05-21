@@ -25,16 +25,16 @@ import useThemeStore from "@/store/useThemeStore";
 export default function TabLayout() {
   const animatedIndex = useSharedValue(0);
   const { isSheetVisible } = useBottomSheet();
-  const { setActiveSplit, loading, setLoading } = useSplitsStore();
+  const { setActiveSplit, setLoading } = useSplitsStore();
   const { user } = userStore();
-  const { refetchNumber } = useAppStore();
+  const { refetchWorkouts } = useAppStore();
   const { theme } = useThemeStore((state) => state);
 
   const router = useRouter();
 
   useEffect(() => {
     getUserActiveSplit();
-  }, [user, refetchNumber]);
+  }, [user, refetchWorkouts]);
 
   useEffect(() => {
     if (user) {

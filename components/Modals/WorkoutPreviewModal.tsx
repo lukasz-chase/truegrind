@@ -33,13 +33,13 @@ export default function WorkoutPreviewModal({
   workout,
 }: Props) {
   const { user } = userStore();
-  const { refetchData } = useAppStore();
+  const { setRefetchWorkouts } = useAppStore();
   const { theme } = useThemeStore((state) => state);
   const styles = useMemo(() => makeStyles(theme), [theme]);
   const router = useRouter();
   const copyWorkoutHandler = async () => {
     await copyWorkout(workout, user!.id);
-    refetchData();
+    setRefetchWorkouts();
   };
   const editWorkoutTemplate = () => {
     router.push(`/template/${workout?.id}`);

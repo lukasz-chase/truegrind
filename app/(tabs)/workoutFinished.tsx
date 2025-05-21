@@ -50,7 +50,7 @@ export default function WorkoutFinishedScreen() {
     resetActiveWorkout,
     setPersistedStorage,
   } = useActiveWorkout();
-  const { refetchData } = useAppStore();
+  const { setRefetchWorkouts } = useAppStore();
   const { endTimer } = useTimerStore();
   const { resetTimer, formattedTime } = useWorkoutTimer();
   const { openModal } = useActionModal();
@@ -195,7 +195,7 @@ export default function WorkoutFinishedScreen() {
         workout_history_id: workoutHistoryId,
       });
 
-      refetchData();
+      setRefetchWorkouts();
       resetTimer();
       endTimer();
       resetActiveWorkout();

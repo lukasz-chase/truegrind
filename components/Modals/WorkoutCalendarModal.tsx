@@ -30,6 +30,7 @@ import CustomDateTimePicker from "../CustomDateTimePicker";
 import { generateNewColor } from "@/utils/colors";
 import useThemeStore from "@/store/useThemeStore";
 import { AppThemeEnum, ThemeColors } from "@/types/user";
+import useAppStore from "@/store/useAppStore";
 
 type Props = {
   isVisible: boolean;
@@ -53,8 +54,9 @@ export default function WorkoutCalendarModal({
   const { startTime, endTime, setStartTime, setEndTime, initializeTimes } =
     useWorkoutCalendar(pressedDate, workoutCalendarData);
   const { theme, mode } = useThemeStore((state) => state);
+  const { setRefetchUpcomingWorkout } = useAppStore();
 
-  const styles = useMemo(() => makeStyles(theme, mode), [theme, mode]);
+  const styles = useMemo(() => makeStyles(theme), [theme]);
   useEffect(() => {
     initializeTimes();
   }, [pressedDate.dateString]);
@@ -70,20 +72,21 @@ export default function WorkoutCalendarModal({
       if (existingWorkout.calendar_event_id) {
         await removeWorkoutFromLocalCalendar(existingWorkout.calendar_event_id);
       }
+      await deleteWorkoutCalendar(
+        workout.id,
+        pressedDate.dateString,
+        workout.user_id
+      );
       setWorkoutCalendarData(
         workoutCalendarData.filter(
           (w) => w.scheduled_date !== pressedDate.dateString
         )
       );
-      deleteWorkoutCalendar(
-        workout.id,
-        pressedDate.dateString,
-        workout.user_id
-      );
 
       if (Platform.OS !== "web") {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       }
+      setRefetchUpcomingWorkout();
       closeModal();
       return;
     }
@@ -109,12 +112,11 @@ export default function WorkoutCalendarModal({
 
     const populatedData = await upsertWorkoutCalendar(newWorkoutCalendar);
     if (populatedData) {
-      console.log(populatedData);
-
       setWorkoutCalendarData([...workoutCalendarData, populatedData]);
       if (Platform.OS !== "web") {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       }
+      setRefetchUpcomingWorkout();
       closeModal();
     }
   };

@@ -25,6 +25,7 @@ import ProfileSkeleton from "@/components/Skeletons/ProfileSkeleton";
 import { exportData } from "@/lib/supabaseActions";
 import useThemeStore from "@/store/useThemeStore";
 import { ThemeColors } from "@/types/user";
+import useAppStore from "@/store/useAppStore";
 
 export default function Profile() {
   const { user } = userStore();
@@ -39,6 +40,7 @@ export default function Profile() {
   const [exportLoading, setExportLoading] = useState(false);
 
   const { theme } = useThemeStore((state) => state);
+  const { refetchUpcomingWorkout } = useAppStore();
 
   const styles = useMemo(() => makeStyles(theme), [theme]);
 
@@ -77,10 +79,11 @@ export default function Profile() {
           upcomingWorkoutDataPromise,
           workoutFrequencyDataPromise,
         ]);
-
+      console.log(upcomingWorkoutData);
       if (goalData) setGoalMeasurement(goalData);
       if (weightData) setWeight(weightData);
       if (upcomingWorkoutData) setUpcomingWorkout(upcomingWorkoutData);
+      else setUpcomingWorkout(null);
       if (typeof workoutFrequencyData === "number") {
         setWorkoutFrequency(workoutFrequencyData);
       }
@@ -100,7 +103,7 @@ export default function Profile() {
 
   useEffect(() => {
     fetchData();
-  }, [user]);
+  }, [user, refetchUpcomingWorkout]);
 
   if (fetchLoading) {
     return <ProfileSkeleton parentStyles={styles} />;
@@ -174,7 +177,10 @@ export default function Profile() {
         <View style={styles.infoBox}>
           {upcomingWorkout ? (
             <>
-              <Text style={styles.infoBoxTitle}>
+              <Text
+                numberOfLines={2}
+                style={[styles.infoBoxTitle, { textOverflow: "ellipsis" }]}
+              >
                 {upcomingWorkout.workouts.name}
               </Text>
               <Text style={styles.infoBoxValue}>
@@ -300,7 +306,8 @@ const makeStyles = (theme: ThemeColors) =>
       alignItems: "center",
       justifyContent: "center",
       borderRadius: 10,
-      gap: 10,
+      gap: 5,
+      paddingHorizontal: 5,
     },
     infoBoxTitle: {
       textAlign: "center",

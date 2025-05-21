@@ -11,7 +11,7 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 type Props = {
   split: Split;
   userId: string;
-  refetchData: () => void;
+  setRefetchWorkouts: () => void;
   isActiveSplit: boolean;
   removeLocalSplit: (splitId: string) => void;
 };
@@ -19,7 +19,7 @@ type Props = {
 const SplitCard = ({
   split,
   userId,
-  refetchData,
+  setRefetchWorkouts,
   isActiveSplit,
   removeLocalSplit,
 }: Props) => {
@@ -30,7 +30,7 @@ const SplitCard = ({
   const chooseSplitHandler = () => {
     if (!isActiveSplit) router.push("/");
     updateUserProfile(userId, { active_split_id: split.id });
-    refetchData();
+    setRefetchWorkouts();
     router.push("/");
   };
 

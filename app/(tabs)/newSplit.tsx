@@ -18,7 +18,7 @@ export default function NewSplitScreen() {
   const [frequency, setFrequency] = useState("");
 
   const { user } = userStore();
-  const { refetchData } = useAppStore();
+  const { setRefetchWorkouts } = useAppStore();
   const { addSplit } = useSplitsStore();
   const { theme } = useThemeStore((state) => state);
 
@@ -36,7 +36,7 @@ export default function NewSplitScreen() {
     if (data) {
       addSplit(data);
       updateUserProfile(user!.id, { active_split_id: data.id });
-      refetchData();
+      setRefetchWorkouts();
       router.push("/");
       setSplitName("");
       setDescription("");

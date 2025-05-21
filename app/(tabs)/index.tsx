@@ -32,7 +32,7 @@ export default function WorkoutScreen() {
     setPersistedStorage,
   } = useActiveWorkout();
   const { user } = userStore();
-  const { refetchNumber } = useAppStore();
+  const { refetchWorkouts } = useAppStore();
   const { activeSplit: split, loading } = useSplitsStore();
   const { theme } = useThemeStore((state) => state);
 
@@ -41,7 +41,7 @@ export default function WorkoutScreen() {
 
   useEffect(() => {
     getExampleWorkouts();
-  }, [user, refetchNumber]);
+  }, [user, refetchWorkouts]);
 
   useEffect(() => {
     // this means that the active workout wasnt persisted so clear the flag,

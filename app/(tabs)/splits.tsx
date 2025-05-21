@@ -16,7 +16,7 @@ export default function SplitsScreen() {
   const [loading, setLoading] = useState(false);
 
   const { user } = userStore();
-  const { refetchData } = useAppStore();
+  const { setRefetchWorkouts } = useAppStore();
   const { setSplits, splits, removeSplit } = useSplitsStore();
   const { theme } = useThemeStore((state) => state);
 
@@ -63,7 +63,7 @@ export default function SplitsScreen() {
           <SplitCard
             split={item}
             userId={user!.id}
-            refetchData={refetchData}
+            refetchWorkouts={setRefetchWorkouts}
             isActiveSplit={item.id === user.active_split_id}
             removeLocalSplit={removeSplit}
           />

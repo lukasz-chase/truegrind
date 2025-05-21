@@ -20,18 +20,18 @@ const WorkoutOptionsModal = function ExerciseOptionsModal() {
   const styles = useMemo(() => makeStyles(theme), [theme]);
   const { isVisible, closeModal, workoutProps } = useWorkoutOptionsModal();
   const { buttonRef, workout } = workoutProps;
-  const { refetchData } = useAppStore();
+  const { setRefetchWorkouts } = useAppStore();
   const { user } = userStore();
   const router = useRouter();
   const { openModal: openActionModal } = useActionModal();
   const deleteWorkoutHandler = async () => {
     await deleteWorkout(workout!.id);
-    refetchData();
+    setRefetchWorkouts();
     closeModal();
   };
   const copyWorkoutHandler = async () => {
     await copyWorkout(workout!, user!.id);
-    refetchData();
+    setRefetchWorkouts();
     closeModal();
   };
   const editTemplateHandler = () => {

@@ -60,7 +60,7 @@ export default function WorkoutTemplate() {
   } = useWorkoutTemplate();
   const { isVisible: IsKeyboardVisible, closeKeyboard } = useCustomKeyboard();
   const { openModal, closeModal } = useWorkoutExercisesModal();
-  const { refetchData } = useAppStore();
+  const { setRefetchWorkouts } = useAppStore();
   const { activeSplit } = useSplitsStore();
 
   useEffect(() => {
@@ -116,7 +116,7 @@ export default function WorkoutTemplate() {
       await updateWorkoutExercises(workout, initialWorkout, true);
       await updateExerciseSets(workout, initialWorkout, true);
 
-      refetchData();
+      setRefetchWorkouts();
       goBackHandler();
       if (Platform.OS !== "web") {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);

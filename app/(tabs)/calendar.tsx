@@ -10,7 +10,6 @@ import { useRouter } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
 import { StyleSheet, ScrollView, View } from "react-native";
 import { Calendar } from "react-native-calendars";
-import useAppStore from "@/store/useAppStore";
 import WorkoutDay from "@/components/WorkoutDay";
 import LegendItem from "@/components/LegendItem";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -35,15 +34,14 @@ export default function CalendarScreen() {
   const styles = useMemo(() => makeStyles(theme), [theme]);
   const { activeSplit } = useSplitsStore();
   const { user } = userStore();
-  const { refetchNumber, refetchData } = useAppStore();
 
   useEffect(() => {
     getWorkoutCalendarData();
-  }, [refetchNumber]);
+  }, [currentMonth]);
 
   useEffect(() => {
     setMissedWorkouts();
-  }, [currentMonth]);
+  }, []);
 
   const getWorkoutCalendarData = async () => {
     try {
@@ -59,7 +57,7 @@ export default function CalendarScreen() {
   const setMissedWorkouts = async () => {
     try {
       const data = await updateMissedWorkouts(user!.id);
-      if (data) refetchData();
+      if (data) getWorkoutCalendarData();
     } catch (error) {
       console.log(error);
     }
