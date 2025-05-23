@@ -61,9 +61,13 @@ export default function WorkoutPreviewModal({
                 <Text style={styles.modalHeaderTitle} numberOfLines={1}>
                   {workout.name}
                 </Text>
-                <Pressable onPress={editWorkoutTemplate}>
-                  <Text style={styles.modalEditButton}>Edit</Text>
-                </Pressable>
+                {workout.user_id === user?.id ? (
+                  <Pressable onPress={editWorkoutTemplate}>
+                    <Text style={styles.modalEditButton}>Edit</Text>
+                  </Pressable>
+                ) : (
+                  <View style={{ width: 24 }} />
+                )}
               </View>
               <FlatList
                 style={styles.exercisesList}

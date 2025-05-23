@@ -120,6 +120,6 @@ export default (theme: ThemeColors) =>
       textAlign: "center",
     },
     selectedBarName: {
-      color: theme.black,
+      color: theme.textColor,
     },
   });

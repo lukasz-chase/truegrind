@@ -1,4 +1,5 @@
 import CustomHeader from "@/components/CustomHeader";
+import { deleteAuthUser } from "@/lib/userService";
 import useActionModal from "@/store/useActionModal";
 import userStore from "@/store/userStore";
 import useThemeStore from "@/store/useThemeStore";
@@ -18,7 +19,7 @@ export default function Privacy() {
     setLoading(true);
     if (!user) throw new Error("No user on the session!");
 
-    // await deleteAuthUser(user.id);
+    await deleteAuthUser(user.id);
     setLoading(false);
   };
   const openActionModal = () => {

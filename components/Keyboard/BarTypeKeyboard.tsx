@@ -9,7 +9,7 @@ import useThemeStore from "@/store/useThemeStore";
 
 type Props = {
   selectedBarType: BarTypeEnum | null;
-  setBarType: (barType: BarTypeEnum) => void;
+  setBarType: (barType: BarTypeEnum | null) => void;
   setKeyboardView: (value: KeyboardView) => void;
 };
 
@@ -49,7 +49,13 @@ const BarTypeKeyboard = ({
               styles.barButton,
               isSelectedBarType(barType.name) && styles.selectedBarButton,
             ]}
-            onPress={() => setBarType(barType.name)}
+            onPress={() => {
+              if (barType.name === selectedBarType) {
+                setBarType(null);
+              } else {
+                setBarType(barType.name);
+              }
+            }}
           >
             <Image
               source={images[barType.image as keyof typeof images]}

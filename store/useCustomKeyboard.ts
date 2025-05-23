@@ -44,6 +44,7 @@ interface KeyboardState {
   setPartials: (value: number | null) => void;
   updateSet: (newValue: Partial<ExerciseSet>) => void;
   registerInput: (id: string, setValueHandler: (value: string) => void) => void;
+  unRegisterInput: (id: string) => void;
   focusNextInput: () => void;
   completeSet: () => void;
   setBarType: (barType: BarTypeEnum | null) => void;
@@ -186,6 +187,15 @@ const useCustomKeyboard = create<KeyboardState>((set, get) => ({
         inputHandlers: { ...inputHandlers, [id]: setValueHandler },
       });
     }
+  },
+  unRegisterInput: (id) => {
+    const { inputOrder, inputHandlers } = get();
+    set({
+      inputOrder: inputOrder.filter((input) => input !== id),
+      inputHandlers: Object.fromEntries(
+        Object.entries(inputHandlers).filter(([key]) => key !== id)
+      ),
+    });
   },
   focusNextInput: () => {
     const {

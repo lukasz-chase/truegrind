@@ -56,6 +56,7 @@ const SetInput = ({
     activeField: activeSetInput,
     setPartials,
     registerInput,
+    unRegisterInput,
     setRPE,
     updateInputProps,
     setBarType,
@@ -77,6 +78,12 @@ const SetInput = ({
   useEffect(() => {
     registerInput(setInputId, setValueHandler);
   }, [setInputId, setValueHandler]);
+
+  useEffect(() => {
+    return () => {
+      unRegisterInput(setInputId);
+    };
+  }, []);
 
   useEffect(() => {
     if (isActive) updateUI();

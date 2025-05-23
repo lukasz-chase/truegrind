@@ -63,7 +63,7 @@ export default function SplitsScreen() {
           <SplitCard
             split={item}
             userId={user!.id}
-            refetchWorkouts={setRefetchWorkouts}
+            setRefetchWorkouts={setRefetchWorkouts}
             isActiveSplit={item.id === user.active_split_id}
             removeLocalSplit={removeSplit}
           />

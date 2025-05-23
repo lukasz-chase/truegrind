@@ -10,7 +10,7 @@ import MaskedView from "@react-native-masked-view/masked-view";
 import useCustomKeyboard from "@/store/useCustomKeyboard";
 import { formatTime } from "@/utils/calendar";
 import useThemeStore from "@/store/useThemeStore";
-import { ThemeColors } from "@/types/user";
+import { AppTheme, AppThemeEnum, ThemeColors } from "@/types/user";
 
 type Props = {
   openModal: () => void;
@@ -29,9 +29,9 @@ const TimerButton = ({
 }: Props) => {
   const animatedWidth = useSharedValue(TIMER_BUTTON_WIDTH);
   const { closeKeyboard } = useCustomKeyboard();
-  const { theme } = useThemeStore((state) => state);
+  const { theme, mode } = useThemeStore((state) => state);
 
-  const styles = useMemo(() => makeStyles(theme), [theme]);
+  const styles = useMemo(() => makeStyles(theme, mode), [theme, mode]);
   useEffect(() => {
     if (isRunning) {
       animatedWidth.value = withTiming(
@@ -109,10 +109,10 @@ const TimerButton = ({
   );
 };
 
-const makeStyles = (theme: ThemeColors) =>
+const makeStyles = (theme: ThemeColors, mode: AppTheme) =>
   StyleSheet.create({
     timerButton: {
-      backgroundColor: theme.black,
+      backgroundColor: mode === AppThemeEnum.DARK ? theme.black : theme.gray,
       padding: 10,
       width: 52,
       borderRadius: 10,

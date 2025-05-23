@@ -95,7 +95,9 @@ export default function AddMetricsModal({
             />
           </>
         ) : (
-          <Text>Loading...</Text>
+          <View style={{ height: 400 }}>
+            <Text style={{ color: theme.textColor }}>Loading...</Text>
+          </View>
         )}
       </View>
     </Modal>

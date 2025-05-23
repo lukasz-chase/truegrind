@@ -72,11 +72,12 @@ const makeStyles = (theme: ThemeColors) =>
       width: "100%",
       padding: 10,
       alignItems: "center",
-      backgroundColor: theme.gray,
+      backgroundColor: theme.black,
       borderRadius: 10,
     },
     buttonText: {
       fontSize: 16,
       fontWeight: "bold",
+      color: theme.white,
     },
   });

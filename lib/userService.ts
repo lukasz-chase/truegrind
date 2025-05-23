@@ -58,5 +58,11 @@ export const updateUserProfile = async (
   }
 };
 export const deleteAuthUser = async (userId: string) => {
-  await supabase.auth.admin.deleteUser(userId);
+  try {
+    await supabase.auth.admin.deleteUser(userId);
+    userStore.setState({ session: null, user: null });
+    await supabase.auth.signOut();
+  } catch (err) {
+    console.log(err);
+  }
 };
