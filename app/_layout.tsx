@@ -10,6 +10,7 @@ import * as Notifications from "expo-notifications";
 import * as SplashScreen from "expo-splash-screen";
 import { setStatusBarStyle, StatusBar } from "expo-status-bar";
 import useThemeStore from "@/store/useThemeStore";
+import { AppThemeEnum } from "@/types/user";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -47,7 +48,9 @@ export default function RootLayout() {
   };
 
   useEffect(() => {
-    setStatusBarStyle(mode);
+    setStatusBarStyle(
+      mode === AppThemeEnum.DARK ? AppThemeEnum.LIGHT : AppThemeEnum.DARK
+    );
 
     supabase.auth.getSession().then(({ data: { session } }) => {
       userStore.setState({ session });
@@ -89,7 +92,11 @@ export default function RootLayout() {
 
         <Stack.Screen name="+not-found" />
       </Stack>
-      <StatusBar style={mode} />
+      <StatusBar
+        style={
+          mode === AppThemeEnum.DARK ? AppThemeEnum.LIGHT : AppThemeEnum.DARK
+        }
+      />
     </>
   );
 }

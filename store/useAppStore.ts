@@ -2,19 +2,19 @@ import { create } from "zustand";
 
 type Store = {
   refetchWorkouts: number;
-  refetchUpcomingWorkout: number;
-  setRefetchUpcomingWorkout: () => void;
+  refetchProfileData: number;
+  setRefetchProfileData: () => void;
   setRefetchWorkouts: () => void;
 };
 
 const useAppStore = create<Store>((set) => ({
   refetchWorkouts: 0,
-  refetchUpcomingWorkout: 0,
+  refetchProfileData: 0,
   setRefetchWorkouts: () =>
     set((state) => ({ refetchWorkouts: state.refetchWorkouts + 1 })),
-  setRefetchUpcomingWorkout: () =>
+  setRefetchProfileData: () =>
     set((state) => ({
-      refetchUpcomingWorkout: state.refetchUpcomingWorkout + 1,
+      refetchProfileData: state.refetchProfileData + 1,
     })),
 }));
 

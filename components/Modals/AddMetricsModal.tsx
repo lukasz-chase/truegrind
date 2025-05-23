@@ -12,12 +12,13 @@ import CustomImage from "../CustomImage";
 import CustomTextInput from "../CustomTextInput";
 import useThemeStore from "@/store/useThemeStore";
 import { ThemeColors } from "@/types/user";
+import useAppStore from "@/store/useAppStore";
 const MeasurementsGuide = require("@/assets/images/measurementsGuide.png");
 
 type Props = {
   isVisible: boolean;
   closeModal: () => void;
-  onPress: (value: number) => void;
+  onPress: (value: number) => Promise<void>;
   label: string;
 };
 
@@ -28,7 +29,9 @@ export default function AddMetricsModal({
   label,
 }: Props) {
   const [inputValue, setInputValue] = useState("");
+  const [loading, setLoading] = useState(false);
   const { theme } = useThemeStore((state) => state);
+  const { setRefetchProfileData } = useAppStore();
 
   const styles = useMemo(() => makeStyles(theme), [theme]);
   const handleChange = (text: string) => {
@@ -38,13 +41,16 @@ export default function AddMetricsModal({
     setInputValue("");
     closeModal();
   };
-  const saveHandler = () => {
+  const saveHandler = async () => {
     if (inputValue !== "") {
+      setLoading(true);
       const replacedValue = inputValue.replace(",", ".");
       const numericValue = Number(replacedValue);
-      onPress(Number(numericValue));
+      await onPress(Number(numericValue));
+      setLoading(false);
       closeModal();
       setInputValue("");
+      setRefetchProfileData();
     }
   };
   return (
@@ -73,14 +79,24 @@ export default function AddMetricsModal({
             </Text>
           </Pressable>
         </View>
-        <Text style={styles.label}>{label}</Text>
-        <CustomTextInput
-          onChangeText={handleChange}
-          placeholder="Enter your measurement"
-          value={inputValue}
-          keyboardType="numeric"
-        />
-        <CustomImage imageUrl={MeasurementsGuide} height={350} width={300} />
+        {!loading ? (
+          <>
+            <Text style={styles.label}>{label}</Text>
+            <CustomTextInput
+              onChangeText={handleChange}
+              placeholder="Enter your measurement"
+              value={inputValue}
+              keyboardType="numeric"
+            />
+            <CustomImage
+              imageUrl={MeasurementsGuide}
+              height={350}
+              width={300}
+            />
+          </>
+        ) : (
+          <Text>Loading...</Text>
+        )}
       </View>
     </Modal>
   );

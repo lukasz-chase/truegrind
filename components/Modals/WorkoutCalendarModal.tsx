@@ -54,7 +54,7 @@ export default function WorkoutCalendarModal({
   const { startTime, endTime, setStartTime, setEndTime, initializeTimes } =
     useWorkoutCalendar(pressedDate, workoutCalendarData);
   const { theme, mode } = useThemeStore((state) => state);
-  const { setRefetchUpcomingWorkout } = useAppStore();
+  const { setRefetchProfileData } = useAppStore();
 
   const styles = useMemo(() => makeStyles(theme), [theme]);
   useEffect(() => {
@@ -86,7 +86,7 @@ export default function WorkoutCalendarModal({
       if (Platform.OS !== "web") {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       }
-      setRefetchUpcomingWorkout();
+      setRefetchProfileData();
       closeModal();
       return;
     }
@@ -116,7 +116,7 @@ export default function WorkoutCalendarModal({
       if (Platform.OS !== "web") {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       }
-      setRefetchUpcomingWorkout();
+      setRefetchProfileData();
       closeModal();
     }
   };

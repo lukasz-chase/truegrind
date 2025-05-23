@@ -40,7 +40,7 @@ export default function Profile() {
   const [exportLoading, setExportLoading] = useState(false);
 
   const { theme } = useThemeStore((state) => state);
-  const { refetchUpcomingWorkout } = useAppStore();
+  const { refetchProfileData } = useAppStore();
 
   const styles = useMemo(() => makeStyles(theme), [theme]);
 
@@ -79,7 +79,6 @@ export default function Profile() {
           upcomingWorkoutDataPromise,
           workoutFrequencyDataPromise,
         ]);
-      console.log(upcomingWorkoutData);
       if (goalData) setGoalMeasurement(goalData);
       if (weightData) setWeight(weightData);
       if (upcomingWorkoutData) setUpcomingWorkout(upcomingWorkoutData);
@@ -103,7 +102,7 @@ export default function Profile() {
 
   useEffect(() => {
     fetchData();
-  }, [user, refetchUpcomingWorkout]);
+  }, [user, refetchProfileData]);
 
   if (fetchLoading) {
     return <ProfileSkeleton parentStyles={styles} />;
@@ -199,7 +198,11 @@ export default function Profile() {
       <View style={styles.progressWrapper}>
         {goalMeasurement && user?.current_goal?.value ? (
           <>
-            <Text style={styles.infoBoxValue}>Goal progress</Text>
+            <Text style={styles.infoBoxValue}>
+              {user?.current_goal.value < goalMeasurement.value
+                ? "Goal reached!"
+                : "Goal progress"}
+            </Text>
             <View style={styles.progressInfo}>
               <Text style={styles.userInfo}>{goalMeasurement?.value}</Text>
               <Text style={styles.userInfo}>{user?.current_goal?.value}</Text>
@@ -210,12 +213,20 @@ export default function Profile() {
                 1
               )}
               width={350}
-              color={theme.blue}
+              color={
+                user?.current_goal.value < goalMeasurement.value
+                  ? theme.green
+                  : theme.blue
+              }
               style={styles.progress}
             />
           </>
         ) : (
-          <Text style={styles.userInfo}>No goal set</Text>
+          <Text style={styles.userInfo}>
+            {user?.current_goal?.value && !goalMeasurement
+              ? "Goal set, no measurements"
+              : "No goal set"}
+          </Text>
         )}
       </View>
       <View style={styles.buttonsWrapper}>
