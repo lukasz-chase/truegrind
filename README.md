@@ -1,50 +1,113 @@
-# Welcome to your Expo app 👋
+This is a workout tracking app, primarily inspired by the UI and UX of another popular app called Strong.
+Tech Stack: React Native, TypeScript, Expo, Supabase.
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Walkthrough:
+The app is divided into five main tabs: Profile, Metrics, Workout, Exercises, Calendar.
 
-## Get started
+Profile
+In this section, users can view personal information if they have filled it in:
 
-1. Install dependencies
+ - Profile picture
 
-   ```bash
-   npm install
-   ```
+ - Age
 
-2. Start the app
+- Height
 
-   ```bash
-    npx expo start
-   ```
+- Weight
 
-In the output, you'll find options to open the app in a
+- Workout frequency
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+- Upcoming workouts
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+- Metric goals
 
-## Get a fresh project
+From the Profile tab, users can:
 
-When you're ready, run:
+- Edit their personal data
 
-```bash
-npm run reset-project
-```
+- Set a metric goal to track
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+- Change the app theme
 
-## Learn more
+- Delete their account
 
-To learn more about developing your project with Expo, look at the following resources:
+- Export their data
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+- Sign out
 
-## Join the community
+Metrics
+Tracks the following data:
 
-Join our community of developers creating universal apps.
+- Core metrics: Weight, Body Fat
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+- Body parts: Neck, Shoulders, Chest, Left Biceps, Right Biceps, Left Forearm, Right Forearm, Waist, Stomach, Hips, Left Thigh, Right Thigh, Left Calf, Right Calf
+
+Each metric has a dedicated screen where the user can:
+
+- Add new entries
+
+- View data as a chart
+
+- View data in a list
+
+Workout
+This is the main screen of the app.
+Users can select a workout split from predefined options:
+
+- Bro Split
+
+- Full Body
+
+- Upper/Lower
+
+- Hybrid Split
+
+- Push Pull Legs
+
+Each split includes example workouts. Users can also create their own custom split.
+
+From this tab, users can:
+
+- Start a new workout
+
+- Choose a previously created workout
+
+- When starting a workout, a bottom sheet appears with the list of exercises and sets. Users can:
+
+- Delete or replace exercises
+
+- Add exercises from the list or create new ones
+
+- For each set, choose the type (Regular, Warmup, Drop Set)
+
+- Add notes
+
+- Set automatic timers (different for regular and warmup sets)
+
+- Input weight and reps
+
+Special features include:
+
+- A custom keyboard for setting weight, allowing selection of barbell type (which adjusts the bar weight)
+
+- On the reps input, users can add partials and RPE
+
+After completing the workout, users are taken to a summary page.
+
+Exercises
+A simple view listing all available exercises.
+Users can:
+
+- Create new exercises
+
+- Filter the list of exercises
+
+Calendar
+A calendar view that shows:
+
+- Completed workouts
+
+- Scheduled (upcoming) workouts
+
+When planning a workout for a future date, it is added to the user's phone calendar.
+Users can also tap on completed workouts to view their summary page.
