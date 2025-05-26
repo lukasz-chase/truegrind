@@ -86,7 +86,10 @@ const SetInput = ({
   }, []);
 
   useEffect(() => {
-    if (isActive) updateUI();
+    if (isActive) {
+      updateUI();
+      handleInputPress();
+    }
   }, [isActive]);
   const updateUI = () => {
     inputRef.current?.measureInWindow((pageX, pageY, width, height) => {
