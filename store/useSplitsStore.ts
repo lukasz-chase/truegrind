@@ -1,4 +1,5 @@
 import { Split, SplitPopulated } from "@/types/split";
+import { Workout } from "@/types/workout";
 import { create } from "zustand";
 
 type Store = {
@@ -10,6 +11,7 @@ type Store = {
   setActiveSplit: (split: SplitPopulated) => void;
   loading: boolean;
   setLoading: (loading: boolean) => void;
+  reorderWorkouts: (newOrder: Workout[]) => void;
 };
 
 const useSplitsStore = create<Store>((set) => ({
@@ -24,6 +26,23 @@ const useSplitsStore = create<Store>((set) => ({
   setActiveSplit: (split) => set({ activeSplit: split }),
   loading: false,
   setLoading: (loading) => set({ loading }),
+  reorderWorkouts: (newOrder) =>
+    set((state) => ({
+      splits: state.splits.map((split) =>
+        split.id === state.activeSplit?.id
+          ? {
+              ...split,
+              workouts: newOrder,
+            }
+          : split
+      ),
+      activeSplit: state.activeSplit
+        ? {
+            ...state.activeSplit,
+            workouts: newOrder,
+          }
+        : null,
+    })),
 }));
 
 export default useSplitsStore;

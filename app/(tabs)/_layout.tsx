@@ -46,11 +46,12 @@ export default function TabLayout() {
   }, [user]);
 
   const getUserActiveSplit = async () => {
+    if (!user) return;
     setLoading(true);
     try {
       const data = await fetchUserSplitWithWorkouts(
-        user!.id,
-        user!.active_split_id!
+        user.id,
+        user.active_split_id!
       );
       if (data) {
         setActiveSplit(data);

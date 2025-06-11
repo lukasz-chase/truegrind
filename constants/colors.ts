@@ -23,6 +23,7 @@ export const LightTheme = {
   background: "#FFFFFF",
   textColor: "#2B2E34",
   tabBackground: "#2B3135",
+  lightText: "#0000007e",
 };
 
 export const DarkTheme = {
@@ -50,4 +51,5 @@ export const DarkTheme = {
   background: "#2B3135",
   textColor: "#FFFFFF",
   tabBackground: "#2B3135",
+  lightText: "#ffffff67",
 };

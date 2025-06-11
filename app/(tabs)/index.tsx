@@ -8,14 +8,19 @@ import { StyleSheet, View, Text, Platform, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as Haptics from "expo-haptics";
 import uuid from "react-native-uuid";
-import { ScrollView } from "react-native-gesture-handler";
 import { useRouter } from "expo-router";
 import { Workout } from "@/types/workout";
-import { fetchExampleWorkouts } from "@/lib/workoutServices";
+import {
+  fetchExampleWorkouts,
+  updateWorkoutsBulk,
+} from "@/lib/workoutServices";
 import useSplitsStore from "@/store/useSplitsStore";
 import MainScreenSkeleton from "@/components/Skeletons/MainScreenSkeleton";
 import { ThemeColors } from "@/types/user";
 import useThemeStore from "@/store/useThemeStore";
+import DraggableFlatList, {
+  RenderItemParams,
+} from "react-native-draggable-flatlist";
 
 export default function WorkoutScreen() {
   const [exampleWorkouts, setExampleWorkouts] = useState<Workout[] | null>(
@@ -33,7 +38,7 @@ export default function WorkoutScreen() {
   } = useActiveWorkout();
   const { user } = userStore();
   const { refetchWorkouts } = useAppStore();
-  const { activeSplit: split, loading } = useSplitsStore();
+  const { activeSplit: split, loading, reorderWorkouts } = useSplitsStore();
   const { theme } = useThemeStore((state) => state);
 
   const styles = useMemo(() => makeStyles(theme), [theme]);
@@ -56,6 +61,20 @@ export default function WorkoutScreen() {
       setIsSheetVisible(true);
     }
   }, [activeWorkout, user]);
+
+  const handleReorderWorkouts = async (newOrder: Workout[]) => {
+    if (Platform.OS !== "web") {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    }
+    const updatedOrder = newOrder.map((w, i) => ({
+      ...w,
+      order: i + 1,
+    }));
+    reorderWorkouts(updatedOrder);
+
+    await updateWorkoutsBulk(updatedOrder);
+  };
+
   const getExampleWorkouts = async () => {
     setDataLoading(true);
     try {
@@ -78,6 +97,7 @@ export default function WorkoutScreen() {
       user_id: user!.id,
       workout_exercises: [],
       split_id: split!.id,
+      order: (split?.workouts.length ?? 0) + 1,
     });
     setIsSheetVisible(true);
     if (Platform.OS !== "web") {
@@ -88,61 +108,74 @@ export default function WorkoutScreen() {
     const templateId = uuid.v4();
     router.push(`/template/${templateId}`);
   };
+  const renderWorkoutCard = ({
+    item,
+    drag,
+    isActive,
+  }: RenderItemParams<Workout>) => (
+    <WorkoutCard workout={item} onLongPress={drag} isActive={isActive} />
+  );
+  const header = (
+    <>
+      <Text style={styles.title}>Start Workout</Text>
+      <Pressable onPress={() => router.push("/splits")}>
+        <View style={styles.splitButton}>
+          <Text
+            style={[
+              styles.actionButtonText,
+              {
+                color: theme.blue,
+              },
+            ]}
+          >
+            {split?.name}
+          </Text>
+        </View>
+      </Pressable>
+      <Pressable style={styles.actionButton} onPress={startAnEmptyWorkout}>
+        <Text style={styles.actionButtonText}>Start an Empty Workout</Text>
+      </Pressable>
+      <View style={styles.templateHeader}>
+        <Text style={styles.templatesTitle}>Templates</Text>
+        <Pressable style={styles.templatesButton} onPress={newTemplateHandler}>
+          <Text style={styles.templatesButtonText}>+ Template</Text>
+        </Pressable>
+      </View>
+      <Text style={styles.templatesText}>
+        My Templates ({split?.workouts.length})
+      </Text>
+    </>
+  );
+  const footer = exampleWorkouts ? (
+    <>
+      <Text style={[styles.templatesText, { marginTop: 20 }]}>
+        Example Templates ({exampleWorkouts.length})
+      </Text>
+      <View style={styles.workouts}>
+        {exampleWorkouts.map((w) => (
+          <WorkoutCard key={w.id} workout={w} />
+        ))}
+      </View>
+    </>
+  ) : null;
   if (loading || dataLoading || !split) {
     return <MainScreenSkeleton parentStyles={styles} />;
   }
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <ScrollView contentContainerStyle={styles.container}>
-        <Text style={styles.title}>Start Workout</Text>
-        <Pressable onPress={() => router.push("/splits")}>
-          <View style={styles.splitButton}>
-            <Text
-              style={[
-                styles.actionButtonText,
-                {
-                  color: theme.blue,
-                },
-              ]}
-            >
-              {split.name}
-            </Text>
-          </View>
-        </Pressable>
-        <Pressable style={styles.actionButton} onPress={startAnEmptyWorkout}>
-          <Text style={styles.actionButtonText}>Start an Empty Workout</Text>
-        </Pressable>
-        <View style={styles.templateHeader}>
-          <Text style={styles.templatesTitle}>Templates</Text>
-          <Pressable
-            style={styles.templatesButton}
-            onPress={newTemplateHandler}
-          >
-            <Text style={styles.templatesButtonText}>+ Template</Text>
-          </Pressable>
-        </View>
-        <Text style={styles.templatesText}>
-          My Templates ({split.workouts.length})
-        </Text>
-        <View style={styles.workouts}>
-          {split.workouts.map((workout) => (
-            <WorkoutCard key={workout.id} workout={workout} />
-          ))}
-        </View>
-        {exampleWorkouts && (
-          <>
-            <Text style={[styles.templatesText, { marginTop: 20 }]}>
-              Example Templates ({exampleWorkouts.length})
-            </Text>
-            <View style={styles.workouts}>
-              {exampleWorkouts.map((workout) => (
-                <WorkoutCard key={workout.id} workout={workout} />
-              ))}
-            </View>
-          </>
+      <DraggableFlatList
+        data={[...split.workouts].sort(
+          (a, b) => (a.order ?? 0) - (b.order ?? 0)
         )}
-      </ScrollView>
+        keyExtractor={(item) => item.id}
+        renderItem={renderWorkoutCard}
+        onDragEnd={({ data }) => handleReorderWorkouts(data)}
+        ListHeaderComponent={header}
+        ListFooterComponent={footer}
+        nestedScrollEnabled
+        contentContainerStyle={[styles.workouts, { paddingHorizontal: 10 }]}
+      />
     </SafeAreaView>
   );
 }
@@ -151,9 +184,6 @@ const makeStyles = (theme: ThemeColors) =>
     safeArea: {
       flex: 1,
       backgroundColor: theme.background,
-    },
-    container: {
-      paddingHorizontal: 20,
     },
     title: {
       fontSize: 32,
@@ -209,9 +239,6 @@ const makeStyles = (theme: ThemeColors) =>
     },
     workouts: {
       marginTop: 20,
-      flexDirection: "row",
-      flexWrap: "wrap",
-      justifyContent: "space-between",
       gap: 10,
     },
   });

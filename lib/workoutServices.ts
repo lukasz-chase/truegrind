@@ -36,6 +36,22 @@ export const updateWorkout = async (
       .eq("id", activeWorkout.id);
   }
 };
+export const updateWorkoutsBulk = async (workoutsToUpdate: Workout[]) => {
+  try {
+    const workoutsToUpdateNotPopulated = workoutsToUpdate.map((workout) => {
+      const { workout_exercises, ...workoutNotPopulated } = workout;
+      return workoutNotPopulated;
+    });
+
+    const { error } = await supabase
+      .from("workouts")
+      .upsert(workoutsToUpdateNotPopulated);
+
+    if (error) console.error("Supabase error:", error);
+  } catch (error) {
+    console.error("Unexpected error:", error);
+  }
+};
 export const deleteWorkout = async (workoutId: string) => {
   await supabase.from("workouts").delete().eq("id", workoutId);
 };

@@ -8,6 +8,7 @@ export type Workout = {
   split_id: string;
   workout_exercises?: WorkoutExercisePopulated[];
   created_at?: string;
+  order: number | null;
 };
 
 export type WorkoutHistory = {

@@ -7,6 +7,7 @@ export const initialWorkoutState = {
     user_id: "",
     split_id: "",
     workout_exercises: [],
+    order: null,
   },
   activeWorkout: {
     id: uuid.v4(),
@@ -14,6 +15,7 @@ export const initialWorkoutState = {
     user_id: "",
     split_id: "",
     workout_exercises: [],
+    order: null,
   },
   workoutWasUpdated: false,
   isNewWorkout: false,
