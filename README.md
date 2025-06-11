@@ -2,6 +2,7 @@ This is a workout tracking app, primarily inspired by the UI and UX of another p
 Tech Stack: React Native, TypeScript, Expo, Supabase.
 
 Walkthrough:
+https://www.youtube.com/watch?v=SJMwyyXW7Bk&ab_channel=coolwoocash
 The app is divided into five main tabs: Profile, Metrics, Workout, Exercises, Calendar.
 
 Profile
