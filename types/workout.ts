@@ -9,6 +9,7 @@ export type Workout = {
   workout_exercises?: WorkoutExercisePopulated[];
   created_at?: string;
   order: number | null;
+  folder_id: string | null;
 };
 
 export type WorkoutHistory = {

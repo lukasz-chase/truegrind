@@ -1,4 +1,4 @@
-export const profileLinks = [
+export const PROFILE_LINKS = [
   {
     label: "Edit Profile",
     href: "/profile/userForm",

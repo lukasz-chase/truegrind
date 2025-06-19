@@ -1,4 +1,4 @@
-export const LightTheme = {
+export const LIGHT_THEME = {
   gray: "#E9E9E9",
   darkGray: "#606669",
   lightGreen: "#EAFAF0",
@@ -26,7 +26,7 @@ export const LightTheme = {
   lightText: "#0000007e",
 };
 
-export const DarkTheme = {
+export const DARK_THEME = {
   gray: "#3D3D42",
   darkGray: "#25292e",
   lightGreen: "#152d1f",

@@ -1,4 +1,4 @@
-import { defaultActionModalState } from "@/constants/actionModal";
+import { DEFAULT_ACTION_MODAL_STATE } from "@/constants/actionModal";
 import { create } from "zustand";
 
 interface Props {
@@ -22,10 +22,13 @@ interface ModalState {
 const useActionModal = create<ModalState>((set, get) => ({
   isVisible: false,
   openModal: (props) => {
-    set({ isVisible: true, props: { ...defaultActionModalState, ...props } });
+    set({
+      isVisible: true,
+      props: { ...DEFAULT_ACTION_MODAL_STATE, ...props },
+    });
   },
   closeModal: () => set({ isVisible: false }),
-  props: defaultActionModalState,
+  props: DEFAULT_ACTION_MODAL_STATE,
 }));
 
 export default useActionModal;

@@ -5,7 +5,7 @@ import { StyleSheet, Text, View } from "react-native";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { fetchHighestWeightSet } from "@/lib/exerciseSetsService";
-import { barTypes } from "@/constants/keyboard";
+import { BAR_TYPES } from "@/constants/keyboard";
 import { formatDate } from "@/utils/calendar";
 import useThemeStore from "@/store/useThemeStore";
 import { ThemeColors } from "@/types/user";
@@ -79,7 +79,7 @@ const WorkoutSummary = ({ workout }: { workout: WorkoutHistory }) => {
       },
       { weight: 0, reps: 0, barType: null }
     );
-    const barType = barTypes.find((bar) => bar.name === best.barType);
+    const barType = BAR_TYPES.find((bar) => bar.name === best.barType);
     if (barType)
       return `${best.weight}kg (+${barType.weight}kg) x ${best.reps}`;
     return `${best.weight}kg x ${best.reps}`;

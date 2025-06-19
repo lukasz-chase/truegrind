@@ -1,4 +1,4 @@
-import { equipmentFilters, muscleFilters } from "@/constants/exerciseFilters";
+import { EQUIPMENT_FILTERS, MUSCLE_FILTERS } from "@/constants/exerciseFilters";
 import useThemeStore from "@/store/useThemeStore";
 import {
   exerciseFormData,
@@ -60,8 +60,8 @@ const OptionScreen = ({
       <FlatList
         data={
           currentScreen === exerciseFormScreensEnum.Equipment
-            ? equipmentFilters
-            : muscleFilters
+            ? EQUIPMENT_FILTERS
+            : MUSCLE_FILTERS
         }
         keyExtractor={(item) => item.value}
         style={styles.listWrapper}

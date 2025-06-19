@@ -1,6 +1,9 @@
 import { Platform, StyleSheet, Text } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { bodyPartsToMeasure, corePartsToMeasure } from "@/constants/metrics";
+import {
+  BODY_PARTS_TO_MEASURE,
+  CORE_PARTS_TO_MEASURE,
+} from "@/constants/metrics";
 import { ScrollView } from "react-native-gesture-handler";
 import AddMetricsModal from "@/components/Modals/AddMetricsModal";
 import { useEffect, useMemo, useState } from "react";
@@ -83,13 +86,13 @@ export default function MetricsScreen() {
         <ScrollView>
           <MeasurementList
             title="Core"
-            items={corePartsToMeasure}
+            items={CORE_PARTS_TO_MEASURE}
             measurements={displayedMeasurements}
             onPressPlus={openModalHandler}
           />
           <MeasurementList
             title="Body Parts"
-            items={bodyPartsToMeasure}
+            items={BODY_PARTS_TO_MEASURE}
             measurements={displayedMeasurements}
             onPressPlus={openModalHandler}
           />

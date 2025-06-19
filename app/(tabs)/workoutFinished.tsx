@@ -29,7 +29,7 @@ import {
   upsertWorkoutCalendar,
 } from "@/lib/workoutCalendarService";
 import { WorkoutCalendarStatusEnum } from "@/types/workoutCalendar";
-import { saveTemplate, updateTemplate } from "@/constants/actionModal";
+import { saveTemplate, UPDATE_TEMPLATE } from "@/constants/actionModal";
 import useActionModal from "@/store/useActionModal";
 import userStore from "@/store/userStore";
 import { generateNewColor } from "@/utils/colors";
@@ -93,10 +93,10 @@ export default function WorkoutFinishedScreen() {
         openModal({
           onCancel: () => saveWorkout(false),
           onProceed: () => saveWorkout(true),
-          subtitle: updateTemplate.subtitle,
-          title: updateTemplate.title,
-          proceedButtonLabeL: updateTemplate.proceedButtonLabeL,
-          cancelButtonLabel: updateTemplate.cancelButtonLabel,
+          subtitle: UPDATE_TEMPLATE.subtitle,
+          title: UPDATE_TEMPLATE.title,
+          proceedButtonLabeL: UPDATE_TEMPLATE.proceedButtonLabeL,
+          cancelButtonLabel: UPDATE_TEMPLATE.cancelButtonLabel,
           buttonsLayout: "column",
         });
       } else {

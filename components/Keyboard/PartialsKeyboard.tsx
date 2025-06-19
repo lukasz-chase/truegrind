@@ -3,7 +3,7 @@ import { AntDesign } from "@expo/vector-icons";
 import { KeyboardView, KeyboardViewEnum } from "@/types/customKeyboard";
 import { useEffect, useMemo, useState } from "react";
 import MemoizedScrollPicker from "../MemoizedScrollPicker";
-import { partialsInfo } from "@/constants/infoModal";
+import { PARTIALS_INFO } from "@/constants/infoModal";
 import useThemeStore from "@/store/useThemeStore";
 import KeyboardStyles from "./KeyboardStyles";
 
@@ -45,7 +45,7 @@ const PartialsKeyboard = ({
         <Pressable
           style={styles.headerButton}
           onPress={() =>
-            openInfoModal(partialsInfo.title, partialsInfo.description)
+            openInfoModal(PARTIALS_INFO.title, PARTIALS_INFO.description)
           }
         >
           <AntDesign name="question" size={24} color={theme.white} />

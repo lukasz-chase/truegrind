@@ -1,7 +1,7 @@
 import { BarTypeEnum } from "@/types/exercisesSets";
 
-export const keys = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"];
-export const rpeValues = [
+export const KEYS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"];
+export const RPE_VALUES = [
   {
     value: 6,
     label:
@@ -41,7 +41,7 @@ export const rpeValues = [
   },
 ];
 export const KEYBOARD_HEIGHT = 270;
-export const barTypes = [
+export const BAR_TYPES = [
   {
     name: BarTypeEnum.MEN_OLYMPIC_BAR,
     weight: 20,

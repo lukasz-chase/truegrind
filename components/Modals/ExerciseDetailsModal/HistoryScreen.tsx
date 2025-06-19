@@ -1,7 +1,7 @@
 import { FlatList, StyleSheet, Text, View } from "react-native";
 import { ExerciseSet } from "@/types/exercisesSets";
 import { WorkoutMetrics } from "@/types/workoutMetrics";
-import { barTypes } from "@/constants/keyboard";
+import { BAR_TYPES } from "@/constants/keyboard";
 import { formatDate } from "@/utils/calendar";
 import HistorySkeleton from "@/components/Skeletons/HistorySkeleton";
 import useThemeStore from "@/store/useThemeStore";
@@ -28,7 +28,7 @@ const HistoryScreen = ({
   }
   const getBarType = (barType: string | null) => {
     if (!barType) return "";
-    const bar = barTypes.find((type) => type.name === barType);
+    const bar = BAR_TYPES.find((type) => type.name === barType);
     return ` +${bar?.weight}kg`;
   };
   const renderItem = ({ item }: { item: any }) => (

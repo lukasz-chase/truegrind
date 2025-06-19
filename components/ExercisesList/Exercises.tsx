@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import { Exercise } from "@/types/exercises";
 import { StyleSheet, View, Pressable, Text, SectionList } from "react-native";
 import ExerciseRow from "@/components/ExerciseRow";
-import { equipmentFilters, muscleFilters } from "@/constants/exerciseFilters";
+import { EQUIPMENT_FILTERS, MUSCLE_FILTERS } from "@/constants/exerciseFilters";
 import CustomTextInput from "../CustomTextInput";
 import exercisesStore from "@/store/exercisesStore";
 import AntDesign from "@expo/vector-icons/AntDesign";
@@ -105,14 +105,14 @@ const Exercises = ({ onPress, selectedExercises }: Props) => {
         <View style={styles.pickerContainer}>
           <CustomSelect
             buttonLabel="Any Body Part"
-            data={muscleFilters}
+            data={MUSCLE_FILTERS}
             selectedValue={selectedMuscle}
             setSelectedValue={setSelectedMuscle}
             anchor="LEFT"
           />
           <CustomSelect
             buttonLabel="Any Equipment"
-            data={equipmentFilters}
+            data={EQUIPMENT_FILTERS}
             selectedValue={selectedEquipment}
             setSelectedValue={setSelectedEquipment}
             anchor="RIGHT"

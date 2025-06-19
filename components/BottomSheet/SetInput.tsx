@@ -8,7 +8,7 @@ import Animated, {
   withRepeat,
   withTiming,
 } from "react-native-reanimated";
-import { barTypes, KEYBOARD_HEIGHT, rpeValues } from "@/constants/keyboard";
+import { BAR_TYPES, KEYBOARD_HEIGHT, RPE_VALUES } from "@/constants/keyboard";
 import useBottomSheet from "@/store/useBottomSheet";
 import useThemeStore from "@/store/useThemeStore";
 import { AppThemeEnum, ThemeColors } from "@/types/user";
@@ -121,7 +121,9 @@ const SetInput = ({
     );
     if (partialsValue) setPartials(partialsValue);
     if (rpeValue) {
-      const keyboardRPE = rpeValues.find((mapRpe) => rpeValue === mapRpe.value);
+      const keyboardRPE = RPE_VALUES.find(
+        (mapRpe) => rpeValue === mapRpe.value
+      );
       setRPE(keyboardRPE!);
     }
     if (barType) setBarType(barType);
@@ -134,7 +136,7 @@ const SetInput = ({
     };
   });
   const getBarType = () => {
-    const foundBarType = barTypes.find((bar) => bar.name === barType);
+    const foundBarType = BAR_TYPES.find((bar) => bar.name === barType);
     return foundBarType?.weight;
   };
   return (

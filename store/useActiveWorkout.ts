@@ -11,7 +11,7 @@ import { createJSONStorage, persist } from "zustand/middleware";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getHistoryExerciseData } from "@/lib/exercisesService";
 import userStore from "./userStore";
-import { initialWorkoutState } from "@/constants/initialState";
+import { INITIAL_WORKOUT_STATE } from "@/constants/initialState";
 
 interface ActiveWorkoutStore {
   initialActiveWorkout: Workout;
@@ -55,11 +55,11 @@ interface ActiveWorkoutStore {
 const useActiveWorkout = create<ActiveWorkoutStore>()(
   persist(
     (set, get) => ({
-      initialActiveWorkout: initialWorkoutState.initialActiveWorkout,
-      activeWorkout: initialWorkoutState.activeWorkout,
-      workoutWasUpdated: initialWorkoutState.workoutWasUpdated,
-      isNewWorkout: initialWorkoutState.isNewWorkout,
-      persistedStorage: initialWorkoutState.persistedStorage,
+      initialActiveWorkout: INITIAL_WORKOUT_STATE.initialActiveWorkout,
+      activeWorkout: INITIAL_WORKOUT_STATE.activeWorkout,
+      workoutWasUpdated: INITIAL_WORKOUT_STATE.workoutWasUpdated,
+      isNewWorkout: INITIAL_WORKOUT_STATE.isNewWorkout,
+      persistedStorage: INITIAL_WORKOUT_STATE.persistedStorage,
       setIsNewWorkout: (value: boolean) => set({ isNewWorkout: value }),
       setActiveWorkout: (
         workout,
@@ -340,7 +340,7 @@ const useActiveWorkout = create<ActiveWorkoutStore>()(
           };
         });
       },
-      resetActiveWorkout: () => set(initialWorkoutState),
+      resetActiveWorkout: () => set(INITIAL_WORKOUT_STATE),
       setPersistedStorage: (value: boolean) => set({ persistedStorage: value }),
     }),
     {

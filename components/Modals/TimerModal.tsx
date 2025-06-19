@@ -10,7 +10,7 @@ import CloseButton from "../CloseButton";
 import useWorkoutTimerModal from "@/store/useWorkoutTimerModal";
 import { updateUserProfile } from "@/lib/userService";
 import useInfoModal from "@/store/useInfoModal";
-import { timerInfo } from "@/constants/infoModal";
+import { TIMER_INFO } from "@/constants/infoModal";
 import { SCREEN_WIDTH } from "@/constants/device";
 import { formatTime } from "@/utils/calendar";
 import useThemeStore from "@/store/useThemeStore";
@@ -45,7 +45,7 @@ export default function TimerModal() {
   };
 
   const openInfoModalHandler = () => {
-    openInfoModal(timerInfo.title, timerInfo.description);
+    openInfoModal(TIMER_INFO.title, TIMER_INFO.description);
     closeModalHandler();
   };
 

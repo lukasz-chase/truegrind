@@ -1,4 +1,4 @@
-export const muscleFilters = [
+export const MUSCLE_FILTERS = [
   { label: "Chest", value: "chest" },
   { label: "Back", value: "back" },
   { label: "Legs", value: "legs" },
@@ -7,7 +7,7 @@ export const muscleFilters = [
   { label: "Shoulders", value: "shoulders" },
   { label: "Abs/Core", value: "abs" },
 ];
-export const equipmentFilters = [
+export const EQUIPMENT_FILTERS = [
   { label: "Barbell", value: "barbell" },
   { label: "Dumbbell", value: "dumbbell" },
   { label: "Machine", value: "machine" },

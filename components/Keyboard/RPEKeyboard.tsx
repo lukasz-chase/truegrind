@@ -1,8 +1,8 @@
 import { View, Text, Pressable } from "react-native";
-import { rpeValues } from "@/constants/keyboard";
+import { RPE_VALUES } from "@/constants/keyboard";
 import { AntDesign } from "@expo/vector-icons";
 import { KeyboardView, KeyboardViewEnum } from "@/types/customKeyboard";
-import { rpeInfo } from "@/constants/infoModal";
+import { RPE_INFO } from "@/constants/infoModal";
 import useThemeStore from "@/store/useThemeStore";
 import { useMemo } from "react";
 import KeyboardStyles from "./KeyboardStyles";
@@ -28,7 +28,7 @@ const RPEKeyboard = ({
       <View style={styles.header}>
         <Pressable
           style={styles.headerButton}
-          onPress={() => openInfoModal(rpeInfo.title, rpeInfo.description)}
+          onPress={() => openInfoModal(RPE_INFO.title, RPE_INFO.description)}
         >
           <AntDesign name="question" size={24} color={theme.white} />
         </Pressable>
@@ -41,7 +41,7 @@ const RPEKeyboard = ({
       </View>
       <Text style={styles.buttonText}>{selectedRPE.label}</Text>
       <View style={styles.rpeButtons}>
-        {rpeValues.map((rpe) => (
+        {RPE_VALUES.map((rpe) => (
           <Pressable
             key={rpe.value}
             style={[

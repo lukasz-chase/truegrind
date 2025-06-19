@@ -1,5 +1,5 @@
 import ChartsSkeleton from "@/components/Skeletons/ChartsSkeleton";
-import { chartConfig } from "@/constants/chart";
+import { CHART_CONFIG } from "@/constants/chart";
 import { SCREEN_WIDTH } from "@/constants/device";
 import useThemeStore from "@/store/useThemeStore";
 import { ThemeColors } from "@/types/user";
@@ -63,7 +63,7 @@ const ChartsScreen = ({
         }}
         width={SCREEN_WIDTH - 50}
         height={220}
-        chartConfig={chartConfig(theme)}
+        CHART_CONFIG={CHART_CONFIG(theme)}
         bezier
         style={styles.chart}
         fromZero
@@ -77,7 +77,7 @@ const ChartsScreen = ({
         }}
         width={SCREEN_WIDTH - 50}
         height={220}
-        chartConfig={chartConfig(theme)}
+        CHART_CONFIG={CHART_CONFIG(theme)}
         bezier
         style={styles.chart}
         fromZero
@@ -91,7 +91,7 @@ const ChartsScreen = ({
         }}
         width={SCREEN_WIDTH - 65}
         height={220}
-        chartConfig={chartConfig(theme)}
+        CHART_CONFIG={CHART_CONFIG(theme)}
         bezier
         style={styles.chart}
         yAxisSuffix="kg"
@@ -105,7 +105,7 @@ const ChartsScreen = ({
         }}
         width={SCREEN_WIDTH - 50}
         height={220}
-        chartConfig={chartConfig(theme)}
+        CHART_CONFIG={CHART_CONFIG(theme)}
         bezier
         style={styles.chart}
         fromZero

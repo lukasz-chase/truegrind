@@ -1,13 +1,13 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { Appearance } from "react-native";
-import { DarkTheme, LightTheme } from "@/constants/colors";
+import { DARK_THEME, LIGHT_THEME } from "@/constants/colors";
 import { AppTheme, AppThemeEnum } from "@/types/user";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type ThemeState = {
   mode: AppTheme;
-  theme: typeof LightTheme;
+  theme: typeof LIGHT_THEME;
   changeTheme: (theme: AppTheme) => void;
 };
 
@@ -16,12 +16,12 @@ export default create<ThemeState>()(
     (set, get) => ({
       mode: (Appearance.getColorScheme() as AppTheme) || "light",
       get theme() {
-        return get().mode === AppThemeEnum.LIGHT ? LightTheme : DarkTheme;
+        return get().mode === AppThemeEnum.LIGHT ? LIGHT_THEME : DARK_THEME;
       },
       changeTheme: (theme) => {
         set({
           mode: theme,
-          theme: theme === AppThemeEnum.LIGHT ? LightTheme : DarkTheme,
+          theme: theme === AppThemeEnum.LIGHT ? LIGHT_THEME : DARK_THEME,
         });
       },
     }),

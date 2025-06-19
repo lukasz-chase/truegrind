@@ -1,6 +1,6 @@
 import uuid from "react-native-uuid";
 
-export const initialWorkoutState = {
+export const INITIAL_WORKOUT_STATE = {
   initialActiveWorkout: {
     id: uuid.v4(),
     name: "New workout",
@@ -8,6 +8,7 @@ export const initialWorkoutState = {
     split_id: "",
     workout_exercises: [],
     order: null,
+    folder_id: null,
   },
   activeWorkout: {
     id: uuid.v4(),
@@ -16,8 +17,11 @@ export const initialWorkoutState = {
     split_id: "",
     workout_exercises: [],
     order: null,
+    folder_id: null,
   },
   workoutWasUpdated: false,
   isNewWorkout: false,
   persistedStorage: false,
 };
+
+export const INITIAL_FOLDER_NAME = "Uncollected";

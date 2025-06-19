@@ -1,6 +1,6 @@
-import { LightTheme } from "./colors";
+import { LIGHT_THEME } from "./colors";
 
-export const updateTemplate = {
+export const UPDATE_TEMPLATE = {
   title: "Update Template",
   subtitle:
     "You've made changes from your original template. Would you like to update it?",
@@ -15,11 +15,11 @@ export const saveTemplate = {
   cancelButtonLabel: "No thanks!",
 };
 
-export const defaultActionModalState = {
+export const DEFAULT_ACTION_MODAL_STATE = {
   title: "",
   subtitle: "",
   proceedButtonLabeL: "Delete",
-  proceedButtonBgColor: LightTheme.red,
+  proceedButtonBgColor: LIGHT_THEME.red,
   cancelButtonLabel: "Cancel",
   buttonsLayout: "row" as const,
   onCancel: () => {},

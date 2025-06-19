@@ -3,7 +3,7 @@ import { Pressable, StyleSheet, Text } from "react-native";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { SetHistoryProps } from "@/types/exercisesSets";
 import { fetchSetsHistory } from "@/lib/exerciseSetsService";
-import { barTypes } from "@/constants/keyboard";
+import { BAR_TYPES } from "@/constants/keyboard";
 import useThemeStore from "@/store/useThemeStore";
 import { AppTheme, AppThemeEnum, ThemeColors } from "@/types/user";
 
@@ -46,7 +46,7 @@ const SetHistory = ({ exerciseId, setOrder, userId, bulkUpdateSet }: Props) => {
     if (!exerciseHistory)
       return <AntDesign name="minus" size={42} color={theme.gray} />;
     const getBarType = () => {
-      const barType = barTypes.find(
+      const barType = BAR_TYPES.find(
         (bar) => bar.name === exerciseHistory.bar_type
       );
       return ` +${barType?.weight}`;

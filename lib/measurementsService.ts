@@ -1,10 +1,10 @@
 import { Measurement } from "@/types/measurements";
 import { supabase } from "./supabase";
-import { allMetrics } from "@/constants/metrics";
+import { ALL_METRICS } from "@/constants/metrics";
 
 export const fetchAllUserMeasurements = async (userId: string) => {
   const measurementsArray = await Promise.all(
-    allMetrics.map(async (metric) => {
+    ALL_METRICS.map(async (metric) => {
       const data = await fetchUserMeasurementsSingle(userId, metric.label);
 
       return data ?? null;

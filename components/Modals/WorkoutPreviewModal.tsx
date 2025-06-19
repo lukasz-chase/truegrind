@@ -8,7 +8,6 @@ import {
   Pressable,
 } from "react-native";
 import ExerciseRow from "../ExerciseRow";
-import { Workout } from "@/types/workout";
 import CloseButton from "../CloseButton";
 import userStore from "@/store/userStore";
 import { copyWorkout } from "@/lib/workoutServices";
@@ -17,47 +16,41 @@ import { useRouter } from "expo-router";
 import useThemeStore from "@/store/useThemeStore";
 import { useMemo } from "react";
 import { ThemeColors } from "@/types/user";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import useWorkoutPreviewModal from "@/store/useWorkoutPreviewModal";
 
-type Props = {
-  visible: boolean;
-  onClose: () => void;
-  startWorkout: () => void;
-  workout: Workout;
-};
-
-export default function WorkoutPreviewModal({
-  visible,
-  onClose,
-  startWorkout,
-  workout,
-}: Props) {
+export default function WorkoutPreviewModal() {
+  const { closeModal, isVisible, startWorkout, workout } =
+    useWorkoutPreviewModal();
   const { user } = userStore();
   const { setRefetchWorkouts } = useAppStore();
   const { theme } = useThemeStore((state) => state);
   const styles = useMemo(() => makeStyles(theme), [theme]);
   const router = useRouter();
+  if (!workout) return null;
   const copyWorkoutHandler = async () => {
     await copyWorkout(workout, user!.id);
     setRefetchWorkouts();
   };
   const editWorkoutTemplate = () => {
     router.push(`/template/${workout?.id}`);
-    onClose();
+    closeModal();
   };
+  const exercises = workout.workout_exercises
+    ? [...workout.workout_exercises].sort((a, b) => a.order - b.order)
+    : [];
   return (
     <Modal
       transparent={true}
-      visible={visible}
+      visible={isVisible}
       animationType="fade"
-      onRequestClose={onClose}
+      onRequestClose={closeModal}
     >
-      <TouchableWithoutFeedback onPress={onClose}>
+      <TouchableWithoutFeedback onPress={closeModal}>
         <View style={styles.modalOverlay}>
           <TouchableWithoutFeedback>
             <View style={styles.modalContent}>
               <View style={styles.modalHeader}>
-                <CloseButton onPress={onClose} />
+                <CloseButton onPress={closeModal} />
                 <Text style={styles.modalHeaderTitle} numberOfLines={1}>
                   {workout.name}
                 </Text>
@@ -71,9 +64,7 @@ export default function WorkoutPreviewModal({
               </View>
               <FlatList
                 style={styles.exercisesList}
-                data={workout.workout_exercises?.sort(
-                  (a, b) => a.order - b.order
-                )}
+                data={exercises}
                 renderItem={({ item }) => (
                   <View style={styles.workoutWrapper}>
                     {item.superset && (
@@ -130,6 +121,7 @@ const makeStyles = (theme: ThemeColors) =>
       alignItems: "center",
       backgroundColor: theme.background,
       minHeight: 150,
+      maxHeight: 500,
     },
     modalHeader: {
       display: "flex",

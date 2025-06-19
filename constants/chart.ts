@@ -1,6 +1,6 @@
 import { ThemeColors } from "@/types/user";
 
-export const chartConfig = (theme: ThemeColors) => ({
+export const CHART_CONFIG = (theme: ThemeColors) => ({
   backgroundColor: theme.background,
   backgroundGradientFrom: theme.background,
   backgroundGradientTo: theme.background,

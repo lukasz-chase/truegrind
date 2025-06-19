@@ -2,68 +2,56 @@ import { StyleSheet, View } from "react-native";
 import AnchoredModal from "./AnchoredModal";
 import ModalOptionButton from "./ModalOptionButton";
 import { EvilIcons } from "@expo/vector-icons";
-import useWorkoutOptionsModal from "@/store/useWorkoutOptionsModal";
 import useAppStore from "@/store/useAppStore";
-import { copyWorkout, deleteWorkout } from "@/lib/workoutServices";
 import userStore from "@/store/userStore";
-import AntDesign from "@expo/vector-icons/AntDesign";
 import { useMemo } from "react";
-import { useRouter } from "expo-router";
 import useActionModal from "@/store/useActionModal";
 import useThemeStore from "@/store/useThemeStore";
 import { ThemeColors } from "@/types/user";
+import useFolderOptionsModal from "@/store/useFolderOptionsModal";
+import { deleteFolder } from "@/lib/folderService";
+import useUpsertFolderModal from "@/store/useUpsertFolderModal";
 
 const MODAL_WIDTH = 170;
 
-const WorkoutOptionsModal = function ExerciseOptionsModal() {
+const FolderOptionsModal = function ExerciseOptionsModal() {
   const { theme } = useThemeStore((state) => state);
   const styles = useMemo(() => makeStyles(theme), [theme]);
-  const { isVisible, closeModal, workoutProps } = useWorkoutOptionsModal();
-  const { buttonRef, workout } = workoutProps;
+
+  const { isVisible, closeModal, props } = useFolderOptionsModal();
+  const { buttonRef, folderId, folderName } = props;
   const { setRefetchWorkouts } = useAppStore();
-  const { user } = userStore();
-  const router = useRouter();
   const { openModal: openActionModal } = useActionModal();
-  const deleteWorkoutHandler = async () => {
-    await deleteWorkout(workout!.id);
+  const { openModal: openUpsertFolderModal } = useUpsertFolderModal();
+
+  const deleteFolderHandler = async () => {
+    await deleteFolder(folderId!);
     setRefetchWorkouts();
     closeModal();
   };
-  const copyWorkoutHandler = async () => {
-    await copyWorkout(workout!, user!.id);
-    setRefetchWorkouts();
-    closeModal();
-  };
+
   const editTemplateHandler = () => {
-    router.push(`/template/${workout?.folder_id}/${workout?.id}`);
+    openUpsertFolderModal({ folderId: folderId!, folderName: folderName! });
     closeModal();
   };
   const openActionModalHandler = () => {
     openActionModal({
       title: "Delete Workout",
-      subtitle: `Are you sure you want to delete ${workout?.name}?`,
-      onProceed: deleteWorkoutHandler,
+      subtitle: `Are you sure you want to folder ${folderName}?`,
+      onProceed: deleteFolderHandler,
     });
     closeModal();
   };
   const options = [
     {
-      Icon: <AntDesign name="copy1" size={24} color={theme.white} />,
-      title: "Copy",
-      cb: copyWorkoutHandler,
-      conditionToDisplay: workout?.user_id !== user?.id,
-    },
-    {
       Icon: <EvilIcons name="pencil" size={24} color={theme.blue} />,
-      title: "Edit template",
+      title: "Edit folder",
       cb: editTemplateHandler,
-      conditionToDisplay: workout?.user_id === user?.id,
     },
     {
       Icon: <EvilIcons name="close" size={24} color={theme.red} />,
       title: "Delete",
       cb: openActionModalHandler,
-      conditionToDisplay: workout?.user_id === user?.id,
     },
   ];
 
@@ -78,9 +66,7 @@ const WorkoutOptionsModal = function ExerciseOptionsModal() {
     >
       <View style={styles.wrapper}>
         {options.map((option) => {
-          if (option.conditionToDisplay) {
-            return <ModalOptionButton key={option.title} {...option} />;
-          }
+          return <ModalOptionButton key={option.title} {...option} />;
         })}
       </View>
     </AnchoredModal>
@@ -97,4 +83,4 @@ const makeStyles = (theme: ThemeColors) =>
     },
   });
 
-export default WorkoutOptionsModal;
+export default FolderOptionsModal;

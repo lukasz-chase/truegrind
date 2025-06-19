@@ -1,6 +1,6 @@
 import { Tabs, useRouter } from "expo-router";
 import FontAwesomeIcons from "@expo/vector-icons/FontAwesome";
-import { hiddenScreens, NavigationData } from "@/constants/tabs";
+import { HIDDEN_SCREENS, NAVIGATION_DATA } from "@/constants/tabs";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import CustomTabBar from "@/components/CustomTabBar";
 import WorkoutBottomSheet from "@/components/BottomSheet/WorkoutBottomSheet";
@@ -21,6 +21,9 @@ import useAppStore from "@/store/useAppStore";
 import InfoModal from "@/components/Modals/InfoModal";
 import ActionModal from "@/components/Modals/ActionModal";
 import useThemeStore from "@/store/useThemeStore";
+import WorkoutPreviewModal from "@/components/Modals/WorkoutPreviewModal";
+import FolderOptionsModal from "@/components/Modals/FolderOptionsModal";
+import UpsertFolderModal from "@/components/Modals/UpsertFolderModal";
 
 export default function TabLayout() {
   const animatedIndex = useSharedValue(0);
@@ -74,6 +77,9 @@ export default function TabLayout() {
           <SetOptionsModal />
           <WorkoutOptionsModal />
           <ExerciseDetailsModal />
+          <WorkoutPreviewModal />
+          <FolderOptionsModal />
+          <UpsertFolderModal />
         </SafeAreaView>
         <Tabs
           initialRouteName="index"
@@ -88,7 +94,7 @@ export default function TabLayout() {
             <CustomTabBar {...props} animatedIndex={animatedIndex} />
           )}
         >
-          {hiddenScreens.map(({ name, additionalOptions }) => (
+          {HIDDEN_SCREENS.map(({ name, additionalOptions }) => (
             <Tabs.Screen
               name={name}
               key={name}
@@ -100,7 +106,7 @@ export default function TabLayout() {
             />
           ))}
 
-          {NavigationData.map(({ name, icon, focusedIcon, title }) => (
+          {NAVIGATION_DATA.map(({ name, icon, focusedIcon, title }) => (
             <Tabs.Screen
               name={name}
               key={name}

@@ -1,7 +1,10 @@
 import React, { useMemo, useState } from "react";
 import CustomHeader from "@/components/CustomHeader";
 import CustomTextInput from "@/components/CustomTextInput";
-import { bodyPartsToMeasure, corePartsToMeasure } from "@/constants/metrics";
+import {
+  BODY_PARTS_TO_MEASURE,
+  CORE_PARTS_TO_MEASURE,
+} from "@/constants/metrics";
 import { updateUserProfile } from "@/lib/userService";
 import userStore from "@/store/userStore";
 import { Pressable, StyleSheet, Text, View, ScrollView } from "react-native";
@@ -94,12 +97,12 @@ export default function UserForm() {
   };
 
   const measurements = [
-    ...corePartsToMeasure.map((part) => ({
+    ...CORE_PARTS_TO_MEASURE.map((part) => ({
       label: part.displayName,
       value: part.label,
       unit: part.unit,
     })),
-    ...bodyPartsToMeasure.map((part) => ({
+    ...BODY_PARTS_TO_MEASURE.map((part) => ({
       label: part.displayName,
       value: part.label,
       unit: part.unit,

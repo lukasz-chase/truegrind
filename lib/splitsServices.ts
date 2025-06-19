@@ -1,5 +1,6 @@
 import { Split, SplitPopulated } from "@/types/split";
 import { supabase } from "./supabase";
+import { createFolder } from "./folderService";
 
 export const fetchUserSplitWithWorkouts = async (
   userId: string,
@@ -44,7 +45,14 @@ export const createSplit = async (split: Partial<Split>) => {
     .select("*")
     .returns<Split[]>();
   if (error) console.log(error);
-  if (data) return data[0];
+  if (data) {
+    await createFolder({
+      name: "Uncollected",
+      split_id: data[0].id,
+      user_id: split.user_id,
+    });
+    return data[0];
+  }
 };
 
 export const deleteSplit = async (splitId: string) => {

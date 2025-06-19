@@ -1,4 +1,4 @@
-export const NavigationData: {
+export const NAVIGATION_DATA: {
   name: string;
   icon: any;
   focusedIcon: any;
@@ -35,7 +35,7 @@ export const NavigationData: {
     focusedIcon: "calendar",
   },
 ];
-export const hiddenScreens = [
+export const HIDDEN_SCREENS = [
   {
     name: "splits",
     additionalOptions: {
@@ -59,13 +59,13 @@ export const hiddenScreens = [
     additionalOptions: {},
   },
   {
-    name: "template/[id]",
+    name: "template/[folderId]/[id]",
     additionalOptions: {
       tabBarStyle: { display: "none" as "none" }, // Explicitly cast "none"
     },
   },
 ];
-export const profileTabs = [
+export const PROFILE_TABS = [
   {
     name: "index",
     animation: "slide_from_left",

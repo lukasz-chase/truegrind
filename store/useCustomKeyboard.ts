@@ -1,4 +1,4 @@
-import { barTypes } from "@/constants/keyboard";
+import { BAR_TYPES } from "@/constants/keyboard";
 import { KeyboardView, KeyboardViewEnum } from "@/types/customKeyboard";
 import { ExerciseSet, BarTypeEnum } from "@/types/exercisesSets";
 import { create } from "zustand";

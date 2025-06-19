@@ -9,7 +9,7 @@ import {
 } from "@/types/workoutExercise";
 import { getHistoryExerciseData } from "@/lib/exercisesService";
 import userStore from "./userStore";
-import { initialWorkoutState } from "@/constants/initialState";
+import { INITIAL_WORKOUT_STATE } from "@/constants/initialState";
 
 interface TemplateWorkoutStore {
   initialWorkout: Workout;
@@ -49,10 +49,10 @@ interface TemplateWorkoutStore {
 }
 
 const useWorkoutTemplate = create<TemplateWorkoutStore>()((set, get) => ({
-  initialWorkout: initialWorkoutState.initialActiveWorkout,
-  workout: initialWorkoutState.activeWorkout,
-  workoutWasUpdated: initialWorkoutState.workoutWasUpdated,
-  isNewWorkout: initialWorkoutState.isNewWorkout,
+  initialWorkout: INITIAL_WORKOUT_STATE.initialActiveWorkout,
+  workout: INITIAL_WORKOUT_STATE.activeWorkout,
+  workoutWasUpdated: INITIAL_WORKOUT_STATE.workoutWasUpdated,
+  isNewWorkout: INITIAL_WORKOUT_STATE.isNewWorkout,
   setIsNewWorkout: (value: boolean) => set({ isNewWorkout: value }),
   setWorkout: (workout, clearSets = true, updateInitialWorkout = true) => {
     if (clearSets) {
@@ -330,10 +330,10 @@ const useWorkoutTemplate = create<TemplateWorkoutStore>()((set, get) => ({
   },
   resetWorkout: () =>
     set({
-      initialWorkout: initialWorkoutState.initialActiveWorkout,
-      workout: initialWorkoutState.activeWorkout,
-      isNewWorkout: initialWorkoutState.isNewWorkout,
-      workoutWasUpdated: initialWorkoutState.workoutWasUpdated,
+      initialWorkout: INITIAL_WORKOUT_STATE.initialActiveWorkout,
+      workout: INITIAL_WORKOUT_STATE.activeWorkout,
+      isNewWorkout: INITIAL_WORKOUT_STATE.isNewWorkout,
+      workoutWasUpdated: INITIAL_WORKOUT_STATE.workoutWasUpdated,
     }),
 }));
 

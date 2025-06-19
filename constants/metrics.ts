@@ -4,7 +4,7 @@ import {
   MeasurementTimeRangeEnum,
 } from "@/types/measurements";
 
-export const corePartsToMeasure = [
+export const CORE_PARTS_TO_MEASURE = [
   {
     displayName: "Weight",
     label: CorePartsLabel.WEIGHT,
@@ -17,7 +17,7 @@ export const corePartsToMeasure = [
   },
 ];
 
-export const bodyPartsToMeasure = [
+export const BODY_PARTS_TO_MEASURE = [
   { displayName: "Neck", label: BodyPartLabel.NECK, unit: "cm" },
   { displayName: "Shoulders", label: BodyPartLabel.SHOULDERS, unit: "cm" },
   { displayName: "Chest", label: BodyPartLabel.CHEST, unit: "cm" },
@@ -46,8 +46,8 @@ export const bodyPartsToMeasure = [
   { displayName: "Right Calf", label: BodyPartLabel.RIGHT_CALF, unit: "cm" },
 ];
 
-export const allMetrics = [...corePartsToMeasure, ...bodyPartsToMeasure];
-export const timePeriodButtons = [
+export const ALL_METRICS = [...CORE_PARTS_TO_MEASURE, ...BODY_PARTS_TO_MEASURE];
+export const TIME_PERIOD_BUTTONS = [
   { label: "All Time", value: MeasurementTimeRangeEnum.ALL },
   { label: "1 Year", value: MeasurementTimeRangeEnum.ONE_YEAR },
   { label: "6 Months", value: MeasurementTimeRangeEnum.SIX_MONTHS },

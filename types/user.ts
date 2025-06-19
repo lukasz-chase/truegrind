@@ -1,4 +1,4 @@
-import { LightTheme } from "@/constants/colors";
+import { LIGHT_THEME } from "@/constants/colors";
 import { BodyPartLabel } from "./measurements";
 
 export type CurrentGoal = {
@@ -12,7 +12,7 @@ export enum AppThemeEnum {
   DARK = "dark",
 }
 
-export type ThemeColors = typeof LightTheme;
+export type ThemeColors = typeof LIGHT_THEME;
 export type AppTheme = `${AppThemeEnum}`;
 
 export type UserProfile = {

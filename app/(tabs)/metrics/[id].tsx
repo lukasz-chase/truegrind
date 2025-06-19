@@ -10,9 +10,9 @@ import { useEffect, useMemo, useState } from "react";
 import { Text, StyleSheet, View, FlatList, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AddMetricsModal from "@/components/Modals/AddMetricsModal";
-import { allMetrics, timePeriodButtons } from "@/constants/metrics";
+import { ALL_METRICS, TIME_PERIOD_BUTTONS } from "@/constants/metrics";
 import { LineChart } from "react-native-chart-kit";
-import { chartConfig } from "@/constants/chart";
+import { CHART_CONFIG } from "@/constants/chart";
 import useMeasurementsStore from "@/store/useMeasurementsStore";
 import SwipeToDelete from "@/components/SwipeToDelete";
 import CustomHeader from "@/components/CustomHeader";
@@ -37,7 +37,7 @@ export default function MetricsDetails() {
   const { theme, mode } = useThemeStore((state) => state);
 
   const styles = useMemo(() => makeStyles(theme, mode), [theme, mode]);
-  const measurement = allMetrics.find((m) => m.label === id);
+  const measurement = ALL_METRICS.find((m) => m.label === id);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -142,7 +142,7 @@ export default function MetricsDetails() {
       <SafeAreaView style={styles.container}>
         <CustomHeader name={measurement.displayName} href="/metrics" />
         <View style={styles.filterContainer}>
-          {timePeriodButtons.map((btn) => (
+          {TIME_PERIOD_BUTTONS.map((btn) => (
             <Pressable
               key={btn.value}
               style={[
@@ -174,7 +174,7 @@ export default function MetricsDetails() {
             }}
             width={SCREEN_WIDTH - 50}
             height={220}
-            chartConfig={chartConfig(theme)}
+            CHART_CONFIG={CHART_CONFIG(theme)}
             bezier
             style={styles.chart}
             fromZero

@@ -1,6 +1,6 @@
 import { View, Text, TouchableOpacity, Pressable } from "react-native";
 import { Entypo, Feather, MaterialIcons, AntDesign } from "@expo/vector-icons";
-import { keys } from "@/constants/keyboard";
+import { KEYS } from "@/constants/keyboard";
 import { KeyboardView, KeyboardViewEnum } from "@/types/customKeyboard";
 import useThemeStore from "@/store/useThemeStore";
 import { useMemo } from "react";
@@ -35,7 +35,7 @@ const DefaultKeyboard = ({
   return (
     <View style={styles.keyboard}>
       <View style={styles.keys}>
-        {keys.map((key) => (
+        {KEYS.map((key) => (
           <TouchableOpacity
             key={key}
             style={styles.key}

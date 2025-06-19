@@ -12,7 +12,7 @@ import useCustomKeyboard from "@/store/useCustomKeyboard";
 import useExerciseOptionsModal from "@/store/useExerciseOptionsModal";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import CustomTextInput from "../CustomTextInput";
-import { exerciseHeader } from "@/constants/exerciseHeader";
+import { EXERCISE_HEADER } from "@/constants/exerciseHeader";
 import useExerciseDetailsModal from "@/store/useExerciseDetailsModal";
 import { ExerciseSet } from "@/types/exercisesSets";
 import useThemeStore from "@/store/useThemeStore";
@@ -113,7 +113,7 @@ const WorkoutExercise = ({
       )}
       <View style={styles.table}>
         <View style={[styles.row, styles.headerRow]}>
-          {exerciseHeader.map((header) => {
+          {EXERCISE_HEADER.map((header) => {
             return (
               <Text
                 key={header.label}

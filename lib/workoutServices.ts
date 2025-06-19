@@ -2,6 +2,7 @@ import { Workout } from "@/types/workout";
 import { supabase } from "./supabase";
 import { areObjectsDifferent } from "@/utils/helpers";
 import { getStartOfWeek } from "@/utils/calendar";
+import { getInitialFolderId } from "./folderService";
 
 export const createWorkoutHistory = async (
   workout: Workout,
@@ -46,7 +47,6 @@ export const updateWorkoutsBulk = async (workoutsToUpdate: Workout[]) => {
     const { error } = await supabase
       .from("workouts")
       .upsert(workoutsToUpdateNotPopulated);
-
     if (error) console.error("Supabase error:", error);
   } catch (error) {
     console.error("Unexpected error:", error);
@@ -73,7 +73,7 @@ export const fetchExampleWorkouts = async (splitId: string) => {
     .eq("split_id", splitId)
     .is("user_id", null);
   if (data) {
-    return data;
+    return data as Workout[];
   }
   if (error) console.log(error);
 };
@@ -81,9 +81,13 @@ export const fetchExampleWorkouts = async (splitId: string) => {
 export const copyWorkout = async (workout: Workout, userId: string) => {
   const workoutExercisesToCreate: any[] = [];
   const { id, workout_exercises, created_at, ...rest } = workout;
+  const uncollectedFolderId = await getInitialFolderId(
+    userId,
+    workout.split_id
+  );
   const { data, error } = await supabase
     .from("workouts")
-    .insert({ ...rest, user_id: userId })
+    .insert({ ...rest, user_id: userId, folder_id: uncollectedFolderId })
     .select("id")
     .limit(1)
     .single();

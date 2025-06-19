@@ -25,7 +25,7 @@ import { updateExerciseSets } from "@/lib/exerciseSetsService";
 import useAppStore from "@/store/useAppStore";
 import * as Haptics from "expo-haptics";
 import useSplitsStore from "@/store/useSplitsStore";
-import { initialWorkoutState } from "@/constants/initialState";
+import { INITIAL_WORKOUT_STATE } from "@/constants/initialState";
 import SplitTemplateSkeleton from "@/components/Skeletons/SplitTemplateSkeleton";
 import useThemeStore from "@/store/useThemeStore";
 import { AppTheme, AppThemeEnum, ThemeColors } from "@/types/user";
@@ -34,7 +34,7 @@ export default function WorkoutTemplate() {
   const [loading, setLoading] = useState(false);
   const [dragItemId, setDragItemId] = useState<string | null>(null);
 
-  const { id } = useLocalSearchParams();
+  const { folderId, id } = useLocalSearchParams();
   const { user } = userStore();
   const { theme, mode } = useThemeStore((state) => state);
 
@@ -74,9 +74,10 @@ export default function WorkoutTemplate() {
           } else {
             setIsNewWorkout(true);
             setWorkout({
-              ...initialWorkoutState.activeWorkout,
+              ...INITIAL_WORKOUT_STATE.activeWorkout,
               user_id: user.id,
               split_id: activeSplit!.id,
+              folder_id: folderId as string,
             });
           }
         }

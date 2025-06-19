@@ -1,5 +1,5 @@
 import { View, Text, Pressable } from "react-native";
-import { barTypes } from "@/constants/keyboard";
+import { BAR_TYPES } from "@/constants/keyboard";
 import { KeyboardView, KeyboardViewEnum } from "@/types/customKeyboard";
 import { Image } from "expo-image";
 import { BarTypeEnum } from "@/types/exercisesSets";
@@ -42,7 +42,7 @@ const BarTypeKeyboard = ({
         </Pressable>
       </View>
       <View style={styles.barButtonsWrapper}>
-        {barTypes.map((barType) => (
+        {BAR_TYPES.map((barType) => (
           <Pressable
             key={barType.name}
             style={[

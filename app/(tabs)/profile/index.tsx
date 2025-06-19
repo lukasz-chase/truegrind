@@ -13,7 +13,7 @@ import AntDesign from "@expo/vector-icons/AntDesign";
 import { Link } from "expo-router";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import * as Progress from "react-native-progress";
-import { profileLinks } from "@/constants/profile";
+import { PROFILE_LINKS } from "@/constants/profile";
 import { fetchUserMeasurementsSingle } from "@/lib/measurementsService";
 import { Measurement } from "@/types/measurements";
 import { fetchWeeklyWorkoutCount } from "@/lib/workoutServices";
@@ -230,7 +230,7 @@ export default function Profile() {
         )}
       </View>
       <View style={styles.buttonsWrapper}>
-        {profileLinks.map((button, i) => (
+        {PROFILE_LINKS.map((button, i) => (
           <Link href={button.href as any} key={button.label}>
             <View
               style={[
