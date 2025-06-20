@@ -15,11 +15,13 @@ import useAppStore from "@/store/useAppStore";
 import { createFolder, updateFolder } from "@/lib/folderService";
 import useUpsertFolderModal from "@/store/useUpsertFolderModal";
 import userStore from "@/store/userStore";
+import useFoldersStore from "@/store/useFoldersStore";
 
 export default function UpsertFolderModal() {
   const { theme } = useThemeStore((state) => state);
   const { setRefetchWorkouts } = useAppStore();
   const { closeModal, isVisible, props } = useUpsertFolderModal();
+  const { addFolder, updateFolder: updateFolderLocal } = useFoldersStore();
   const { folderId, folderName } = props ?? {};
   const { user } = userStore();
 
@@ -42,15 +44,16 @@ export default function UpsertFolderModal() {
     if (inputValue !== "") {
       if (folderId) {
         await updateFolder({ id: folderId, name: inputValue });
+        updateFolderLocal(folderId, { name: inputValue });
       } else {
-        await createFolder({
+        const folder = await createFolder({
           name: inputValue,
           split_id: user?.active_split_id!,
           user_id: user!.id,
           order: null,
         });
+        if (folder) addFolder(folder);
       }
-
       closeModal();
       setInputValue("");
       setRefetchWorkouts();

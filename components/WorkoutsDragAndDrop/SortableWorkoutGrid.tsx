@@ -21,9 +21,12 @@ type SortableWorkoutGridProps = {
   folderId: string;
   hoveredFolderId: string | null;
   setHoveredFolderId: React.Dispatch<React.SetStateAction<string | null>>;
-  handleMoveToFolder: (targetFolderId: string) => Promise<void>;
+  handleMoveToFolder: (
+    workoutId: string,
+    targetFolderId: string
+  ) => Promise<void>;
   dragAbsoluteY: SharedValue<number | null>;
-  onReorder: (newOrderedIds: string[], folderId: string) => void;
+  onReorder: (folderId: string, newOrderIds: string[]) => Promise<void>;
   newTemplateHandler: (folderId: string) => void;
 };
 
@@ -68,7 +71,7 @@ const SortableWorkoutGrid: React.FC<SortableWorkoutGridProps> = ({
       const newOrder = [...order];
       newOrder.splice(dragIndex, 0, newOrder.splice(fromIndex, 1)[0]);
 
-      if (folderId === hoveredFolderId) onReorder(newOrder, folderId);
+      if (folderId === hoveredFolderId) onReorder(folderId, newOrder);
 
       // *then* update your own state so the UI mirrors it:
       setOrder(newOrder);

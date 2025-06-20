@@ -12,6 +12,7 @@ import { setProfileInUserStore } from "@/lib/userService";
 import CustomTextInput from "@/components/CustomTextInput";
 import { ThemeColors } from "@/types/user";
 import useThemeStore from "@/store/useThemeStore";
+import { prepareInitialFolders } from "@/lib/splitsServices";
 
 export default function Auth() {
   const [email, setEmail] = useState("");
@@ -49,6 +50,9 @@ export default function Auth() {
         },
       },
     });
+    if (session) {
+      await prepareInitialFolders(session!.user.id);
+    }
     console.log(error);
     if (error) Alert.alert(error.message);
     if (!session)

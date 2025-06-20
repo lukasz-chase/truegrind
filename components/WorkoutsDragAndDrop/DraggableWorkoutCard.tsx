@@ -36,7 +36,10 @@ interface DraggableBoxProps {
   setDraggedWorkout: React.Dispatch<React.SetStateAction<Workout | null>>;
   setSourceFolderId: React.Dispatch<React.SetStateAction<string | null>>;
   folderId: string;
-  handleMoveToFolder: (targetFolderId: string) => Promise<void>;
+  handleMoveToFolder: (
+    workoutId: string,
+    targetFolderId: string
+  ) => Promise<void>;
   hoveredFolderId: string | null;
   sourceFolderId: string | null;
   dragAbsoluteY: SharedValue<number | null>;
@@ -172,7 +175,7 @@ export default ({
       runOnJS(onDragEnd)();
 
       if (hoveredFolderId && hoveredFolderId !== sourceFolderId) {
-        runOnJS(handleMoveToFolder)(hoveredFolderId);
+        runOnJS(handleMoveToFolder)(workout.id, hoveredFolderId);
       }
     });
 

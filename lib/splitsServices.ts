@@ -1,6 +1,7 @@
 import { Split, SplitPopulated } from "@/types/split";
 import { supabase } from "./supabase";
 import { createFolder } from "./folderService";
+import { INITIAL_FOLDER_NAME } from "@/constants/initialState";
 
 export const fetchUserSplitWithWorkouts = async (
   userId: string,
@@ -57,4 +58,21 @@ export const createSplit = async (split: Partial<Split>) => {
 
 export const deleteSplit = async (splitId: string) => {
   await supabase.from("splits").delete().eq("id", splitId);
+};
+
+export const prepareInitialFolders = async (userId: string) => {
+  const splits = await fetchSplits(userId);
+  if (splits) {
+    const promises = splits.map(async (split) => {
+      const initialFolder = await createFolder({
+        name: INITIAL_FOLDER_NAME,
+        split_id: split.id,
+        user_id: userId,
+        order: null,
+      });
+      return initialFolder;
+    });
+    const initialFolders = await Promise.all(promises);
+    return initialFolders;
+  }
 };

@@ -3,18 +3,22 @@ import AnchoredModal from "./AnchoredModal";
 import ModalOptionButton from "./ModalOptionButton";
 import { EvilIcons } from "@expo/vector-icons";
 import useAppStore from "@/store/useAppStore";
-import userStore from "@/store/userStore";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import useActionModal from "@/store/useActionModal";
 import useThemeStore from "@/store/useThemeStore";
 import { ThemeColors } from "@/types/user";
 import useFolderOptionsModal from "@/store/useFolderOptionsModal";
 import { deleteFolder } from "@/lib/folderService";
 import useUpsertFolderModal from "@/store/useUpsertFolderModal";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import useFoldersStore from "@/store/useFoldersStore";
+import useInfoModal from "@/store/useInfoModal";
 
 const MODAL_WIDTH = 170;
 
 const FolderOptionsModal = function ExerciseOptionsModal() {
+  const [isCollapsed, setIsCollapsed] = useState(false);
+
   const { theme } = useThemeStore((state) => state);
   const styles = useMemo(() => makeStyles(theme), [theme]);
 
@@ -23,10 +27,22 @@ const FolderOptionsModal = function ExerciseOptionsModal() {
   const { setRefetchWorkouts } = useAppStore();
   const { openModal: openActionModal } = useActionModal();
   const { openModal: openUpsertFolderModal } = useUpsertFolderModal();
-
+  const { toggleFolderCollapse, collapsedFolders, folders } = useFoldersStore();
+  const { openModal: openInfoModal } = useInfoModal();
+  useEffect(() => {
+    if (folderId) setIsCollapsed(collapsedFolders.includes(folderId));
+  }, [folderId, collapsedFolders]);
   const deleteFolderHandler = async () => {
-    await deleteFolder(folderId!);
-    setRefetchWorkouts();
+    const { error } = (await deleteFolder(folderId!)) ?? {};
+    closeModal();
+    if (error) {
+      openInfoModal("Error", error);
+    } else {
+      setRefetchWorkouts();
+    }
+  };
+  const toggleFolderCollapseHandler = () => {
+    toggleFolderCollapse(folderId!);
     closeModal();
   };
 
@@ -47,11 +63,31 @@ const FolderOptionsModal = function ExerciseOptionsModal() {
       Icon: <EvilIcons name="pencil" size={24} color={theme.blue} />,
       title: "Edit folder",
       cb: editTemplateHandler,
+      conditionToDisplay: true,
+    },
+    {
+      Icon: isCollapsed ? (
+        <MaterialCommunityIcons
+          name="arrow-expand"
+          size={24}
+          color={theme.blue}
+        />
+      ) : (
+        <MaterialCommunityIcons
+          name="arrow-collapse"
+          size={24}
+          color={theme.blue}
+        />
+      ),
+      title: isCollapsed ? "Expand" : "Collapse",
+      cb: toggleFolderCollapseHandler,
+      conditionToDisplay: true,
     },
     {
       Icon: <EvilIcons name="close" size={24} color={theme.red} />,
       title: "Delete",
       cb: openActionModalHandler,
+      conditionToDisplay: folders.length > 1,
     },
   ];
 
@@ -66,7 +102,9 @@ const FolderOptionsModal = function ExerciseOptionsModal() {
     >
       <View style={styles.wrapper}>
         {options.map((option) => {
-          return <ModalOptionButton key={option.title} {...option} />;
+          if (option.conditionToDisplay) {
+            return <ModalOptionButton key={option.title} {...option} />;
+          }
         })}
       </View>
     </AnchoredModal>

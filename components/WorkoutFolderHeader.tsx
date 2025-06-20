@@ -4,6 +4,7 @@ import { useMemo, useRef } from "react";
 import { ThemeColors } from "@/types/user";
 import { SimpleLineIcons } from "@expo/vector-icons";
 import useFolderOptionsModal from "@/store/useFolderOptionsModal";
+import useFoldersStore from "@/store/useFoldersStore";
 
 type Props = {
   name: string;
@@ -16,16 +17,20 @@ export default ({ name, workoutsLength, id }: Props) => {
   const { theme } = useThemeStore((state) => state);
   const styles = useMemo(() => makeStyles(theme), [theme]);
   const { openModal } = useFolderOptionsModal();
+  const { toggleFolderCollapse } = useFoldersStore();
   const handleOptions = () => {
     openModal({ buttonRef, folderId: id, folderName: name });
   };
 
   return (
     <View style={styles.header}>
-      <View style={{ flexDirection: "row", alignItems: "center", gap: 5 }}>
+      <Pressable
+        onPress={() => toggleFolderCollapse(id)}
+        style={{ flexDirection: "row", alignItems: "center", gap: 5 }}
+      >
         <Text style={styles.title}>{name}</Text>
         <Text style={styles.title}>({workoutsLength})</Text>
-      </View>
+      </Pressable>
       <Pressable
         ref={buttonRef}
         onPress={handleOptions}

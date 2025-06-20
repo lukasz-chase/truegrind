@@ -10,21 +10,15 @@ import * as Haptics from "expo-haptics";
 import uuid from "react-native-uuid";
 import { useRouter } from "expo-router";
 import { Workout } from "@/types/workout";
-import {
-  fetchExampleWorkouts,
-  updateWorkoutsBulk,
-} from "@/lib/workoutServices";
+import { fetchExampleWorkouts } from "@/lib/workoutServices";
 import useSplitsStore from "@/store/useSplitsStore";
 import MainScreenSkeleton from "@/components/Skeletons/MainScreenSkeleton";
 import { ThemeColors } from "@/types/user";
 import useThemeStore from "@/store/useThemeStore";
-import {
-  fetchUserFoldersWithWorkouts,
-  updateFoldersBulk,
-} from "@/lib/folderService";
-import { WorkoutsFolderPopulated } from "@/types/folders";
+import { fetchUserFoldersWithWorkouts } from "@/lib/folderService";
 import SortableWorkoutGrid from "@/components/WorkoutsDragAndDrop/SortableWorkoutGrid";
 import Animated, {
+  LinearTransition,
   runOnJS,
   useAnimatedReaction,
   useAnimatedScrollHandler,
@@ -33,14 +27,12 @@ import Animated, {
 import { AnimatedScrollView } from "react-native-reanimated/lib/typescript/component/ScrollView";
 import WorkoutFolderHeader from "@/components/WorkoutFolderHeader";
 import useUpsertFolderModal from "@/store/useUpsertFolderModal";
+import useFoldersStore from "@/store/useFoldersStore";
 
 export default function WorkoutScreen() {
   const [exampleWorkouts, setExampleWorkouts] = useState<Workout[] | null>(
     null
   );
-  const [folderData, setFolderData] = useState<
-    WorkoutsFolderPopulated[] | null
-  >(null);
   const [dataLoading, setDataLoading] = useState(false);
   const [draggedWorkout, setDraggedWorkout] = useState<Workout | null>(null);
   const [sourceFolderId, setSourceFolderId] = useState<string | null>(null);
@@ -61,6 +53,14 @@ export default function WorkoutScreen() {
   const { refetchWorkouts } = useAppStore();
   const { activeSplit: split, loading } = useSplitsStore();
   const { openModal } = useUpsertFolderModal();
+  const {
+    folders,
+    setFolders,
+    loading: foldersLoading,
+    reorderWorkouts,
+    moveWorkoutToFolder,
+    collapsedFolders,
+  } = useFoldersStore();
 
   const { theme } = useThemeStore((state) => state);
   const styles = useMemo(() => makeStyles(theme), [theme]);
@@ -84,7 +84,7 @@ export default function WorkoutScreen() {
         }
 
         if (folderResult) {
-          setFolderData(folderResult);
+          setFolders(folderResult);
         }
       } catch (error) {
         console.log("Unexpected fetch error", error);
@@ -111,6 +111,14 @@ export default function WorkoutScreen() {
       setIsSheetVisible(true);
     }
   }, [activeWorkout, user]);
+
+  useEffect(() => {
+    setFolderLayouts((prev) =>
+      Object.fromEntries(
+        Object.entries(prev).filter(([id]) => folders.some((f) => f.id === id))
+      )
+    );
+  }, [folders]);
 
   useAnimatedReaction(
     () => {
@@ -139,66 +147,6 @@ export default function WorkoutScreen() {
     setFolderLayouts((prev) => ({ ...prev, [folderId]: layout }));
   };
 
-  const handleMoveToFolder = async (targetFolderId: string) => {
-    if (!draggedWorkout || !folderData) return;
-
-    // Prevent dropping into same folder
-    if (targetFolderId === draggedWorkout.folder_id) return;
-
-    const targetFolder = folderData.find((f) => f.id === targetFolderId);
-    if (!targetFolder) return;
-
-    const updatedWorkout = {
-      ...draggedWorkout,
-      folder_id: targetFolderId,
-      order: targetFolder.workouts.length + 1,
-    };
-
-    const updatedFolders = folderData.map((folder) => {
-      if (folder.id === targetFolderId) {
-        return {
-          ...folder,
-          workouts: [...folder.workouts, updatedWorkout],
-        };
-      } else if (folder.id === draggedWorkout.folder_id) {
-        return {
-          ...folder,
-          workouts: folder.workouts.filter((w) => w.id !== draggedWorkout.id),
-        };
-      }
-      return folder;
-    });
-
-    try {
-      setFolderData(updatedFolders);
-      await updateWorkoutsBulk([updatedWorkout]);
-    } catch (err) {
-      console.log("Failed to move workout:", err);
-    }
-  };
-  const onReorder = (newOrderIds: string[], folderId: string) => {
-    if (!folderData) return;
-
-    const folder = folderData.find((f) => f.id === folderId);
-    if (!folder) return;
-
-    const lookup: Record<string, Workout> = {};
-    folder.workouts.forEach((w) => {
-      lookup[w.id] = w;
-    });
-
-    const updatedWorkouts = newOrderIds.map((id, idx) => ({
-      ...lookup[id]!,
-      order: idx + 1,
-    }));
-    setFolderData((prevFolders) =>
-      prevFolders!.map((f) =>
-        f.id === folderId ? { ...f, workouts: updatedWorkouts } : f
-      )
-    );
-
-    updateWorkoutsBulk(updatedWorkouts);
-  };
   const startAnEmptyWorkout = (folderId: string) => {
     setIsNewWorkout(true);
     setActiveWorkout({
@@ -226,7 +174,7 @@ export default function WorkoutScreen() {
       scrollY.value = e.contentOffset.y;
     },
   });
-  if (loading || dataLoading || !split || !folderData) {
+  if (loading || dataLoading || !split || !folders || foldersLoading) {
     return <MainScreenSkeleton parentStyles={styles} />;
   }
 
@@ -255,7 +203,7 @@ export default function WorkoutScreen() {
         </Pressable>
         <Pressable
           style={styles.actionButton}
-          onPress={() => startAnEmptyWorkout(folderData[0].id)}
+          onPress={() => startAnEmptyWorkout(folders[0].id)}
         >
           <Text style={styles.actionButtonText}>Start an Empty Workout</Text>
         </Pressable>
@@ -264,7 +212,7 @@ export default function WorkoutScreen() {
           <View style={styles.buttonRow}>
             <Pressable
               style={styles.templatesButton}
-              onPress={() => newTemplateHandler(folderData[0].id)}
+              onPress={() => newTemplateHandler(folders[0].id)}
             >
               <Text style={styles.templatesButtonText}>+ Template</Text>
             </Pressable>
@@ -276,39 +224,45 @@ export default function WorkoutScreen() {
             </Pressable>
           </View>
         </View>
-        {folderData.map((folder) => (
-          <View
-            key={`${folder.id}-${folder.workouts.length}`}
-            onLayout={(e) => {
-              const { y, height } = e.nativeEvent.layout;
-              registerFolderLayout(folder.id, { top: y, bottom: y + height });
-            }}
-            style={{ marginBottom: 24 }}
-          >
-            <WorkoutFolderHeader
-              id={folder.id}
-              name={folder.name}
-              workoutsLength={folder.workouts.length}
-            />
-            <SortableWorkoutGrid
-              workouts={folder.workouts}
-              scrollRef={scrollRef}
-              scrollY={scrollY}
-              sourceFolderId={sourceFolderId}
-              setDraggedWorkout={setDraggedWorkout}
-              setSourceFolderId={setSourceFolderId}
-              folderId={folder.id}
-              hoveredFolderId={hoveredFolderId}
-              setHoveredFolderId={setHoveredFolderId}
-              handleMoveToFolder={handleMoveToFolder}
-              dragAbsoluteY={dragAbsoluteY}
-              onReorder={onReorder}
-              newTemplateHandler={newTemplateHandler}
-            />
-          </View>
-        ))}
+        {folders.map((folder) => {
+          const isCollapsed = collapsedFolders.includes(folder.id);
+          return (
+            <Animated.View
+              key={`${folder.id}-${folder.workouts.length}`}
+              onLayout={(e) => {
+                const { y, height } = e.nativeEvent.layout;
+                registerFolderLayout(folder.id, { top: y, bottom: y + height });
+              }}
+              style={{ marginBottom: 24 }}
+              layout={LinearTransition}
+            >
+              <WorkoutFolderHeader
+                id={folder.id}
+                name={folder.name}
+                workoutsLength={folder.workouts.length}
+              />
+              {!isCollapsed && (
+                <SortableWorkoutGrid
+                  workouts={folder.workouts}
+                  scrollRef={scrollRef}
+                  scrollY={scrollY}
+                  sourceFolderId={sourceFolderId}
+                  setDraggedWorkout={setDraggedWorkout}
+                  setSourceFolderId={setSourceFolderId}
+                  folderId={folder.id}
+                  hoveredFolderId={hoveredFolderId}
+                  setHoveredFolderId={setHoveredFolderId}
+                  handleMoveToFolder={moveWorkoutToFolder}
+                  dragAbsoluteY={dragAbsoluteY}
+                  onReorder={reorderWorkouts}
+                  newTemplateHandler={newTemplateHandler}
+                />
+              )}
+            </Animated.View>
+          );
+        })}
         {exampleWorkouts ? (
-          <>
+          <Animated.View layout={LinearTransition}>
             <Text style={[styles.templatesText, { marginTop: 20 }]}>
               Example Templates ({exampleWorkouts.length})
             </Text>
@@ -317,7 +271,7 @@ export default function WorkoutScreen() {
                 <WorkoutCard key={w.id} workout={w} />
               ))}
             </View>
-          </>
+          </Animated.View>
         ) : null}
       </Animated.ScrollView>
     </SafeAreaView>
