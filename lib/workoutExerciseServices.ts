@@ -50,7 +50,10 @@ export const updateWorkoutExercises = async (
     }
 
     if (workoutExercisesToUpdate.length > 0) {
-      await supabase.from("workout_exercises").upsert(workoutExercisesToUpdate);
+      const { error } = await supabase
+        .from("workout_exercises")
+        .upsert(workoutExercisesToUpdate);
+      console.log("error updating workout_exercises", error);
     }
   }
 };
@@ -74,8 +77,10 @@ export const createWorkoutExercisesHistory = async (
       created_at: new Date().toISOString(),
     });
   }
-
-  await supabase
+  console.log({ workoutHistoryId });
+  const { error } = await supabase
     .from("exercises_history")
     .insert(workoutExercisesHistoryToCreate);
+
+  console.log("error creating exercises_history", error);
 };

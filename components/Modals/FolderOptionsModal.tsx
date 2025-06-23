@@ -2,7 +2,6 @@ import { StyleSheet, View } from "react-native";
 import AnchoredModal from "./AnchoredModal";
 import ModalOptionButton from "./ModalOptionButton";
 import { EvilIcons } from "@expo/vector-icons";
-import useAppStore from "@/store/useAppStore";
 import { useEffect, useMemo, useState } from "react";
 import useActionModal from "@/store/useActionModal";
 import useThemeStore from "@/store/useThemeStore";
@@ -24,7 +23,6 @@ const FolderOptionsModal = function ExerciseOptionsModal() {
 
   const { isVisible, closeModal, props } = useFolderOptionsModal();
   const { buttonRef, folderId, folderName } = props;
-  const { setRefetchWorkouts } = useAppStore();
   const { openModal: openActionModal } = useActionModal();
   const { openModal: openUpsertFolderModal } = useUpsertFolderModal();
   const { toggleFolderCollapse, collapsedFolders, folders } = useFoldersStore();
@@ -37,8 +35,6 @@ const FolderOptionsModal = function ExerciseOptionsModal() {
     closeModal();
     if (error) {
       openInfoModal("Error", error);
-    } else {
-      setRefetchWorkouts();
     }
   };
   const toggleFolderCollapseHandler = () => {

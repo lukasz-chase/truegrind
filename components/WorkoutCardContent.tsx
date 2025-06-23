@@ -31,7 +31,9 @@ export default function WorkoutCardContent({ workout }: Props) {
   return (
     <>
       <View style={styles.header}>
-        <Text style={styles.title}>{workout.name}</Text>
+        <Text style={styles.title} numberOfLines={3} ellipsizeMode="tail">
+          {workout.name}
+        </Text>
         <Pressable
           ref={buttonRef}
           onPress={handleOptions}
@@ -48,9 +50,8 @@ export default function WorkoutCardContent({ workout }: Props) {
         ))}
         {workout.workout_exercises!.length > WORKOUT_EXERCISE_NAMES_TO_SHOW && (
           <Text style={styles.exercise}>
-            &nbsp;+
-            {workout.workout_exercises!.length -
-              WORKOUT_EXERCISE_NAMES_TO_SHOW}{" "}
+            +
+            {workout.workout_exercises!.length - WORKOUT_EXERCISE_NAMES_TO_SHOW}{" "}
             more
           </Text>
         )}
@@ -63,13 +64,14 @@ const makeStyles = (theme: ThemeColors) =>
   StyleSheet.create({
     header: {
       flexDirection: "row",
-      justifyContent: "space-between",
       alignItems: "center",
+      justifyContent: "space-between",
     },
     title: {
       fontSize: 18,
       fontWeight: "bold",
       color: theme.textColor,
+      flex: 1,
     },
     exerciseContainer: {
       flexDirection: "column",
@@ -83,5 +85,9 @@ const makeStyles = (theme: ThemeColors) =>
       paddingHorizontal: 5,
       backgroundColor: theme.lightBlue,
       borderRadius: 5,
+      height: 20,
+      justifyContent: "center",
+      alignItems: "center",
+      alignSelf: "flex-start",
     },
   });

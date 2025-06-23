@@ -3,6 +3,7 @@ import { create } from "zustand";
 import { updateWorkoutsBulk } from "@/lib/workoutServices";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createJSONStorage, persist } from "zustand/middleware";
+import { Workout } from "@/types/workout";
 
 type Store = {
   folders: WorkoutsFolderPopulated[];
@@ -22,6 +23,8 @@ type Store = {
     targetFolderId: string
   ) => Promise<void>;
   toggleFolderCollapse: (folderId: string) => void;
+  addWorkoutToFolder: (folderId: string, workout: Workout) => void;
+  removeWorkoutFromFolder: (folderId: string, workoutId: string) => void;
 };
 
 const useFoldersStore = create<Store>()(
@@ -121,6 +124,28 @@ const useFoldersStore = create<Store>()(
           ? collapsedFolders.filter((id) => id !== folderId)
           : [...collapsedFolders, folderId];
         set({ collapsedFolders: next });
+      },
+      addWorkoutToFolder: (folderId, workout) => {
+        const { folders } = get();
+        const folder = folders.find((f) => f.id === folderId);
+        if (!folder) return;
+        const updated = [...folder.workouts, workout];
+        set({
+          folders: folders.map((f) =>
+            f.id === folderId ? { ...f, workouts: updated } : f
+          ),
+        });
+      },
+      removeWorkoutFromFolder: (folderId, workoutId) => {
+        const { folders } = get();
+        const folder = folders.find((f) => f.id === folderId);
+        if (!folder) return;
+        const updated = folder.workouts.filter((w) => w.id !== workoutId);
+        set({
+          folders: folders.map((f) =>
+            f.id === folderId ? { ...f, workouts: updated } : f
+          ),
+        });
       },
     }),
     {

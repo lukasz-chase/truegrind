@@ -3,7 +3,6 @@ import AnchoredModal from "./AnchoredModal";
 import ModalOptionButton from "./ModalOptionButton";
 import { EvilIcons } from "@expo/vector-icons";
 import useWorkoutOptionsModal from "@/store/useWorkoutOptionsModal";
-import useAppStore from "@/store/useAppStore";
 import { copyWorkout, deleteWorkout } from "@/lib/workoutServices";
 import userStore from "@/store/userStore";
 import AntDesign from "@expo/vector-icons/AntDesign";
@@ -12,26 +11,36 @@ import { useRouter } from "expo-router";
 import useActionModal from "@/store/useActionModal";
 import useThemeStore from "@/store/useThemeStore";
 import { ThemeColors } from "@/types/user";
+import useFoldersStore from "@/store/useFoldersStore";
 
 const MODAL_WIDTH = 170;
 
 const WorkoutOptionsModal = function ExerciseOptionsModal() {
   const { theme } = useThemeStore((state) => state);
   const styles = useMemo(() => makeStyles(theme), [theme]);
+
   const { isVisible, closeModal, workoutProps } = useWorkoutOptionsModal();
+  const { removeWorkoutFromFolder, addWorkoutToFolder, folders } =
+    useFoldersStore();
+  const { openModal: openActionModal } = useActionModal();
   const { buttonRef, workout } = workoutProps;
-  const { setRefetchWorkouts } = useAppStore();
+
   const { user } = userStore();
   const router = useRouter();
-  const { openModal: openActionModal } = useActionModal();
   const deleteWorkoutHandler = async () => {
     await deleteWorkout(workout!.id);
-    setRefetchWorkouts();
+    removeWorkoutFromFolder(workout?.folder_id!, workout!.id);
     closeModal();
   };
+  //TODO FIX COPY
+  //THE CARD HEIGHT IS WEIRD
+  //MODAL DOESNT CLOSE
   const copyWorkoutHandler = async () => {
-    await copyWorkout(workout!, user!.id);
-    setRefetchWorkouts();
+    const copiedWorkout = await copyWorkout(workout!, user!.id, folders[0].id);
+    console.log(copiedWorkout);
+    if (copiedWorkout) {
+      addWorkoutToFolder(copiedWorkout.folder_id!, copiedWorkout);
+    }
     closeModal();
   };
   const editTemplateHandler = () => {

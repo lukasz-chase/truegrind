@@ -8,7 +8,6 @@ import Animated, {
 import { Workout } from "@/types/workout";
 import DraggableWorkoutCard from "./DraggableWorkoutCard";
 import { DRAGGABLE_WORKOUT_CARD_HEIGHT } from "@/constants/drag";
-import { Text, View } from "react-native";
 import WorkoutCardPreview from "./WorkoutCardPreview";
 
 type SortableWorkoutGridProps = {

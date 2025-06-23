@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { StyleSheet, Text, TouchableOpacity } from "react-native";
 import useThemeStore from "@/store/useThemeStore";
 import { ThemeColors } from "@/types/user";
+import { DRAGGABLE_WORKOUT_CARD_HEIGHT } from "@/constants/drag";
 
 type Props = {
   newTemplateHandler: () => void;
@@ -21,7 +22,7 @@ const WorkoutCardPreview = ({ newTemplateHandler }: Props) => {
 const makeStyles = (theme: ThemeColors) =>
   StyleSheet.create({
     workoutCard: {
-      minHeight: 150,
+      minHeight: DRAGGABLE_WORKOUT_CARD_HEIGHT,
       borderRadius: 10,
       borderWidth: 1,
       borderColor: theme.lightText,
