@@ -74,9 +74,10 @@ export default function WorkoutScreen() {
     const fetchData = async () => {
       setDataLoading(true);
       try {
+        console.log("user.id", user?.id);
         const [exampleResult, folderResult] = await Promise.all([
-          fetchExampleWorkouts(user!.active_split_id!),
-          fetchUserFoldersWithWorkouts(user!.id, user!.active_split_id!),
+          fetchExampleWorkouts(user?.active_split_id!),
+          fetchUserFoldersWithWorkouts(user?.id!, user?.active_split_id!),
         ]);
 
         if (exampleResult) {
@@ -153,9 +154,9 @@ export default function WorkoutScreen() {
       id: uuid.v4(),
       name: "Workout",
       notes: "",
-      user_id: user!.id,
+      user_id: user?.id ?? "user_id",
       workout_exercises: [],
-      split_id: split!.id,
+      split_id: split?.id ?? "split_id",
       order: (split?.workouts.length ?? 0) + 1,
       folder_id: folderId,
     });
@@ -164,6 +165,7 @@ export default function WorkoutScreen() {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     }
   };
+
   const newTemplateHandler = (folderId: string) => {
     const templateId = uuid.v4();
     router.push(`/template/${folderId}/${templateId}`);

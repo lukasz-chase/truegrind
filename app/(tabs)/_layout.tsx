@@ -42,7 +42,7 @@ export default function TabLayout() {
   useEffect(() => {
     if (user) {
       // If user is loaded, but has no active_split_id, push to /splits
-      if (!user.active_split_id) {
+      if (!user?.active_split_id) {
         router.replace("/splits");
       }
     }
@@ -67,63 +67,53 @@ export default function TabLayout() {
   };
   return (
     <GestureHandlerRootView>
-      <SafeAreaProvider>
-        <SafeAreaView>
-          <ActionModal />
-          <InfoModal />
-          <TimerModal />
-          <ExerciseOptionsModal />
-          <WorkoutExercisesModal />
-          <SetOptionsModal />
-          <WorkoutOptionsModal />
-          <ExerciseDetailsModal />
-          <WorkoutPreviewModal />
-          <FolderOptionsModal />
-          <UpsertFolderModal />
-        </SafeAreaView>
+      <SafeAreaProvider style={{ flex: 1 }}>
+        <ActionModal />
+        <InfoModal />
+        <TimerModal />
+        <ExerciseOptionsModal />
+        <WorkoutExercisesModal />
+        <SetOptionsModal />
+        <WorkoutOptionsModal />
+        <ExerciseDetailsModal />
+        <WorkoutPreviewModal />
+
         <Tabs
-          initialRouteName="index"
           screenOptions={{
             tabBarActiveTintColor: theme.blue,
-            tabBarStyle: {
-              backgroundColor: theme.tabBackground,
-              height: 70,
-            },
+            headerShown: false,
+            tabBarStyle: { backgroundColor: theme.tabBackground, height: 70 },
           }}
           tabBar={(props) => (
             <CustomTabBar {...props} animatedIndex={animatedIndex} />
           )}
         >
-          {HIDDEN_SCREENS.map(({ name, additionalOptions }) => (
+          {HIDDEN_SCREENS.map((screen) => (
             <Tabs.Screen
-              name={name}
-              key={name}
-              options={{
-                href: null,
-                headerShown: false,
-                ...additionalOptions,
-              }}
+              key={screen.name}
+              name={screen.name}
+              options={{ href: null, ...screen.additionalOptions }}
             />
           ))}
-
           {NAVIGATION_DATA.map(({ name, icon, focusedIcon, title }) => (
             <Tabs.Screen
               name={name}
               key={name}
               options={{
                 title,
-                headerShown: false,
                 tabBarIcon: ({ color, focused }) => (
                   <FontAwesomeIcons
                     name={focused ? focusedIcon : icon}
-                    color={color}
                     size={24}
+                    color={color}
                   />
                 ),
               }}
             />
           ))}
         </Tabs>
+        <FolderOptionsModal />
+        <UpsertFolderModal />
         {isSheetVisible && <WorkoutBottomSheet animatedIndex={animatedIndex} />}
       </SafeAreaProvider>
     </GestureHandlerRootView>

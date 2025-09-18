@@ -143,9 +143,9 @@ const Exercises = ({ onPress, selectedExercises }: Props) => {
               }}
             >
               {collapsedSections[section.title] ? (
-                <AntDesign name="caretright" size={20} color={theme.black} />
+                <AntDesign name="caret-up" size={20} color={theme.black} />
               ) : (
-                <AntDesign name="caretdown" size={20} color={theme.black} />
+                <AntDesign name="caret-down" size={20} color={theme.black} />
               )}
               <Text style={styles.sectionHeaderText}>{section.title}</Text>
             </Pressable>
