@@ -67,7 +67,7 @@ export default function TabLayout() {
   };
   return (
     <GestureHandlerRootView>
-      <SafeAreaProvider style={{ flex: 1 }}>
+      <SafeAreaProvider>
         <ActionModal />
         <InfoModal />
         <TimerModal />
@@ -77,24 +77,19 @@ export default function TabLayout() {
         <WorkoutOptionsModal />
         <ExerciseDetailsModal />
         <WorkoutPreviewModal />
-
+        <FolderOptionsModal />
+        <UpsertFolderModal />
         <Tabs
           screenOptions={{
             tabBarActiveTintColor: theme.blue,
             headerShown: false,
             tabBarStyle: { backgroundColor: theme.tabBackground, height: 70 },
           }}
+          initialRouteName="index"
           tabBar={(props) => (
             <CustomTabBar {...props} animatedIndex={animatedIndex} />
           )}
         >
-          {HIDDEN_SCREENS.map((screen) => (
-            <Tabs.Screen
-              key={screen.name}
-              name={screen.name}
-              options={{ href: null, ...screen.additionalOptions }}
-            />
-          ))}
           {NAVIGATION_DATA.map(({ name, icon, focusedIcon, title }) => (
             <Tabs.Screen
               name={name}
@@ -111,9 +106,14 @@ export default function TabLayout() {
               }}
             />
           ))}
+          {HIDDEN_SCREENS.map((screen) => (
+            <Tabs.Screen
+              key={screen.name}
+              name={screen.name}
+              options={{ href: null, ...screen.additionalOptions }}
+            />
+          ))}
         </Tabs>
-        <FolderOptionsModal />
-        <UpsertFolderModal />
         {isSheetVisible && <WorkoutBottomSheet animatedIndex={animatedIndex} />}
       </SafeAreaProvider>
     </GestureHandlerRootView>
