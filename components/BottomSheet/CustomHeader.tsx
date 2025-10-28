@@ -17,6 +17,7 @@ import { useRouter } from "expo-router";
 import useActionModal from "@/store/useActionModal";
 import useThemeStore from "@/store/useThemeStore";
 import { ThemeColors } from "@/types/user";
+import { useShallow } from "zustand/shallow";
 
 type Props = {
   sheetIndex: number;
@@ -28,15 +29,38 @@ const CustomHeader = ({ sheetIndex, close, scrolledY }: Props) => {
   const { animatedIndex, expand } = useBottomSheet();
   const {
     formattedTime,
-    isRunning: isWorkoutTimerRunning,
-    startTimer: startWorkoutTimer,
+    isWorkoutTimerRunning,
+    startWorkoutTimer,
     resumeIfRunning,
-  } = useWorkoutTimer();
-  const { timeRemaining, isRunning, timerDuration } = useTimerStore();
-  const { activeWorkout, setActiveWorkout } = useActiveWorkout();
-  const { openModal, setButtonRef } = useWorkoutTimerModal();
-  const { closeKeyboard } = useCustomKeyboard();
-  const { openModal: openActionModal } = useActionModal();
+  } = useWorkoutTimer(
+    useShallow((state) => ({
+      formattedTime: state.formattedTime,
+      isWorkoutTimerRunning: state.isRunning,
+      startWorkoutTimer: state.startTimer,
+      resumeIfRunning: state.resumeIfRunning,
+    }))
+  );
+  const { timeRemaining, isRunning, timerDuration } = useTimerStore(
+    useShallow((state) => ({
+      timeRemaining: state.timeRemaining,
+      isRunning: state.isRunning,
+      timerDuration: state.timerDuration,
+    }))
+  );
+  const { activeWorkout, setActiveWorkout } = useActiveWorkout(
+    useShallow((state) => ({
+      activeWorkout: state.activeWorkout,
+      setActiveWorkout: state.setActiveWorkout,
+    }))
+  );
+  const { openModal, setButtonRef } = useWorkoutTimerModal(
+    useShallow((state) => ({
+      openModal: state.openModal,
+      setButtonRef: state.setButtonRef,
+    }))
+  );
+  const closeKeyboard = useCustomKeyboard((state) => state.closeKeyboard);
+  const openActionModal = useActionModal((state) => state.openModal);
   const { theme } = useThemeStore((state) => state);
 
   const styles = useMemo(() => makeStyles(theme), [theme]);

@@ -29,6 +29,7 @@ import { INITIAL_WORKOUT_STATE } from "@/constants/initialState";
 import SplitTemplateSkeleton from "@/components/Skeletons/SplitTemplateSkeleton";
 import useThemeStore from "@/store/useThemeStore";
 import { AppTheme, AppThemeEnum, ThemeColors } from "@/types/user";
+import { useShallow } from "zustand/shallow";
 
 export default function WorkoutTemplate() {
   const [loading, setLoading] = useState(false);
@@ -57,9 +58,30 @@ export default function WorkoutTemplate() {
     deleteExerciseSet,
     resetWorkout,
     initialWorkout,
-  } = useWorkoutTemplate();
+  } = useWorkoutTemplate(
+    useShallow((state) => ({
+      setWorkout: state.setWorkout,
+      setIsNewWorkout: state.setIsNewWorkout,
+      workout: state.workout,
+      isNewWorkout: state.isNewWorkout,
+      updateWorkoutField: state.updateWorkoutField,
+      reorderWorkoutExercises: state.reorderWorkoutExercises,
+      addNewWorkoutExercise: state.addNewWorkoutExercise,
+      updateWorkoutExerciseField: state.updateWorkoutExerciseField,
+      addNewSet: state.addNewSet,
+      updateExerciseSet: state.updateExerciseSet,
+      deleteExerciseSet: state.deleteExerciseSet,
+      resetWorkout: state.resetWorkout,
+      initialWorkout: state.initialWorkout,
+    }))
+  );
   const { isVisible: IsKeyboardVisible, closeKeyboard } = useCustomKeyboard();
-  const { openModal, closeModal } = useWorkoutExercisesModal();
+  const { openModal, closeModal } = useWorkoutExercisesModal(
+    useShallow((state) => ({
+      openModal: state.openModal,
+      closeModal: state.closeModal,
+    }))
+  );
   const { setRefetchWorkouts } = useAppStore();
   const { activeSplit } = useSplitsStore();
 

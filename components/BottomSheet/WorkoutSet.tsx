@@ -19,6 +19,7 @@ import * as Haptics from "expo-haptics";
 import { useMemo, useState } from "react";
 import useThemeStore from "@/store/useThemeStore";
 import { ThemeColors } from "@/types/user";
+import { useShallow } from "zustand/shallow";
 
 type Props = {
   exerciseSet: ExerciseSet;
@@ -46,10 +47,16 @@ const WorkoutSet = ({
   const rowScale = useSharedValue(1);
   const shakeAnimation = useSharedValue(0);
 
-  const { user } = userStore();
-  const { startTimer, endTimer, isRunning } = useTimerStore();
-  const { openModal } = useWorkoutTimerModal();
-  const { closeKeyboard } = useCustomKeyboard();
+  const user = userStore((state) => state.user);
+  const { startTimer, endTimer, isRunning } = useTimerStore(
+    useShallow((state) => ({
+      startTimer: state.startTimer,
+      endTimer: state.endTimer,
+      isRunning: state.isRunning,
+    }))
+  );
+  const openModal = useWorkoutTimerModal((state) => state.openModal);
+  const closeKeyboard = useCustomKeyboard((state) => state.closeKeyboard);
   const { theme } = useThemeStore((state) => state);
 
   const styles = useMemo(() => makeStyles(theme), [theme]);

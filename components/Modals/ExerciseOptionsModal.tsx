@@ -17,6 +17,7 @@ import userStore from "@/store/userStore";
 import useActionModal from "@/store/useActionModal";
 import useThemeStore from "@/store/useThemeStore";
 import { ThemeColors } from "@/types/user";
+import { useShallow } from "zustand/shallow";
 
 const MODAL_WIDTH = 275;
 
@@ -42,9 +43,15 @@ const ExerciseOptionsModal = function ExerciseOptionsModal() {
     replaceWorkoutExercise,
     updateWorkoutExerciseField,
     removeWorkoutExercise,
-  } = useActiveWorkout();
-  const { user } = userStore();
-  const { openModal: openWarningModal } = useActionModal();
+  } = useActiveWorkout(
+    useShallow((state) => ({
+      replaceWorkoutExercise: state.replaceWorkoutExercise,
+      updateWorkoutExerciseField: state.updateWorkoutExerciseField,
+      removeWorkoutExercise: state.removeWorkoutExercise,
+    }))
+  );
+  const user = userStore((state) => state.user);
+  const openWarningModal = useActionModal((state) => state.openModal);
   const { theme } = useThemeStore((state) => state);
 
   const styles = useMemo(() => makeStyles(theme), [theme]);

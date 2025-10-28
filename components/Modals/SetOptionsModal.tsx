@@ -9,13 +9,25 @@ import { Pressable } from "react-native";
 import useThemeStore from "@/store/useThemeStore";
 import { useMemo } from "react";
 import { ThemeColors } from "@/types/user";
+import { useShallow } from "zustand/shallow";
 
 const MODAL_WIDTH = 275;
 
 const SetOptionsModal = function ExerciseOptionsModal() {
-  const { isVisible, closeModal, setProps } = useSetOptionsModal();
-  const { buttonRef, exerciseId, exerciseSetId } = setProps;
-  const { updateExerciseSet, activeWorkout } = useActiveWorkout();
+  const { isVisible, closeModal, buttonRef, exerciseId, exerciseSetId } =
+    useSetOptionsModal(
+      useShallow((state) => ({
+        isVisible: state.isVisible,
+        closeModal: state.closeModal,
+        ...state.setProps,
+      }))
+    );
+  const { updateExerciseSet, activeWorkout } = useActiveWorkout(
+    useShallow((state) => ({
+      updateExerciseSet: state.updateExerciseSet,
+      activeWorkout: state.activeWorkout,
+    }))
+  );
   const { theme } = useThemeStore((state) => state);
 
   const styles = useMemo(() => makeStyles(theme), [theme]);

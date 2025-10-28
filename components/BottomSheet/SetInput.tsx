@@ -12,6 +12,7 @@ import { BAR_TYPES, KEYBOARD_HEIGHT, RPE_VALUES } from "@/constants/keyboard";
 import useBottomSheet from "@/store/useBottomSheet";
 import useThemeStore from "@/store/useThemeStore";
 import { AppThemeEnum, ThemeColors } from "@/types/user";
+import { useShallow } from "zustand/shallow";
 
 const CARET_WIDTH = 2;
 
@@ -53,15 +54,28 @@ const SetInput = ({
 
   const {
     openKeyboard,
-    activeField: activeSetInput,
+    activeSetInput,
     setPartials,
     registerInput,
     unRegisterInput,
     setRPE,
     updateInputProps,
     setBarType,
-  } = useCustomKeyboard();
-  const { bottomSheetScrollViewRef } = useBottomSheet();
+  } = useCustomKeyboard(
+    useShallow((state) => ({
+      openKeyboard: state.openKeyboard,
+      activeSetInput: state.activeField,
+      setPartials: state.setPartials,
+      registerInput: state.registerInput,
+      unRegisterInput: state.unRegisterInput,
+      setRPE: state.setRPE,
+      updateInputProps: state.updateInputProps,
+      setBarType: state.setBarType,
+    }))
+  );
+  const bottomSheetScrollViewRef = useBottomSheet(
+    (state) => state.bottomSheetScrollViewRef
+  );
 
   const repsInput = fieldName === "reps";
   const setInputId = `${exerciseSetId}-${fieldName}`;

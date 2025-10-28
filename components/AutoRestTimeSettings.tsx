@@ -6,6 +6,7 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withSpring,
+  SharedValue,
   withTiming,
 } from "react-native-reanimated";
 import TimerSettings from "./TimerSettings";
@@ -15,7 +16,7 @@ import { useMemo } from "react";
 
 type Props = {
   screenWidth: number;
-  translateX: Animated.SharedValue<number>;
+  translateX: SharedValue<number>;
   exerciseTimer: number | null;
   setExerciseTimer: (exerciseTimer: number | null) => void;
   warmupTimer: number | null;

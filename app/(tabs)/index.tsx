@@ -28,6 +28,7 @@ import { AnimatedScrollView } from "react-native-reanimated/lib/typescript/compo
 import WorkoutFolderHeader from "@/components/WorkoutFolderHeader";
 import useUpsertFolderModal from "@/store/useUpsertFolderModal";
 import useFoldersStore from "@/store/useFoldersStore";
+import { useShallow } from "zustand/shallow";
 
 export default function WorkoutScreen() {
   const [exampleWorkouts, setExampleWorkouts] = useState<Workout[] | null>(
@@ -41,26 +42,48 @@ export default function WorkoutScreen() {
   >({});
   const [hoveredFolderId, setHoveredFolderId] = useState<string | null>(null);
 
-  const { setIsSheetVisible } = useBottomSheet();
+  const setIsSheetVisible = useBottomSheet((state) => state.setIsSheetVisible);
   const {
     activeWorkout,
     setActiveWorkout,
     setIsNewWorkout,
     persistedStorage,
     setPersistedStorage,
-  } = useActiveWorkout();
-  const { user } = userStore();
-  const { refetchWorkouts } = useAppStore();
-  const { activeSplit: split, loading } = useSplitsStore();
-  const { openModal } = useUpsertFolderModal();
+  } = useActiveWorkout(
+    useShallow((state) => ({
+      activeWorkout: state.activeWorkout,
+      setActiveWorkout: state.setActiveWorkout,
+      setIsNewWorkout: state.setIsNewWorkout,
+      persistedStorage: state.persistedStorage,
+      setPersistedStorage: state.setPersistedStorage,
+    }))
+  );
+  const user = userStore((state) => state.user);
+  const refetchWorkouts = useAppStore((state) => state.refetchWorkouts);
+  const { split, loading } = useSplitsStore(
+    useShallow((state) => ({
+      split: state.activeSplit,
+      loading: state.loading,
+    }))
+  );
+  const openModal = useUpsertFolderModal((state) => state.openModal);
   const {
     folders,
     setFolders,
-    loading: foldersLoading,
+    foldersLoading,
     reorderWorkouts,
     moveWorkoutToFolder,
     collapsedFolders,
-  } = useFoldersStore();
+  } = useFoldersStore(
+    useShallow((state) => ({
+      folders: state.folders,
+      setFolders: state.setFolders,
+      foldersLoading: state.loading,
+      reorderWorkouts: state.reorderWorkouts,
+      moveWorkoutToFolder: state.moveWorkoutToFolder,
+      collapsedFolders: state.collapsedFolders,
+    }))
+  );
 
   const { theme } = useThemeStore((state) => state);
   const styles = useMemo(() => makeStyles(theme), [theme]);

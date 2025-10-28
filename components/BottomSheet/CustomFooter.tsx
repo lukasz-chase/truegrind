@@ -6,20 +6,32 @@ import { Exercise } from "@/types/exercises";
 import useCustomKeyboard from "@/store/useCustomKeyboard";
 import useWorkoutTimer from "@/store/useWorkoutTimer";
 import { WorkoutExercise } from "@/types/workoutExercise";
-import useThemeStore from "@/store/useThemeStore";
 import { useMemo } from "react";
 import { ThemeColors } from "@/types/user";
+import useTimerStore from "@/store/useTimer";
+import { useShallow } from "zustand/shallow";
 
 type Props = {
+  theme: ThemeColors;
   close: () => void;
 };
 
-const CustomFooter = ({ close }: Props) => {
-  const { openModal, closeModal } = useWorkoutExercisesModal();
-  const { addNewWorkoutExercise, resetActiveWorkout } = useActiveWorkout();
-  const { isVisible: IsKeyboardVisible } = useCustomKeyboard();
-  const { resetTimer } = useWorkoutTimer();
-  const { theme } = useThemeStore((state) => state);
+const CustomFooter = ({ close, theme }: Props) => {
+  const { openModal, closeModal } = useWorkoutExercisesModal(
+    useShallow((state) => ({
+      openModal: state.openModal,
+      closeModal: state.closeModal,
+    }))
+  );
+  const { addNewWorkoutExercise, resetActiveWorkout } = useActiveWorkout(
+    useShallow((state) => ({
+      addNewWorkoutExercise: state.addNewWorkoutExercise,
+      resetActiveWorkout: state.resetActiveWorkout,
+    }))
+  );
+  const IsKeyboardVisible = useCustomKeyboard((state) => state.isVisible);
+  const resetExerciseTimer = useWorkoutTimer((state) => state.resetTimer);
+  const stopWorkoutTimer = useTimerStore((state) => state.endTimer);
 
   const styles = useMemo(() => makeStyles(theme), [theme]);
   const addExercises = async (
@@ -33,7 +45,8 @@ const CustomFooter = ({ close }: Props) => {
     closeModal();
   };
   const closeBottomSheet = () => {
-    resetTimer();
+    resetExerciseTimer();
+    stopWorkoutTimer();
     close();
     resetActiveWorkout();
   };

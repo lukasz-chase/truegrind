@@ -15,7 +15,7 @@ type TimerState = {
 };
 
 const useTimerStore = create<TimerState>()((set, get) => {
-  let timer: NodeJS.Timeout | null = null;
+  let timer: number | null = null;
   let notificationId: string | null = null;
 
   const startTimer = async (timeLength: number) => {

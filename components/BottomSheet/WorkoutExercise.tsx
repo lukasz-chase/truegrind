@@ -43,9 +43,11 @@ const WorkoutExercise = ({
   deleteExerciseSet,
   isEditTemplate = false,
 }: Props) => {
-  const { openModal } = useExerciseOptionsModal();
-  const { closeKeyboard } = useCustomKeyboard();
-  const { openModal: openExerciseDetailsModal } = useExerciseDetailsModal();
+  const openModal = useExerciseOptionsModal((state) => state.openModal);
+  const closeKeyboard = useCustomKeyboard((state) => state.closeKeyboard);
+  const openExerciseDetailsModal = useExerciseDetailsModal(
+    (state) => state.openModal
+  );
   const [note, setNote] = useState(
     workoutExercise?.note ?? { noteValue: "", showNote: false }
   );

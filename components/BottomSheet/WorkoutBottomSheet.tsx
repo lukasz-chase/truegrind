@@ -19,6 +19,7 @@ import WorkoutExerciseWrapper from "./WorkoutExerciseWrapper";
 import useThemeStore from "@/store/useThemeStore";
 import { ThemeColors } from "@/types/user";
 import CustomHandle from "./CustomHandle";
+import { useShallow } from "zustand/shallow";
 
 type Props = {
   animatedIndex: SharedValue<number>;
@@ -38,7 +39,17 @@ const WorkoutBottomSheet = ({ animatedIndex }: Props) => {
     deleteExerciseSet,
     updateExerciseSet,
     updateWorkoutExerciseField,
-  } = useActiveWorkout();
+  } = useActiveWorkout(
+    useShallow((state) => ({
+      activeWorkout: state.activeWorkout,
+      reorderWorkoutExercises: state.reorderWorkoutExercises,
+      updateWorkoutField: state.updateWorkoutField,
+      addNewSet: state.addNewSet,
+      deleteExerciseSet: state.deleteExerciseSet,
+      updateExerciseSet: state.updateExerciseSet,
+      updateWorkoutExerciseField: state.updateWorkoutExerciseField,
+    }))
+  );
   const { closeKeyboard } = useCustomKeyboard();
 
   const sheetRef = useRef<BottomSheet>(null);
@@ -138,7 +149,7 @@ const WorkoutBottomSheet = ({ animatedIndex }: Props) => {
                   />
                 </WorkoutExerciseWrapper>
               ))}
-            <CustomFooter close={handleClosePress} />
+            <CustomFooter close={handleClosePress} theme={theme} />
           </BottomSheetScrollView>
         </Pressable>
       </BottomSheet>

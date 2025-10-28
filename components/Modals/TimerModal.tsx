@@ -15,6 +15,7 @@ import { SCREEN_WIDTH } from "@/constants/device";
 import { formatTime } from "@/utils/calendar";
 import useThemeStore from "@/store/useThemeStore";
 import { AppTheme, AppThemeEnum, ThemeColors } from "@/types/user";
+import { useShallow } from "zustand/shallow";
 
 export default function TimerModal() {
   const [customTimerView, setCustomTimerView] = useState(false);
@@ -33,9 +34,25 @@ export default function TimerModal() {
     reduceFromTimer,
     endTimer,
     timerDuration,
-  } = useTimerStore();
-  const { closeModal, isVisible, buttonRef } = useWorkoutTimerModal();
-  const { openModal: openInfoModal } = useInfoModal();
+  } = useTimerStore(
+    useShallow((state) => ({
+      timeRemaining: state.timeRemaining,
+      isRunning: state.isRunning,
+      startTimer: state.startTimer,
+      addToTimer: state.addToTimer,
+      reduceFromTimer: state.reduceFromTimer,
+      endTimer: state.endTimer,
+      timerDuration: state.timerDuration,
+    }))
+  );
+  const { closeModal, isVisible, buttonRef } = useWorkoutTimerModal(
+    useShallow((state) => ({
+      closeModal: state.closeModal,
+      isVisible: state.isVisible,
+      buttonRef: state.buttonRef,
+    }))
+  );
+  const openInfoModal = useInfoModal((state) => state.openModal);
   const { theme, mode } = useThemeStore((state) => state);
 
   const styles = useMemo(() => makeStyles(theme, mode), [theme, mode]);

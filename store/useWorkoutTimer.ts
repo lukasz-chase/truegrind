@@ -17,7 +17,7 @@ interface TimerStore {
 const useWorkoutTimer = create<TimerStore>()(
   persist(
     (set, get) => {
-      let timer: NodeJS.Timeout | null = null;
+      let timer: number | null = null;
 
       const getNowSec = () => Math.floor(Date.now() / 1000);
 

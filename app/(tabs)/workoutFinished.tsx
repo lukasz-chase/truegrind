@@ -36,6 +36,7 @@ import { generateNewColor } from "@/utils/colors";
 import { getCalendarDateFormat, getOrdinalSuffix } from "@/utils/calendar";
 import { ThemeColors } from "@/types/user";
 import useThemeStore from "@/store/useThemeStore";
+import { useShallow } from "zustand/shallow";
 
 const TrophyImage = require("@/assets/images/trophy.webp");
 
@@ -49,12 +50,26 @@ export default function WorkoutFinishedScreen() {
     isNewWorkout,
     resetActiveWorkout,
     setPersistedStorage,
-  } = useActiveWorkout();
-  const { setRefetchWorkouts } = useAppStore();
-  const { endTimer } = useTimerStore();
-  const { resetTimer, formattedTime } = useWorkoutTimer();
-  const { openModal } = useActionModal();
-  const { user } = userStore();
+  } = useActiveWorkout(
+    useShallow((state) => ({
+      activeWorkout: state.activeWorkout,
+      initialActiveWorkout: state.initialActiveWorkout,
+      workoutWasUpdated: state.workoutWasUpdated,
+      isNewWorkout: state.isNewWorkout,
+      resetActiveWorkout: state.resetActiveWorkout,
+      setPersistedStorage: state.setPersistedStorage,
+    }))
+  );
+  const setRefetchWorkouts = useAppStore((state) => state.setRefetchWorkouts);
+  const endTimer = useTimerStore((state) => state.endTimer);
+  const { resetTimer, formattedTime } = useWorkoutTimer(
+    useShallow((state) => ({
+      resetTimer: state.resetTimer,
+      formattedTime: state.formattedTime,
+    }))
+  );
+  const openModal = useActionModal((state) => state.openModal);
+  const user = userStore((state) => state.user);
   const { theme } = useThemeStore((state) => state);
 
   const styles = useMemo(() => makeStyles(theme), [theme]);

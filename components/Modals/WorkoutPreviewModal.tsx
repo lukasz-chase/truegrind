@@ -17,12 +17,20 @@ import useThemeStore from "@/store/useThemeStore";
 import { useMemo } from "react";
 import { ThemeColors } from "@/types/user";
 import useWorkoutPreviewModal from "@/store/useWorkoutPreviewModal";
+import { useShallow } from "zustand/shallow";
 
 export default function WorkoutPreviewModal() {
   const { closeModal, isVisible, startWorkout, workout } =
-    useWorkoutPreviewModal();
-  const { user } = userStore();
-  const { setRefetchWorkouts } = useAppStore();
+    useWorkoutPreviewModal(
+      useShallow((state) => ({
+        closeModal: state.closeModal,
+        isVisible: state.isVisible,
+        startWorkout: state.startWorkout,
+        workout: state.workout,
+      }))
+    );
+  const user = userStore((state) => state.user);
+  const setRefetchWorkouts = useAppStore((state) => state.setRefetchWorkouts);
   const { theme } = useThemeStore((state) => state);
   const styles = useMemo(() => makeStyles(theme), [theme]);
   const router = useRouter();
@@ -32,7 +40,10 @@ export default function WorkoutPreviewModal() {
     setRefetchWorkouts();
   };
   const editWorkoutTemplate = () => {
-    router.push(`/template/${workout?.id}`);
+    router.push({
+      pathname: "/template/[folderId]/[id]",
+      params: { folderId: workout.folder_id!, id: workout.id },
+    });
     closeModal();
   };
   const exercises = workout.workout_exercises

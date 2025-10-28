@@ -19,6 +19,7 @@ import * as Haptics from "expo-haptics";
 import { generateNewColor } from "@/utils/colors";
 import useThemeStore from "@/store/useThemeStore";
 import { ThemeColors } from "@/types/user";
+import { useShallow } from "zustand/shallow";
 
 export default function WorkoutExercisesModal() {
   const {
@@ -28,8 +29,17 @@ export default function WorkoutExercisesModal() {
     allowMultiple,
     actionButtonLabel,
     openModal,
-  } = useWorkoutExercisesModal();
-  const { activeWorkout } = useActiveWorkout();
+  } = useWorkoutExercisesModal(
+    useShallow((state) => ({
+      closeModal: state.closeModal,
+      isVisible: state.isVisible,
+      onPress: state.onPress,
+      allowMultiple: state.allowMultiple,
+      actionButtonLabel: state.actionButtonLabel,
+      openModal: state.openModal,
+    }))
+  );
+  const activeWorkout = useActiveWorkout((state) => state.activeWorkout);
   const [isNewExerciseModalVisible, setIsNewExerciseModalVisible] =
     useState(false);
   const [chosenExercises, setChosenExercises] = useState<Exercise[]>([]);
