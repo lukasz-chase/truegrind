@@ -1,5 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import React, { useEffect, useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import Animated, {
   useAnimatedStyle,
@@ -84,7 +84,7 @@ const TimerButton = ({
             <View
               style={[
                 styles.timerButtonAbsoluteBackground,
-                { backgroundColor: theme.black },
+                { backgroundColor: theme.textColor },
               ]}
             />
           </MaskedView>
