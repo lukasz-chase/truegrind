@@ -11,4 +11,8 @@ export const PROFILE_LINKS = [
     label: "Privacy / Delete Account",
     href: "/profile/privacy",
   },
+  {
+    label: "Integrations",
+    href: "/profile/integrations",
+  },
 ];

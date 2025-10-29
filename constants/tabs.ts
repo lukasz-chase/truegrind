@@ -82,4 +82,8 @@ export const PROFILE_TABS = [
     name: "userForm",
     animation: "slide_from_right",
   },
+  {
+    name: "integrations",
+    animation: "slide_from_right",
+  },
 ];
