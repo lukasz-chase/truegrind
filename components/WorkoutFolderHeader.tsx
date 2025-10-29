@@ -14,6 +14,7 @@ type Props = {
   workoutsLength: number;
   setDragFolderId: React.Dispatch<React.SetStateAction<string | null>>;
   scrollRef: React.RefObject<Animated.ScrollView | null>;
+  startAnEmptyWorkout: (folderId: string) => void;
 };
 
 export default ({
@@ -22,14 +23,22 @@ export default ({
   id,
   setDragFolderId,
   scrollRef,
+  startAnEmptyWorkout,
 }: Props) => {
   const buttonRef = useRef(null);
-  const { theme } = useThemeStore((state) => state);
+  const theme = useThemeStore((state) => state.theme);
   const styles = useMemo(() => makeStyles(theme), [theme]);
-  const { openModal } = useFolderOptionsModal();
-  const { toggleFolderCollapse } = useFoldersStore();
+  const openModal = useFolderOptionsModal((state) => state.openModal);
+  const toggleFolderCollapse = useFoldersStore(
+    (state) => state.toggleFolderCollapse
+  );
   const handleOptions = () => {
-    openModal({ buttonRef, folderId: id, folderName: name });
+    openModal({
+      buttonRef,
+      folderId: id,
+      folderName: name,
+      startAnEmptyWorkout,
+    });
   };
 
   const onLongPress = () => {

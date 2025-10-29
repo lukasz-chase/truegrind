@@ -8,6 +8,7 @@ interface ModalState {
     folderId: string | null;
     buttonRef: React.MutableRefObject<null>;
     folderName: string | null;
+    startAnEmptyWorkout: (folderId: string) => void;
   };
 }
 
@@ -19,6 +20,7 @@ const useFolderOptionsModal = create<ModalState>((set) => ({
     folderId: null,
     buttonRef: { current: null },
     folderName: null,
+    startAnEmptyWorkout: () => {},
   },
 }));
 

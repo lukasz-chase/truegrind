@@ -1,4 +1,4 @@
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import AnchoredModal from "./AnchoredModal";
 import ModalOptionButton from "./ModalOptionButton";
 import { EvilIcons } from "@expo/vector-icons";
@@ -12,24 +12,38 @@ import useUpsertFolderModal from "@/store/useUpsertFolderModal";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import useFoldersStore from "@/store/useFoldersStore";
 import useInfoModal from "@/store/useInfoModal";
+import { useShallow } from "zustand/shallow";
+import Entypo from "@expo/vector-icons/Entypo";
 
 const MODAL_WIDTH = 170;
 
 const FolderOptionsModal = function ExerciseOptionsModal() {
   const [isCollapsed, setIsCollapsed] = useState(false);
 
-  const { theme } = useThemeStore((state) => state);
+  const theme = useThemeStore((state) => state.theme);
   const styles = useMemo(() => makeStyles(theme), [theme]);
 
   const { isVisible, closeModal, props } = useFolderOptionsModal();
-  const { buttonRef, folderId, folderName } = props;
-  const { openModal: openActionModal } = useActionModal();
-  const { openModal: openUpsertFolderModal } = useUpsertFolderModal();
-  const { toggleFolderCollapse, collapsedFolders, folders } = useFoldersStore();
-  const { openModal: openInfoModal } = useInfoModal();
+  const { buttonRef, folderId, folderName, startAnEmptyWorkout } = props;
+  const openActionModal = useActionModal((state) => state.openModal);
+
+  const openUpsertFolderModal = useUpsertFolderModal(
+    (state) => state.openModal
+  );
+
+  const { toggleFolderCollapse, collapsedFolders, folders } = useFoldersStore(
+    useShallow((state) => ({
+      toggleFolderCollapse: state.toggleFolderCollapse,
+      collapsedFolders: state.collapsedFolders,
+      folders: state.folders,
+    }))
+  );
+  const openInfoModal = useInfoModal((state) => state.openModal);
+
   useEffect(() => {
     if (folderId) setIsCollapsed(collapsedFolders.includes(folderId));
   }, [folderId, collapsedFolders]);
+
   const deleteFolderHandler = async () => {
     const { error } = (await deleteFolder(folderId!)) ?? {};
     closeModal();
@@ -46,6 +60,10 @@ const FolderOptionsModal = function ExerciseOptionsModal() {
     openUpsertFolderModal({ folderId: folderId!, folderName: folderName! });
     closeModal();
   };
+  const startAnEmptyWorkoutHandler = () => {
+    startAnEmptyWorkout(folderId!);
+    closeModal();
+  };
   const openActionModalHandler = () => {
     openActionModal({
       title: "Delete Workout",
@@ -59,6 +77,12 @@ const FolderOptionsModal = function ExerciseOptionsModal() {
       Icon: <EvilIcons name="pencil" size={24} color={theme.blue} />,
       title: "Edit folder",
       cb: editTemplateHandler,
+      conditionToDisplay: true,
+    },
+    {
+      Icon: <Entypo name="plus" size={24} color={theme.blue} />,
+      title: "New template",
+      cb: startAnEmptyWorkoutHandler,
       conditionToDisplay: true,
     },
     {

@@ -92,7 +92,7 @@ const WorkoutSummary = ({ workout }: { workout: WorkoutHistory }) => {
       <Text style={styles.columnText}>{formatDate(new Date())}</Text>
       <View style={styles.header}>
         <View style={styles.headerItem}>
-          <AntDesign name="clockcircle" size={24} color={theme.textColor} />
+          <AntDesign name="clock-circle" size={24} color={theme.textColor} />
           <Text style={styles.columnText}>{workout.workout_time}</Text>
         </View>
         <View style={styles.headerItem}>

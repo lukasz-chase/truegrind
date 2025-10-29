@@ -285,6 +285,7 @@ export default function WorkoutScreen() {
                 workoutsLength={folder.workouts.length}
                 setDragFolderId={setDragFolderId}
                 scrollRef={scrollRef}
+                startAnEmptyWorkout={startAnEmptyWorkout}
               />
               {!isCollapsed && (
                 <SortableWorkoutGrid
