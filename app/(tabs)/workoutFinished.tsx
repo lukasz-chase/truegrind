@@ -36,6 +36,7 @@ import { generateNewColor } from "@/utils/colors";
 import { getCalendarDateFormat, getOrdinalSuffix } from "@/utils/calendar";
 import { ThemeColors } from "@/types/user";
 import useThemeStore from "@/store/useThemeStore";
+import { supabase } from "@/lib/supabase";
 import { useShallow } from "zustand/shallow";
 
 const TrophyImage = require("@/assets/images/trophy.webp");
@@ -218,6 +219,19 @@ export default function WorkoutFinishedScreen() {
       if (Platform.OS !== "web") {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       }
+      const { data: stravaIntegration, error: checkError } = await supabase
+        .from("strava_integrations")
+        .select("id")
+        .eq("user_id", user!.id)
+        .maybeSingle();
+
+      if (checkError || !stravaIntegration) {
+        console.log("No Strava integration found for user. Skipping upload.");
+        return;
+      }
+      await supabase.functions.invoke("strava-upload", {
+        body: { userId: user!.id, workout, startTime },
+      });
     } catch (error) {
       console.error("Error finishing workout:", error);
       throw error;

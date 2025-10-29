@@ -14,16 +14,9 @@ const discovery = {
 };
 
 const redirectUri = AuthSession.makeRedirectUri({
-  useProxy: true,
+  scheme: "trueGrind",
+  preferLocalhost: true,
 });
-
-const stravaOauthConfig = {
-  clientId: process.env.EXPO_PUBLIC_STRAVA_CLIENT_ID ?? "",
-  scopes: ["activity:write,read"],
-  responseType: AuthSession.ResponseType.Code,
-  redirectUri,
-};
-
 const Integrations = () => {
   const { user } = userStore((s) => s);
   const [loading, setLoading] = useState(false);
@@ -32,7 +25,12 @@ const Integrations = () => {
   const styles = useMemo(() => makeStyles(theme), [theme]);
 
   const [request, response, promptAsync] = AuthSession.useAuthRequest(
-    stravaOauthConfig,
+    {
+      clientId: process.env.EXPO_PUBLIC_STRAVA_CLIENT_ID ?? "",
+      scopes: ["activity:write,read"],
+      responseType: AuthSession.ResponseType.Code,
+      redirectUri,
+    },
     discovery
   );
 
@@ -85,11 +83,26 @@ const Integrations = () => {
     checkConnection();
   }, [response, user]);
 
-  const handlePress = () => {
+  const handleDisconnect = async () => {
+    if (!user) return;
+    setLoading(true);
+    try {
+      const { error } = await supabase.functions.invoke("strava-deauth", {
+        body: { userId: user.id },
+      });
+      if (error) throw error;
+      setIsConnected(false);
+    } catch (e) {
+      console.error("Failed to disconnect Strava:", e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handlePress = async () => {
     if (isConnected) {
-      console.log("TODO: disconnect logic");
+      await handleDisconnect();
     } else {
-      // Proxy keeps things stable across dev/prod with Strava
       promptAsync({ useProxy: true });
     }
   };
