@@ -15,7 +15,7 @@ const discovery = {
 
 const redirectUri = AuthSession.makeRedirectUri({
   scheme: "trueGrind",
-  preferLocalhost: true,
+  path: "redirect",
 });
 const Integrations = () => {
   const { user } = userStore((s) => s);
