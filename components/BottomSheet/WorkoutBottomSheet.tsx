@@ -115,9 +115,12 @@ const WorkoutBottomSheet = ({ animatedIndex }: Props) => {
             {dragItemId && (
               <DraggableList
                 data={
-                  activeWorkout?.workout_exercises?.sort(
-                    (a, b) => a.order - b.order
-                  ) ?? []
+                  activeWorkout?.workout_exercises
+                    ?.sort((a, b) => a.order - b.order)
+                    .map((exercise) => ({
+                      id: exercise.id,
+                      name: exercise.exercises.name,
+                    })) ?? []
                 }
                 onReorder={handleReorder}
                 dragItemId={dragItemId}

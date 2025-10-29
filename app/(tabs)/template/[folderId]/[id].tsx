@@ -176,8 +176,12 @@ export default function WorkoutTemplate() {
           {dragItemId && (
             <DraggableList
               data={
-                workout?.workout_exercises?.sort((a, b) => a.order - b.order) ??
-                []
+                workout?.workout_exercises
+                  ?.sort((a, b) => a.order - b.order)
+                  .map((exercise) => ({
+                    id: exercise.id,
+                    name: exercise.exercises.name,
+                  })) ?? []
               }
               onReorder={handleReorder}
               dragItemId={dragItemId}

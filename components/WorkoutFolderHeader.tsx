@@ -5,14 +5,24 @@ import { ThemeColors } from "@/types/user";
 import { SimpleLineIcons } from "@expo/vector-icons";
 import useFolderOptionsModal from "@/store/useFolderOptionsModal";
 import useFoldersStore from "@/store/useFoldersStore";
+import * as Haptics from "expo-haptics";
+import Animated from "react-native-reanimated";
 
 type Props = {
   name: string;
   id: string;
   workoutsLength: number;
+  setDragFolderId: React.Dispatch<React.SetStateAction<string | null>>;
+  scrollRef: React.RefObject<Animated.ScrollView | null>;
 };
 
-export default ({ name, workoutsLength, id }: Props) => {
+export default ({
+  name,
+  workoutsLength,
+  id,
+  setDragFolderId,
+  scrollRef,
+}: Props) => {
   const buttonRef = useRef(null);
   const { theme } = useThemeStore((state) => state);
   const styles = useMemo(() => makeStyles(theme), [theme]);
@@ -22,15 +32,24 @@ export default ({ name, workoutsLength, id }: Props) => {
     openModal({ buttonRef, folderId: id, folderName: name });
   };
 
+  const onLongPress = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+    //scroll to the top of the screen
+    scrollRef.current?.scrollTo({ y: 0, animated: true });
+    setDragFolderId(id);
+  };
+
   return (
     <View style={styles.header}>
       <Pressable
         onPress={() => toggleFolderCollapse(id)}
+        onLongPress={onLongPress}
         style={{ flexDirection: "row", alignItems: "center", gap: 5 }}
       >
         <Text style={styles.title}>{name}</Text>
         <Text style={styles.title}>({workoutsLength})</Text>
       </Pressable>
+
       <Pressable
         ref={buttonRef}
         onPress={handleOptions}

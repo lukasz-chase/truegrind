@@ -1,11 +1,10 @@
-import { WorkoutExercisePopulated } from "@/types/workoutExercise";
 import { useState, useEffect } from "react";
 import { View, StyleSheet } from "react-native";
 import DraggableItem from "./DraggableItem";
 import { ITEM_HEIGHT } from "@/constants/drag";
 
 type Props = {
-  data: WorkoutExercisePopulated[];
+  data: { id: string; name: string }[];
   onReorder?: (newOrder: string[]) => void;
   dragItemId: string | null;
 };

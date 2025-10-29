@@ -29,6 +29,7 @@ import WorkoutFolderHeader from "@/components/WorkoutFolderHeader";
 import useUpsertFolderModal from "@/store/useUpsertFolderModal";
 import useFoldersStore from "@/store/useFoldersStore";
 import { useShallow } from "zustand/shallow";
+import DraggableList from "@/components/BottomSheet/DraggableExercisesList.tsx/DraggableList";
 
 export default function WorkoutScreen() {
   const [exampleWorkouts, setExampleWorkouts] = useState<Workout[] | null>(
@@ -41,6 +42,7 @@ export default function WorkoutScreen() {
     Record<string, { top: number; bottom: number }>
   >({});
   const [hoveredFolderId, setHoveredFolderId] = useState<string | null>(null);
+  const [dragFolderId, setDragFolderId] = useState<string | null>(null);
 
   const setIsSheetVisible = useBottomSheet((state) => state.setIsSheetVisible);
   const {
@@ -74,6 +76,7 @@ export default function WorkoutScreen() {
     reorderWorkouts,
     moveWorkoutToFolder,
     collapsedFolders,
+    reorderFolders,
   } = useFoldersStore(
     useShallow((state) => ({
       folders: state.folders,
@@ -82,6 +85,7 @@ export default function WorkoutScreen() {
       reorderWorkouts: state.reorderWorkouts,
       moveWorkoutToFolder: state.moveWorkoutToFolder,
       collapsedFolders: state.collapsedFolders,
+      reorderFolders: state.reorderFolders,
     }))
   );
 
@@ -193,12 +197,16 @@ export default function WorkoutScreen() {
     const templateId = uuid.v4();
     router.push(`/template/${folderId}/${templateId}`);
   };
-
+  const handleReorder = (newOrder: string[]) => {
+    reorderFolders(newOrder);
+    setDragFolderId(null);
+  };
   const onScroll = useAnimatedScrollHandler({
     onScroll: (e) => {
       scrollY.value = e.contentOffset.y;
     },
   });
+
   if (loading || dataLoading || !split || !folders || foldersLoading) {
     return <MainScreenSkeleton parentStyles={styles} />;
   }
@@ -249,6 +257,16 @@ export default function WorkoutScreen() {
             </Pressable>
           </View>
         </View>
+        {dragFolderId && (
+          <DraggableList
+            data={folders.map((folder) => ({
+              id: folder.id,
+              name: folder.name,
+            }))}
+            onReorder={handleReorder}
+            dragItemId={dragFolderId}
+          />
+        )}
         {folders.map((folder) => {
           const isCollapsed = collapsedFolders.includes(folder.id);
           return (
@@ -258,13 +276,15 @@ export default function WorkoutScreen() {
                 const { y, height } = e.nativeEvent.layout;
                 registerFolderLayout(folder.id, { top: y, bottom: y + height });
               }}
-              style={{ marginBottom: 24 }}
+              style={[{ marginBottom: 24 }, dragFolderId && styles.collapsed]}
               layout={LinearTransition}
             >
               <WorkoutFolderHeader
                 id={folder.id}
                 name={folder.name}
                 workoutsLength={folder.workouts.length}
+                setDragFolderId={setDragFolderId}
+                scrollRef={scrollRef}
               />
               {!isCollapsed && (
                 <SortableWorkoutGrid
@@ -371,4 +391,9 @@ const makeStyles = (theme: ThemeColors) =>
       gap: 10,
     },
     buttonRow: { flexDirection: "row", gap: 8 },
+    collapsed: {
+      height: 0,
+      overflow: "hidden",
+      opacity: 0,
+    },
   });

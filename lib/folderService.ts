@@ -83,7 +83,6 @@ export const updateFoldersBulk = async (
       const { workouts, ...folderNotPopulated } = folder;
       return folderNotPopulated;
     });
-    console.log(foldersToUpdateNotPopulated);
     const { error } = await supabase
       .from("folders")
       .upsert(foldersToUpdateNotPopulated);

@@ -23,7 +23,7 @@ const moveArrayItem = (arr: string[], from: number, to: number): string[] => {
 };
 
 type Props = {
-  item: WorkoutExercisePopulated;
+  item: { name: string; id: string };
   index: number;
   itemsOrder: string[];
   setItemsOrder: React.Dispatch<React.SetStateAction<string[]>>;
@@ -112,7 +112,7 @@ const DraggableItem = ({
     <>
       <GestureDetector gesture={combinedGesture}>
         <Animated.View style={[styles.header, animatedStyle]}>
-          <Text style={styles.headerTitle}>{item.exercises.name}</Text>
+          <Text style={styles.headerTitle}>{item.name}</Text>
           <View style={styles.headerOptions}>
             <FontAwesome5 name="grip-lines" size={24} color={theme.black} />
           </View>

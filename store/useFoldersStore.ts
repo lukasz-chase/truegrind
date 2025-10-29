@@ -4,6 +4,7 @@ import { updateWorkoutsBulk } from "@/lib/workoutServices";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { Workout } from "@/types/workout";
+import { updateFoldersBulk } from "@/lib/folderService";
 
 type Store = {
   folders: WorkoutsFolderPopulated[];
@@ -25,6 +26,7 @@ type Store = {
   toggleFolderCollapse: (folderId: string) => void;
   addWorkoutToFolder: (folderId: string, workout: Workout) => void;
   removeWorkoutFromFolder: (folderId: string, workoutId: string) => void;
+  reorderFolders: (newOrder: string[]) => Promise<void>;
 };
 
 const useFoldersStore = create<Store>()(
@@ -145,6 +147,28 @@ const useFoldersStore = create<Store>()(
             f.id === folderId ? { ...f, workouts: updated } : f
           ),
         });
+      },
+      reorderFolders: async (newOrder) => {
+        let updatedFolders: WorkoutsFolderPopulated[] = [];
+        set((state) => {
+          const currentFolders = state.folders;
+          updatedFolders = newOrder.map((id, index) => {
+            const folder = currentFolders.find((folder) => folder.id === id);
+            if (!folder) return currentFolders[index];
+            return {
+              ...folder,
+              order: index + 1,
+            };
+          });
+          return {
+            folders: updatedFolders,
+          };
+        });
+        try {
+          await updateFoldersBulk(updatedFolders);
+        } catch (error) {
+          console.log(error);
+        }
       },
     }),
     {
