@@ -108,14 +108,20 @@ export const finishWorkout = async ({
     .maybeSingle();
 
   if (stravaIntegration) {
-    await supabase.functions.invoke("strava-upload", {
+    const res = await supabase.functions.invoke("strava-upload", {
       body: {
         userId: user.id,
-        workout: activeWorkout,
+        workout: {
+          ...activeWorkout,
+          workout_exercises: activeWorkout.workout_exercises?.filter(
+            (we) => we.exercise_sets.length > 0
+          ),
+        },
         startTime,
         caloriesBurned,
         PRs,
       },
     });
+    console.log(res);
   }
 };
