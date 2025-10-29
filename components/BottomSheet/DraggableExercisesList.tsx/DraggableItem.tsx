@@ -12,6 +12,7 @@ import Animated, {
   withSpring,
   runOnJS,
 } from "react-native-reanimated";
+import * as Haptics from "expo-haptics";
 
 const moveArrayItem = (arr: string[], from: number, to: number): string[] => {
   "worklet";
@@ -76,6 +77,7 @@ const DraggableItem = ({
 
       if (newIndex !== oldIndex) {
         const updatedOrder = moveArrayItem(itemsOrder, oldIndex, newIndex);
+        runOnJS(Haptics.impactAsync)(Haptics.ImpactFeedbackStyle.Light);
         runOnJS(setItemsOrder)(updatedOrder);
       }
     })
@@ -102,7 +104,7 @@ const DraggableItem = ({
       transform: [{ translateY: y.value }],
       zIndex: isActive.value ? 10 : 1,
       elevation: isActive.value ? 5 : 0,
-      backgroundColor: isActive.value ? theme.lightBlue : theme.white,
+      backgroundColor: isActive.value ? theme.lightBlue : theme.background,
     };
   });
 
@@ -133,7 +135,7 @@ const makeStyles = (theme: ThemeColors) =>
       fontSize: 20,
     },
     headerOptions: {
-      backgroundColor: theme.lightBlue,
+      backgroundColor: theme.blue,
       paddingHorizontal: 5,
       borderRadius: 10,
     },

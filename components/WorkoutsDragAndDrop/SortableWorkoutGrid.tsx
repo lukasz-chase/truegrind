@@ -13,7 +13,7 @@ import WorkoutCardPreview from "./WorkoutCardPreview";
 type SortableWorkoutGridProps = {
   workouts: Workout[];
   scrollRef: React.RefObject<Animated.ScrollView | null>;
-  scrollY: Animated.SharedValue<number>;
+  scrollY: SharedValue<number>;
   sourceFolderId: string | null;
   setDraggedWorkout: React.Dispatch<React.SetStateAction<Workout | null>>;
   setSourceFolderId: React.Dispatch<React.SetStateAction<string | null>>;

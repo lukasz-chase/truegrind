@@ -32,7 +32,7 @@ interface DraggableBoxProps {
   onDragMove: (key: string, dragIndex: number) => void;
   onDragEnd: () => void;
   scrollRef: React.RefObject<Animated.ScrollView | null>;
-  scrollY: Animated.SharedValue<number>;
+  scrollY: SharedValue<number>;
   setDraggedWorkout: React.Dispatch<React.SetStateAction<Workout | null>>;
   setSourceFolderId: React.Dispatch<React.SetStateAction<string | null>>;
   folderId: string;

@@ -179,7 +179,7 @@ const makeStyles = (theme: ThemeColors) =>
     container: {
       backgroundColor: theme.background,
       paddingBottom: 30,
-      flex: 1,
+      flexGrow: 1,
     },
     supersetIndicator: {
       width: 2,

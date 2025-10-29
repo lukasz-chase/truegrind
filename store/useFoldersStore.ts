@@ -115,7 +115,6 @@ const useFoldersStore = create<Store>()(
           await updateWorkoutsBulk([moved]);
         } catch (err) {
           console.error("Move failed", err);
-          // TODO: optionally revert on failure
         }
       },
       toggleFolderCollapse: (folderId) => {

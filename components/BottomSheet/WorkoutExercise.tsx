@@ -17,6 +17,7 @@ import useExerciseDetailsModal from "@/store/useExerciseDetailsModal";
 import { ExerciseSet } from "@/types/exercisesSets";
 import useThemeStore from "@/store/useThemeStore";
 import { AppTheme, AppThemeEnum, ThemeColors } from "@/types/user";
+import * as Haptics from "expo-haptics";
 
 type Props = {
   workoutExercise: WorkoutExercisePopulated;
@@ -74,6 +75,7 @@ const WorkoutExercise = ({
   };
 
   const longPressGesture = Gesture.LongPress().onStart((event) => {
+    runOnJS(Haptics.impactAsync)(Haptics.ImpactFeedbackStyle.Heavy);
     runOnJS(setDragItemId)(workoutExercise.id);
   });
 
