@@ -12,6 +12,7 @@
       }
     },
     "development": {
+      "ios": { "buildConfiguration": "Debug" },
       "developmentClient": true,
       "distribution": "internal"
     },
@@ -19,6 +20,7 @@
       "distribution": "internal"
     },
     "production": {
+      "ios": { "buildConfiguration": "Release" },
       "autoIncrement": true
     }
   },
