@@ -11,38 +11,25 @@ import useAppStore from "@/store/useAppStore";
 import useTimerStore from "@/store/useTimer";
 import useWorkoutTimer from "@/store/useWorkoutTimer";
 import * as Haptics from "expo-haptics";
-import {
-  createWorkoutHistory,
-  fetchWorkoutsCount,
-  updateWorkout,
-} from "@/lib/workoutServices";
-import {
-  createWorkoutExercisesHistory,
-  updateWorkoutExercises,
-} from "@/lib/workoutExerciseServices";
-import {
-  createExerciseSetsHistory,
-  updateExerciseSets,
-} from "@/lib/exerciseSetsService";
-import {
-  fetchUserWorkoutCalendar,
-  upsertWorkoutCalendar,
-} from "@/lib/workoutCalendarService";
-import { WorkoutCalendarStatusEnum } from "@/types/workoutCalendar";
+import { fetchWorkoutsCount } from "@/lib/workoutServices";
 import { saveTemplate, UPDATE_TEMPLATE } from "@/constants/actionModal";
 import useActionModal from "@/store/useActionModal";
 import userStore from "@/store/userStore";
-import { generateNewColor } from "@/utils/colors";
-import { getCalendarDateFormat, getOrdinalSuffix } from "@/utils/calendar";
+import { getOrdinalSuffix } from "@/utils/calendar";
 import { ThemeColors } from "@/types/user";
+import { estimateCaloriesBurned } from "@/utils/calories";
 import useThemeStore from "@/store/useThemeStore";
 import { supabase } from "@/lib/supabase";
+import { calculatePRs } from "@/utils/prs";
 import { useShallow } from "zustand/shallow";
+import { finishWorkout } from "@/lib/finishWorkoutService";
 
 const TrophyImage = require("@/assets/images/trophy.webp");
 
 export default function WorkoutFinishedScreen() {
   const [workoutsCount, setWorkoutsCount] = useState(0);
+  const [caloriesBurned, setCaloriesBurned] = useState(0);
+  const [PRs, setPRs] = useState(0);
 
   const {
     activeWorkout,
@@ -93,6 +80,12 @@ export default function WorkoutFinishedScreen() {
           ...filteredWorkout,
           workout_time: formattedTime,
         });
+
+        const estimatedCalories = estimateCaloriesBurned(formattedTime, user);
+        if (estimatedCalories) {
+          setCaloriesBurned(estimatedCalories);
+        }
+        calculateAndSetPRs(filteredWorkout);
       }
       const exercisesChanged = haveExercisesChanged();
       if (isNewWorkout) {
@@ -149,91 +142,44 @@ export default function WorkoutFinishedScreen() {
       setWorkoutsCount(count);
     }
   };
+
+  const calculateAndSetPRs = async (workout: typeof activeWorkout) => {
+    const workoutExercises = workout.workout_exercises ?? [];
+    const totalPRs = await calculatePRs(workoutExercises);
+    setPRs(totalPRs);
+  };
+
   const saveWorkout = async (updateTemplate: boolean) => {
     if (!workoutWasUpdated) return;
     try {
-      const workoutHistoryId = uuid.v4();
-      await updateWorkout(
-        activeWorkout,
+      //positively update
+      setWorkoutsCount((prev) => prev + 1);
+
+      await finishWorkout({
+        activeWorkout: workout,
         initialActiveWorkout,
         isNewWorkout,
-        updateTemplate
-      );
-      await createWorkoutHistory(
-        activeWorkout,
-        workoutHistoryId,
-        formattedTime
-      );
-      const workoutExercisesHistoryIds =
-        activeWorkout.workout_exercises?.map((workoutExercise) => ({
-          historyId: uuid.v4(),
-          id: workoutExercise.id,
-        })) ?? [];
-      await updateWorkoutExercises(
-        activeWorkout,
-        initialActiveWorkout,
-        updateTemplate
-      );
-      await createWorkoutExercisesHistory(
-        activeWorkout,
-        workoutHistoryId,
-        workoutExercisesHistoryIds
-      );
-      await updateExerciseSets(activeWorkout, initialActiveWorkout);
-      await createExerciseSetsHistory(
-        activeWorkout,
-        workoutExercisesHistoryIds
-      );
-      const userCalendarWorkouts = await fetchUserWorkoutCalendar(
-        activeWorkout.user_id,
-        new Date().getMonth() + 1
-      );
-      const currentColors = userCalendarWorkouts.map((data) => data.color);
-      const workoutCalendar = userCalendarWorkouts.find((workout) => {
-        return workout.workout_id === activeWorkout.id;
-      });
-      const color = workoutCalendar
-        ? workoutCalendar.color
-        : generateNewColor(currentColors);
-      const [minutes, seconds] = formattedTime.split(":").map(Number);
-      const now = new Date();
-      const startTime = new Date(
-        now.getTime() - (minutes * 60 + seconds) * 1000
-      );
-      await upsertWorkoutCalendar({
-        status: WorkoutCalendarStatusEnum.Completed,
-        user_id: activeWorkout.user_id,
-        scheduled_date: getCalendarDateFormat(),
-        workout_id: activeWorkout.id,
-        color,
-        start_time: startTime,
-        end_time: now,
-        workout_history_id: workoutHistoryId,
+        updateTemplate,
+        formattedTime,
+        caloriesBurned,
+        PRs,
+        user: user!,
       });
 
+      // Cleanup and state reset
       setRefetchWorkouts();
       resetTimer();
       endTimer();
       resetActiveWorkout();
       setPersistedStorage(false);
+
       if (Platform.OS !== "web") {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       }
-      const { data: stravaIntegration, error: checkError } = await supabase
-        .from("strava_integrations")
-        .select("id")
-        .eq("user_id", user!.id)
-        .maybeSingle();
-
-      if (checkError || !stravaIntegration) {
-        console.log("No Strava integration found for user. Skipping upload.");
-        return;
-      }
-      await supabase.functions.invoke("strava-upload", {
-        body: { userId: user!.id, workout, startTime },
-      });
     } catch (error) {
       console.error("Error finishing workout:", error);
+      //if failed undo positive update
+      setWorkoutsCount((prev) => prev - 1);
       throw error;
     }
   };
@@ -250,7 +196,12 @@ export default function WorkoutFinishedScreen() {
       <Text style={styles.subtitle}>
         You completed your {getOrdinalSuffix(workoutsCount)} workout!
       </Text>
-      <WorkoutSummary workout={workout} />
+      {caloriesBurned > 0 && (
+        <Text style={styles.calories}>
+          Estimated Calories Burned: {caloriesBurned} kcal
+        </Text>
+      )}
+      <WorkoutSummary workout={workout} PRs={PRs} />
     </SafeAreaView>
   );
 }
@@ -274,5 +225,11 @@ const makeStyles = (theme: ThemeColors) =>
       fontSize: 22,
       marginVertical: 10,
       color: theme.textColor,
+    },
+    calories: {
+      fontSize: 18,
+      color: theme.green,
+      fontWeight: "bold",
+      marginBottom: 10,
     },
   });

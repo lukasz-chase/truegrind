@@ -1,56 +1,24 @@
 import { WorkoutHistory } from "@/types/workout";
 import { WorkoutExercisePopulated } from "@/types/workoutExercise";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import AntDesign from "@expo/vector-icons/AntDesign";
-import { fetchHighestWeightSet } from "@/lib/exerciseSetsService";
 import { BAR_TYPES } from "@/constants/keyboard";
 import { formatDate } from "@/utils/calendar";
 import useThemeStore from "@/store/useThemeStore";
 import { ThemeColors } from "@/types/user";
 
-const WorkoutSummary = ({ workout }: { workout: WorkoutHistory }) => {
-  const [PRs, setPRs] = useState(0);
+const WorkoutSummary = ({
+  workout,
+  PRs,
+}: {
+  workout: WorkoutHistory;
+  PRs: number;
+}) => {
   const { theme } = useThemeStore((state) => state);
 
   const styles = useMemo(() => makeStyles(theme), [theme]);
-  useEffect(() => {
-    searchPRs();
-  }, [workout]);
-  const searchPRs = async () => {
-    // If `workout.workout_exercises` is undefined, fallback to []
-    const workoutExercises = workout.workout_exercises ?? [];
-
-    // Build an array of Promises, one per exercise
-    const foundPRs = workoutExercises.map(async (workoutExercise) => {
-      const highestWeight = workoutExercise.exercise_sets.reduce(
-        (max, set) => Math.max(max, set.weight ?? 0),
-        0
-      );
-
-      if (highestWeight === 0) return {};
-      const { data, error } = await fetchHighestWeightSet(
-        workoutExercise.exercises.id,
-        highestWeight
-      );
-      return { data, error };
-    });
-
-    // Wait for all to complete
-    const allResults = await Promise.all(foundPRs);
-
-    // Inspect what you got
-    allResults.forEach(({ data, error }, idx) => {
-      if (error) {
-        console.error(`Query #${idx} failed:`, error);
-      } else {
-        if (data && data.length === 0) {
-          setPRs((prevPRs) => prevPRs + 1);
-        }
-      }
-    });
-  };
 
   const weightLifted = () => {
     let totalWeight = 0;

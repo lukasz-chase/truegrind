@@ -9,6 +9,7 @@ import WorkoutSummary from "@/components/WorkoutSummary";
 import { fetchWorkoutHistory } from "@/lib/workoutServices";
 import WorkoutHistorySkeleton from "@/components/Skeletons/WorkoutHistorySkeleton";
 import useThemeStore from "@/store/useThemeStore";
+import { calculatePRs } from "@/utils/prs";
 import { ThemeColors } from "@/types/user";
 
 export default function workoutHistory() {
@@ -16,6 +17,7 @@ export default function workoutHistory() {
     null
   );
   const [loading, setLoading] = useState(false);
+  const [PRs, setPRs] = useState(0);
   const { id } = useLocalSearchParams();
   const { user } = userStore();
   const { theme } = useThemeStore((state) => state);
@@ -31,6 +33,7 @@ export default function workoutHistory() {
           const data = await fetchWorkoutHistory(id as string, user.id);
           if (data) {
             setWorkoutHistory(data);
+            calculateAndSetPRs(data);
           }
         }
       } catch (error) {
@@ -41,6 +44,12 @@ export default function workoutHistory() {
     };
     fetchData();
   }, [user, id]);
+
+  const calculateAndSetPRs = async (workout: WorkoutHistory) => {
+    const workoutExercises = workout.workout_exercises ?? [];
+    const totalPRs = await calculatePRs(workoutExercises);
+    setPRs(totalPRs);
+  };
   const goBackHandler = () => {
     router.push("/(tabs)/calendar");
   };
@@ -65,7 +74,7 @@ export default function workoutHistory() {
         <Text style={styles.title}>{workoutHistory?.name}</Text>
         <View style={{ width: 24 }} />
       </View>
-      <WorkoutSummary workout={workoutHistory} />
+      <WorkoutSummary workout={workoutHistory} PRs={PRs} />
     </SafeAreaView>
   );
 }

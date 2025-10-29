@@ -13,10 +13,7 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.tru.grind",
       "infoPlist": {
-        "UIBackgroundModes": [
-          "remote-notification",
-          "remote-notification"
-        ],
+        "UIBackgroundModes": ["remote-notification", "remote-notification"],
         "ITSAppUsesNonExemptEncryption": false
       }
     },
@@ -37,7 +34,6 @@
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
-      "react-native-health",
       "expo-router",
       [
         "expo-splash-screen",
@@ -53,9 +49,7 @@
           "icon": "./assets/images/notification-icon.png",
           "color": "#ffffff",
           "defaultChannel": "default",
-          "sounds": [
-            "./assets/sounds/bell.mp3"
-          ],
+          "sounds": ["./assets/sounds/bell.mp3"],
           "enableBackgroundRemoteNotifications": false
         }
       ],
