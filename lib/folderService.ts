@@ -1,10 +1,8 @@
 import { WorkoutsFolder, WorkoutsFolderPopulated } from "@/types/folders";
 import { supabase } from "./supabase";
 import { INITIAL_FOLDER_NAME } from "@/constants/initialState";
-import useFoldersStore from "@/store/useFoldersStore";
 import { updateWorkoutsBulk } from "./workoutServices";
 import userStore from "@/store/userStore";
-import { fetchSplits } from "./splitsServices";
 
 export const fetchUserFoldersWithWorkouts = async (
   userId: string,
@@ -104,10 +102,13 @@ export const updateFolder = async (folderToUpdate: Partial<WorkoutsFolder>) => {
     console.error("Unexpected error:", error);
   }
 };
-export const deleteFolder = async (folderId: string) => {
-  const { folders, removeFolder } = useFoldersStore.getState();
+export const deleteFolder = async (
+  folderId: string,
+  folders: WorkoutsFolderPopulated[],
+  removeFolder: (folderId: string) => void
+) => {
   //at least one folder
-  if (folders.length === 1) return { error: "Cannot delete last folder" };
+  if (folders.length <= 1) return { error: "Cannot delete last folder" };
 
   const folder = folders.find((folder) => folder.id === folderId);
   const hasWorkouts = (folder?.workouts.length ?? 0) > 0;

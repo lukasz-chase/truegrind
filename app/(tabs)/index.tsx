@@ -101,7 +101,7 @@ export default function WorkoutScreen() {
     const fetchData = async () => {
       setDataLoading(true);
       try {
-        console.log("user.id", user?.id);
+        "user.id", user?.id;
         const [exampleResult, folderResult] = await Promise.all([
           fetchExampleWorkouts(user?.active_split_id!),
           fetchUserFoldersWithWorkouts(user?.id!, user?.active_split_id!),

@@ -74,13 +74,15 @@ export default function ExerciseDetailsModal() {
   const buttonBackgroundLeftPosition = useSharedValue(0);
 
   useEffect(() => {
-    fetchExerciseData();
-    if (exercise.instructions || exercise.image) {
-      setScreen(exerciseDetailScreensEnum.About);
-    } else {
-      setScreen(exerciseDetailScreensEnum.Charts);
+    if (user && exercise?.id) {
+      fetchExerciseData();
+      if (exercise.instructions || exercise.image) {
+        setScreen(exerciseDetailScreensEnum.About);
+      } else {
+        setScreen(exerciseDetailScreensEnum.Charts);
+      }
     }
-  }, [exercise]);
+  }, [exercise, user]);
 
   const fetchExerciseData = async () => {
     setLoading(true);
