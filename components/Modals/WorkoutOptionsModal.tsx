@@ -32,12 +32,8 @@ const WorkoutOptionsModal = function ExerciseOptionsModal() {
     removeWorkoutFromFolder(workout?.folder_id!, workout!.id);
     closeModal();
   };
-  //TODO FIX COPY
-  //THE CARD HEIGHT IS WEIRD
-  //MODAL DOESNT CLOSE
   const copyWorkoutHandler = async () => {
     const copiedWorkout = await copyWorkout(workout!, user!.id, folders[0].id);
-    console.log(copiedWorkout);
     if (copiedWorkout) {
       addWorkoutToFolder(copiedWorkout.folder_id!, copiedWorkout);
     }
@@ -57,7 +53,7 @@ const WorkoutOptionsModal = function ExerciseOptionsModal() {
   };
   const options = [
     {
-      Icon: <AntDesign name="copy1" size={24} color={theme.white} />,
+      Icon: <AntDesign name="copy" size={24} color={theme.white} />,
       title: "Copy",
       cb: copyWorkoutHandler,
       conditionToDisplay: workout?.user_id !== user?.id,

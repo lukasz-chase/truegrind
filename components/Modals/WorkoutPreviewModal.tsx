@@ -12,6 +12,7 @@ import CloseButton from "../CloseButton";
 import userStore from "@/store/userStore";
 import { copyWorkout } from "@/lib/workoutServices";
 import useAppStore from "@/store/useAppStore";
+import useFoldersStore from "@/store/useFoldersStore";
 import { useRouter } from "expo-router";
 import useThemeStore from "@/store/useThemeStore";
 import { useMemo } from "react";
@@ -31,13 +32,18 @@ export default function WorkoutPreviewModal() {
     );
   const user = userStore((state) => state.user);
   const setRefetchWorkouts = useAppStore((state) => state.setRefetchWorkouts);
-  const { theme } = useThemeStore((state) => state);
+  const theme = useThemeStore((state) => state.theme);
+  const { addWorkoutToFolder, folders } = useFoldersStore();
   const styles = useMemo(() => makeStyles(theme), [theme]);
   const router = useRouter();
   if (!workout) return null;
   const copyWorkoutHandler = async () => {
-    await copyWorkout(workout, user!.id);
+    const copiedWorkout = await copyWorkout(workout!, user!.id, folders[0].id);
+    if (copiedWorkout) {
+      addWorkoutToFolder(copiedWorkout.folder_id!, copiedWorkout);
+    }
     setRefetchWorkouts();
+    closeModal();
   };
   const editWorkoutTemplate = () => {
     router.push({

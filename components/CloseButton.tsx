@@ -1,6 +1,6 @@
 import useThemeStore from "@/store/useThemeStore";
 import { AppTheme, AppThemeEnum, ThemeColors } from "@/types/user";
-import { EvilIcons } from "@expo/vector-icons";
+import EvilIcons from "@expo/vector-icons/EvilIcons";
 import React, { useMemo } from "react";
 import { Pressable, StyleSheet } from "react-native";
 

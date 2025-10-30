@@ -2,13 +2,13 @@ import SplitCard from "@/components/SplitCard";
 import { fetchSplits } from "@/lib/splitsServices";
 import useAppStore from "@/store/useAppStore";
 import userStore from "@/store/userStore";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { StyleSheet, Text, FlatList, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AntDesign from "@expo/vector-icons/AntDesign";
-import { useRouter } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
 import useSplitsStore from "@/store/useSplitsStore";
-import ProfileSkeleton from "@/components/Skeletons/ProfileSkeleton";
+import SplitsSkeleton from "@/components/Skeletons/SplitsSkeleton";
 import useThemeStore from "@/store/useThemeStore";
 import { ThemeColors } from "@/types/user";
 
@@ -23,26 +23,28 @@ export default function SplitsScreen() {
   const styles = useMemo(() => makeStyles(theme), [theme]);
   const router = useRouter();
 
-  useEffect(() => {
-    const getSplits = async () => {
-      setLoading(true);
-      try {
-        const data = await fetchSplits(user!.id);
-        if (data) {
-          setSplits(data);
+  useFocusEffect(
+    useCallback(() => {
+      const getSplits = async () => {
+        setLoading(true);
+        try {
+          if (!user) return;
+          const data = await fetchSplits(user.id);
+          if (data) {
+            setSplits(data);
+          }
+        } catch (error) {
+          console.log(error);
+        } finally {
+          setLoading(false);
         }
-      } catch (error) {
-        console.log(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    if (user && splits.length === 0) {
-      getSplits();
-    }
-  }, [user]);
+      };
 
-  if (loading) return <ProfileSkeleton parentStyles={styles} />;
+      getSplits();
+    }, [user])
+  );
+
+  if (loading) return <SplitsSkeleton parentStyles={styles} />;
   if (!user) return null;
   return (
     <SafeAreaView style={styles.container}>
