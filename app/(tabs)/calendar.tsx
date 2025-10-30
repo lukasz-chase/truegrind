@@ -29,6 +29,9 @@ export default function CalendarScreen() {
   >([]);
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth() + 1);
   const [loading, setLoading] = useState(true);
+  const [filteredWorkoutId, setFilteredWorkoutId] = useState<string | null>(
+    null
+  );
 
   const { theme } = useThemeStore((state) => state);
   const styles = useMemo(() => makeStyles(theme), [theme]);
@@ -89,6 +92,16 @@ export default function CalendarScreen() {
     return workoutCalendar?.color ?? theme.darkGray;
   };
 
+  const handleLegendPress = (workoutId: string) => {
+    setFilteredWorkoutId((prev) => (prev === workoutId ? null : workoutId));
+  };
+
+  const filteredCalendarData = useMemo(() => {
+    if (!filteredWorkoutId) return workoutCalendarData;
+    return workoutCalendarData.filter(
+      (w) => w.workout_id === filteredWorkoutId
+    );
+  }, [workoutCalendarData, filteredWorkoutId]);
   const getUniqueCalendarData = () => {
     return workoutCalendarData.filter(
       (item, index, self) =>
@@ -109,11 +122,14 @@ export default function CalendarScreen() {
             {getUniqueCalendarData().map((workoutCalendar) => (
               <LegendItem
                 key={workoutCalendar.id}
+                onPress={() => handleLegendPress(workoutCalendar.workout_id)}
                 color={getWorkoutColorByWorkoutId(workoutCalendar.workout_id)}
                 workoutName={
                   workoutCalendar.workout_history?.name ??
                   workoutCalendar.workouts.name
                 }
+                isActive={filteredWorkoutId === workoutCalendar.workout_id}
+                isFiltered={!!filteredWorkoutId}
               />
             ))}
           </ScrollView>
@@ -132,7 +148,7 @@ export default function CalendarScreen() {
               date={date}
               state={state}
               onDayPress={onDayPressHandler}
-              workoutCalendarData={workoutCalendarData}
+              workoutCalendarData={filteredCalendarData}
               loading={loading}
             />
           );

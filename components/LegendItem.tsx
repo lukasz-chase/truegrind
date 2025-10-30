@@ -1,21 +1,36 @@
 import useThemeStore from "@/store/useThemeStore";
 import { ThemeColors } from "@/types/user";
 import { useMemo } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { Text, StyleSheet, Pressable } from "react-native";
 
 type Props = {
   workoutName: string;
   color: string;
+  onPress: () => void;
+  isActive: boolean;
+  isFiltered: boolean;
 };
 
-export default function LegendItem({ workoutName, color }: Props) {
+export default function LegendItem({
+  workoutName,
+  color,
+  onPress,
+  isActive,
+  isFiltered,
+}: Props) {
   const { theme } = useThemeStore((state) => state);
 
   const styles = useMemo(() => makeStyles(theme), [theme]);
   return (
-    <View style={[styles.legendItem, { backgroundColor: color }]}>
+    <Pressable
+      style={[
+        styles.legendItem,
+        { backgroundColor: color, opacity: isFiltered && !isActive ? 0.5 : 1 },
+      ]}
+      onPress={onPress}
+    >
       <Text style={styles.legendItemText}>{workoutName}</Text>
-    </View>
+    </Pressable>
   );
 }
 
