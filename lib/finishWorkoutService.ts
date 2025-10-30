@@ -26,7 +26,6 @@ interface FinishWorkoutParams {
   updateTemplate: boolean;
   formattedTime: string;
   caloriesBurned: number;
-  PRs: number;
   user: User;
 }
 
@@ -37,7 +36,6 @@ export const finishWorkout = async ({
   updateTemplate,
   formattedTime,
   caloriesBurned,
-  PRs,
   user,
 }: FinishWorkoutParams) => {
   const workoutHistoryId = uuid.v4() as string;
@@ -119,7 +117,6 @@ export const finishWorkout = async ({
         },
         startTime,
         caloriesBurned,
-        PRs,
       },
     });
     console.log(res);

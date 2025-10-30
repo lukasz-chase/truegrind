@@ -34,8 +34,6 @@ interface StravaUploadPayload {
   userId: string;
   workout: Workout;
   startTime: string; // ISO Date string
-  caloriesBurned: number;
-  PRs: number;
 }
 
 const parseElapsedSeconds = (mmss: string): number => {
@@ -109,7 +107,7 @@ serve(async (req) => {
   }
 
   try {
-    const { userId, workout, startTime, caloriesBurned, PRs } =
+    const { userId, workout, startTime } =
       (await req.json()) as StravaUploadPayload;
     if (!userId || !workout || !startTime) {
       return new Response(
@@ -145,8 +143,6 @@ serve(async (req) => {
         workout.name + "\n\n" + description ||
         "Completed a workout on trueGrind.",
       trainer: "1",
-      calories: String(caloriesBurned),
-      pr_count: String(PRs),
     });
 
     const stravaResp = await fetch(`${STRAVA_API_BASE}/activities`, {

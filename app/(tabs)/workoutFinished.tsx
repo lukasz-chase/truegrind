@@ -20,7 +20,6 @@ import { ThemeColors } from "@/types/user";
 import { estimateCaloriesBurned } from "@/utils/calories";
 import useThemeStore from "@/store/useThemeStore";
 import { supabase } from "@/lib/supabase";
-import { calculatePRs } from "@/utils/prs";
 import { useShallow } from "zustand/shallow";
 import { finishWorkout } from "@/lib/finishWorkoutService";
 
@@ -29,7 +28,6 @@ const TrophyImage = require("@/assets/images/trophy.webp");
 export default function WorkoutFinishedScreen() {
   const [workoutsCount, setWorkoutsCount] = useState(0);
   const [caloriesBurned, setCaloriesBurned] = useState(0);
-  const [PRs, setPRs] = useState(0);
 
   const {
     activeWorkout,
@@ -85,7 +83,6 @@ export default function WorkoutFinishedScreen() {
         if (estimatedCalories) {
           setCaloriesBurned(estimatedCalories);
         }
-        calculateAndSetPRs(filteredWorkout);
       }
       const exercisesChanged = haveExercisesChanged();
       if (isNewWorkout) {
@@ -143,12 +140,6 @@ export default function WorkoutFinishedScreen() {
     }
   };
 
-  const calculateAndSetPRs = async (workout: typeof activeWorkout) => {
-    const workoutExercises = workout.workout_exercises ?? [];
-    const totalPRs = await calculatePRs(workoutExercises);
-    setPRs(totalPRs);
-  };
-
   const saveWorkout = async (updateTemplate: boolean) => {
     if (!workoutWasUpdated) return;
     try {
@@ -162,7 +153,6 @@ export default function WorkoutFinishedScreen() {
         updateTemplate,
         formattedTime,
         caloriesBurned,
-        PRs,
         user: user!,
       });
 
@@ -201,7 +191,7 @@ export default function WorkoutFinishedScreen() {
           Estimated Calories Burned: {caloriesBurned} kcal
         </Text>
       )}
-      <WorkoutSummary workout={workout} PRs={PRs} />
+      <WorkoutSummary workout={workout} />
     </SafeAreaView>
   );
 }
