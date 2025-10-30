@@ -57,12 +57,18 @@ export const updateUserProfile = async (
     console.log("error", error);
   }
 };
-export const deleteAuthUser = async (userId: string) => {
-  try {
-    await supabase.auth.admin.deleteUser(userId);
-    userStore.setState({ session: null, user: null });
-    await supabase.auth.signOut();
-  } catch (err) {
-    console.log(err);
+export const deleteAuthUser = async () => {
+  const { error } = await supabase.functions.invoke("delete-user");
+
+  if (error) {
+    console.error("Error deleting user:", error);
+    throw error;
   }
+
+  // Sign out the user from the client
+  const { error: signOutError } = await supabase.auth.signOut();
+  if (signOutError) {
+    console.error("Error signing out:", signOutError);
+  }
+  userStore.setState({ session: null, user: null });
 };

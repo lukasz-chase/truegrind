@@ -17,10 +17,14 @@ export default function Privacy() {
   const styles = useMemo(() => makeStyles(theme), [theme]);
   const deleteAccountHandler = async () => {
     setLoading(true);
-    if (!user) throw new Error("No user on the session!");
-
-    await deleteAuthUser(user.id);
-    setLoading(false);
+    try {
+      if (!user) throw new Error("No user on the session!");
+      await deleteAuthUser();
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
   };
   const openActionModal = () => {
     openModal({
