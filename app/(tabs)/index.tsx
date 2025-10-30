@@ -19,13 +19,13 @@ import { fetchUserFoldersWithWorkouts } from "@/lib/folderService";
 import SortableWorkoutGrid from "@/components/WorkoutsDragAndDrop/SortableWorkoutGrid";
 import Animated, {
   LinearTransition,
-  runOnJS,
   useAnimatedReaction,
   useAnimatedScrollHandler,
   useSharedValue,
 } from "react-native-reanimated";
 import { AnimatedScrollView } from "react-native-reanimated/lib/typescript/component/ScrollView";
 import WorkoutFolderHeader from "@/components/WorkoutFolderHeader";
+import { scheduleOnRN } from "react-native-worklets";
 import useUpsertFolderModal from "@/store/useUpsertFolderModal";
 import useFoldersStore from "@/store/useFoldersStore";
 import { useShallow } from "zustand/shallow";
@@ -163,7 +163,7 @@ export default function WorkoutScreen() {
           break;
         }
       }
-      runOnJS(setHoveredFolderId)(found);
+      scheduleOnRN(setHoveredFolderId, found);
     },
     [draggedWorkout, folderLayouts]
   );

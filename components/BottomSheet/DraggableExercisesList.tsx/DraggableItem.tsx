@@ -10,9 +10,9 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withSpring,
-  runOnJS,
 } from "react-native-reanimated";
 import * as Haptics from "expo-haptics";
+import { scheduleOnRN } from "react-native-worklets";
 
 const moveArrayItem = (arr: string[], from: number, to: number): string[] => {
   "worklet";
@@ -77,8 +77,10 @@ const DraggableItem = ({
 
       if (newIndex !== oldIndex) {
         const updatedOrder = moveArrayItem(itemsOrder, oldIndex, newIndex);
-        runOnJS(Haptics.impactAsync)(Haptics.ImpactFeedbackStyle.Light);
-        runOnJS(setItemsOrder)(updatedOrder);
+        scheduleOnRN(() =>
+          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
+        );
+        scheduleOnRN(setItemsOrder, updatedOrder);
       }
     })
     .onEnd(() => {
@@ -90,7 +92,7 @@ const DraggableItem = ({
           stiffness: 200,
         });
         if (onReorder) {
-          runOnJS(onReorder)(itemsOrder);
+          scheduleOnRN(onReorder, itemsOrder);
         }
       }
     });

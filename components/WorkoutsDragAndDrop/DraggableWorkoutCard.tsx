@@ -4,7 +4,6 @@ import { GestureDetector, Gesture } from "react-native-gesture-handler";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
-  runOnJS,
   withTiming,
   SharedValue,
 } from "react-native-reanimated";
@@ -19,6 +18,7 @@ import {
   DRAGGABLE_WORKOUT_CARD_WIDTH,
 } from "@/constants/drag";
 import WorkoutCardContent from "../WorkoutCardContent";
+import { scheduleOnRN } from "react-native-worklets";
 
 const SCROLL_EDGE = 160; // how close to edge before scrolling
 const SCROLL_SPEED = 20; // how many pixels per update
@@ -113,8 +113,8 @@ export default ({
     initialY.value = y.value;
     startScrollY.value = scrollY.value;
     isDragging.value = true;
-    runOnJS(setDraggedWorkout)(workout);
-    runOnJS(setSourceFolderId)(folderId);
+    scheduleOnRN(setDraggedWorkout, workout);
+    scheduleOnRN(setSourceFolderId, folderId);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
   };
 
@@ -147,7 +147,7 @@ export default ({
 
   const tap = Gesture.Tap()
     .onStart(() => {
-      runOnJS(openWorkoutModalHandler)();
+      scheduleOnRN(openWorkoutModalHandler);
     })
     .hitSlop({ right: -30 });
 
@@ -167,22 +167,23 @@ export default ({
         Math.max(dropRow * 2 + dropCol, 0),
         order.length - 1
       );
-      runOnJS(onDragMove)(itemKey, newIndex);
-      runOnJS(scrollPageHandler)(e);
+      scheduleOnRN(onDragMove, itemKey, newIndex);
+      scheduleOnRN(scrollPageHandler, e);
     })
     .onEnd(() => {
       isDragging.value = false;
-      runOnJS(onDragEnd)();
+
+      scheduleOnRN(onDragEnd);
 
       if (hoveredFolderId && hoveredFolderId !== sourceFolderId) {
-        runOnJS(handleMoveToFolder)(workout.id, hoveredFolderId);
+        scheduleOnRN(handleMoveToFolder, workout.id, hoveredFolderId);
       }
     });
 
   const longPress = Gesture.LongPress()
     .minDuration(300)
     .onStart(() => {
-      runOnJS(startDrag)();
+      scheduleOnRN(startDrag);
     });
   const composed = Gesture.Simultaneous(longPress, pan, tap);
 

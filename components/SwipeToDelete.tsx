@@ -6,11 +6,11 @@ import {
   GestureDetector,
 } from "react-native-gesture-handler";
 import Animated, {
-  useSharedValue,
   useAnimatedStyle,
+  useSharedValue,
   withTiming,
-  runOnJS,
 } from "react-native-reanimated";
+import { scheduleOnRN } from "react-native-worklets";
 import * as Haptics from "expo-haptics";
 import useThemeStore from "@/store/useThemeStore";
 import { ThemeColors } from "@/types/user";
@@ -71,9 +71,9 @@ export default function SwipeToDelete({
           translateX.value < -rowWidth * thresholdFraction &&
           !hapticTriggered
         ) {
-          runOnJS(handleHapticFeedback)();
-          runOnJS(setHapticTriggered)(true);
-          runOnJS(setMovedPastThreshold)(true);
+          scheduleOnRN(handleHapticFeedback);
+          scheduleOnRN(setHapticTriggered, true);
+          scheduleOnRN(setMovedPastThreshold, true);
         }
 
         // If we go back above the threshold after crossing it
@@ -81,8 +81,8 @@ export default function SwipeToDelete({
           translateX.value >= -rowWidth * thresholdFraction &&
           hapticTriggered
         ) {
-          runOnJS(setHapticTriggered)(false);
-          runOnJS(setMovedPastThreshold)(false);
+          scheduleOnRN(setHapticTriggered, false);
+          scheduleOnRN(setMovedPastThreshold, false);
         }
       }
     })
@@ -90,7 +90,7 @@ export default function SwipeToDelete({
       if (translateX.value < -rowWidth * thresholdFraction) {
         // Fully swipe off-screen, then trigger onDelete
         translateX.value = withTiming(-rowWidth, {}, () => {
-          runOnJS(onDelete)();
+          scheduleOnRN(onDelete);
         });
         buttonWidth.value = withTiming(
           rowWidth + INITIAL_BUTTON_WIDTH + BUTTON_MARGIN
@@ -99,8 +99,8 @@ export default function SwipeToDelete({
         // Bounce back
         translateX.value = withTiming(0);
         buttonWidth.value = withTiming(INITIAL_BUTTON_WIDTH);
-        runOnJS(setHapticTriggered)(false);
-        runOnJS(setMovedPastThreshold)(false);
+        scheduleOnRN(setHapticTriggered, false);
+        scheduleOnRN(setMovedPastThreshold, false);
       }
     });
 

@@ -2,7 +2,7 @@ import { Pressable, Text, TouchableOpacity, View } from "react-native";
 import { StyleSheet } from "react-native";
 import SimpleLineIcons from "@expo/vector-icons/SimpleLineIcons";
 import WorkoutSet from "./WorkoutSet";
-import Animated, { LinearTransition, runOnJS } from "react-native-reanimated";
+import Animated, { LinearTransition } from "react-native-reanimated";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   WorkoutExercise as WorkoutExerciseType,
@@ -18,6 +18,7 @@ import { ExerciseSet } from "@/types/exercisesSets";
 import useThemeStore from "@/store/useThemeStore";
 import { AppTheme, AppThemeEnum, ThemeColors } from "@/types/user";
 import * as Haptics from "expo-haptics";
+import { scheduleOnRN } from "react-native-worklets";
 
 type Props = {
   workoutExercise: WorkoutExercisePopulated;
@@ -74,11 +75,10 @@ const WorkoutExercise = ({
     updateWorkoutExerciseField(workoutExercise.id, { note: newNote });
   };
 
-  const longPressGesture = Gesture.LongPress().onStart((event) => {
-    runOnJS(Haptics.impactAsync)(Haptics.ImpactFeedbackStyle.Heavy);
-    runOnJS(setDragItemId)(workoutExercise.id);
+  const longPressGesture = Gesture.LongPress().onStart(() => {
+    scheduleOnRN(() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy));
+    scheduleOnRN(setDragItemId, workoutExercise.id);
   });
-
   const openExerciseDetailsModalHandler = () => {
     openExerciseDetailsModal(workoutExercise.exercises);
   };

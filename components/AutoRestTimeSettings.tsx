@@ -2,7 +2,6 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, {
-  runOnJS,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
@@ -10,6 +9,7 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 import TimerSettings from "./TimerSettings";
+import { scheduleOnRN } from "react-native-worklets";
 import { ThemeColors } from "@/types/user";
 import useThemeStore from "@/store/useThemeStore";
 import { useMemo } from "react";
@@ -62,7 +62,7 @@ const AutoRestTimeSettings = ({
     .onEnd((event) => {
       const translationX = Number(event.translationX);
       if (translationX > SWIPE_THRESHOLD) {
-        runOnJS(switchToMainScreen)();
+        scheduleOnRN(switchToMainScreen);
       } else {
         translateX.value = withSpring(-screenWidth, {
           duration: 300,
