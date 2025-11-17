@@ -62,7 +62,7 @@ export default function TimerModal() {
   };
 
   const openInfoModalHandler = () => {
-    openInfoModal(TIMER_INFO.title, TIMER_INFO.description);
+    openInfoModal(TIMER_INFO);
     closeModalHandler();
   };
 

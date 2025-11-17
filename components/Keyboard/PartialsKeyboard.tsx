@@ -11,7 +11,7 @@ type Props = {
   partials: number | null;
   setPartials: (value: number | null) => void;
   setKeyboardView: (value: KeyboardView) => void;
-  openInfoModal: (title: string, subtitle: string) => void;
+  openInfoModal: (content: { title: string; description: string }) => void;
 };
 
 const PartialsKeyboard = ({
@@ -44,9 +44,7 @@ const PartialsKeyboard = ({
       <View style={styles.header}>
         <Pressable
           style={styles.headerButton}
-          onPress={() =>
-            openInfoModal(PARTIALS_INFO.title, PARTIALS_INFO.description)
-          }
+          onPress={() => openInfoModal(PARTIALS_INFO)}
         >
           <AntDesign name="question" size={24} color={theme.white} />
         </Pressable>

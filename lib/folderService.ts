@@ -111,12 +111,12 @@ export const deleteFolder = async (
   if (folders.length <= 1) return { error: "Cannot delete last folder" };
 
   const folder = folders.find((folder) => folder.id === folderId);
-  const hasWorkouts = (folder?.workouts.length ?? 0) > 0;
+  if (!folder) return { error: "Folder not found" };
+
   const doesInitialFolderExist = folders.find(
     (folder) => folder.name === INITIAL_FOLDER_NAME
   );
-  //if folder has workouts move them to initial folder
-  if (hasWorkouts) {
+  if (folder.workouts && folder.workouts.length > 0) {
     let initialFolderId: string;
     if (doesInitialFolderExist) {
       initialFolderId = doesInitialFolderExist.id;
@@ -134,11 +134,11 @@ export const deleteFolder = async (
       }
     }
     //update workouts folder_id
-    const updatedWorkouts = folder?.workouts.map((workout) => ({
+    const updatedWorkouts = folder.workouts.map((workout) => ({
       ...workout,
       folder_id: initialFolderId,
     }));
-    if (updatedWorkouts) updateWorkoutsBulk(updatedWorkouts);
+    await updateWorkoutsBulk(updatedWorkouts);
   }
   removeFolder(folderId);
   await supabase.from("folders").delete().eq("id", folderId);

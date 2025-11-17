@@ -11,7 +11,7 @@ type Props = {
   selectedRPE: { label: string; value: number | null };
   setRPE: (rpe: { label: string; value: number }) => void;
   setKeyboardView: (value: KeyboardView) => void;
-  openInfoModal: (title: string, subtitle: string) => void;
+  openInfoModal: (content: { title: string; description: string }) => void;
 };
 
 const RPEKeyboard = ({
@@ -28,7 +28,7 @@ const RPEKeyboard = ({
       <View style={styles.header}>
         <Pressable
           style={styles.headerButton}
-          onPress={() => openInfoModal(RPE_INFO.title, RPE_INFO.description)}
+          onPress={() => openInfoModal(RPE_INFO)}
         >
           <AntDesign name="question" size={24} color={theme.white} />
         </Pressable>

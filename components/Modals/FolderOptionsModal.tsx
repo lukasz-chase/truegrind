@@ -31,13 +31,15 @@ const FolderOptionsModal = function ExerciseOptionsModal() {
     (state) => state.openModal
   );
 
-  const { toggleFolderCollapse, collapsedFolders, folders } = useFoldersStore(
-    useShallow((state) => ({
-      toggleFolderCollapse: state.toggleFolderCollapse,
-      collapsedFolders: state.collapsedFolders,
-      folders: state.folders,
-    }))
-  );
+  const { toggleFolderCollapse, collapsedFolders, folders, removeFolder } =
+    useFoldersStore(
+      useShallow((state) => ({
+        toggleFolderCollapse: state.toggleFolderCollapse,
+        collapsedFolders: state.collapsedFolders,
+        folders: state.folders,
+        removeFolder: state.removeFolder,
+      }))
+    );
   const openInfoModal = useInfoModal((state) => state.openModal);
 
   useEffect(() => {
@@ -45,10 +47,14 @@ const FolderOptionsModal = function ExerciseOptionsModal() {
   }, [folderId, collapsedFolders]);
 
   const deleteFolderHandler = async () => {
-    const { error } = (await deleteFolder(folderId!)) ?? {};
+    const { error } =
+      (await deleteFolder(folderId!, folders, removeFolder)) ?? {};
     closeModal();
     if (error) {
-      openInfoModal("Error", error);
+      openInfoModal({
+        title: "Error",
+        description: error,
+      });
     }
   };
   const toggleFolderCollapseHandler = () => {
@@ -117,7 +123,7 @@ const FolderOptionsModal = function ExerciseOptionsModal() {
       closeModal={closeModal}
       anchorRef={buttonRef}
       anchorCorner="RIGHT"
-      backgroundColor={theme.darkBlue}
+      backgroundColor={theme.background}
       modalWidth={MODAL_WIDTH}
     >
       <View style={styles.wrapper}>

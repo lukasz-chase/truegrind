@@ -34,7 +34,7 @@ const SelectOptionsModal = ({
       anchorRef={anchorRef}
       closeModal={closeModal}
       isVisible={isVisible}
-      backgroundColor={theme.darkBlue}
+      backgroundColor={theme.background}
       modalWidth={width}
     >
       <View style={{ gap: 10, width: "100%", alignSelf: "flex-start" }}>

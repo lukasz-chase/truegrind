@@ -77,9 +77,7 @@ const DraggableItem = ({
 
       if (newIndex !== oldIndex) {
         const updatedOrder = moveArrayItem(itemsOrder, oldIndex, newIndex);
-        scheduleOnRN(() =>
-          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
-        );
+        scheduleOnRN(Haptics.impactAsync, Haptics.ImpactFeedbackStyle.Light);
         scheduleOnRN(setItemsOrder, updatedOrder);
       }
     })

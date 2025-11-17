@@ -10,6 +10,8 @@ import useThemeStore from "@/store/useThemeStore";
 import { useMemo } from "react";
 import { ThemeColors } from "@/types/user";
 import { useShallow } from "zustand/shallow";
+import { DROPSET_INFO, WARMUP_INFO } from "@/constants/infoModal";
+import useInfoModal from "@/store/useInfoModal";
 
 const MODAL_WIDTH = 275;
 
@@ -29,6 +31,7 @@ const SetOptionsModal = function ExerciseOptionsModal() {
     }))
   );
   const { theme } = useThemeStore((state) => state);
+  const openInfoModal = useInfoModal((state) => state.openModal);
 
   const styles = useMemo(() => makeStyles(theme), [theme]);
   const currentSet = activeWorkout.workout_exercises
@@ -55,8 +58,20 @@ const SetOptionsModal = function ExerciseOptionsModal() {
     });
     closeModal();
   };
-  const questionButton = (
-    <Pressable style={styles.questionButton}>
+
+  const openInfoModalHandler = (content: {
+    title: string;
+    description: string;
+  }) => {
+    closeModal();
+    openInfoModal(content);
+  };
+
+  const questionButton = (content: { title: string; description: string }) => (
+    <Pressable
+      style={styles.questionButton}
+      onPress={() => openInfoModalHandler(content)}
+    >
       <AntDesign name="question" size={24} color={theme.white} />
     </Pressable>
   );
@@ -68,7 +83,7 @@ const SetOptionsModal = function ExerciseOptionsModal() {
       ),
       title: "Warm Up",
       cb: () => updateSetHandler("is_warmup"),
-      rightSide: questionButton,
+      rightSide: questionButton(WARMUP_INFO),
       isActive: currentSet?.is_warmup,
     },
     {
@@ -77,7 +92,7 @@ const SetOptionsModal = function ExerciseOptionsModal() {
       ),
       title: "Drop Set",
       cb: () => updateSetHandler("is_dropset"),
-      rightSide: questionButton,
+      rightSide: questionButton(DROPSET_INFO),
       isActive: currentSet?.is_dropset,
     },
   ];
@@ -88,7 +103,7 @@ const SetOptionsModal = function ExerciseOptionsModal() {
       closeModal={closeModal}
       anchorRef={buttonRef}
       anchorCorner="LEFT"
-      backgroundColor={theme.darkBlue}
+      backgroundColor={theme.background}
       modalWidth={MODAL_WIDTH}
     >
       <View style={styles.wrapper}>

@@ -174,7 +174,7 @@ export default function MetricsDetails() {
             }}
             width={SCREEN_WIDTH - 50}
             height={220}
-            CHART_CONFIG={CHART_CONFIG(theme)}
+            chartConfig={CHART_CONFIG(theme)}
             bezier
             style={styles.chart}
             fromZero

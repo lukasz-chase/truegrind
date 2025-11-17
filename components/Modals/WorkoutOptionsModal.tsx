@@ -78,7 +78,7 @@ const WorkoutOptionsModal = function ExerciseOptionsModal() {
       closeModal={closeModal}
       anchorRef={buttonRef}
       anchorCorner="RIGHT"
-      backgroundColor={theme.darkBlue}
+      backgroundColor={theme.background}
       modalWidth={MODAL_WIDTH}
     >
       <View style={styles.wrapper}>

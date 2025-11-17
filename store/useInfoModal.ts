@@ -2,18 +2,22 @@ import { create } from "zustand";
 
 interface ModalState {
   isVisible: boolean;
-  openModal: (title: string, subtitle: string) => void;
+  openModal: (content: { title: string; description: string }) => void;
   closeModal: () => void;
-  title: string;
-  subtitle: string;
+  content: {
+    title: string;
+    description: string;
+  };
 }
 
 const useInfoModal = create<ModalState>((set) => ({
   isVisible: false,
-  openModal: (title, subtitle) => set({ isVisible: true, title, subtitle }),
+  openModal: (content) => set({ isVisible: true, content }),
   closeModal: () => set({ isVisible: false }),
-  title: "",
-  subtitle: "",
+  content: {
+    title: "",
+    description: "",
+  },
 }));
 
 export default useInfoModal;

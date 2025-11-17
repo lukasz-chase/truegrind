@@ -76,7 +76,7 @@ const WorkoutExercise = ({
   };
 
   const longPressGesture = Gesture.LongPress().onStart(() => {
-    scheduleOnRN(() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy));
+    scheduleOnRN(Haptics.impactAsync, Haptics.ImpactFeedbackStyle.Heavy);
     scheduleOnRN(setDragItemId, workoutExercise.id);
   });
   const openExerciseDetailsModalHandler = () => {
