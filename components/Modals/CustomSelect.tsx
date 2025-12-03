@@ -24,7 +24,6 @@ const CustomSelect = ({
   const buttonRef = useRef(null);
   const [modalVisible, setModalVisible] = useState(false);
   const { theme } = useThemeStore((state) => state);
-
   const styles = useMemo(() => makeStyles(theme), [theme]);
   return (
     <>

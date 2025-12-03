@@ -50,7 +50,19 @@ const SelectOptionsModal = ({
               },
             ]}
           >
-            <Text style={styles.filterOptionText}>{filterOption.label}</Text>
+            <Text
+              style={[
+                styles.filterOptionText,
+                {
+                  color:
+                    value === filterOption.value
+                      ? theme.white
+                      : theme.textColor,
+                },
+              ]}
+            >
+              {filterOption.label}
+            </Text>
           </Pressable>
         ))}
       </View>
@@ -65,7 +77,6 @@ const makeStyles = (theme: ThemeColors) =>
       marginHorizontal: -10,
     },
     filterOptionText: {
-      color: theme.white,
       fontWeight: "bold",
       fontSize: 16,
       textAlign: "left",

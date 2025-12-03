@@ -149,7 +149,7 @@ const makeStyles = (theme: ThemeColors) =>
       justifyContent: "space-between",
     },
     text: {
-      color: theme.white,
+      color: theme.textColor,
       fontSize: 18,
       fontWeight: "bold",
       textAlign: "center",

@@ -13,49 +13,50 @@ type Props = {
   data: { value: number; label: string }[];
 };
 
-const MemoizedScrollPicker = memo(
-  ({
+const MemoizedScrollPicker = memo((props: Props) => {
+  const {
     enabled = true,
-    textColor = null,
+    textColor,
     value,
     setValue,
     visibleItemCount,
     data,
-  }: Props) => {
-    const { theme } = useThemeStore((state) => state);
+  } = props;
+  const { theme } = useThemeStore((state) => state);
+  const styles = useMemo(() => makeStyles(theme), [theme]);
 
-    const styles = useMemo(() => makeStyles(theme), [theme]);
-    return (
-      <View
-        style={[
-          styles.scrollPicker,
-          Platform.OS === "android" && styles.androidPicker,
-          !enabled && styles.disabled,
-        ]}
-        pointerEvents={enabled ? "auto" : "none"}
+  const isAndroid = Platform.OS === "android";
+
+  return (
+    <View
+      style={[
+        styles.scrollPicker,
+        isAndroid && styles.androidPicker,
+        !enabled && styles.disabled,
+      ]}
+      pointerEvents={enabled ? "auto" : "none"}
+    >
+      <Picker
+        enabled={enabled}
+        selectedValue={value}
+        onValueChange={setValue}
+        style={styles.picker}
+        mode={isAndroid ? "dropdown" : "dialog"}
+        itemStyle={!isAndroid ? styles.pickerItem : undefined}
+        numberOfLines={1}
       >
-        <Picker
-          enabled={enabled}
-          selectedValue={value}
-          onValueChange={setValue}
-          style={styles.picker}
-          mode="dropdown"
-          itemStyle={{ height: 40 * visibleItemCount }}
-          numberOfLines={1}
-        >
-          {data.map((dataItem) => (
-            <Picker.Item
-              color={textColor ?? theme.textColor}
-              label={dataItem.label}
-              value={dataItem.value}
-              key={dataItem.value}
-            />
-          ))}
-        </Picker>
-      </View>
-    );
-  }
-);
+        {data.map((item) => (
+          <Picker.Item
+            key={item.value}
+            label={item.label}
+            value={item.value}
+            color={!isAndroid ? textColor ?? theme.textColor : undefined}
+          />
+        ))}
+      </Picker>
+    </View>
+  );
+});
 
 const makeStyles = (theme: ThemeColors) =>
   StyleSheet.create({

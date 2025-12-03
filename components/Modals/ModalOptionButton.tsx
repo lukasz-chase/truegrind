@@ -53,7 +53,7 @@ const makeStyles = (theme: ThemeColors) =>
     pressableText: {
       fontSize: 16,
       fontWeight: "bold",
-      color: theme.white,
+      color: theme.textColor,
     },
   });
 

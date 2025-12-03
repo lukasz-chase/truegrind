@@ -230,6 +230,7 @@ const makeStyles = (theme: ThemeColors) =>
       color: theme.white,
       fontWeight: "bold",
       fontSize: 18,
+      lineHeight: 20,
       textAlign: "center",
     },
   });

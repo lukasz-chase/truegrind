@@ -64,7 +64,7 @@ export default ({
           alignItems: "center",
         }}
       >
-        <Text style={{ color: theme.white }}>
+        <Text style={{ color: theme.textColor }}>
           {!!exerciseTimer ? formatTime(exerciseTimer) : "Off"}
         </Text>
         <MaterialIcons
