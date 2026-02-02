@@ -25,13 +25,13 @@ type Props = {
   setDragItemId: React.Dispatch<React.SetStateAction<string | null>>;
   updateWorkoutExerciseField: (
     workoutExerciseId: string,
-    propertiesToUpdate: Partial<WorkoutExerciseType>
+    propertiesToUpdate: Partial<WorkoutExerciseType>,
   ) => void;
   addNewSet: (exerciseId: string) => void;
   updateExerciseSet: (
     exerciseId: string,
     setId: string,
-    propertiesToUpdate: Partial<ExerciseSet>
+    propertiesToUpdate: Partial<ExerciseSet>,
   ) => void;
   deleteExerciseSet: (exerciseId: string, setId: string) => void;
   isEditTemplate?: boolean;
@@ -48,11 +48,12 @@ const WorkoutExercise = ({
   const openModal = useExerciseOptionsModal((state) => state.openModal);
   const closeKeyboard = useCustomKeyboard((state) => state.closeKeyboard);
   const openExerciseDetailsModal = useExerciseDetailsModal(
-    (state) => state.openModal
+    (state) => state.openModal,
   );
   const [note, setNote] = useState(
-    workoutExercise?.note ?? { noteValue: "", showNote: false }
+    workoutExercise?.note ?? { noteValue: "", showNote: false },
   );
+  console.log(note);
   const { theme, mode } = useThemeStore((state) => state);
 
   const styles = useMemo(() => makeStyles(theme, mode), [theme, mode]);
@@ -66,7 +67,7 @@ const WorkoutExercise = ({
 
   const onButtonPress = () => {
     closeKeyboard();
-    openModal(buttonRef, workoutExercise);
+    openModal(buttonRef, workoutExercise, isEditTemplate);
   };
 
   const noteChangeHandler = (text: string) => {

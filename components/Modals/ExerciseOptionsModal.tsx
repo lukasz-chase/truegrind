@@ -11,6 +11,7 @@ import exerciseOptions from "@/components/exerciseOptions";
 import useWorkoutExercisesModal from "@/store/useWorkoutExercisesModal";
 import { Exercise } from "@/types/exercises";
 import useActiveWorkout from "@/store/useActiveWorkout";
+import useWorkoutTemplate from "@/store/useWorkoutTemplate";
 import useExerciseOptionsModal from "@/store/useExerciseOptionsModal";
 import ModalOptionButton from "./ModalOptionButton";
 import userStore from "@/store/userStore";
@@ -24,7 +25,7 @@ const MODAL_WIDTH = 275;
 const ExerciseOptionsModal = function ExerciseOptionsModal() {
   const [currentScreen, setCurrentScreen] = useState("main");
   const [currentTimer, setCurrentTimer] = useState<"timer" | "warmup_timer">(
-    "timer"
+    "timer",
   );
 
   const {
@@ -34,6 +35,7 @@ const ExerciseOptionsModal = function ExerciseOptionsModal() {
     setWarmupTimer,
     buttonRef,
     workoutExercise,
+    isEditTemplate,
   } = useExerciseOptionsModal((state) => state);
   const {
     openModal: openWorkoutExercisesModal,
@@ -48,7 +50,12 @@ const ExerciseOptionsModal = function ExerciseOptionsModal() {
       replaceWorkoutExercise: state.replaceWorkoutExercise,
       updateWorkoutExerciseField: state.updateWorkoutExerciseField,
       removeWorkoutExercise: state.removeWorkoutExercise,
-    }))
+    })),
+  );
+  const { updateWorkoutTemplateExerciseField } = useWorkoutTemplate(
+    useShallow((state) => ({
+      updateWorkoutTemplateExerciseField: state.updateWorkoutExerciseField,
+    })),
   );
   const user = userStore((state) => state.user);
   const openWarningModal = useActionModal((state) => state.openModal);
@@ -100,12 +107,22 @@ const ExerciseOptionsModal = function ExerciseOptionsModal() {
   };
 
   const noteHandler = () => {
-    updateWorkoutExerciseField(workoutExercise.id, {
-      note: {
-        ...workoutExercise.note,
-        showNote: !workoutExercise.note?.showNote,
-      },
-    });
+    if (isEditTemplate) {
+      updateWorkoutTemplateExerciseField(workoutExercise.id, {
+        note: {
+          ...workoutExercise.note,
+          showNote: !workoutExercise.note?.showNote,
+        },
+      });
+    } else {
+      updateWorkoutExerciseField(workoutExercise.id, {
+        note: {
+          ...workoutExercise.note,
+          showNote: !workoutExercise.note?.showNote,
+        },
+      });
+    }
+
     closeModalHandler();
   };
   const generateNoteOptionName = () => {
@@ -133,7 +150,7 @@ const ExerciseOptionsModal = function ExerciseOptionsModal() {
 
   const updateTimer = (
     timerName: "timer" | "warmup_timer",
-    timerValue: number | null
+    timerValue: number | null,
   ) => {
     updateWorkoutExerciseField(workoutExercise.id, { [timerName]: timerValue });
   };

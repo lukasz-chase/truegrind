@@ -14,6 +14,8 @@ import useFoldersStore from "@/store/useFoldersStore";
 import useInfoModal from "@/store/useInfoModal";
 import { useShallow } from "zustand/shallow";
 import Entypo from "@expo/vector-icons/Entypo";
+import uuid from "react-native-uuid";
+import { useRouter } from "expo-router";
 
 const MODAL_WIDTH = 170;
 
@@ -22,13 +24,14 @@ const FolderOptionsModal = function ExerciseOptionsModal() {
 
   const theme = useThemeStore((state) => state.theme);
   const styles = useMemo(() => makeStyles(theme), [theme]);
+  const router = useRouter();
 
   const { isVisible, closeModal, props } = useFolderOptionsModal();
   const { buttonRef, folderId, folderName, startAnEmptyWorkout } = props;
   const openActionModal = useActionModal((state) => state.openModal);
 
   const openUpsertFolderModal = useUpsertFolderModal(
-    (state) => state.openModal
+    (state) => state.openModal,
   );
 
   const { toggleFolderCollapse, collapsedFolders, folders, removeFolder } =
@@ -38,7 +41,7 @@ const FolderOptionsModal = function ExerciseOptionsModal() {
         collapsedFolders: state.collapsedFolders,
         folders: state.folders,
         removeFolder: state.removeFolder,
-      }))
+      })),
     );
   const openInfoModal = useInfoModal((state) => state.openModal);
 
@@ -66,10 +69,12 @@ const FolderOptionsModal = function ExerciseOptionsModal() {
     openUpsertFolderModal({ folderId: folderId!, folderName: folderName! });
     closeModal();
   };
-  const startAnEmptyWorkoutHandler = () => {
-    startAnEmptyWorkout(folderId!);
+  const newTemplateHandler = () => {
+    const templateId = uuid.v4();
+    router.push(`/template/${folderId}/${templateId}`);
     closeModal();
   };
+
   const openActionModalHandler = () => {
     openActionModal({
       title: "Delete Workout",
@@ -88,7 +93,7 @@ const FolderOptionsModal = function ExerciseOptionsModal() {
     {
       Icon: <Entypo name="plus" size={24} color={theme.blue} />,
       title: "New template",
-      cb: startAnEmptyWorkoutHandler,
+      cb: newTemplateHandler,
       conditionToDisplay: true,
     },
     {

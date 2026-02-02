@@ -33,7 +33,7 @@ import DraggableList from "@/components/BottomSheet/DraggableExercisesList.tsx/D
 
 export default function WorkoutScreen() {
   const [exampleWorkouts, setExampleWorkouts] = useState<Workout[] | null>(
-    null
+    null,
   );
   const [dataLoading, setDataLoading] = useState(false);
   const [draggedWorkout, setDraggedWorkout] = useState<Workout | null>(null);
@@ -58,7 +58,7 @@ export default function WorkoutScreen() {
       setIsNewWorkout: state.setIsNewWorkout,
       persistedStorage: state.persistedStorage,
       setPersistedStorage: state.setPersistedStorage,
-    }))
+    })),
   );
   const user = userStore((state) => state.user);
   const refetchWorkouts = useAppStore((state) => state.refetchWorkouts);
@@ -66,7 +66,7 @@ export default function WorkoutScreen() {
     useShallow((state) => ({
       split: state.activeSplit,
       loading: state.loading,
-    }))
+    })),
   );
   const openModal = useUpsertFolderModal((state) => state.openModal);
   const {
@@ -86,7 +86,7 @@ export default function WorkoutScreen() {
       moveWorkoutToFolder: state.moveWorkoutToFolder,
       collapsedFolders: state.collapsedFolders,
       reorderFolders: state.reorderFolders,
-    }))
+    })),
   );
 
   const { theme } = useThemeStore((state) => state);
@@ -101,7 +101,7 @@ export default function WorkoutScreen() {
     const fetchData = async () => {
       setDataLoading(true);
       try {
-        "user.id", user?.id;
+        ("user.id", user?.id);
         const [exampleResult, folderResult] = await Promise.all([
           fetchExampleWorkouts(user?.active_split_id!),
           fetchUserFoldersWithWorkouts(user?.id!, user?.active_split_id!),
@@ -143,8 +143,8 @@ export default function WorkoutScreen() {
   useEffect(() => {
     setFolderLayouts((prev) =>
       Object.fromEntries(
-        Object.entries(prev).filter(([id]) => folders.some((f) => f.id === id))
-      )
+        Object.entries(prev).filter(([id]) => folders.some((f) => f.id === id)),
+      ),
     );
   }, [folders]);
 
@@ -165,14 +165,19 @@ export default function WorkoutScreen() {
       }
       scheduleOnRN(setHoveredFolderId, found);
     },
-    [draggedWorkout, folderLayouts]
+    [draggedWorkout, folderLayouts],
   );
 
   const registerFolderLayout = (
     folderId: string,
-    layout: { top: number; bottom: number }
+    layout: { top: number; bottom: number },
   ) => {
     setFolderLayouts((prev) => ({ ...prev, [folderId]: layout }));
+  };
+
+  const newTemplateHandler = () => {
+    const templateId = uuid.v4();
+    router.push(`/template/${folderId}/${templateId}`);
   };
 
   const startAnEmptyWorkout = (folderId: string) => {
@@ -193,10 +198,6 @@ export default function WorkoutScreen() {
     }
   };
 
-  const newTemplateHandler = (folderId: string) => {
-    const templateId = uuid.v4();
-    router.push(`/template/${folderId}/${templateId}`);
-  };
   const handleReorder = (newOrder: string[]) => {
     reorderFolders(newOrder);
     setDragFolderId(null);

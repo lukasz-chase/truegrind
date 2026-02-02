@@ -3,9 +3,11 @@ import { create } from "zustand";
 
 interface ModalState {
   isVisible: boolean;
+  isEditTemplate: boolean;
   openModal: (
     buttonRef: React.MutableRefObject<null>,
-    workoutExercise: WorkoutExercisePopulated
+    workoutExercise: WorkoutExercisePopulated,
+    isEditTemplate: boolean,
   ) => void;
   closeModal: () => void;
   workoutExercise: null | WorkoutExercisePopulated;
@@ -16,8 +18,9 @@ interface ModalState {
 
 const useExerciseOptionsModal = create<ModalState>((set) => ({
   isVisible: false,
-  openModal: (buttonRef, workoutExercise) =>
-    set({ isVisible: true, buttonRef, workoutExercise }),
+  isEditTemplate: false,
+  openModal: (buttonRef, workoutExercise, isEditTemplate = false) =>
+    set({ isVisible: true, buttonRef, workoutExercise, isEditTemplate }),
   closeModal: () => set({ isVisible: false }),
   workoutExercise: null,
   buttonRef: null,
