@@ -29,6 +29,17 @@ interface FinishWorkoutParams {
   user: User;
 }
 
+const formatLocalDateTimeForStrava = (date: Date) => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  const hours = String(date.getHours()).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+  const seconds = String(date.getSeconds()).padStart(2, "0");
+
+  return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}Z`;
+};
+
 export const finishWorkout = async ({
   activeWorkout,
   initialActiveWorkout,
@@ -86,6 +97,7 @@ export const finishWorkout = async ({
   const [minutes, seconds] = formattedTime.split(":").map(Number);
   const now = new Date();
   const startTime = new Date(now.getTime() - (minutes * 60 + seconds) * 1000);
+  const stravaStartTime = formatLocalDateTimeForStrava(startTime);
 
   await upsertWorkoutCalendar({
     status: WorkoutCalendarStatusEnum.Completed,
@@ -115,7 +127,7 @@ export const finishWorkout = async ({
             (we) => we.exercise_sets.length > 0
           ),
         },
-        startTime,
+        startTime: stravaStartTime,
         caloriesBurned,
       },
     });
