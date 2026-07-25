@@ -56,7 +56,7 @@ export const finishWorkout = async ({
     activeWorkout,
     initialActiveWorkout,
     isNewWorkout,
-    updateTemplate
+    updateTemplate,
   );
 
   // 2. Create history records
@@ -71,12 +71,12 @@ export const finishWorkout = async ({
   await updateWorkoutExercises(
     activeWorkout,
     initialActiveWorkout,
-    updateTemplate
+    updateTemplate,
   );
   await createWorkoutExercisesHistory(
     activeWorkout,
     workoutHistoryId,
-    workoutExercisesHistoryIds
+    workoutExercisesHistoryIds,
   );
   await updateExerciseSets(activeWorkout, initialActiveWorkout, updateTemplate);
   await createExerciseSetsHistory(activeWorkout, workoutExercisesHistoryIds);
@@ -84,11 +84,11 @@ export const finishWorkout = async ({
   // 3. Update workout calendar
   const userCalendarWorkouts = await fetchUserWorkoutCalendar(
     activeWorkout.user_id,
-    new Date().getMonth() + 1
+    new Date().getMonth() + 1,
   );
   const currentColors = userCalendarWorkouts.map((data) => data.color);
   const workoutCalendar = userCalendarWorkouts.find(
-    (workout) => workout.workout_id === activeWorkout.id
+    (workout) => workout.workout_id === activeWorkout.id,
   );
   const color = workoutCalendar
     ? workoutCalendar.color
@@ -124,13 +124,12 @@ export const finishWorkout = async ({
         workout: {
           ...activeWorkout,
           workout_exercises: activeWorkout.workout_exercises?.filter(
-            (we) => we.exercise_sets.length > 0
+            (we) => we.exercise_sets.length > 0,
           ),
         },
         startTime: stravaStartTime,
         caloriesBurned,
       },
     });
-    console.log(res);
   }
 };

@@ -6,14 +6,14 @@ import { areObjectsDifferent } from "@/utils/helpers";
 export const updateWorkoutExercises = async (
   activeWorkout: Workout,
   initialActiveWorkout: Workout,
-  updateTemplate: boolean
+  updateTemplate: boolean,
 ) => {
   const workoutExercisesToUpdate: WorkoutExercise[] = [];
   const workoutExercisesToDelete: string[] = [];
 
   for (const workoutExercise of activeWorkout.workout_exercises || []) {
     const initialExercise = initialActiveWorkout.workout_exercises?.find(
-      (ex) => ex.id === workoutExercise.id
+      (ex) => ex.id === workoutExercise.id,
     );
     const { exercise_sets, exercises, ...workoutExerciseNotPopulated } =
       workoutExercise;
@@ -37,7 +37,7 @@ export const updateWorkoutExercises = async (
     for (const initialWorkoutExercise of initialActiveWorkout.workout_exercises ||
       []) {
       const exists = activeWorkout.workout_exercises?.some(
-        (current) => current.id === initialWorkoutExercise.id
+        (current) => current.id === initialWorkoutExercise.id,
       );
       if (!exists) workoutExercisesToDelete.push(initialWorkoutExercise.id);
     }
@@ -64,7 +64,7 @@ export const updateWorkoutExercises = async (
 export const createWorkoutExercisesHistory = async (
   activeWorkout: Workout,
   workoutHistoryId: string,
-  workoutExercisesHistoryIds: { id: string; historyId: string }[]
+  workoutExercisesHistoryIds: { id: string; historyId: string }[],
 ) => {
   const workoutExercisesHistoryToCreate: WorkoutExercise[] = [];
 
@@ -83,7 +83,6 @@ export const createWorkoutExercisesHistory = async (
 
   if (workoutExercisesHistoryToCreate.length === 0) return;
 
-  console.log({ workoutHistoryId });
   const { error } = await supabase
     .from("exercises_history")
     .insert(workoutExercisesHistoryToCreate);
