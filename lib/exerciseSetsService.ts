@@ -44,7 +44,10 @@ export const updateExerciseSets = async (
     const { error } = await supabase
       .from("exercise_sets")
       .upsert(exerciseSetsToUpdate);
-    console.log("error upserting exercise sets", error);
+    if (error) {
+      console.log("error upserting exercise sets", error);
+      throw error;
+    }
   }
   if (exerciseSetsToDelete.length > 0) {
     await supabase
@@ -95,7 +98,10 @@ export const createExerciseSetsHistory = async (
     const { error } = await supabase
       .from("sets_history")
       .upsert(exerciseHistorySets);
-    console.log("error upserting exercise sets history", error);
+    if (error) {
+      console.log("error upserting exercise sets history", error);
+      throw error;
+    }
   }
 };
 

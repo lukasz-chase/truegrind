@@ -78,7 +78,7 @@ export const finishWorkout = async ({
     workoutHistoryId,
     workoutExercisesHistoryIds
   );
-  await updateExerciseSets(activeWorkout, initialActiveWorkout);
+  await updateExerciseSets(activeWorkout, initialActiveWorkout, updateTemplate);
   await createExerciseSetsHistory(activeWorkout, workoutExercisesHistoryIds);
 
   // 3. Update workout calendar

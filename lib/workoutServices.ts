@@ -3,6 +3,17 @@ import { supabase } from "./supabase";
 import { areObjectsDifferent } from "@/utils/helpers";
 import { getStartOfWeek } from "@/utils/calendar";
 
+type WorkoutWithDisplayFields = Workout & {
+  workout_time?: string;
+};
+
+const getWorkoutTableRow = (workout: Workout) => {
+  const { workout_exercises, workout_time, ...workoutTableRow } =
+    workout as WorkoutWithDisplayFields;
+
+  return workoutTableRow;
+};
+
 export const createWorkoutHistory = async (
   workout: Workout,
   workoutHistoryId: string,
@@ -18,7 +29,10 @@ export const createWorkoutHistory = async (
   const { error } = await supabase
     .from("workout_history")
     .insert(workoutHistory);
-  console.log("error creating workout history", error);
+  if (error) {
+    console.log("error creating workout history", error);
+    throw error;
+  }
 };
 
 export const updateWorkout = async (
@@ -32,20 +46,20 @@ export const updateWorkout = async (
       isNewWorkout) &&
     updateTemplate
   ) {
-    const { workout_exercises, ...workoutDB } = activeWorkout;
     const { error } = await supabase
       .from("workouts")
-      .upsert(workoutDB)
+      .upsert(getWorkoutTableRow(activeWorkout))
       .eq("id", activeWorkout.id);
-    console.log("error updating workout", error);
+    if (error) {
+      console.log("error updating workout", error);
+      throw error;
+    }
   }
 };
 export const updateWorkoutsBulk = async (workoutsToUpdate: Workout[]) => {
   try {
-    const workoutsToUpdateNotPopulated = workoutsToUpdate.map((workout) => {
-      const { workout_exercises, ...workoutNotPopulated } = workout;
-      return workoutNotPopulated;
-    });
+    const workoutsToUpdateNotPopulated =
+      workoutsToUpdate.map(getWorkoutTableRow);
 
     const { error } = await supabase
       .from("workouts")
@@ -89,7 +103,7 @@ export const copyWorkout = async (
   try {
     const { getInitialFolderId } = await import("./folderService");
     const workoutExercisesToCreate: any[] = [];
-    const { id, workout_exercises, created_at, ...rest } = workout;
+    const { id, created_at, ...rest } = getWorkoutTableRow(workout);
     let folderToCopyTo = folderId;
     if (!folderId) {
       folderToCopyTo = await getInitialFolderId(userId, workout.split_id);
@@ -100,7 +114,7 @@ export const copyWorkout = async (
       .select("*")
       .limit(1)
       .single();
-    workout_exercises?.forEach((workoutExercise) => {
+    workout.workout_exercises?.forEach((workoutExercise) => {
       const { id, exercise_sets, exercises, created_at, ...rest } =
         workoutExercise;
       workoutExercisesToCreate.push({
@@ -109,6 +123,9 @@ export const copyWorkout = async (
         workout_id: data?.id,
       });
     });
+    if (data && workoutExercisesToCreate.length === 0) {
+      return { ...data, workout_exercises: [] } as Workout;
+    }
     const { data: exercises, error: errorExercises } = await supabase
       .from("workout_exercises")
       .insert(workoutExercisesToCreate)
