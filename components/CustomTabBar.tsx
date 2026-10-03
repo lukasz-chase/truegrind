@@ -1,4 +1,4 @@
-import { BottomTabBar } from "@react-navigation/bottom-tabs"; // Import the BottomTabBar
+import { BottomTabBar } from "expo-router/js-tabs"; // Import the BottomTabBar
 import { useSafeAreaInsets } from "react-native-safe-area-context"; // Import SafeArea
 import Animated, {
   useAnimatedStyle,
@@ -34,7 +34,7 @@ const CustomTabBar = ({
       },
       animatedStyle,
     ],
-    [animatedStyle]
+    [animatedStyle],
   );
   return (
     <Animated.View style={containerStyle}>
