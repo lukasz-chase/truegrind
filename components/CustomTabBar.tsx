@@ -49,14 +49,14 @@ const CustomTabBar = ({
     [animatedStyle],
   );
   return (
-    <Animated.View style={containerStyle}>
+    <>
       <BottomTabBar
         state={state}
         descriptors={descriptors}
         navigation={navigation}
         insets={insets} // Pass the insets
       />
-    </Animated.View>
+    </>
   );
 };
 

@@ -47,7 +47,10 @@ export default function TabLayout() {
     const getUserActiveSplit = async () => {
       setLoading(true);
       try {
-        const data = await fetchUserSplitWithWorkouts(userId, splitId);
+        const data = await fetchUserSplitWithWorkouts(
+          user.id,
+          user.active_split_id!,
+        );
         if (data) {
           setActiveSplit(data);
         }
@@ -70,7 +73,7 @@ export default function TabLayout() {
     }
   }, [router, user]);
   return (
-    <GestureHandlerRootView>
+    <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
         <ActionModal />
         <InfoModal />
@@ -87,7 +90,10 @@ export default function TabLayout() {
           screenOptions={{
             tabBarActiveTintColor: theme.blue,
             headerShown: false,
-            tabBarStyle: { backgroundColor: theme.tabBackground, height: 70 },
+            tabBarStyle: {
+              backgroundColor: theme.tabBackground,
+              height: 70,
+            },
           }}
           initialRouteName="index"
           tabBar={(props) => (
@@ -108,7 +114,7 @@ export default function TabLayout() {
                   <FontAwesomeIcons
                     name={focused ? focusedIcon : icon}
                     size={24}
-                    color={color}
+                    color="white"
                   />
                 ),
               }}

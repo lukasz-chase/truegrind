@@ -48,7 +48,7 @@ const WorkoutBottomSheet = ({ animatedIndex }: Props) => {
       deleteExerciseSet: state.deleteExerciseSet,
       updateExerciseSet: state.updateExerciseSet,
       updateWorkoutExerciseField: state.updateWorkoutExerciseField,
-    }))
+    })),
   );
   const { closeKeyboard } = useCustomKeyboard();
 
@@ -57,7 +57,10 @@ const WorkoutBottomSheet = ({ animatedIndex }: Props) => {
   const { theme } = useThemeStore((state) => state);
 
   const styles = useMemo(() => makeStyles(theme), [theme]);
-
+  useEffect(() => {
+    const timer = setTimeout(() => sheetRef.current?.snapToIndex(1), 300);
+    return () => clearTimeout(timer);
+  }, []);
   useEffect(() => {
     setBottomSheetScrollViewRef(scrollViewRef);
   }, [scrollViewRef]);
@@ -92,7 +95,7 @@ const WorkoutBottomSheet = ({ animatedIndex }: Props) => {
         ref={sheetRef}
         snapPoints={snapPoints}
         enableDynamicSizing={false}
-        animateOnMount={true}
+        animateOnMount={false}
         index={1}
         backdropComponent={CustomBackdrop}
         animatedIndex={animatedIndex}

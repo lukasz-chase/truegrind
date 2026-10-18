@@ -13,7 +13,7 @@
     "test:watch": "jest --watchAll",
     "lint": "expo lint",
     "buildAndroidPreview": "eas build --profile=preview --platform=android --clear-cache",
-    "updateExpoApp": "expo update"
+    "updateExpoApp": "eas update"
   },
   "jest": {
     "preset": "jest-expo"
