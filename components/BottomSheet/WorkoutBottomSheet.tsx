@@ -26,7 +26,7 @@ type Props = {
 };
 
 const WorkoutBottomSheet = ({ animatedIndex }: Props) => {
-  const [sheetIndex, setSheetIndex] = useState(0);
+  const [sheetIndex, setSheetIndex] = useState(1);
   const [scrolledY, setScrolledY] = useState(0);
   const [dragItemId, setDragItemId] = useState<string | null>(null);
 
@@ -57,10 +57,6 @@ const WorkoutBottomSheet = ({ animatedIndex }: Props) => {
   const { theme } = useThemeStore((state) => state);
 
   const styles = useMemo(() => makeStyles(theme), [theme]);
-  useEffect(() => {
-    const timer = setTimeout(() => sheetRef.current?.snapToIndex(1), 300);
-    return () => clearTimeout(timer);
-  }, []);
   useEffect(() => {
     setBottomSheetScrollViewRef(scrollViewRef);
   }, [scrollViewRef]);
@@ -95,7 +91,7 @@ const WorkoutBottomSheet = ({ animatedIndex }: Props) => {
         ref={sheetRef}
         snapPoints={snapPoints}
         enableDynamicSizing={false}
-        animateOnMount={false}
+        animateOnMount={true}
         index={1}
         backdropComponent={CustomBackdrop}
         animatedIndex={animatedIndex}
