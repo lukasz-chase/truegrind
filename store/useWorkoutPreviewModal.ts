@@ -34,9 +34,9 @@ const useWorkoutPreviewModal = create<ModalState>((set, get) => ({
 
     // run them
     setIsNewWorkout(false);
+    setActiveWorkout(workout, true);
     set({ isVisible: false });
     setIsSheetVisible(true);
-    setActiveWorkout(workout, true);
 
     if (Platform.OS !== "web") {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);

@@ -58,22 +58,30 @@ const WorkoutBottomSheet = ({ animatedIndex }: Props) => {
 
   const styles = useMemo(() => makeStyles(theme), [theme]);
   useEffect(() => {
+    if (__DEV__) console.info("[WorkoutSheet] mounted");
+    return () => {
+      if (__DEV__) console.info("[WorkoutSheet] unmounted");
+    };
+  }, []);
+  useEffect(() => {
     setBottomSheetScrollViewRef(scrollViewRef);
-  }, [scrollViewRef]);
+  }, [setBottomSheetScrollViewRef]);
 
   const snapPoints = useMemo(() => [130, "90%"], []);
 
   const handleClosePress = useCallback(() => {
+    if (__DEV__) console.info("[WorkoutSheet] close");
     closeKeyboard();
     setIsSheetVisible(false);
     sheetRef.current?.close();
     animatedIndex.value = 0;
-  }, []);
+  }, [animatedIndex, closeKeyboard, setIsSheetVisible]);
 
   const handleSheetChanges = useCallback((index: number) => {
+    if (__DEV__) console.info("[WorkoutSheet] index", index);
     closeKeyboard();
     setSheetIndex(index);
-  }, []);
+  }, [closeKeyboard]);
 
   const handleScroll = (event: any) => {
     const scrollY = event.nativeEvent.contentOffset.y;
@@ -85,7 +93,18 @@ const WorkoutBottomSheet = ({ animatedIndex }: Props) => {
     setDragItemId(null);
   };
   return (
-    <View style={styles.overlay} pointerEvents="box-none">
+    <View
+      style={styles.overlay}
+      pointerEvents="box-none"
+      onLayout={({ nativeEvent: { layout } }) => {
+        if (__DEV__) {
+          console.info("[WorkoutSheet] layout", {
+            width: layout.width,
+            height: layout.height,
+          });
+        }
+      }}
+    >
       <BottomSheet
         onClose={handleClosePress}
         ref={sheetRef}
