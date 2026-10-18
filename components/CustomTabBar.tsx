@@ -1,4 +1,4 @@
-import { BottomTabBar, BottomTabBarProps } from "@react-navigation/bottom-tabs";
+import { BottomTabBar, BottomTabBarProps } from "expo-router/js-tabs";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Animated, {
   Extrapolation,
