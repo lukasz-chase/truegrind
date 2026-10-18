@@ -36,7 +36,7 @@ const useTimerStore = create<TimerState>()((set, get) => {
 
       const timeRemaining = Math.max(
         Math.floor((endTime - Date.now()) / 1000),
-        0
+        0,
       );
 
       if (timeRemaining <= 0) {
@@ -70,7 +70,9 @@ const useTimerStore = create<TimerState>()((set, get) => {
       if (notificationId) {
         Notifications.cancelScheduledNotificationAsync(notificationId);
       }
-      scheduleNotification(newTimeRemaining);
+      if (Platform.OS !== "web") {
+        void scheduleNotification(newTimeRemaining);
+      }
     }
   };
 
@@ -90,8 +92,8 @@ const useTimerStore = create<TimerState>()((set, get) => {
       if (notificationId) {
         Notifications.cancelScheduledNotificationAsync(notificationId);
       }
-      if (newTimeRemaining > 0) {
-        scheduleNotification(newTimeRemaining);
+      if (newTimeRemaining > 0 && Platform.OS !== "web") {
+        void scheduleNotification(newTimeRemaining);
       } else {
         endTimer();
       }
@@ -119,18 +121,31 @@ const useTimerStore = create<TimerState>()((set, get) => {
   };
 
   const scheduleNotification = async (timeRemaining: number) => {
-    const id = await Notifications.scheduleNotificationAsync({
-      content: {
-        title: "Time's Up!",
-        body: "Your timer is complete.",
-        sound: "bell.mp3",
-      },
-      trigger: {
-        seconds: timeRemaining,
-        type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
-      },
-    });
-    notificationId = id;
+    try {
+      const { status: currentStatus } =
+        await Notifications.getPermissionsAsync();
+      const { status } =
+        currentStatus === "granted"
+          ? { status: currentStatus }
+          : await Notifications.requestPermissionsAsync();
+
+      if (status !== "granted") return;
+
+      const id = await Notifications.scheduleNotificationAsync({
+        content: {
+          title: "Time's Up!",
+          body: "Your timer is complete.",
+          sound: "bell.mp3",
+        },
+        trigger: {
+          seconds: timeRemaining,
+          type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
+        },
+      });
+      notificationId = id;
+    } catch (error) {
+      console.error("Unable to schedule timer notification:", error);
+    }
   };
 
   return {

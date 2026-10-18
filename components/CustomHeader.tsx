@@ -10,7 +10,7 @@ type Props = {
   href: Href;
 };
 
-export default ({ name, href }: Props) => {
+const CustomHeader = ({ name, href }: Props) => {
   const router = useRouter();
   const { theme } = useThemeStore((state) => state);
 
@@ -45,3 +45,5 @@ const makeStyles = (theme: ThemeColors) =>
       color: theme.textColor,
     },
   });
+
+export default CustomHeader;

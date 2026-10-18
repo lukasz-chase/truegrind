@@ -7,7 +7,7 @@ import uuid from "react-native-uuid";
 export const updateExerciseSets = async (
   activeWorkout: Workout,
   initialActiveWorkout: Workout,
-  isEditTemplate = false
+  isEditTemplate = false,
 ) => {
   const exerciseSetsToUpdate: ExerciseSet[] = [];
   const exerciseSetsToDelete: string[] = [];
@@ -33,8 +33,8 @@ export const updateExerciseSets = async (
       const exists = activeWorkout.workout_exercises?.some(
         (currentWorkoutExercise) =>
           currentWorkoutExercise.exercise_sets.some(
-            (currentSet) => currentSet.id === initialSet.id
-          )
+            (currentSet) => currentSet.id === initialSet.id,
+          ),
       );
       if (!exists) exerciseSetsToDelete.push(initialSet.id);
     }
@@ -44,19 +44,24 @@ export const updateExerciseSets = async (
     const { error } = await supabase
       .from("exercise_sets")
       .upsert(exerciseSetsToUpdate);
-    console.log("error upserting exercise sets", error);
+    if (error) {
+      throw error;
+    }
   }
   if (exerciseSetsToDelete.length > 0) {
-    await supabase
+    const { error } = await supabase
       .from("exercise_sets")
       .delete()
       .in("id", exerciseSetsToDelete);
+    if (error) {
+      throw error;
+    }
   }
 };
 
 export const createExerciseSetsHistory = async (
   activeWorkout: Workout,
-  workoutExercisesHistoryIds: { id: string; historyId: string }[]
+  workoutExercisesHistoryIds: { id: string; historyId: string }[],
 ) => {
   const exerciseHistorySets: ExerciseSet[] = [];
   const userId = userStore.getState().user?.id || null;
@@ -74,7 +79,7 @@ export const createExerciseSetsHistory = async (
         };
 
         const workoutExerciseHistoricId = workoutExercisesHistoryIds.find(
-          (e) => e.id === workoutExercise.id
+          (e) => e.id === workoutExercise.id,
         )?.historyId;
 
         if (workoutExerciseHistoricId) {
@@ -95,13 +100,15 @@ export const createExerciseSetsHistory = async (
     const { error } = await supabase
       .from("sets_history")
       .upsert(exerciseHistorySets);
-    console.log("error upserting exercise sets history", error);
+    if (error) {
+      throw error;
+    }
   }
 };
 
 export const fetchHighestWeightSet = async (
   exerciseId: string,
-  highestWeight: number
+  highestWeight: number,
 ) => {
   const { data, error } = await supabase
     .from("sets_history")
@@ -114,7 +121,7 @@ export const fetchHighestWeightSet = async (
 export const fetchSetsHistory = async (
   exerciseId: string,
   userId: string,
-  setOrder: number
+  setOrder: number,
 ) => {
   const { data, error } = await supabase
     .from("sets_history")

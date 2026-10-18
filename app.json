@@ -13,7 +13,7 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.tru.grind",
       "infoPlist": {
-        "UIBackgroundModes": ["remote-notification", "remote-notification"],
+        "UIBackgroundModes": ["remote-notification"],
         "ITSAppUsesNonExemptEncryption": false
       }
     },

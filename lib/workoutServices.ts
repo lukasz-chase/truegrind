@@ -6,7 +6,7 @@ import { getStartOfWeek } from "@/utils/calendar";
 export const createWorkoutHistory = async (
   workout: Workout,
   workoutHistoryId: string,
-  workoutTime: string
+  workoutTime: string,
 ) => {
   const { workout_exercises, id, ...workoutNotPopulated } = workout;
   const workoutHistory = {
@@ -18,14 +18,16 @@ export const createWorkoutHistory = async (
   const { error } = await supabase
     .from("workout_history")
     .insert(workoutHistory);
-  console.log("error creating workout history", error);
+  if (error) {
+    throw error;
+  }
 };
 
 export const updateWorkout = async (
   activeWorkout: Workout,
   initialActiveWorkout: Workout,
   isNewWorkout: boolean,
-  updateTemplate: boolean
+  updateTemplate: boolean,
 ) => {
   if (
     (areObjectsDifferent(activeWorkout, initialActiveWorkout) ||
@@ -37,22 +39,23 @@ export const updateWorkout = async (
       .from("workouts")
       .upsert(workoutDB)
       .eq("id", activeWorkout.id);
-    console.log("error updating workout", error);
+    if (error) {
+      throw error;
+    }
   }
 };
 export const updateWorkoutsBulk = async (workoutsToUpdate: Workout[]) => {
-  try {
-    const workoutsToUpdateNotPopulated = workoutsToUpdate.map((workout) => {
-      const { workout_exercises, ...workoutNotPopulated } = workout;
-      return workoutNotPopulated;
-    });
+  const workoutsToUpdateNotPopulated = workoutsToUpdate.map((workout) => {
+    const { workout_exercises, ...workoutNotPopulated } = workout;
+    return workoutNotPopulated;
+  });
 
-    const { error } = await supabase
-      .from("workouts")
-      .upsert(workoutsToUpdateNotPopulated);
-    if (error) console.error("Supabase error:", error);
-  } catch (error) {
-    console.error("Unexpected error:", error);
+  const { error } = await supabase
+    .from("workouts")
+    .upsert(workoutsToUpdateNotPopulated);
+
+  if (error) {
+    throw error;
   }
 };
 export const deleteWorkout = async (workoutId: string) => {
@@ -84,7 +87,7 @@ export const fetchExampleWorkouts = async (splitId: string) => {
 export const copyWorkout = async (
   workout: Workout,
   userId: string,
-  folderId?: string
+  folderId?: string,
 ) => {
   try {
     const { getInitialFolderId } = await import("./folderService");
@@ -124,7 +127,7 @@ export const copyWorkout = async (
 };
 export const fetchWorkoutHistory = async (
   workoutHistoryId: string,
-  userId: string
+  userId: string,
 ) => {
   const { data, error } = await supabase
     .from("workout_history")
@@ -136,7 +139,7 @@ export const fetchWorkoutHistory = async (
         exercises(*),
         exercise_sets:sets_history(*)
       )
-    `
+    `,
     )
     .eq("id", workoutHistoryId)
     .eq("user_id", userId)

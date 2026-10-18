@@ -34,8 +34,9 @@ export default function WorkoutDay({
   loading,
 }: Props) {
   const { theme } = useThemeStore((state) => state);
-
   const styles = useMemo(() => makeStyles(theme), [theme]);
+  const router = useRouter();
+
   if (loading) {
     return (
       <View style={[styles.date, { borderColor: "transparent" }]}>
@@ -43,9 +44,8 @@ export default function WorkoutDay({
       </View>
     );
   }
-  const router = useRouter();
   const dayData = workoutCalendarData.find(
-    (item) => item.scheduled_date === date.dateString
+    (item) => item.scheduled_date === date.dateString,
   );
   const isCompleted = dayData?.status === WorkoutCalendarStatusEnum.Completed;
   const isMissed = dayData?.status === WorkoutCalendarStatusEnum.Missed;

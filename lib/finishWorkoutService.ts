@@ -56,7 +56,7 @@ export const finishWorkout = async ({
     activeWorkout,
     initialActiveWorkout,
     isNewWorkout,
-    updateTemplate
+    updateTemplate,
   );
 
   // 2. Create history records
@@ -71,12 +71,12 @@ export const finishWorkout = async ({
   await updateWorkoutExercises(
     activeWorkout,
     initialActiveWorkout,
-    updateTemplate
+    updateTemplate,
   );
   await createWorkoutExercisesHistory(
     activeWorkout,
     workoutHistoryId,
-    workoutExercisesHistoryIds
+    workoutExercisesHistoryIds,
   );
   await updateExerciseSets(activeWorkout, initialActiveWorkout);
   await createExerciseSetsHistory(activeWorkout, workoutExercisesHistoryIds);
@@ -84,11 +84,11 @@ export const finishWorkout = async ({
   // 3. Update workout calendar
   const userCalendarWorkouts = await fetchUserWorkoutCalendar(
     activeWorkout.user_id,
-    new Date().getMonth() + 1
+    new Date().getMonth() + 1,
   );
   const currentColors = userCalendarWorkouts.map((data) => data.color);
   const workoutCalendar = userCalendarWorkouts.find(
-    (workout) => workout.workout_id === activeWorkout.id
+    (workout) => workout.workout_id === activeWorkout.id,
   );
   const color = workoutCalendar
     ? workoutCalendar.color
@@ -99,7 +99,7 @@ export const finishWorkout = async ({
   const startTime = new Date(now.getTime() - (minutes * 60 + seconds) * 1000);
   const stravaStartTime = formatLocalDateTimeForStrava(startTime);
 
-  await upsertWorkoutCalendar({
+  const savedWorkoutCalendar = await upsertWorkoutCalendar({
     status: WorkoutCalendarStatusEnum.Completed,
     user_id: activeWorkout.user_id,
     scheduled_date: getCalendarDateFormat(),
@@ -109,28 +109,42 @@ export const finishWorkout = async ({
     end_time: now,
     workout_history_id: workoutHistoryId,
   });
+  if (!savedWorkoutCalendar) {
+    throw new Error("Unable to save the workout calendar entry");
+  }
 
   // 4. Upload to Strava (if integrated)
-  const { data: stravaIntegration } = await supabase
-    .from("strava_integrations")
-    .select("id")
-    .eq("user_id", user.id)
-    .maybeSingle();
+  const { data: stravaIntegration, error: stravaIntegrationError } =
+    await supabase
+      .from("strava_integrations")
+      .select("id")
+      .eq("user_id", user.id)
+      .maybeSingle();
+
+  if (stravaIntegrationError) {
+    console.error(
+      "Unable to check Strava integration:",
+      stravaIntegrationError,
+    );
+    return;
+  }
 
   if (stravaIntegration) {
-    const res = await supabase.functions.invoke("strava-upload", {
+    const { error } = await supabase.functions.invoke("strava-upload", {
       body: {
         userId: user.id,
         workout: {
           ...activeWorkout,
           workout_exercises: activeWorkout.workout_exercises?.filter(
-            (we) => we.exercise_sets.length > 0
+            (we) => we.exercise_sets.length > 0,
           ),
         },
         startTime: stravaStartTime,
         caloriesBurned,
       },
     });
-    console.log(res);
+    if (error) {
+      console.error("Unable to upload workout to Strava:", error);
+    }
   }
 };

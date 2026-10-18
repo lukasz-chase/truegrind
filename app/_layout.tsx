@@ -5,7 +5,7 @@ import userStore from "@/store/userStore";
 import useActiveWorkout from "@/store/useActiveWorkout";
 import useMeasurementsStore from "@/store/useMeasurementsStore";
 import { setProfileInUserStore } from "@/lib/userService";
-import { Alert, AppState, Platform } from "react-native";
+import { AppState } from "react-native";
 import * as Notifications from "expo-notifications";
 import * as SplashScreen from "expo-splash-screen";
 import { setStatusBarStyle, StatusBar } from "expo-status-bar";
@@ -24,32 +24,15 @@ Notifications.setNotificationHandler({
   }),
 });
 
-AppState.addEventListener("change", (state) => {
-  if (state === "active") supabase.auth.startAutoRefresh();
-  else supabase.auth.stopAutoRefresh();
-});
-
 export default function RootLayout() {
   const { session } = userStore((s) => s);
   const { resetActiveWorkout } = useActiveWorkout();
   const { resetMeasurements } = useMeasurementsStore();
   const { mode } = useThemeStore();
-  const askNotificationPermission = async () => {
-    const { status } = await Notifications.requestPermissionsAsync();
-    if (status === "granted") {
-      console.log("Notification permissions granted.");
-    }
-    if (status !== "granted") {
-      Alert.alert(
-        "Permission Required",
-        "You need to grant notification permissions to use this feature."
-      );
-    }
-  };
 
   useEffect(() => {
     setStatusBarStyle(
-      mode === AppThemeEnum.DARK ? AppThemeEnum.LIGHT : AppThemeEnum.DARK
+      mode === AppThemeEnum.DARK ? AppThemeEnum.LIGHT : AppThemeEnum.DARK,
     );
 
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -74,9 +57,12 @@ export default function RootLayout() {
   }, []);
 
   useEffect(() => {
-    if (Platform.OS !== "web") {
-      askNotificationPermission();
-    }
+    const subscription = AppState.addEventListener("change", (state) => {
+      if (state === "active") supabase.auth.startAutoRefresh();
+      else supabase.auth.stopAutoRefresh();
+    });
+
+    return () => subscription.remove();
   }, []);
 
   return (

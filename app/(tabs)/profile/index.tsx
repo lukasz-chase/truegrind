@@ -30,7 +30,7 @@ import useAppStore from "@/store/useAppStore";
 export default function Profile() {
   const { user } = userStore();
   const [goalMeasurement, setGoalMeasurement] = useState<Measurement | null>(
-    null
+    null,
   );
   const [weight, setWeight] = useState<Measurement | null>(null);
   const [upcomingWorkout, setUpcomingWorkout] =
@@ -176,10 +176,7 @@ export default function Profile() {
         <View style={styles.infoBox}>
           {upcomingWorkout ? (
             <>
-              <Text
-                numberOfLines={2}
-                style={[styles.infoBoxTitle, { textOverflow: "ellipsis" }]}
-              >
+              <Text numberOfLines={2} style={styles.infoBoxTitle}>
                 {upcomingWorkout.workouts.name}
               </Text>
               <Text style={styles.infoBoxValue}>
@@ -210,7 +207,7 @@ export default function Profile() {
             <Progress.Bar
               progress={Math.min(
                 goalMeasurement?.value / user?.current_goal?.value,
-                1
+                1,
               )}
               width={350}
               color={

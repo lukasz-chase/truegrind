@@ -101,7 +101,6 @@ export default function WorkoutScreen() {
     const fetchData = async () => {
       setDataLoading(true);
       try {
-        ("user.id", user?.id);
         const [exampleResult, folderResult] = await Promise.all([
           fetchExampleWorkouts(user?.active_split_id!),
           fetchUserFoldersWithWorkouts(user?.id!, user?.active_split_id!),
@@ -175,7 +174,7 @@ export default function WorkoutScreen() {
     setFolderLayouts((prev) => ({ ...prev, [folderId]: layout }));
   };
 
-  const newTemplateHandler = () => {
+  const newTemplateHandler = (folderId: string) => {
     const templateId = uuid.v4();
     router.push(`/template/${folderId}/${templateId}`);
   };

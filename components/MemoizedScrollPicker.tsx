@@ -13,7 +13,7 @@ type Props = {
   data: { value: number; label: string }[];
 };
 
-const MemoizedScrollPicker = memo((props: Props) => {
+const MemoizedScrollPicker = memo(function MemoizedScrollPicker(props: Props) {
   const {
     enabled = true,
     textColor,
@@ -31,6 +31,7 @@ const MemoizedScrollPicker = memo((props: Props) => {
     <View
       style={[
         styles.scrollPicker,
+        { height: Math.max(40, visibleItemCount * 40) },
         isAndroid && styles.androidPicker,
         !enabled && styles.disabled,
       ]}
@@ -50,7 +51,7 @@ const MemoizedScrollPicker = memo((props: Props) => {
             key={item.value}
             label={item.label}
             value={item.value}
-            color={!isAndroid ? textColor ?? theme.textColor : undefined}
+            color={!isAndroid ? (textColor ?? theme.textColor) : undefined}
           />
         ))}
       </Picker>
@@ -71,6 +72,9 @@ const makeStyles = (theme: ThemeColors) =>
     },
     picker: {
       width: "100%",
+    },
+    pickerItem: {
+      fontSize: 18,
     },
     disabled: {
       opacity: 0.5,

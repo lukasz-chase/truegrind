@@ -38,26 +38,26 @@ const CustomHeader = ({ sheetIndex, close, scrolledY }: Props) => {
       isWorkoutTimerRunning: state.isRunning,
       startWorkoutTimer: state.startTimer,
       resumeIfRunning: state.resumeIfRunning,
-    }))
+    })),
   );
   const { timeRemaining, isRunning, timerDuration } = useTimerStore(
     useShallow((state) => ({
       timeRemaining: state.timeRemaining,
       isRunning: state.isRunning,
       timerDuration: state.timerDuration,
-    }))
+    })),
   );
   const { activeWorkout, setActiveWorkout } = useActiveWorkout(
     useShallow((state) => ({
       activeWorkout: state.activeWorkout,
       setActiveWorkout: state.setActiveWorkout,
-    }))
+    })),
   );
   const { openModal, setButtonRef } = useWorkoutTimerModal(
     useShallow((state) => ({
       openModal: state.openModal,
       setButtonRef: state.setButtonRef,
-    }))
+    })),
   );
   const closeKeyboard = useCustomKeyboard((state) => state.closeKeyboard);
   const openActionModal = useActionModal((state) => state.openModal);
@@ -85,7 +85,7 @@ const CustomHeader = ({ sheetIndex, close, scrolledY }: Props) => {
 
   const finishWorkoutHandler = () => {
     const notCompletedSets = activeWorkout.workout_exercises?.some((exercise) =>
-      exercise.exercise_sets?.some((set) => !set.completed)
+      exercise.exercise_sets?.some((set) => !set.completed),
     );
     if (notCompletedSets) {
       openActionModal({
@@ -110,14 +110,14 @@ const CustomHeader = ({ sheetIndex, close, scrolledY }: Props) => {
       (exercise) => ({
         ...exercise,
         exercise_sets: exercise.exercise_sets?.filter((set) => set.completed),
-      })
+      }),
     );
     setActiveWorkout(
       {
         ...activeWorkout,
         workout_exercises: workoutWithoutNotCompletedSets,
       },
-      false
+      false,
     );
     finishWorkout();
   };
@@ -128,13 +128,13 @@ const CustomHeader = ({ sheetIndex, close, scrolledY }: Props) => {
       animatedIndex.value,
       [0, 1],
       [0, 1],
-      Extrapolation.CLAMP
+      Extrapolation.CLAMP,
     ),
   }));
 
   const containerStyle = useMemo(
     () => [styles.buttonContainer, containerAnimatedStyle],
-    [containerAnimatedStyle]
+    [containerAnimatedStyle],
   );
 
   const combinedAnimatedStyle = useAnimatedStyle(() => {
@@ -142,13 +142,13 @@ const CustomHeader = ({ sheetIndex, close, scrolledY }: Props) => {
       animatedIndex.value,
       [0, 1],
       [1, 0],
-      Extrapolation.CLAMP
+      Extrapolation.CLAMP,
     );
     const opacityScroll = interpolate(
       scrolledValue.value,
       [0, 100],
       [0, 1],
-      Extrapolation.CLAMP
+      Extrapolation.CLAMP,
     );
     // Blend the two animations into one style
     return {
@@ -206,7 +206,6 @@ const makeStyles = (theme: ThemeColors) =>
     headerTitle: {
       fontWeight: "bold",
       fontSize: 16,
-      textOverflow: "ellipsis",
       color: theme.textColor,
     },
     headerTitleTime: {

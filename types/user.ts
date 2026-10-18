@@ -24,4 +24,7 @@ export type UserProfile = {
   profile_picture: string | null;
   age: number | null;
   height: number | null;
+  weight: number | null;
 };
+
+export type User = UserProfile;

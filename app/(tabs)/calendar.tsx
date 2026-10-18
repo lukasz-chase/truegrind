@@ -30,48 +30,53 @@ export default function CalendarScreen() {
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth() + 1);
   const [loading, setLoading] = useState(true);
   const [filteredWorkoutId, setFilteredWorkoutId] = useState<string | null>(
-    null
+    null,
   );
 
   const { theme } = useThemeStore((state) => state);
   const styles = useMemo(() => makeStyles(theme), [theme]);
   const { activeSplit } = useSplitsStore();
   const { user } = userStore();
-
-  useEffect(() => {
-    getWorkoutCalendarData();
-  }, [currentMonth]);
-
-  useEffect(() => {
-    setMissedWorkouts();
-  }, []);
-
-  const getWorkoutCalendarData = async () => {
-    try {
-      setLoading(true);
-      const data = await fetchUserWorkoutCalendar(user!.id, currentMonth);
-      setWorkoutCalendarData(data);
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-  const setMissedWorkouts = async () => {
-    try {
-      const data = await updateMissedWorkouts(user!.id);
-      if (data) getWorkoutCalendarData();
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   const router = useRouter();
+  const userId = user?.id;
 
-  if (!activeSplit) {
-    router.push("/splits");
-    return;
-  }
+  useEffect(() => {
+    if (!userId) {
+      setWorkoutCalendarData([]);
+      setLoading(false);
+      return;
+    }
+
+    let isActive = true;
+    const loadCalendar = async () => {
+      try {
+        setLoading(true);
+        await updateMissedWorkouts(userId);
+        const data = await fetchUserWorkoutCalendar(userId, currentMonth);
+        if (isActive) {
+          setWorkoutCalendarData(data);
+        }
+      } catch (error) {
+        console.error("Unable to load workout calendar:", error);
+      } finally {
+        if (isActive) {
+          setLoading(false);
+        }
+      }
+    };
+
+    void loadCalendar();
+
+    return () => {
+      isActive = false;
+    };
+  }, [currentMonth, userId]);
+
+  useEffect(() => {
+    if (!activeSplit) {
+      router.replace("/splits");
+    }
+  }, [activeSplit, router]);
 
   const onDayPressHandler = (day: any) => {
     const workout = workoutCalendarData.find((workout) => {
@@ -99,13 +104,18 @@ export default function CalendarScreen() {
   const filteredCalendarData = useMemo(() => {
     if (!filteredWorkoutId) return workoutCalendarData;
     return workoutCalendarData.filter(
-      (w) => w.workout_id === filteredWorkoutId
+      (w) => w.workout_id === filteredWorkoutId,
     );
   }, [workoutCalendarData, filteredWorkoutId]);
+
+  if (!activeSplit) {
+    return null;
+  }
+
   const getUniqueCalendarData = () => {
     return workoutCalendarData.filter(
       (item, index, self) =>
-        index === self.findIndex((t) => t.workout_id === item.workout_id)
+        index === self.findIndex((t) => t.workout_id === item.workout_id),
     );
   };
 

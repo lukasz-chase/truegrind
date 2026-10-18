@@ -86,7 +86,7 @@ const WorkoutBottomSheet = ({ animatedIndex }: Props) => {
     setDragItemId(null);
   };
   return (
-    <View style={styles.overlay}>
+    <View style={styles.overlay} pointerEvents="box-none">
       <BottomSheet
         onClose={handleClosePress}
         ref={sheetRef}

@@ -6,7 +6,7 @@ import CustomTabBar from "@/components/CustomTabBar";
 import WorkoutBottomSheet from "@/components/BottomSheet/WorkoutBottomSheet";
 import { useSharedValue } from "react-native-reanimated";
 import useBottomSheet from "@/store/useBottomSheet";
-import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 import ExerciseOptionsModal from "@/components/Modals/ExerciseOptionsModal";
 import WorkoutExercisesModal from "@/components/Modals/WorkoutExercisesModal";
 import TimerModal from "@/components/Modals/TimerModal";
@@ -36,8 +36,30 @@ export default function TabLayout() {
   const router = useRouter();
 
   useEffect(() => {
-    getUserActiveSplit();
-  }, [user, refetchWorkouts]);
+    const userId = user?.id;
+    const splitId = user?.active_split_id;
+    if (!userId || !splitId) {
+      setActiveSplit(null);
+      setLoading(false);
+      return;
+    }
+
+    const getUserActiveSplit = async () => {
+      setLoading(true);
+      try {
+        const data = await fetchUserSplitWithWorkouts(userId, splitId);
+        if (data) {
+          setActiveSplit(data);
+        }
+      } catch (error) {
+        console.error("Unable to load active split:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    void getUserActiveSplit();
+  }, [user, refetchWorkouts, setActiveSplit, setLoading]);
 
   useEffect(() => {
     if (user) {
@@ -46,25 +68,7 @@ export default function TabLayout() {
         router.replace("/splits");
       }
     }
-  }, [user]);
-
-  const getUserActiveSplit = async () => {
-    if (!user) return;
-    setLoading(true);
-    try {
-      const data = await fetchUserSplitWithWorkouts(
-        user.id,
-        user.active_split_id!
-      );
-      if (data) {
-        setActiveSplit(data);
-      }
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [router, user]);
   return (
     <GestureHandlerRootView>
       <SafeAreaProvider>
@@ -87,7 +91,11 @@ export default function TabLayout() {
           }}
           initialRouteName="index"
           tabBar={(props) => (
-            <CustomTabBar {...props} animatedIndex={animatedIndex} />
+            <CustomTabBar
+              {...props}
+              animatedIndex={animatedIndex}
+              isSheetVisible={isSheetVisible}
+            />
           )}
         >
           {NAVIGATION_DATA.map(({ name, icon, focusedIcon, title }) => (

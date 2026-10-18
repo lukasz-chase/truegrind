@@ -31,7 +31,7 @@ const Integrations = () => {
       responseType: AuthSession.ResponseType.Code,
       redirectUri,
     },
-    discovery
+    discovery,
   );
 
   useEffect(() => {
@@ -103,7 +103,7 @@ const Integrations = () => {
     if (isConnected) {
       await handleDisconnect();
     } else {
-      promptAsync({ useProxy: true });
+      promptAsync();
     }
   };
 
@@ -124,8 +124,8 @@ const Integrations = () => {
             {loading
               ? "Loading..."
               : isConnected
-              ? "Disconnect from Strava"
-              : "Connect with Strava"}
+                ? "Disconnect from Strava"
+                : "Connect with Strava"}
           </Text>
         </Pressable>
       </View>

@@ -6,12 +6,12 @@ import userStore from "@/store/userStore";
 
 export const fetchUserFoldersWithWorkouts = async (
   userId: string,
-  splitId: string
+  splitId: string,
 ) => {
   const { data, error } = await supabase
     .from("folders")
     .select(
-      `*, workouts(*, workout_exercises(*, exercises(*), exercise_sets(*)))`
+      `*, workouts(*, workout_exercises(*, exercises(*), exercise_sets(*)))`,
     )
     .eq("split_id", splitId)
     .eq("user_id", userId)
@@ -36,7 +36,7 @@ export const createFolder = async (folderData: Partial<WorkoutsFolder>) => {
            exercises(*), 
            exercise_sets(*)
          )
-       )`
+       )`,
     )
     .single();
 
@@ -74,20 +74,18 @@ export const getInitialFolderId = async (userId: string, splitId: string) => {
   }
 };
 export const updateFoldersBulk = async (
-  foldersToUpdate: WorkoutsFolderPopulated[]
+  foldersToUpdate: WorkoutsFolderPopulated[],
 ) => {
-  try {
-    const foldersToUpdateNotPopulated = foldersToUpdate.map((folder) => {
-      const { workouts, ...folderNotPopulated } = folder;
-      return folderNotPopulated;
-    });
-    const { error } = await supabase
-      .from("folders")
-      .upsert(foldersToUpdateNotPopulated);
+  const foldersToUpdateNotPopulated = foldersToUpdate.map((folder) => {
+    const { workouts, ...folderNotPopulated } = folder;
+    return folderNotPopulated;
+  });
+  const { error } = await supabase
+    .from("folders")
+    .upsert(foldersToUpdateNotPopulated);
 
-    if (error) console.error("Supabase error:", error);
-  } catch (error) {
-    console.error("Unexpected error:", error);
+  if (error) {
+    throw error;
   }
 };
 export const updateFolder = async (folderToUpdate: Partial<WorkoutsFolder>) => {
@@ -105,7 +103,7 @@ export const updateFolder = async (folderToUpdate: Partial<WorkoutsFolder>) => {
 export const deleteFolder = async (
   folderId: string,
   folders: WorkoutsFolderPopulated[],
-  removeFolder: (folderId: string) => void
+  removeFolder: (folderId: string) => void,
 ) => {
   //at least one folder
   if (folders.length <= 1) return { error: "Cannot delete last folder" };
@@ -113,33 +111,50 @@ export const deleteFolder = async (
   const folder = folders.find((folder) => folder.id === folderId);
   if (!folder) return { error: "Folder not found" };
 
-  const doesInitialFolderExist = folders.find(
-    (folder) => folder.name === INITIAL_FOLDER_NAME
-  );
-  if (folder.workouts && folder.workouts.length > 0) {
-    let initialFolderId: string;
-    if (doesInitialFolderExist) {
-      initialFolderId = doesInitialFolderExist.id;
-    } else {
-      //if there is no initial folder create it
+  try {
+    const existingInitialFolder = folders.find(
+      (folder) => folder.name === INITIAL_FOLDER_NAME,
+    );
+    let initialFolderId = existingInitialFolder?.id;
+
+    if (folder.workouts.length > 0 && !initialFolderId) {
       const user = userStore.getState().user;
+      if (!user?.id || !user.active_split_id) {
+        return { error: "Unable to find the active user split" };
+      }
+
       const initialFolder = await createFolder({
         name: INITIAL_FOLDER_NAME,
-        split_id: user?.active_split_id!,
-        user_id: user?.id!,
+        split_id: user.active_split_id,
+        user_id: user.id,
         order: null,
       });
-      if (initialFolder) {
-        initialFolderId = initialFolder.id;
+      initialFolderId = initialFolder?.id;
+
+      if (!initialFolderId) {
+        return { error: "Unable to create a folder for the workouts" };
       }
     }
-    //update workouts folder_id
-    const updatedWorkouts = folder.workouts.map((workout) => ({
-      ...workout,
-      folder_id: initialFolderId,
-    }));
-    await updateWorkoutsBulk(updatedWorkouts);
+
+    if (folder.workouts.length > 0 && initialFolderId) {
+      const updatedWorkouts = folder.workouts.map((workout) => ({
+        ...workout,
+        folder_id: initialFolderId,
+      }));
+      await updateWorkoutsBulk(updatedWorkouts);
+    }
+
+    const { error } = await supabase
+      .from("folders")
+      .delete()
+      .eq("id", folderId);
+    if (error) {
+      throw error;
+    }
+
+    removeFolder(folderId);
+  } catch (error) {
+    console.error("Unable to delete folder:", error);
+    return { error: "Unable to delete the folder. Please try again." };
   }
-  removeFolder(folderId);
-  await supabase.from("folders").delete().eq("id", folderId);
 };

@@ -8,7 +8,7 @@ type Store = {
   removeSplit: (splitId: string) => void;
   addSplit: (split: Split) => void;
   activeSplit: SplitPopulated | null;
-  setActiveSplit: (split: SplitPopulated) => void;
+  setActiveSplit: (split: SplitPopulated | null) => void;
   loading: boolean;
   setLoading: (loading: boolean) => void;
   reorderWorkouts: (newOrder: Workout[]) => void;
@@ -34,7 +34,7 @@ const useSplitsStore = create<Store>((set) => ({
               ...split,
               workouts: newOrder,
             }
-          : split
+          : split,
       ),
       activeSplit: state.activeSplit
         ? {

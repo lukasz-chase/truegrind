@@ -11,9 +11,9 @@ import WorkoutHistorySkeleton from "@/components/Skeletons/WorkoutHistorySkeleto
 import useThemeStore from "@/store/useThemeStore";
 import { ThemeColors } from "@/types/user";
 
-export default function workoutHistory() {
+export default function WorkoutHistoryScreen() {
   const [workoutHistory, setWorkoutHistory] = useState<WorkoutHistory | null>(
-    null
+    null,
   );
   const [loading, setLoading] = useState(false);
   const { id } = useLocalSearchParams();

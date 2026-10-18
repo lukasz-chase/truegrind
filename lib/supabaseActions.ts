@@ -1,7 +1,7 @@
 import { Alert } from "react-native";
 import { supabase } from "./supabase";
 import { decode } from "base64-arraybuffer";
-import * as FileSystem from "expo-file-system";
+import * as FileSystem from "expo-file-system/legacy";
 import * as Sharing from "expo-sharing";
 
 const getSignedUrl = async (bucketName: string, filePath: string) => {
@@ -18,7 +18,7 @@ const getSignedUrl = async (bucketName: string, filePath: string) => {
 export const uploadImageToBucket = async (
   imageBase64: string,
   filePath: string,
-  bucketName: string
+  bucketName: string,
 ) => {
   try {
     const { data, error } = await supabase.storage
@@ -44,7 +44,7 @@ export const uploadImageToBucket = async (
 };
 export const deleteImageFromBucket = async (
   filePath: string,
-  bucketName: string
+  bucketName: string,
 ) => {
   try {
     const { error } = await supabase.storage
@@ -68,14 +68,14 @@ export const exportData = async (userId: string) => {
         exercises(*),
         exercise_sets:sets_history(*)
       )
-    `
+    `,
       )
       .eq("user_id", userId);
     if (error) {
       console.log(error);
       Alert.alert(
         "Export Error",
-        "There was a problem exporting your data. Please try again."
+        "There was a problem exporting your data. Please try again.",
       );
       return;
     }
@@ -83,7 +83,11 @@ export const exportData = async (userId: string) => {
       const jsonString = JSON.stringify(data, null, 2);
 
       const fileName = `workout_history_${userId}.json`;
-      const fileUri = FileSystem.documentDirectory + fileName;
+      const documentDirectory = FileSystem.documentDirectory;
+      if (!documentDirectory) {
+        throw new Error("Document directory is unavailable");
+      }
+      const fileUri = documentDirectory + fileName;
 
       await FileSystem.writeAsStringAsync(fileUri, jsonString, {
         encoding: FileSystem.EncodingType.UTF8,
@@ -104,7 +108,7 @@ export const exportData = async (userId: string) => {
     console.error("Export failed", error);
     Alert.alert(
       "Export Error",
-      "There was a problem exporting your data. Please try again."
+      "There was a problem exporting your data. Please try again.",
     );
   }
 };

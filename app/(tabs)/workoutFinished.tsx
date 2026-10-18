@@ -1,12 +1,11 @@
-import { Platform, StyleSheet, Text } from "react-native";
+import { Alert, Platform, StyleSheet, Text } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import CustomImage from "@/components/CustomImage";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 
 import useActiveWorkout from "@/store/useActiveWorkout";
 import WorkoutSummary from "@/components/WorkoutSummary";
 import { useFocusEffect } from "expo-router";
-import uuid from "react-native-uuid";
 import useAppStore from "@/store/useAppStore";
 import useTimerStore from "@/store/useTimer";
 import useWorkoutTimer from "@/store/useWorkoutTimer";
@@ -19,7 +18,6 @@ import { getOrdinalSuffix } from "@/utils/calendar";
 import { ThemeColors } from "@/types/user";
 import { estimateCaloriesBurned } from "@/utils/calories";
 import useThemeStore from "@/store/useThemeStore";
-import { supabase } from "@/lib/supabase";
 import { useShallow } from "zustand/shallow";
 import { finishWorkout } from "@/lib/finishWorkoutService";
 
@@ -28,6 +26,7 @@ const TrophyImage = require("@/assets/images/trophy.webp");
 export default function WorkoutFinishedScreen() {
   const [workoutsCount, setWorkoutsCount] = useState(0);
   const [caloriesBurned, setCaloriesBurned] = useState(0);
+  const isSavingRef = useRef(false);
 
   const {
     activeWorkout,
@@ -44,7 +43,7 @@ export default function WorkoutFinishedScreen() {
       isNewWorkout: state.isNewWorkout,
       resetActiveWorkout: state.resetActiveWorkout,
       setPersistedStorage: state.setPersistedStorage,
-    }))
+    })),
   );
   const setRefetchWorkouts = useAppStore((state) => state.setRefetchWorkouts);
   const endTimer = useTimerStore((state) => state.endTimer);
@@ -52,7 +51,7 @@ export default function WorkoutFinishedScreen() {
     useShallow((state) => ({
       resetTimer: state.resetTimer,
       formattedTime: state.formattedTime,
-    }))
+    })),
   );
   const openModal = useActionModal((state) => state.openModal);
   const user = userStore((state) => state.user);
@@ -71,7 +70,7 @@ export default function WorkoutFinishedScreen() {
         const filteredWorkout = {
           ...activeWorkout,
           workout_exercises: activeWorkout.workout_exercises?.filter(
-            (workoutExercise) => workoutExercise.exercise_sets.length > 0
+            (workoutExercise) => workoutExercise.exercise_sets.length > 0,
           ),
         };
         setWorkout({
@@ -112,7 +111,7 @@ export default function WorkoutFinishedScreen() {
         // Do something when the screen is unfocused
         // Useful for cleanup functions
       };
-    }, [activeWorkout, initialActiveWorkout])
+    }, [activeWorkout, initialActiveWorkout]),
   );
 
   const haveExercisesChanged = () => {
@@ -122,12 +121,12 @@ export default function WorkoutFinishedScreen() {
     const removedExercises = initialExercises.some((workoutExercise) => {
       return !activeExercises.find(
         (activeWorkoutExercise) =>
-          activeWorkoutExercise.id === workoutExercise.id
+          activeWorkoutExercise.id === workoutExercise.id,
       );
     });
     const addedExercises = activeExercises.some((activeWorkoutExercise) => {
       return !initialExercises.find(
-        (workoutExercise) => workoutExercise.id === activeWorkoutExercise.id
+        (workoutExercise) => workoutExercise.id === activeWorkoutExercise.id,
       );
     });
 
@@ -141,9 +140,10 @@ export default function WorkoutFinishedScreen() {
   };
 
   const saveWorkout = async (updateTemplate: boolean) => {
-    if (!workoutWasUpdated) return;
+    if (!workoutWasUpdated || isSavingRef.current) return;
+    isSavingRef.current = true;
+
     try {
-      //positively update
       setWorkoutsCount((prev) => prev + 1);
 
       await finishWorkout({
@@ -168,9 +168,18 @@ export default function WorkoutFinishedScreen() {
       }
     } catch (error) {
       console.error("Error finishing workout:", error);
-      //if failed undo positive update
       setWorkoutsCount((prev) => prev - 1);
-      throw error;
+      Alert.alert("Workout not saved", "Check your connection and try again.", [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Retry",
+          onPress: () => {
+            void saveWorkout(updateTemplate);
+          },
+        },
+      ]);
+    } finally {
+      isSavingRef.current = false;
     }
   };
 

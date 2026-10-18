@@ -15,13 +15,13 @@ type Store = {
   addFolder: (folder: WorkoutsFolderPopulated) => void;
   updateFolder: (
     folderId: string,
-    propertiestoUpdate: Partial<WorkoutsFolderPopulated>
+    propertiestoUpdate: Partial<WorkoutsFolderPopulated>,
   ) => void;
   removeFolder: (folderId: string) => void;
   reorderWorkouts: (folderId: string, newOrderIds: string[]) => Promise<void>;
   moveWorkoutToFolder: (
     workoutId: string,
-    targetFolderId: string
+    targetFolderId: string,
   ) => Promise<void>;
   toggleFolderCollapse: (folderId: string) => void;
   addWorkoutToFolder: (folderId: string, workout: Workout) => void;
@@ -50,7 +50,7 @@ const useFoldersStore = create<Store>()(
           folders: state.folders.map((folder) =>
             folder.id === folderId
               ? { ...folder, ...propertiestoUpdate }
-              : folder
+              : folder,
           ),
         })),
       reorderWorkouts: async (folderId, newOrderIds) => {
@@ -58,7 +58,7 @@ const useFoldersStore = create<Store>()(
         const folder = folders.find((f) => f.id === folderId);
         if (!folder) return;
 
-        const lookup: Record<string, any> = {};
+        const lookup: Record<string, Workout> = {};
         folder.workouts.forEach((w) => (lookup[w.id] = w));
 
         const updated = newOrderIds.map((id, idx) => ({
@@ -66,10 +66,11 @@ const useFoldersStore = create<Store>()(
           order: idx + 1,
         }));
 
-        // Optimistic update
+        if (updated.length !== folder.workouts.length) return;
+
         set({
           folders: folders.map((f) =>
-            f.id === folderId ? { ...f, workouts: updated } : f
+            f.id === folderId ? { ...f, workouts: updated } : f,
           ),
         });
 
@@ -77,46 +78,54 @@ const useFoldersStore = create<Store>()(
           await updateWorkoutsBulk(updated);
         } catch (err) {
           console.error("Reorder failed", err);
-          // TODO: optionally revert on failure
+          set((state) => ({
+            folders: state.folders.map((currentFolder) =>
+              currentFolder.id === folderId
+                ? { ...currentFolder, workouts: folder.workouts }
+                : currentFolder,
+            ),
+          }));
         }
       },
 
       moveWorkoutToFolder: async (workoutId, targetFolderId) => {
         const { folders } = get();
-        let dragged: any;
-        const updatedFolders = folders.map((f) => {
-          if (f.workouts.some((w) => w.id === workoutId)) {
-            // remove from source
-            dragged = f.workouts.find((w) => w.id === workoutId)!;
-            return {
-              ...f,
-              workouts: f.workouts.filter((w) => w.id !== workoutId),
-            };
-          }
-          return f;
-        });
-        if (!dragged) return;
+        const sourceFolder = folders.find((folder) =>
+          folder.workouts.some((workout) => workout.id === workoutId),
+        );
+        const targetFolder = folders.find(
+          (folder) => folder.id === targetFolderId,
+        );
+        const draggedWorkout = sourceFolder?.workouts.find(
+          (workout) => workout.id === workoutId,
+        );
+        if (!sourceFolder || !targetFolder || !draggedWorkout) return;
+        if (sourceFolder.id === targetFolder.id) return;
 
-        const target = updatedFolders.find((f) => f.id === targetFolderId);
-        if (!target) return;
+        const sourceWorkouts = sourceFolder.workouts
+          .filter((workout) => workout.id !== workoutId)
+          .map((workout, index) => ({ ...workout, order: index + 1 }));
 
         const moved = {
-          ...dragged,
+          ...draggedWorkout,
           folder_id: targetFolderId,
-          order: target.workouts.length + 1,
+          order: targetFolder.workouts.length + 1,
         };
-        const final = updatedFolders.map((f) =>
-          f.id === targetFolderId
-            ? { ...f, workouts: [...f.workouts, moved] }
-            : f
+        const final = folders.map((folder) =>
+          folder.id === sourceFolder.id
+            ? { ...folder, workouts: sourceWorkouts }
+            : folder.id === targetFolderId
+              ? { ...folder, workouts: [...folder.workouts, moved] }
+              : folder,
         );
 
         set({ folders: final });
 
         try {
-          await updateWorkoutsBulk([moved]);
+          await updateWorkoutsBulk([...sourceWorkouts, moved]);
         } catch (err) {
           console.error("Move failed", err);
+          set({ folders });
         }
       },
       toggleFolderCollapse: (folderId) => {
@@ -133,7 +142,7 @@ const useFoldersStore = create<Store>()(
         const updated = [...folder.workouts, workout];
         set({
           folders: folders.map((f) =>
-            f.id === folderId ? { ...f, workouts: updated } : f
+            f.id === folderId ? { ...f, workouts: updated } : f,
           ),
         });
       },
@@ -144,30 +153,26 @@ const useFoldersStore = create<Store>()(
         const updated = folder.workouts.filter((w) => w.id !== workoutId);
         set({
           folders: folders.map((f) =>
-            f.id === folderId ? { ...f, workouts: updated } : f
+            f.id === folderId ? { ...f, workouts: updated } : f,
           ),
         });
       },
       reorderFolders: async (newOrder) => {
-        let updatedFolders: WorkoutsFolderPopulated[] = [];
-        set((state) => {
-          const currentFolders = state.folders;
-          updatedFolders = newOrder.map((id, index) => {
-            const folder = currentFolders.find((folder) => folder.id === id);
-            if (!folder) return currentFolders[index];
-            return {
-              ...folder,
-              order: index + 1,
-            };
-          });
-          return {
-            folders: updatedFolders,
-          };
+        const { folders } = get();
+        const updatedFolders = newOrder.map((id, index) => {
+          const folder = folders.find((folder) => folder.id === id);
+          return folder ? { ...folder, order: index + 1 } : null;
         });
+        if (updatedFolders.some((folder) => folder === null)) return;
+
+        const orderedFolders = updatedFolders as WorkoutsFolderPopulated[];
+        set({ folders: orderedFolders });
+
         try {
-          await updateFoldersBulk(updatedFolders);
+          await updateFoldersBulk(orderedFolders);
         } catch (error) {
-          console.log(error);
+          console.error("Reorder failed", error);
+          set({ folders });
         }
       },
     }),
@@ -177,8 +182,8 @@ const useFoldersStore = create<Store>()(
       partialize: (state) => ({
         collapsedFolders: state.collapsedFolders,
       }),
-    }
-  )
+    },
+  ),
 );
 
 export default useFoldersStore;

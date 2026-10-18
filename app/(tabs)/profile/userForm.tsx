@@ -22,6 +22,7 @@ interface ProfileFormData {
   username: string;
   age: number;
   height: number;
+  weight: number;
   current_goal: CurrentGoal;
 }
 
@@ -32,6 +33,7 @@ export default function UserForm() {
     username: user?.username || "",
     age: user?.age || 0,
     height: user?.height || 0,
+    weight: user?.weight || 0,
     current_goal: user?.current_goal || {
       name: BodyPartLabel.CHEST,
       value: 0,
@@ -49,9 +51,9 @@ export default function UserForm() {
   const styles = useMemo(() => makeStyles(theme), [theme]);
   const handleChange = <K extends keyof Omit<ProfileFormData, "goal">>(
     field: K,
-    value: string | number
+    value: string | number,
   ) => {
-    setFormData((prev) => ({ ...prev, [field]: value } as any));
+    setFormData((prev) => ({ ...prev, [field]: value }) as any);
   };
 
   const handleGoalChange = (field: keyof CurrentGoal, value: string) => {
@@ -84,7 +86,7 @@ export default function UserForm() {
     try {
       if (formData.current_goal.name) {
         const goalUnit = measurements.find(
-          (m) => m.value === formData.current_goal.name
+          (m) => m.value === formData.current_goal.name,
         );
         handleGoalChange("unit", goalUnit ? goalUnit.unit : "cm");
       }
@@ -152,6 +154,16 @@ export default function UserForm() {
             placeholder="Height (cm)"
             value={`${formData.height}`}
             onChangeText={(text) => handleChange("height", Number(text))}
+            keyboardType="numeric"
+          />
+        </View>
+
+        <View style={styles.field}>
+          <Text style={styles.label}>Weight (kg)</Text>
+          <CustomTextInput
+            placeholder="Weight (kg)"
+            value={`${formData.weight}`}
+            onChangeText={(text) => handleChange("weight", Number(text))}
             keyboardType="numeric"
           />
         </View>
