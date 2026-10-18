@@ -8,7 +8,7 @@ import CustomBackdrop from "./CustomBackdrop";
 import CustomHeader from "./CustomHeader";
 import CustomFooter from "./CustomFooter";
 import useBottomSheet from "@/store/useBottomSheet";
-import { SharedValue } from "react-native-reanimated";
+import { SharedValue, useSharedValue } from "react-native-reanimated";
 import useActiveWorkout from "@/store/useActiveWorkout";
 import WorkoutDetails from "./WorkoutDetails";
 import CustomKeyboard from "../Keyboard/CustomKeyboard";
@@ -27,7 +27,11 @@ type Props = {
 
 const WorkoutBottomSheet = ({ animatedIndex }: Props) => {
   const [sheetIndex, setSheetIndex] = useState(-1);
-  const initialPositionHandled = useRef(false);
+  const [containerHeight, setContainerHeight] = useState(0);
+  const containerLayoutState = useSharedValue({
+    height: 0,
+    offset: { top: 0, bottom: 0, left: 0, right: 0 },
+  });
   const [scrolledY, setScrolledY] = useState(0);
   const [dragItemId, setDragItemId] = useState<string | null>(null);
 
@@ -70,18 +74,6 @@ const WorkoutBottomSheet = ({ animatedIndex }: Props) => {
 
   const snapPoints = useMemo(() => [130, "90%"], []);
 
-  useEffect(() => {
-    if (initialPositionHandled.current || sheetIndex < 0) return;
-    initialPositionHandled.current = true;
-
-    // Native layout can settle at the collapsed detent during mounting. Wait
-    // for its first completed position before requesting the expanded detent.
-    if (sheetIndex === 0) {
-      if (__DEV__) console.info("[WorkoutSheet] expanding after initial layout");
-      sheetRef.current?.expand();
-    }
-  }, [sheetIndex]);
-
   const handleClosePress = useCallback(() => {
     if (__DEV__) console.info("[WorkoutSheet] close");
     closeKeyboard();
@@ -110,6 +102,13 @@ const WorkoutBottomSheet = ({ animatedIndex }: Props) => {
       style={styles.overlay}
       pointerEvents="box-none"
       onLayout={({ nativeEvent: { layout } }) => {
+        if (layout.height > 0) {
+          containerLayoutState.set({
+            height: layout.height,
+            offset: { top: 0, bottom: 0, left: 0, right: 0 },
+          });
+          setContainerHeight(layout.height);
+        }
         if (__DEV__) {
           console.info("[WorkoutSheet] layout", {
             width: layout.width,
@@ -118,10 +117,12 @@ const WorkoutBottomSheet = ({ animatedIndex }: Props) => {
         }
       }}
     >
-      <BottomSheet
+      {containerHeight > 0 && <BottomSheet
         onClose={handleClosePress}
         ref={sheetRef}
         snapPoints={snapPoints}
+        containerLayoutState={containerLayoutState}
+        containerStyle={{ height: containerHeight, width: "100%" }}
         enableDynamicSizing={false}
         animateOnMount={true}
         index={1}
@@ -193,7 +194,7 @@ const WorkoutBottomSheet = ({ animatedIndex }: Props) => {
             <CustomFooter close={handleClosePress} theme={theme} />
           </BottomSheetScrollView>
         </Pressable>
-      </BottomSheet>
+      </BottomSheet>}
       <CustomKeyboard animatedIndex={animatedIndex} />
     </View>
   );
