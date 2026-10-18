@@ -26,7 +26,8 @@ type Props = {
 };
 
 const WorkoutBottomSheet = ({ animatedIndex }: Props) => {
-  const [sheetIndex, setSheetIndex] = useState(1);
+  const [sheetIndex, setSheetIndex] = useState(-1);
+  const initialPositionHandled = useRef(false);
   const [scrolledY, setScrolledY] = useState(0);
   const [dragItemId, setDragItemId] = useState<string | null>(null);
 
@@ -68,6 +69,18 @@ const WorkoutBottomSheet = ({ animatedIndex }: Props) => {
   }, [setBottomSheetScrollViewRef]);
 
   const snapPoints = useMemo(() => [130, "90%"], []);
+
+  useEffect(() => {
+    if (initialPositionHandled.current || sheetIndex < 0) return;
+    initialPositionHandled.current = true;
+
+    // Native layout can settle at the collapsed detent during mounting. Wait
+    // for its first completed position before requesting the expanded detent.
+    if (sheetIndex === 0) {
+      if (__DEV__) console.info("[WorkoutSheet] expanding after initial layout");
+      sheetRef.current?.expand();
+    }
+  }, [sheetIndex]);
 
   const handleClosePress = useCallback(() => {
     if (__DEV__) console.info("[WorkoutSheet] close");
@@ -116,6 +129,13 @@ const WorkoutBottomSheet = ({ animatedIndex }: Props) => {
         animatedIndex={animatedIndex}
         enableOverDrag={false}
         onChange={handleSheetChanges}
+        onAnimate={(fromIndex, toIndex, fromPosition, toPosition) => {
+          if (__DEV__) {
+            console.info("[WorkoutSheet] animation", {
+              fromIndex, toIndex, fromPosition, toPosition,
+            });
+          }
+        }}
         style={styles.sheetShadow}
         handleComponent={() => <CustomHandle theme={theme} />}
       >
@@ -184,6 +204,7 @@ const makeStyles = (theme: ThemeColors) =>
     overlay: {
       ...StyleSheet.absoluteFill,
       justifyContent: "flex-end",
+      zIndex: 10,
     },
     sheetShadow: {
       borderWidth: 0,
