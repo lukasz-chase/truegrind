@@ -62,12 +62,7 @@ const WorkoutBottomSheet = ({ animatedIndex }: Props) => {
   const { theme } = useThemeStore((state) => state);
 
   const styles = useMemo(() => makeStyles(theme), [theme]);
-  useEffect(() => {
-    if (__DEV__) console.info("[WorkoutSheet] mounted");
-    return () => {
-      if (__DEV__) console.info("[WorkoutSheet] unmounted");
-    };
-  }, []);
+
   useEffect(() => {
     setBottomSheetScrollViewRef(scrollViewRef);
   }, [setBottomSheetScrollViewRef]);
@@ -75,18 +70,19 @@ const WorkoutBottomSheet = ({ animatedIndex }: Props) => {
   const snapPoints = useMemo(() => [130, "90%"], []);
 
   const handleClosePress = useCallback(() => {
-    if (__DEV__) console.info("[WorkoutSheet] close");
     closeKeyboard();
     setIsSheetVisible(false);
     sheetRef.current?.close();
     animatedIndex.value = 0;
   }, [animatedIndex, closeKeyboard, setIsSheetVisible]);
 
-  const handleSheetChanges = useCallback((index: number) => {
-    if (__DEV__) console.info("[WorkoutSheet] index", index);
-    closeKeyboard();
-    setSheetIndex(index);
-  }, [closeKeyboard]);
+  const handleSheetChanges = useCallback(
+    (index: number) => {
+      closeKeyboard();
+      setSheetIndex(index);
+    },
+    [closeKeyboard],
+  );
 
   const handleScroll = (event: any) => {
     const scrollY = event.nativeEvent.contentOffset.y;
@@ -109,92 +105,81 @@ const WorkoutBottomSheet = ({ animatedIndex }: Props) => {
           });
           setContainerHeight(layout.height);
         }
-        if (__DEV__) {
-          console.info("[WorkoutSheet] layout", {
-            width: layout.width,
-            height: layout.height,
-          });
-        }
       }}
     >
-      {containerHeight > 0 && <BottomSheet
-        onClose={handleClosePress}
-        ref={sheetRef}
-        snapPoints={snapPoints}
-        containerLayoutState={containerLayoutState}
-        containerStyle={{ height: containerHeight, width: "100%" }}
-        enableDynamicSizing={false}
-        animateOnMount={true}
-        index={1}
-        backdropComponent={CustomBackdrop}
-        animatedIndex={animatedIndex}
-        enableOverDrag={false}
-        onChange={handleSheetChanges}
-        onAnimate={(fromIndex, toIndex, fromPosition, toPosition) => {
-          if (__DEV__) {
-            console.info("[WorkoutSheet] animation", {
-              fromIndex, toIndex, fromPosition, toPosition,
-            });
-          }
-        }}
-        style={styles.sheetShadow}
-        handleComponent={() => <CustomHandle theme={theme} />}
-      >
-        <Pressable style={styles.container} onPress={closeKeyboard}>
-          <CustomHeader
-            sheetIndex={sheetIndex}
-            close={handleClosePress}
-            scrolledY={scrolledY}
-          />
-          <BottomSheetScrollView ref={scrollViewRef} onScroll={handleScroll}>
-            <WorkoutDetails
-              workout={activeWorkout}
-              updateWorkoutField={updateWorkoutField}
+      {containerHeight > 0 && (
+        <BottomSheet
+          onClose={handleClosePress}
+          ref={sheetRef}
+          snapPoints={snapPoints}
+          containerLayoutState={containerLayoutState}
+          containerStyle={{ height: containerHeight, width: "100%" }}
+          enableDynamicSizing={false}
+          animateOnMount={true}
+          index={1}
+          backdropComponent={CustomBackdrop}
+          animatedIndex={animatedIndex}
+          enableOverDrag={false}
+          onChange={handleSheetChanges}
+          style={styles.sheetShadow}
+          handleComponent={() => <CustomHandle theme={theme} />}
+        >
+          <Pressable style={styles.container} onPress={closeKeyboard}>
+            <CustomHeader
+              sheetIndex={sheetIndex}
+              close={handleClosePress}
+              scrolledY={scrolledY}
             />
-            {dragItemId && (
-              <DraggableList
-                data={
-                  activeWorkout?.workout_exercises
-                    ?.sort((a, b) => a.order - b.order)
-                    .map((exercise) => ({
-                      id: exercise.id,
-                      name: exercise.exercises.name,
-                    })) ?? []
-                }
-                onReorder={handleReorder}
-                dragItemId={dragItemId}
+            <BottomSheetScrollView ref={scrollViewRef} onScroll={handleScroll}>
+              <WorkoutDetails
+                workout={activeWorkout}
+                updateWorkoutField={updateWorkoutField}
               />
-            )}
-
-            {activeWorkout?.workout_exercises
-              ?.sort((a, b) => a.order - b.order)
-              .map((workoutExercise) => (
-                <WorkoutExerciseWrapper
+              {dragItemId && (
+                <DraggableList
+                  data={
+                    activeWorkout?.workout_exercises
+                      ?.sort((a, b) => a.order - b.order)
+                      .map((exercise) => ({
+                        id: exercise.id,
+                        name: exercise.exercises.name,
+                      })) ?? []
+                  }
+                  onReorder={handleReorder}
                   dragItemId={dragItemId}
-                  key={workoutExercise.id}
-                >
-                  {workoutExercise.superset && (
-                    <View
-                      style={[
-                        styles.supersetIndicator,
-                        { backgroundColor: workoutExercise.superset },
-                      ]}
+                />
+              )}
+
+              {activeWorkout?.workout_exercises
+                ?.sort((a, b) => a.order - b.order)
+                .map((workoutExercise) => (
+                  <WorkoutExerciseWrapper
+                    dragItemId={dragItemId}
+                    key={workoutExercise.id}
+                  >
+                    {workoutExercise.superset && (
+                      <View
+                        style={[
+                          styles.supersetIndicator,
+                          { backgroundColor: workoutExercise.superset },
+                        ]}
+                      />
+                    )}
+                    <WorkoutExercise
+                      workoutExercise={workoutExercise}
+                      setDragItemId={setDragItemId}
+                      addNewSet={addNewSet}
+                      deleteExerciseSet={deleteExerciseSet}
+                      updateExerciseSet={updateExerciseSet}
+                      updateWorkoutExerciseField={updateWorkoutExerciseField}
                     />
-                  )}
-                  <WorkoutExercise
-                    workoutExercise={workoutExercise}
-                    setDragItemId={setDragItemId}
-                    addNewSet={addNewSet}
-                    deleteExerciseSet={deleteExerciseSet}
-                    updateExerciseSet={updateExerciseSet}
-                    updateWorkoutExerciseField={updateWorkoutExerciseField}
-                  />
-                </WorkoutExerciseWrapper>
-              ))}
-            <CustomFooter close={handleClosePress} theme={theme} />
-          </BottomSheetScrollView>
-        </Pressable>
-      </BottomSheet>}
+                  </WorkoutExerciseWrapper>
+                ))}
+              <CustomFooter close={handleClosePress} theme={theme} />
+            </BottomSheetScrollView>
+          </Pressable>
+        </BottomSheet>
+      )}
       <CustomKeyboard animatedIndex={animatedIndex} />
     </View>
   );
