@@ -46,7 +46,7 @@ const CustomTabBar = ({
       },
       animatedStyle,
     ],
-    [animatedStyle]
+    [animatedStyle],
   );
   return (
     <Animated.View style={containerStyle}>

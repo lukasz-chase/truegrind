@@ -57,6 +57,7 @@ export const updateWorkoutExercises = async (
         .from("workout_exercises")
         .upsert(workoutExercisesToUpdate);
       if (error) {
+        console.log("error updating workout_exercises", error);
         throw error;
       }
     }
@@ -82,11 +83,15 @@ export const createWorkoutExercisesHistory = async (
       created_at: new Date().toISOString(),
     });
   }
+
+  if (workoutExercisesHistoryToCreate.length === 0) return;
+
   const { error } = await supabase
     .from("exercises_history")
     .insert(workoutExercisesHistoryToCreate);
 
   if (error) {
+    console.log("error creating exercises_history", error);
     throw error;
   }
 };

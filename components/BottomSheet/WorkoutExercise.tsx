@@ -53,7 +53,6 @@ const WorkoutExercise = ({
   const [note, setNote] = useState(
     workoutExercise?.note ?? { noteValue: "", showNote: false },
   );
-  console.log(note);
   const { theme, mode } = useThemeStore((state) => state);
 
   const styles = useMemo(() => makeStyles(theme, mode), [theme, mode]);

@@ -45,6 +45,7 @@ export const updateExerciseSets = async (
       .from("exercise_sets")
       .upsert(exerciseSetsToUpdate);
     if (error) {
+      console.log("error upserting exercise sets", error);
       throw error;
     }
   }
@@ -101,6 +102,7 @@ export const createExerciseSetsHistory = async (
       .from("sets_history")
       .upsert(exerciseHistorySets);
     if (error) {
+      console.log("error upserting exercise sets history", error);
       throw error;
     }
   }
