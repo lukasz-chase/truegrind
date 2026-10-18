@@ -167,7 +167,7 @@ const WorkoutBottomSheet = ({ animatedIndex }: Props) => {
 const makeStyles = (theme: ThemeColors) =>
   StyleSheet.create({
     overlay: {
-      ...StyleSheet.absoluteFillObject,
+      ...StyleSheet.absoluteFill,
       justifyContent: "flex-end",
     },
     sheetShadow: {

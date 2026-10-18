@@ -35,7 +35,7 @@ const LoadingAnimation = () => {
 const makeStyles = (theme: ThemeColors) =>
   StyleSheet.create({
     container: {
-      ...StyleSheet.absoluteFillObject,
+      ...StyleSheet.absoluteFill,
       justifyContent: "center",
       alignItems: "center",
       backgroundColor: theme.semiTransparent,
