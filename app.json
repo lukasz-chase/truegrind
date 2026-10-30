@@ -8,7 +8,6 @@
     "icon": "./assets/images/icon.png",
     "scheme": "truegrind",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.tru.grind",
@@ -78,7 +77,7 @@
       }
     },
     "runtimeVersion": {
-      "policy": "appVersion"
+      "policy": "fingerprint"
     },
     "updates": {
       "url": "https://u.expo.dev/3ed877d3-61e8-4949-8922-8e9f0688ee5e"

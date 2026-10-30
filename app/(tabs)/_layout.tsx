@@ -25,6 +25,10 @@ import WorkoutPreviewModal from "@/components/Modals/WorkoutPreviewModal";
 import FolderOptionsModal from "@/components/Modals/FolderOptionsModal";
 import UpsertFolderModal from "@/components/Modals/UpsertFolderModal";
 
+export const unstable_settings = {
+  initialRouteName: "index",
+};
+
 export default function TabLayout() {
   const animatedIndex = useSharedValue(0);
   const { isSheetVisible } = useBottomSheet();
@@ -95,7 +99,6 @@ export default function TabLayout() {
               height: 70,
             },
           }}
-          initialRouteName="index"
           tabBar={(props) => (
             <CustomTabBar
               {...props}

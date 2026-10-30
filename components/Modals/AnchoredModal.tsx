@@ -8,6 +8,7 @@ import {
   StyleSheet,
   TouchableWithoutFeedback,
   DimensionValue,
+  type ViewInstance,
 } from "react-native";
 
 type Props = {
@@ -39,7 +40,7 @@ export default function AnchoredModal({
     isBottomAnchored: false,
   });
   const [modalHeight, setModalHeight] = useState(0);
-  const modalRef = useRef<View>(null);
+  const modalRef = useRef<ViewInstance>(null);
   const { theme } = useThemeStore((state) => state);
 
   const styles = useMemo(() => makeStyles(theme), [theme]);

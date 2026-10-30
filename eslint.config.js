@@ -9,6 +9,9 @@ module.exports = defineConfig([
     rules: {
       "react/display-name": "warn",
       "react/no-unescaped-entities": "off",
+      // SDK 58 adds compiler diagnostics; migrate existing components gradually.
+      "react-hooks/set-state-in-effect": "warn",
+      "react-hooks/immutability": "warn",
     },
   },
 ]);

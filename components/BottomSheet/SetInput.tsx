@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { StyleSheet, Pressable, View, Text } from "react-native";
+import { StyleSheet, Pressable, View, Text, type ViewInstance } from "react-native";
 import { BarTypeEnum, ExerciseSet } from "@/types/exercisesSets";
 import useCustomKeyboard from "@/store/useCustomKeyboard";
 import Animated, {
@@ -50,7 +50,7 @@ const SetInput = ({
   const { theme, mode } = useThemeStore((state) => state);
 
   const styles = useMemo(() => makeStyles(theme), [theme]);
-  const inputRef = useRef<View>(null);
+  const inputRef = useRef<ViewInstance>(null);
 
   const {
     openKeyboard,

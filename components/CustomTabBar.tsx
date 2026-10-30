@@ -16,7 +16,8 @@ type Props = BottomTabBarProps & {
 const CustomTabBar = ({
   state,
   descriptors,
-  navigation,
+  emitter,
+  navigateToTab,
   animatedIndex,
   isSheetVisible,
 }: Props) => {
@@ -53,7 +54,8 @@ const CustomTabBar = ({
       <BottomTabBar
         state={state}
         descriptors={descriptors}
-        navigation={navigation}
+        emitter={emitter}
+        navigateToTab={navigateToTab}
         insets={insets} // Pass the insets
       />
     </>
